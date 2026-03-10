@@ -1,0 +1,11 @@
+# build_runner / flutter_gen_runner pubspec.yaml va assets ni o'qiydi.
+# Asset generatsiya: dart run flutter_gen_runner
+targets:
+  $default:
+    sources:
+      include:
+        - $package$
+        - pubspec.yaml
+        - lib/**
+        - test/**
+        - assets/**
