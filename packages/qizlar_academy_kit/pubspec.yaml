@@ -4,7 +4,7 @@ version: 1.0.0
 publish_to: 'none'
 
 environment:
-  sdk: ^3.11.0
+  sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -80,6 +80,7 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_screenutil: ^5.9.3
   flutter_html: ^3.0.0
+  liquid_glass_renderer: ^0.2.0-dev.4
 
   # Device info and utilities
   screenshot: ^3.0.0
@@ -102,10 +103,11 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
 
-  test: ^1.30.0
+  test: ^1.29.0
   json_serializable: ^6.13.0
   freezed: ^3.2.5
   build_runner: ^2.12.1
+  flutter_gen_runner: ^5.6.0
 
 
 

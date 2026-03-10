@@ -20,6 +20,12 @@ void main() {
       WidgetsFlutterBinding.ensureInitialized();
       await setupLocator();
 
+      // Flutter framework xatolarini (build, layout, render) Crashlytics ga yuborish
+      FlutterError.onError = (FlutterErrorDetails details) {
+        FlutterError.presentError(details);
+        FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+      };
+
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
