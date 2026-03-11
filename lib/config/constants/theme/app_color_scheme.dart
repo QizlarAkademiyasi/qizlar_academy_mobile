@@ -24,6 +24,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     required this.onSecondaryContainer,
     required this.iconSecondary,
     required this.error,
+    required this.bottomBarGlass,
+    required this.bottomBarIndicator,
+    required this.bottomBarTabUnselected,
   });
 
   final Color primary;
@@ -64,6 +67,15 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   /// Xato holati rangi.
   final Color error;
 
+  /// Bottom bar (Liquid Glass) shisha fon tinti.
+  final Color bottomBarGlass;
+
+  /// Bottom bar indikator pill (oddiy fallback).
+  final Color bottomBarIndicator;
+
+  /// Bottom bar tanlanmagan tab icon/label.
+  final Color bottomBarTabUnselected;
+
   // ─── Light ───────────────────────────────────────────────────────────────
 
   static final AppColorScheme light = AppColorScheme(
@@ -80,6 +92,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     onSecondaryContainer: AppColors.lightOnSecondaryContainer,
     iconSecondary: AppColors.lightIconSecondary,
     error: AppColors.redAction,
+    bottomBarGlass: AppColors.lightBottomBarGlass,
+    bottomBarIndicator: AppColors.lightBottomBarIndicator,
+    bottomBarTabUnselected: AppColors.lightBottomBarTabUnselected,
   );
 
   // ─── Dark ────────────────────────────────────────────────────────────────
@@ -98,6 +113,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     onSecondaryContainer: AppColors.darkOnSecondaryContainer,
     iconSecondary: AppColors.darkIconSecondary,
     error: AppColors.redAction,
+    bottomBarGlass: AppColors.darkBottomBarGlass,
+    bottomBarIndicator: AppColors.darkBottomBarIndicator,
+    bottomBarTabUnselected: AppColors.darkBottomBarTabUnselected,
   );
 
   // ─── ThemeExtension impl ──────────────────────────────────────────────────
@@ -117,6 +135,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     Color? onSecondaryContainer,
     Color? iconSecondary,
     Color? error,
+    Color? bottomBarGlass,
+    Color? bottomBarIndicator,
+    Color? bottomBarTabUnselected,
   }) {
     return AppColorScheme(
       primary: primary ?? this.primary,
@@ -132,6 +153,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       onSecondaryContainer: onSecondaryContainer ?? this.onSecondaryContainer,
       iconSecondary: iconSecondary ?? this.iconSecondary,
       error: error ?? this.error,
+      bottomBarGlass: bottomBarGlass ?? this.bottomBarGlass,
+      bottomBarIndicator: bottomBarIndicator ?? this.bottomBarIndicator,
+      bottomBarTabUnselected: bottomBarTabUnselected ?? this.bottomBarTabUnselected,
     );
   }
 
@@ -152,6 +176,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       onSecondaryContainer: Color.lerp(onSecondaryContainer, other.onSecondaryContainer, t)!,
       iconSecondary: Color.lerp(iconSecondary, other.iconSecondary, t)!,
       error: Color.lerp(error, other.error, t)!,
+      bottomBarGlass: Color.lerp(bottomBarGlass, other.bottomBarGlass, t)!,
+      bottomBarIndicator: Color.lerp(bottomBarIndicator, other.bottomBarIndicator, t)!,
+      bottomBarTabUnselected: Color.lerp(bottomBarTabUnselected, other.bottomBarTabUnselected, t)!,
     );
   }
 }

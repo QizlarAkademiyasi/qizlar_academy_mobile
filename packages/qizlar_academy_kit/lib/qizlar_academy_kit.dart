@@ -16,3 +16,4 @@ export 'package:cached_network_image/cached_network_image.dart';
 export 'package:lucide_icons_flutter/lucide_icons.dart';
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
+export 'package:motor/motor.dart';

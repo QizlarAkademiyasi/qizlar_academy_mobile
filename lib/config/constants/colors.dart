@@ -39,6 +39,30 @@ abstract class AppColors {
   static const Color darkOnSecondaryContainer = black;
   static const Color darkIconSecondary = textDark;
 
+  // ─── Bottom bar (Liquid Glass) — Light / Dark ──────────────────────────────
+
+  /// Light: shisha bar fon tint (glassColor).
+  static final Color lightBottomBarGlass =
+      lightNavBar.withValues(alpha: 0.6);
+
+  /// Dark: shisha bar fon tint (glassColor).
+  static final Color darkBottomBarGlass =
+      darkNavBar.withValues(alpha: 0.6);
+
+  /// Light: indikator pill (oddiy fallback, yopilishda).
+  static final Color lightBottomBarIndicator =
+      grey.withValues(alpha: 0.12);
+
+  /// Dark: indikator pill (oddiy fallback).
+  static final Color darkBottomBarIndicator =
+      white.withValues(alpha: 0.08);
+
+  /// Light: tanlanmagan tab icon/label.
+  static const Color lightBottomBarTabUnselected = grey;
+
+  /// Dark: tanlanmagan tab icon/label.
+  static const Color darkBottomBarTabUnselected = secondaryGrey;
+
   // ─── Splash screen (light / dark) ─────────────────────────────────────────
 
   /// Light: bright pink background.

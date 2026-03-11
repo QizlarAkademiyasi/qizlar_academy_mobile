@@ -81,6 +81,9 @@ dependencies:
   flutter_screenutil: ^5.9.3
   flutter_html: ^3.0.0
   liquid_glass_renderer: ^0.2.0-dev.4
+  cupertino_native: ^0.1.1
+  motor: ^1.1.0
+  flutter_hooks: ^0.21.3+1
 
   # Device info and utilities
   screenshot: ^3.0.0
@@ -91,6 +94,7 @@ dependencies:
   
   # Animations
   flutter_staggered_animations: ^1.1.1
+  rivership: ^0.4.0+5
 
   # Notifications
   flutter_local_notifications: ^20.1.0

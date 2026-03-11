@@ -1,4 +1,4 @@
-package com.example.qizlar_academy_mobile
+package uz.globalmove.girls_academy
 
 import io.flutter.embedding.android.FlutterActivity
 
