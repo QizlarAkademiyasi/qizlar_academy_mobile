@@ -9,22 +9,25 @@ class HomeState extends Equatable {
     this.categories = const [],
     this.teachers = const [],
     this.courses = const [],
+    this.banners = const [],
     this.message,
   });
 
   final HomeStatus status;
   final HomeStatsModel? homeStats;
-  final List<CategoryModel> categories;
+  final List<StoryModel> categories;
   final List<TeacherModel> teachers;
   final List<CourseModel> courses;
+  final List<BannerModel> banners;
   final String? message;
 
   HomeState copyWith({
     HomeStatus? status,
     HomeStatsModel? homeStats,
-    List<CategoryModel>? categories,
+    List<StoryModel>? categories,
     List<TeacherModel>? teachers,
     List<CourseModel>? courses,
+    List<BannerModel>? banners,
     String? message,
   }) {
     return HomeState(
@@ -33,10 +36,19 @@ class HomeState extends Equatable {
       categories: categories ?? this.categories,
       teachers: teachers ?? this.teachers,
       courses: courses ?? this.courses,
+      banners: banners ?? this.banners,
       message: message ?? this.message,
     );
   }
 
   @override
-  List<Object?> get props => [status, homeStats, categories, teachers, courses, message];
+  List<Object?> get props => [
+    status,
+    homeStats,
+    categories,
+    teachers,
+    courses,
+    banners,
+    message,
+  ];
 }

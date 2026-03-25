@@ -1,5 +1,1 @@
-enum UserType {
-  none,
-  anonymous,
-  registered,
-}
+enum UserType { anonymous, registered }

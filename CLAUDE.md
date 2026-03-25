@@ -17,7 +17,8 @@ This file is read by Cursor in every conversation. Follow these rules when editi
 
 - **lib/main.dart** — Widget binding init, `setupLocator()`, then `runApp(App())`.
 - **lib/app.dart** — Root widget (MaterialApp.router), theme, router.
-- **lib/config/** — Router, DI, constants, theme, flavor, settings, l10n.
+- **lib/config/** — Router, DI, constants, **enum/** (shared enums), theme, flavor, settings, l10n.
+- **lib/config/logs/** — markaziy logging (`AppLogger`); barcha loglar shu qatlam orqali yoziladi.
 - **lib/core/** — Shared components, generated assets.
 - **lib/feature/** — One folder per feature; each has domain, data, presentation.
 
@@ -72,6 +73,7 @@ Use equatable and bloc/flutter_bloc from the kit (import via kit when re-exporte
 
 - **Router:** Paths in `config/router/path_routes.dart` (part of app_routes); GoRouter in `config/router/app_routes.dart`; BlocProvider in route builder when needed.
 - **DI:** All registration in `config/di/setup_locator.dart`. Use `getIt` (GetIt from kit). In screens/routes: `getIt<X>()` or `BlocProvider(create: (context) => getIt<XxxBloc>())`.
+- **Logging:** `logger` paketidan foydalaning, lekin loglarni faqat `lib/config/logs/app_logger.dart` dagi `AppLogger` orqali yozing. Feature/screen/bloc ichida alohida `Logger()` ochmang.
 
 ---
 

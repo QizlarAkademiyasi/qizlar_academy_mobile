@@ -1,5 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/components/app_components.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 /// Splash ekranining markaziy qismi — asosiy logo.
 class SplashCenterContent extends StatelessWidget {

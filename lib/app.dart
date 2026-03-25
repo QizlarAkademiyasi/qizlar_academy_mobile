@@ -17,6 +17,9 @@ class MyApp extends StatelessWidget {
       initialModel: appOptions,
       builder: (context) => MaterialApp.router(
         routerConfig: goRouter,
+        builder: (context, child) => _GlobalKeyboardDismiss(
+          child: ThemeCircleAnimation(child: child ?? const SizedBox.shrink()),
+        ),
         title: 'Qizlar Akademiyasi',
         theme: AppOptions.of(context).themeLightData(context),
         darkTheme: AppOptions.of(context).themeDarkData(context),
@@ -28,6 +31,25 @@ class MyApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
       ),
+    );
+  }
+}
+
+class _GlobalKeyboardDismiss extends StatelessWidget {
+  const _GlobalKeyboardDismiss({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        final currentFocus = FocusManager.instance.primaryFocus;
+        if (currentFocus == null) return;
+        currentFocus.unfocus();
+      },
+      child: child,
     );
   }
 }

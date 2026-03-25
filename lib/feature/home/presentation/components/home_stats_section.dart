@@ -1,42 +1,38 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/components/app_components.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_last_lesson_card.dart';
 
 class HomeStatsSection extends StatelessWidget {
-  const HomeStatsSection({super.key, required this.stats});
+  const HomeStatsSection({super.key, required this.stats, this.isLoading = false});
 
   final HomeStatsModel stats;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
         children: [
-          Row(
-            children: [
-              Expanded(child: _CoinsCard(coins: stats.coins)),
-              const SizedBox(width: 12),
-              Expanded(child: _GradeCard(grade: stats.grade)),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _CoinsCard(coins: stats.coins, grade: stats.grade, isLoading: isLoading),
+                const SizedBox(height: 12),
+                _RatingCard(rating: stats.rating, onTap: () {}, isLoading: isLoading),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: HomeLastLessonCard(
-                  category: stats.lastLessonCategory,
-                  progress: stats.lastLessonProgress,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 2,
-                child: _RatingCard(rating: stats.rating),
-              ),
-            ],
+          const SizedBox(width: 8),
+          Expanded(
+            child: HomeLastLessonCard(
+              category: stats.lastLessonCategory,
+              progress: stats.lastLessonProgress,
+              onTap: () {},
+              isLoading: isLoading,
+            ),
           ),
         ],
       ),
@@ -45,153 +41,155 @@ class HomeStatsSection extends StatelessWidget {
 }
 
 class _CoinsCard extends StatelessWidget {
-  const _CoinsCard({required this.coins});
+  const _CoinsCard({required this.coins, required this.grade, this.isLoading = false});
 
   final int coins;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colorScheme.surface,
-        borderRadius: AppRadius.radiusMd,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF3E0),
-              borderRadius: AppRadius.radiusXs,
-            ),
-            child: const Icon(LucideIcons.coins, color: Color(0xFFFF9800), size: 20),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '$coins',
-                style: context.textTheme.heading6.copyWith(
-                  color: context.colorScheme.onSurface,
-                ),
-              ),
-              Text(
-                'Tangalar',
-                style: context.textTheme.bodyXSmallRegular.copyWith(
-                  color: AppColors.secondaryGrey,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GradeCard extends StatelessWidget {
-  const _GradeCard({required this.grade});
-
   final int grade;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colorScheme.surface,
-        borderRadius: AppRadius.radiusMd,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE8F5E9),
-              borderRadius: AppRadius.radiusXs,
+    return Bounce(
+      onTap: () {},
+      child: Container(
+        height: 100,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        decoration: BoxDecoration(
+          color: context.appColors.onContainer,
+          borderRadius: AppRadius.radiusXl,
+          border: Border.all(color: context.appColors.stroke, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadow.withValues(alpha: 0.05),
+              blurRadius: 2,
+              offset: const Offset(0, 2),
             ),
-            child: const Icon(LucideIcons.star, color: Color(0xFF4CAF50), size: 20),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '$grade',
-                style: context.textTheme.heading6.copyWith(
-                  color: context.colorScheme.onSurface,
-                ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    LucideIcons.circleStar,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                  const SizedBox(height: 8),
+                  Skeletonizer(
+                    enabled: isLoading,
+                    child: Text(
+                      '$coins',
+                      style: context.textTheme.bodyMediumMedium.copyWith(
+                        color: context.appColors.text,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Tangalar',
+                    style: context.textTheme.bodySmallMedium.copyWith(
+                      color: AppColors.secondaryGrey,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                'Baho',
-                style: context.textTheme.bodyXSmallRegular.copyWith(
-                  color: AppColors.secondaryGrey,
-                ),
+            ),
+            const SizedBox(width: 10),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    LucideIcons.flame,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                  const SizedBox(height: 8),
+                  Skeletonizer(
+                    enabled: isLoading,
+                    child: Text(
+                      '$grade',
+                      style: context.textTheme.bodyMediumMedium.copyWith(
+                        color: context.appColors.text,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Baho',
+                    style: context.textTheme.bodySmallMedium.copyWith(
+                      color: AppColors.secondaryGrey,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _RatingCard extends StatelessWidget {
-  const _RatingCard({required this.rating});
+  const _RatingCard({required this.rating, required this.onTap, this.isLoading = false});
 
   final int rating;
+  final VoidCallback? onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colorScheme.surface,
-        borderRadius: AppRadius.radiusMd,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(LucideIcons.trophy, color: AppColors.primary, size: 28),
-          const SizedBox(height: 8),
-          Text(
-            '$rating',
-            style: context.textTheme.heading6.copyWith(
-              color: context.colorScheme.onSurface,
+    return Bounce(
+      onTap: () {},
+      child: Container(
+        height: 100,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        decoration: BoxDecoration(
+          color: context.appColors.onContainer,
+          borderRadius: AppRadius.radiusXl,
+          border: Border.all(color: context.appColors.stroke, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadow.withValues(alpha: 0.05),
+              blurRadius: 2,
+              offset: const Offset(0, 2),
             ),
+          ],
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(LucideIcons.crown, color: AppColors.primary, size: 24),
+              const SizedBox(height: 8),
+              Skeletonizer(
+                enabled: isLoading,
+                child: Text(
+                  '$rating',
+                  style: context.textTheme.bodyMediumMedium.copyWith(
+                    color: context.appColors.text,
+                  ),
+                ),
+              ),
+              Text(
+                'Reytingdagi o’riningiz',
+                style: context.textTheme.bodySmallMedium.copyWith(
+                  color: AppColors.secondaryGrey,
+                ),
+              ),
+            ],
           ),
-          Text(
-            'Reyting',
-            style: context.textTheme.bodyXSmallRegular.copyWith(
-              color: AppColors.secondaryGrey,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

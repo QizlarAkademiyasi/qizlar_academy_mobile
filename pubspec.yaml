@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.5.0+27
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
@@ -35,6 +35,7 @@ dependencies:
     
   qizlar_academy_kit:
     path: packages/qizlar_academy_kit
+  story: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -49,17 +50,13 @@ dev_dependencies:
 
   flutter_launcher_icons: ^0.14.4
 
-  # Asset/code generation (paket qizlar_academy_kit da ham mavjud)
-  build_runner: ^2.12.1
-  flutter_gen_runner: ^5.6.0
-
 flutter_launcher_icons:
   android: true
   ios: true
   remove_alpha_ios: true
-  image_path: 'assets/images/logo.png'
-  adaptive_icon_background: "assets/images/logo.png"
-  adaptive_icon_foreground: "assets/images/logo.png"
+  image_path: 'packages/qizlar_academy_kit/assets/images/logo.png'
+  adaptive_icon_background: "packages/qizlar_academy_kit/assets/images/logo.png"
+  adaptive_icon_foreground: "packages/qizlar_academy_kit/assets/images/logo.png"
   adaptive_icon_background_color: "#E8649E"
 
 # For information on the generic Dart part of this file, see the
@@ -73,19 +70,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # flutter_gen_runner asset generatsiyasi uchun (dart run flutter_gen_runner)
-  generate: true
-
-  assets:
-    - assets/svgs/countries/
-    - assets/svgs/icons/general/
-    - assets/svgs/icons/bottomNavBar/
-    - assets/svgs/icons/app/
-    - assets/svgs/icons/
-    - assets/json/
-    - assets/markdown/
-    - assets/images/
-    - shorebird.yaml
+  # Barcha assets packages/qizlar_academy_kit/assets dan olinadi.
+  # assets: (root da assets yo'q — kit dan ishlatiladi)
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -106,16 +92,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-
-# Asset generatsiya: lib/core/assets/ da Assets.gen.dart (UiKitAssets) yaratiladi.
-# Ishga tushirish: dart run flutter_gen_runner
-flutter_gen:
-  output: lib/core/assets/
-  line_length: 100
-  assets:
-    enabled: true
-    outputs:
-      class_name: UiKitAssets
-  integrations:
-    flutter_svg: true
-    lottie: true

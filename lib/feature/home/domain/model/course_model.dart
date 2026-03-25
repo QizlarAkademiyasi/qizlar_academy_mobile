@@ -18,5 +18,12 @@ class CourseModel extends Equatable {
   final int studentCount;
 
   @override
-  List<Object?> get props => [id, title, author, imageUrl, durationHours, studentCount];
+  List<Object?> get props => [
+    id,
+    title,
+    author,
+    imageUrl,
+    durationHours,
+    studentCount,
+  ];
 }

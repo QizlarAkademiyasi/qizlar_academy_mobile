@@ -1,68 +1,95 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/components/app_components.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class HomeHeaderComponent extends StatelessWidget {
-  const HomeHeaderComponent({super.key, required this.userName});
+  const HomeHeaderComponent({
+    super.key,
+    required this.userName,
+    required this.onNotificationTap,
+  });
 
   final String userName;
+  final VoidCallback onNotificationTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      color: context.appColors.background,
       child: Row(
         children: [
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Xush kelibsiz!',
+                    style: context.textTheme.bodyMediumMedium.copyWith(
+                      color: context.appColors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    userName,
+                    maxLines: 1,
+                    style: context.textTheme.heading4.copyWith(
+                      overflow: TextOverflow.ellipsis,
+                      color: context.appColors.text,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Bounce(
+            tilt: false,
+            onTap: () {
+              Gaimon.selection();
+              onNotificationTap();
+            },
+            child: Stack(
               children: [
-                Text(
-                  'Xush kelibsiz,',
-                  style: context.textTheme.bodyMediumRegular.copyWith(
-                    color: context.colorScheme.onSurfaceVariant,
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: context.appColors.onContainer,
+                    boxShadow: [
+                      BoxShadow(
+                        color: context.appColors.shadow.withValues(
+                          alpha: 0.005,
+                        ),
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                    border: Border.all(color: context.appColors.stroke),
+                  ),
+                  child: Icon(
+                    LucideIcons.bell,
+                    size: 22,
+                    color: context.appColors.text,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  userName,
-                  style: context.textTheme.heading5.copyWith(
-                    color: context.colorScheme.onSurface,
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-          Stack(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: context.colorScheme.surface,
-                  border: Border.all(
-                    color: context.colorScheme.outline.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: Icon(
-                  LucideIcons.bell,
-                  size: 22,
-                  color: context.colorScheme.onSurface,
-                ),
-              ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),

@@ -12,50 +12,64 @@ abstract class AppColors {
   static const Color secondaryGrey = Color(0xFF94A3B8);
   static const Color textDark = Color(0xFF0F172A);
   static const Color redAction = Color(0xFFEF4444);
-  static const Color darkBackground = Color(0xFF0B0E13);
+  static const Color darkBackground = Color(0xFF121212);
   static const Color bigOpacityDark = Color(0xFFB0B0B0);
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color lightBackground = Color(0xFFF7F7F6);
+  static const Color lightBackground = Color(0xFFF7F7F5);
+  static const Color shadow = Color(0xFF000000);
 
   // ─── Light theme ─────────────────────────────────────────────────────────
 
-  static const Color lightScaffold = white;
+  static const Color lightScaffold = lightBackground;
   static const Color lightNavBar = white;
   static const Color lightText = textDark;
-  static const Color lightAction = white;
-  static const Color lightStroke = Color(0xFFE2E8F0);
+  static const Color lightAction = Color(0xFF8FAFC0);
+  static const Color lightStroke = Color(0xFFF1F5F9);
   static const Color lightOnContainer = white;
-  static const Color lightOnSecondaryContainer = white;
+  static const Color lightOnSecondaryContainer = Color(0xFFF1F5F9);
   static const Color lightIconSecondary = Color(0xFFF8FAFC);
 
   // ─── Dark theme ──────────────────────────────────────────────────────────
 
-  static const Color darkNavBar = Color(0xFF161C26);
+  static const Color darkNavBar = Color(0xFF121212);
   static const Color darkText = white;
-  static const Color darkAction = Color(0xFF1E293B);
-  static const Color darkStroke = Color(0xFF1E293B);
-  static const Color darkOnContainer = black;
-  static const Color darkOnSecondaryContainer = black;
-  static const Color darkIconSecondary = textDark;
+  static const Color darkAction = Color(0xFF334155);
+  static const Color darkStroke = Color(0xFF252C36);
+  static const Color darkOnContainer = Color(0xFF171717);
+  static const Color darkOnSecondaryContainer = Color(0xFF171717);
+  static const Color darkIconSecondary = Color(0xFF1E1E1E);
 
   // ─── Bottom bar (Liquid Glass) — Light / Dark ──────────────────────────────
 
   /// Light: shisha bar fon tint (glassColor).
-  static final Color lightBottomBarGlass =
-      lightNavBar.withValues(alpha: 0.6);
+  static final Color lightBottomBarGlass = lightOnContainer.withValues(
+    alpha: 0.55,
+  );
 
   /// Dark: shisha bar fon tint (glassColor).
-  static final Color darkBottomBarGlass =
-      darkNavBar.withValues(alpha: 0.6);
+  static final Color darkBottomBarGlass = const Color.fromARGB(
+    255,
+    87,
+    87,
+    87,
+  ).withValues(alpha: 0.65);
 
   /// Light: indikator pill (oddiy fallback, yopilishda).
-  static final Color lightBottomBarIndicator =
-      grey.withValues(alpha: 0.12);
+  static final Color lightBottomBarIndicator = const Color.fromARGB(
+    255,
+    174,
+    174,
+    174,
+  ).withValues(alpha: 0.12);
 
   /// Dark: indikator pill (oddiy fallback).
-  static final Color darkBottomBarIndicator =
-      white.withValues(alpha: 0.08);
+  static final Color darkBottomBarIndicator = const Color.fromARGB(
+    255,
+    158,
+    158,
+    158,
+  ).withValues(alpha: 0.48);
 
   /// Light: tanlanmagan tab icon/label.
   static const Color lightBottomBarTabUnselected = grey;
@@ -97,12 +111,12 @@ abstract class AppColors {
 
   // ─── Opacity colors ───────────────────────────────────────────────────────
 
-  static Color get whiteOpacity40 => white.withValues(alpha: 0.4);
-  static Color get whiteOpacity20 => white.withValues(alpha: 0.2);
-  static Color get whiteOpacity10 => white.withValues(alpha: 0.1);
-  static Color get blackOpacity40 => black.withValues(alpha: 0.4);
-  static Color get blackOpacity20 => black.withValues(alpha: 0.2);
-  static Color get blackOpacity10 => black.withValues(alpha: 0.1);
+  static Color get whiteOpacity40 => white.withValues(alpha: 0.04);
+  static Color get whiteOpacity20 => white.withValues(alpha: 0.02);
+  static Color get whiteOpacity10 => white.withValues(alpha: 0.01);
+  static Color get blackOpacity40 => black.withValues(alpha: 0.04);
+  static Color get blackOpacity20 => black.withValues(alpha: 0.02);
+  static Color get blackOpacity10 => black.withValues(alpha: 0.01);
 
   // ─── Flutter ColorScheme (Light) ─────────────────────────────────────────
 

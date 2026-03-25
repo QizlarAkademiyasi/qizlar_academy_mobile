@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "17451483765",
+    "project_id": "qizlar-akademiyasi",
+    "storage_bucket": "qizlar-akademiyasi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17451483765:android:fa7b74250bc2a4bbe76e3c",
+        "android_client_info": {
+          "package_name": "uz.globalmove.girls_academy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "17451483765-5p9gq3bs3bjfjt8nrblv3gqjh0de6df9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_K3vC5UjflYqBYg_sBFkqn56RVECtatI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "17451483765-5p9gq3bs3bjfjt8nrblv3gqjh0de6df9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "17451483765-f39q9ctojqi23kv7srojttn4palecpca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "uz.qizlar.akademiyasiDev"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17451483765:android:3823d14409c3bbd5e76e3c",
+        "android_client_info": {
+          "package_name": "uz.globalmove.girls_academy_dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "17451483765-5p9gq3bs3bjfjt8nrblv3gqjh0de6df9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_K3vC5UjflYqBYg_sBFkqn56RVECtatI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "17451483765-5p9gq3bs3bjfjt8nrblv3gqjh0de6df9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "17451483765-f39q9ctojqi23kv7srojttn4palecpca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "uz.qizlar.akademiyasiDev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

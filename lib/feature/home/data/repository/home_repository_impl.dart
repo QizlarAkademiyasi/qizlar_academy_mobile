@@ -1,4 +1,6 @@
-import 'package:qizlar_academy_mobile/feature/home/data/datasource/home_mock_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
+import 'package:qizlar_academy_mobile/feature/home/data/datasource/home_api_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
@@ -6,19 +8,32 @@ import 'package:qizlar_academy_mobile/feature/home/domain/model/teacher_model.da
 import 'package:qizlar_academy_mobile/feature/home/domain/repository/home_repository.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
-  HomeRepositoryImpl(this._datasource);
+  HomeRepositoryImpl({
+    required HomeApiDatasource apiDatasource,
+    required AuthSessionCubit authSessionCubit,
+  }) : _apiDatasource = apiDatasource,
+       _authSessionCubit = authSessionCubit;
 
-  final HomeMockDatasource _datasource;
-
-  @override
-  Future<HomeStatsModel> getStats() => _datasource.getStats();
-
-  @override
-  Future<List<CategoryModel>> getCategories() => _datasource.getCategories();
-
-  @override
-  Future<List<TeacherModel>> getTeachers() => _datasource.getTeachers();
+  final HomeApiDatasource _apiDatasource;
+  final AuthSessionCubit _authSessionCubit;
 
   @override
-  Future<List<CourseModel>> getCourses() => _datasource.getCourses();
+  Future<HomeStatsModel> getStats() =>
+      _apiDatasource.getStatsByUserType(_authSessionCubit.state.userType);
+
+  @override
+  Future<List<StoryModel>> getCategories() =>
+      _apiDatasource.getCategoriesByUserType(_authSessionCubit.state.userType);
+
+  @override
+  Future<List<TeacherModel>> getTeachers() =>
+      _apiDatasource.getTeachersByUserType(_authSessionCubit.state.userType);
+
+  @override
+  Future<List<CourseModel>> getCourses() =>
+      _apiDatasource.getCoursesByUserType(_authSessionCubit.state.userType);
+
+  @override
+  Future<List<BannerModel>> getBanners() =>
+      _apiDatasource.getBannersByUserType(_authSessionCubit.state.userType);
 }

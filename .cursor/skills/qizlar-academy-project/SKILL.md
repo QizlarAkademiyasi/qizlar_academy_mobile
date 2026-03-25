@@ -20,11 +20,15 @@ This skill applies **only** to the qizlar_academy_mobile project. Follow it toge
 ## Architecture (this project)
 
 - Follow the structure and patterns in **[reference.md](reference.md)** for this repo.
-- **lib:** `main.dart`, `app.dart`, `config/`, `core/`, `feature/`.
+- **lib:** `main.dart`, `app.dart`, `config/` (shu jumladan `config/enum/` — shared enumlar), `core/`, `feature/`.
 - **Feature:** `domain/`, `data/`, `presentation/` (screens/, bloc/, components/ as in reference).
 - **Router:** `config/router/app_routes.dart`, `path_routes.dart` (part of app_routes).
 - **DI:** `config/di/setup_locator.dart` (GetIt); register repositories and blocs in the kit or in app config as per reference.
+- **Logging:** all app logs must go through `lib/config/logs/` (central logger). Use `AppLogger` there; do not instantiate `Logger` directly in features/screens/blocs.
 - **Screens:** Page/View/Mixin pattern; mixin holds navigation, bloc listeners, lifecycle; build only in page/view. UI bloklarni komponentlarga ajratish va mixin orqali chaqirish qoidalari — reference.md bo‘limi **5.1 Mixin va componentlarga ajratish qonuniyatlari**.
+- **Komponent ichida mixin:** Juda katta kompozitsiyani `presentation/components/` ichida `*_mixin.dart` bilan bo‘lib tashlash (Single Responsibility / tsiklik importdan qochish) mumkin — bu qoidalar reference.md’da aniqlangan.
+- **Global toast:** SnackBar o‘rniga `core/presentation/components/app_toast.dart` dagi `AppToast` ishlatiladi (`success`, `error`, `warning`, `info`), va toast ichida `.tgs` animatsiyalar ishlatiladi.
+- **Error UX + logging:** API/exception xatoliklarida userga backend xabari yoki stack trace ko‘rsatilmaydi. UI’da faqat umumiy, xavfsiz matn beriladi (masalan: `Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.`). Texnik tafsilotlar esa faqat `AppLogger` orqali loglanadi.
 
 ## Full project rules
 
@@ -34,5 +38,6 @@ See **[reference.md](reference.md)** for:
 - Kit package list and import conventions
 - Feature, config, and core structure
 - Bloc, mixin, and component rules (including mixin/component ajratish qonuniyatlari, §5.1) for this project
+- **Exception screens va skeleton (§6.1):** fail holatlari uchun `.tgs` animatsiyali `exception_screens` komponentlari (TgsFailureContent); yuklanishda CircularProgressIndicator o‘rniga skeleton (PageLoadingSkeleton yoki feature-specific skeleton) ishlatiladi.
 
 Do not deviate from reference.md when adding or refactoring code in this project.

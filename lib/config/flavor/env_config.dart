@@ -15,10 +15,7 @@ final class EnvConfig {
 
   String get remoteConfigKey => flavor.remoteConfigKey;
 
-  EnvConfig._({
-    required this.appName,
-    required this.flavor,
-  });
+  EnvConfig._({required this.appName, required this.flavor});
 
   static EnvConfig? _instance;
 
@@ -26,10 +23,7 @@ final class EnvConfig {
     required String appName,
     required AppFlavors flavor,
   }) {
-    _instance = EnvConfig._(
-      appName: appName,
-      flavor: flavor,
-    );
+    _instance = EnvConfig._(appName: appName, flavor: flavor);
     debugPrint(
       '[EnvConfig] Flavor: ${_instance!.flavor.name.toUpperCase()} | '
       'App: ${_instance!.appName}',

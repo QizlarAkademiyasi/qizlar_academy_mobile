@@ -11,9 +11,11 @@ Loyiha qoidalari **CLAUDE.md** (loyiha ildizi) va **.cursor/skills/qizlar-academ
 
 - **Packages:** Faqat `packages/qizlar_academy_kit/pubspec.yaml` dan; root pubspec’ga yangi third-party qo‘shilmasin.
 - **Struktura:** lib = config, core, feature; har bir feature = domain + data + presentation (screens, bloc, components).
+- **Enumlar:** ilova bo‘ylab qayta ishlatiladigan enumlar `lib/config/enum/` da (har biri odatda alohida fayl).
 - **Screens:** Page/View/Mixin; mixin — navigatsiya, listener, lifecycle; build ekran/widget da.
 - **Komponentlar:** Yirik UI bloklar `presentation/components/` da alohida widget; ekranda mixin orqali chaqiriladi (§5.1 / §4.1 reference/CLAUDE).
 - **Bloc:** part event/state; Equatable; repository constructor orqali.
 - **Router/DI:** `config/router/app_routes.dart`, `path_routes.dart`; `config/di/setup_locator.dart` (getIt).
+- **Logging:** barcha loglar `lib/config/logs/` orqali; `AppLogger` dan foydalaning (`logger` package).
 
 To‘liq qoidalar: [CLAUDE.md](/CLAUDE.md) va [reference.md](.cursor/skills/qizlar-academy-project/reference.md).

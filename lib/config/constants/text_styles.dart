@@ -91,10 +91,10 @@ class AppTextTheme {
   factory AppTextTheme.plusJakartaTheme() {
     return AppTextTheme(
       heading1: _plusJakarta(72, FontWeight.w700),
-      heading2: _plusJakarta(48, FontWeight.w600),
-      heading3: _plusJakarta(32, FontWeight.w500),
-      heading4: _plusJakarta(24, FontWeight.w400),
-      heading5: _plusJakarta(20, FontWeight.w500),
+      heading2: _plusJakarta(48, FontWeight.w700),
+      heading3: _plusJakarta(32, FontWeight.w700),
+      heading4: _plusJakarta(24, FontWeight.w700),
+      heading5: _plusJakarta(20, FontWeight.w700),
       heading6: _plusJakarta(16, FontWeight.w700),
       bodyXLargeBold: _plusJakarta(18, FontWeight.w700),
       bodyXLargeSemibold: _plusJakarta(18, FontWeight.w600),

@@ -16,5 +16,11 @@ class HomeStatsModel extends Equatable {
   final double lastLessonProgress;
 
   @override
-  List<Object?> get props => [coins, grade, rating, lastLessonCategory, lastLessonProgress];
+  List<Object?> get props => [
+    coins,
+    grade,
+    rating,
+    lastLessonCategory,
+    lastLessonProgress,
+  ];
 }

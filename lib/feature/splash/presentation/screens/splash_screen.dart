@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
-import 'package:qizlar_academy_mobile/core/components/app_components.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/splash/presentation/screens/splash_screen_mixin.dart';
 
 class SplashScreen extends StatefulWidget {

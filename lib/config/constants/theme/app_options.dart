@@ -55,24 +55,23 @@ class AppOptions extends Equatable {
     ThemeMode? themeMode,
     ThemeDataBuilder? themeLightData,
     ThemeDataBuilder? themeDarkData,
-  }) =>
-      AppOptions(
-        _settingsDataSource,
-        locale: locale ?? this.locale,
-        themeMode: themeMode ?? this.themeMode,
-        themeLightData: themeLightData ?? this.themeLightData,
-        themeDarkData: themeDarkData ?? this.themeDarkData,
-      );
+  }) => AppOptions(
+    _settingsDataSource,
+    locale: locale ?? this.locale,
+    themeMode: themeMode ?? this.themeMode,
+    themeLightData: themeLightData ?? this.themeLightData,
+    themeDarkData: themeDarkData ?? this.themeDarkData,
+  );
 
   static AppOptions of(BuildContext context) {
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<_ModelBindingScope>()!;
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_ModelBindingScope>()!;
     return scope.modelBindingState.currentModel;
   }
 
   static void update(BuildContext context, AppOptions newModel) {
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<_ModelBindingScope>()!;
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<_ModelBindingScope>()!;
     scope.modelBindingState.updateModel(newModel);
   }
 
@@ -93,6 +92,22 @@ class AppOptions extends Equatable {
         backgroundColor: AppColors.darkBackground,
         surfaceTintColor: Colors.transparent,
         titleTextStyle: textTheme.bodyMedium?.copyWith(color: AppColors.white),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.darkBackground,
+        indicatorColor: AppColors.primary,
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: AppColors.darkBackground,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.secondaryGrey,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
       ),
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.transparent,
@@ -133,6 +148,22 @@ class AppOptions extends Equatable {
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.primary,
         surfaceTintColor: Colors.transparent,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.lightBackground,
+        indicatorColor: AppColors.primary,
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: AppColors.lightBackground,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.secondaryGrey,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
       ),
       tabBarTheme: TabBarThemeData(
         indicatorSize: TabBarIndicatorSize.tab,
@@ -211,14 +242,15 @@ class _ModelBindingState extends State<ModelBinding> {
   void _setupListeners() {
     _themeModeSubscription = currentModel._settingsDataSource.themeModeStream
         .listen((themeMode) {
-      if (themeMode != currentModel.themeMode) {
-        setState(() {
-          currentModel = currentModel.copyWith(themeMode: themeMode);
+          if (themeMode != currentModel.themeMode) {
+            setState(() {
+              currentModel = currentModel.copyWith(themeMode: themeMode);
+            });
+          }
         });
-      }
-    });
-    _localeSubscription =
-        currentModel._settingsDataSource.localeStream.listen((locale) {
+    _localeSubscription = currentModel._settingsDataSource.localeStream.listen((
+      locale,
+    ) {
       if (locale != currentModel.locale) {
         setState(() {
           currentModel = currentModel.copyWith(locale: locale);
@@ -252,9 +284,9 @@ class _ModelBindingState extends State<ModelBinding> {
 
   @override
   Widget build(BuildContext context) => _ModelBindingScope(
-        modelBindingState: this,
-        child: AppThemeProvider(builder: widget.builder),
-      );
+    modelBindingState: this,
+    child: AppThemeProvider(builder: widget.builder),
+  );
 }
 
 class AppOptionsService {

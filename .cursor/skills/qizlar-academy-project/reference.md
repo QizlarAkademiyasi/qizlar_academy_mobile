@@ -8,7 +8,7 @@ This document defines structure and conventions for the qizlar_academy_mobile ap
 
 - **lib/main.dart** — Widget binding init, `setupLocator()`, then `runApp(App())`.
 - **lib/app.dart** — Root widget (MaterialApp.router or MaterialApp), theme, router.
-- **lib/config/** — Router, DI, constants, theme, flavor, settings, l10n.
+- **lib/config/** — Router, DI, constants, **enum**, theme, flavor, settings, l10n.
 - **lib/core/** — Shared components, assets (generated).
 - **lib/feature/** — One folder per feature; each has domain, data, presentation.
 
@@ -19,6 +19,8 @@ This document defines structure and conventions for the qizlar_academy_mobile ap
 - **router/app_routes.dart** — GoRouter, routes; `part 'path_routes.dart';`.
 - **router/path_routes.dart** — `part of 'app_routes.dart';`; path constants (e.g. `Routes.splash`, `Routes.home`).
 - **di/setup_locator.dart** — GetIt (`getIt`); register singletons (e.g. SettingsDataSource, AppOptionsService, GoRouter).
+- **logs/** — ilova bo'ylab markaziy logging qatlamı. `app_logger.dart` ichidagi `AppLogger` orqali log yoziladi; `Logger` ni feature yoki screen ichida to'g'ridan-to'g'ri yaratmang.
+- **enum/** — Ilova bo‘ylab qayta ishlatiladigan **enum**lar (masalan `courses_tab.dart`). Har bir enum odatda alohida fayl; feature ichida emas, `config/enum/` da joylashadi.
 - **constants/** — colors, text_styles, apis, app_keys, app_radius, gradients, shadows, icons, theme (app_theme, app_options, theme_extension), user_type.
 - **flavor/** — env_config, app_remote_config.
 - **settings/** — settings_data_source (implementation can use SharedPreferences from the kit).
@@ -61,6 +63,7 @@ Listener naming: `xxxBlocListener(BuildContext context, XxxState state)` or `blo
 
 - **Komponentga ajratish:** Ekrandagi mantiqiy UI bloklari (masalan markaziy logo, pastki hamkorlar, forma bloki) alohida **StatelessWidget** sifatida `feature/.../presentation/components/` ichida yoziladi. Har bir komponent o‘z faylida (masalan `splash_center_content.dart`, `splash_bottom_partners.dart`). Maqsad: qayta ishlatish, test qilish osonligi, bitta javobgarlik (Single Responsibility).
 - **Mixin’ga ko‘chirish:** Ekrandagi `_buildXxx(BuildContext)` kabi UI qismlarini qaytaruvchi metodlar **mixin**ga ko‘chiriladi. Mixin `buildCenterContent(BuildContext)`, `buildBottomPartners(BuildContext)` kabi metodlar orqali faqat shu feature komponentlarini qaytaradi (`return const XxxComponent();`). Ekran o‘zi faqat layout (Column, Stack, …) va animatsiya/lifecycle bilan shug‘ullanadi; kontent mixin orqali olinadi.
+- **Juda katta komponentlar uchun:** Murakkab kompozitsiya (masalan sliver + tab + CTA) bitta `components/*` faylga sig‘may qolsa, `presentation/components/` ichida alohida `*_mixin.dart` fayl yaratib, shu komponentning ichki `buildXxx` logikasini mixin ichiga ko‘chirish mumkin. Bu ham Single Responsibility va tsiklik importdan qochishga yordam beradi.
 - **Tsiklik importdan qochish:** Mixin fayli ekran faylini import qilmasin. Bunun uchun mixin **generic** bo‘ladi: `mixin XxxScreenMixin<T extends StatefulWidget> on State<T>`. Ekranda: `class _XxxScreenState extends State<XxxScreen> with XxxScreenMixin<XxxScreen>`.
 - **Joylashuv:** Mixin — `presentation/screens/` da, ekran yonida (`*_screen_mixin.dart`). Komponentlar — `presentation/components/` da, aniq nom bilan (`*_center_content.dart`, `*_bottom_partners.dart` va h.k.).
 - **Import:** Komponentlar va mixin `app_components` (yoki config) va kerak bo‘lsa kit import qiladi; ekran mixin va router’ni import qiladi, komponentlarni to‘g‘ridan-to‘g‘ri import qilmaydi (faqat mixin orqali ishlatadi).
@@ -72,6 +75,23 @@ Listener naming: `xxxBlocListener(BuildContext context, XxxState state)` or `blo
 - **Core:** `core/components/` — shared across features; StatelessWidget; use config (colors, text_styles, theme).
 - **Feature:** `feature/.../presentation/components/` — only that feature; clear props; use config for styling.
 - **Ajratish:** Ekran build ichidagi yirik UI bloklarni alohida widget qilib `presentation/components/` ga chiqaring; ekranda ularni mixin metodlari orqali chaqiring (5.1 ga qarang).
+
+### 6.1 Exception screens va yuklanish (skeleton)
+
+- **Fail holatlari (failure/error):** Xato yoki muvaffaqiyatsiz yuklanish ekranlari uchun **feature/exception_screens/presentation/components/** dagi widgetlardan foydalaning. [TgsFailureContent](lib/feature/exception_screens/presentation/components/tgs_failure_content.dart) — `.tgs` animatsiya + xabar va "Qayta urinish" tugmasi; `message`, `onRetry`, ixtiyoriy `retryLabel`.
+- **Yuklanish (loading):** **CircularProgressIndicator ishlatilmasin.** O‘rniga **skeleton** (skeletonizer) ishlatiladi:
+  - Butun sahifa dastlabki yuklanayotganda (masalan ro‘yxat hali bo‘sh): [PageLoadingSkeleton](lib/feature/exception_screens/presentation/components/page_loading_skeleton.dart) — umumiy sahifa skeleti (sarlavha, tablar, karta, ro‘yxat).
+  - Sahifa ichidagi alohida blok yuklanayotganda: feature’ning `presentation/components/` da shu blok uchun skeleton widget (masalan [LeaderboardTopPerformersSkeleton](lib/feature/leaderboard/presentation/components/leaderboard_top_performers_skeleton.dart)); Skeletonizer.zone va Bone widgetlari (Bone.text, Bone.circle, Bone.button va h.k.) dan foydalaning.
+- **exception_screens** — faqat presentation/components (umumiy failure va page skeleton); domain/data kerak emas.
+
+### 6.2 Global toast standardi
+
+- Ilova bo'ylab **SnackBar** o'rniga `core/presentation/components/app_toast.dart` dagi `AppToast` ishlatiladi.
+- `AppToast` quyidagi turlarni taqdim etadi va shu turlar doimiy ishlatiladi: `success`, `error`, `warning`, `info`.
+- Har bir toast turi `.tgs` animatsiya bilan ko'rsatiladi (`lottie_tgs`), oddiy text-only toast yozilmaydi.
+- Feature/screen/bloc ichida lokal toast/snackbar yozish o'rniga markaziy `AppToast` API chaqiriladi.
+- API yoki texnik exception xatolarida userga backend `message`, stack trace yoki debug tafsilotlari ko'rsatilmaydi; faqat umumiy va xavfsiz xabar beriladi (masalan: `Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.`).
+- Asosiy xatolik tafsilotlari (status code, endpoint, raw response, stack trace) UI’da emas, faqat `lib/config/logs/app_logger.dart` dagi `AppLogger` orqali logga yoziladi.
 
 ---
 
@@ -114,7 +134,7 @@ All app dependencies must be declared in **packages/qizlar_academy_kit/pubspec.y
 - **Device / locale:** devicelocale  
 - **Storage / cache:** shared_preferences, flutter_cache_manager  
 - **Forms / UI:** pinput, sms_autofill, pull_to_refresh  
-- **UI / assets:** flutter_svg, cached_network_image, flutter_screenutil, flutter_html, liquid_glass_renderer  
+- **UI / assets:** flutter_svg, cached_network_image, flutter_screenutil, flutter_html, liquid_glass_renderer, skeletonizer, lottie_tgs
 - **Device / security:** screenshot, screen_protector  
 - **Other:** in_app_review, flutter_staggered_animations, flutter_local_notifications, fluttertoast  
 
@@ -122,6 +142,7 @@ All app dependencies must be declared in **packages/qizlar_academy_kit/pubspec.y
 
 - Prefer **`import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';`** for: Flutter, go_router, flutter_bloc, get_it, equatable, firebase_*, shared_preferences, cupertino_icons (or whatever the kit barrel file exports). Use one kit import instead of many package imports when the kit re-exports them.
 - For other packages that are in the kit but not re-exported: add an export in **packages/qizlar_academy_kit/lib/qizlar_academy_kit.dart** and then import the kit in the app, or import the package directly (the dependency must still be only in the kit’s pubspec, not the root).
+- For logging, use `logger` via the kit and call only `AppLogger` from `lib/config/logs/`.
 
 ---
 
