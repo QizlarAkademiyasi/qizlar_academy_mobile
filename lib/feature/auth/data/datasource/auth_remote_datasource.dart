@@ -79,11 +79,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   }) async {
     final response = await _dio.post<dynamic>(
       Apis.authSignIn,
-      data: <String, dynamic>{
-        'phone': phone,
-        'code': code,
-        'keyHash': keyHash,
-      },
+      data: <String, dynamic>{'phone': phone, 'code': code, 'keyHash': keyHash},
       options: Options(extra: <String, dynamic>{skipAuthRefresh: true}),
     );
     final map = _extractDataMap(response.data);
