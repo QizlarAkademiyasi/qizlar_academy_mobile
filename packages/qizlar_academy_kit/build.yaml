@@ -1,0 +1,11 @@
+# build_runner: freezed / json_serializable / flutter_gen_runner
+# Asset codegen: `dart run build_runner build --delete-conflicting-outputs`
+targets:
+  $default:
+    sources:
+      include:
+        - $package$
+        - pubspec.yaml
+        - lib/**
+        - assets/**
+        - test/**
