@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_gap.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_margin.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
@@ -19,17 +20,27 @@ import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_stats_section.dart';
 
 mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
-  Widget buildHeader(BuildContext context, String userName) {
+  Widget buildHeader(BuildContext context, {String userGreetingName = ''}) {
+    final isAnonymous = getIt<AuthSessionCubit>().state.isAnonymous;
+    final l10n = context.l10n;
+    final title = isAnonymous
+        ? l10n.homeWelcomeGuestTitle
+        : _registeredHeaderTitle(context, userGreetingName);
+    final subtitle = isAnonymous
+        ? l10n.homeWelcomeGuestSubtitle
+        : l10n.homeWelcomeBack;
+
     return HomeHeaderComponent(
-      userName: userName,
+      title: title,
+      subtitle: subtitle,
       onNotificationTap: () => onNotificationTap(context),
     );
   }
 
-  String resolveUserName() {
-    return getIt<AuthSessionCubit>().state.isAnonymous
-        ? 'Mehmon foydalanuvchi'
-        : 'Ro‘yxatdan o‘tgan foydalanuvchi';
+  String _registeredHeaderTitle(BuildContext context, String userGreetingName) {
+    final trimmed = userGreetingName.trim();
+    if (trimmed.isNotEmpty) return trimmed;
+    return context.l10n.homeRegisteredUserFallback;
   }
 
   Widget buildStoryBoard(BuildContext context, List<StoryModel> stories) {
@@ -78,7 +89,7 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     final canOpen = await getIt<GuestTapGateService>().allowAction(
       context,
       key: 'home_course_$courseId',
-      title: 'Kurslarni to‘liq ko‘rish uchun ro‘yxatdan o‘ting',
+      title: context.l10n.homeGuestCoursesGate,
     );
     if (!canOpen) return;
     if (!context.mounted) return;
@@ -86,10 +97,14 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> onNotificationTap(BuildContext context) async {
+    if (getIt<AuthSessionCubit>().state.isAnonymous) {
+      context.push(Routes.signIn);
+      return;
+    }
     final canOpen = await getIt<GuestTapGateService>().allowAction(
       context,
       key: 'home_notification_bell',
-      title: 'Bildirishnomalar uchun ro‘yxatdan o‘ting',
+      title: context.l10n.homeGuestNotificationsGate,
     );
     if (!canOpen) return;
     if (!context.mounted) return;
@@ -107,7 +122,7 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mashhur kurslar',
+            context.l10n.homePopularCourses,
             style: context.textTheme.heading6.copyWith(
               color: context.appColors.text,
             ),
@@ -135,11 +150,9 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
 
   void homeBlocListener(BuildContext context, HomeState state) {
     if (state.status == HomeStatus.failure) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.message ?? 'Xatolik yuz berdi'),
-          backgroundColor: AppColors.redAction,
-        ),
+      AppToast.error(
+        context,
+        message: state.message ?? context.l10n.homeLoadErrorMessage,
       );
     }
   }

@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
 import 'package:qizlar_academy_mobile/feature/notification/domain/model/notification_item_model.dart';
@@ -38,7 +39,7 @@ mixin NotificationScreenMixin<T extends StatefulWidget> on State<T> {
     final canExecute = await getIt<GuestTapGateService>().allowAction(
       context,
       key: 'notification_mark_all',
-      title: 'Barchasini o‘qilgan qilish uchun ro‘yxatdan o‘ting',
+      title: context.l10n.guestGateMarkAllRead,
     );
     if (!canExecute) return;
     if (!context.mounted) return;
@@ -55,7 +56,7 @@ mixin NotificationScreenMixin<T extends StatefulWidget> on State<T> {
     final canExecute = await getIt<GuestTapGateService>().allowAction(
       context,
       key: 'notification_item_${item.id}',
-      title: 'Bildirishnomalarni boshqarish uchun ro‘yxatdan o‘ting',
+      title: context.l10n.guestGateManageNotifications,
     );
     if (!canExecute) return;
     if (!context.mounted) return;

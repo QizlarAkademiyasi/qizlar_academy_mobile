@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class CoursesSearchField extends StatelessWidget {
@@ -24,7 +25,7 @@ class CoursesSearchField extends StatelessWidget {
         ),
         textInputAction: TextInputAction.search,
         decoration: InputDecoration(
-          hintText: 'Kurslarni izlash...',
+          hintText: context.l10n.coursesSearchHint,
           hintStyle: context.textTheme.bodyMediumRegular.copyWith(
             color: context.appColors.secondaryGrey,
           ),

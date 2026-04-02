@@ -50,6 +50,10 @@ dev_dependencies:
 
   flutter_launcher_icons: ^0.14.4
 
+# pdfrx_engine ↔ lottie_tgs uchun archive major mosligi (kit ichida ham override bor).
+dependency_overrides:
+  archive: ^4.0.7
+
 flutter_launcher_icons:
   android: true
   ios: true
@@ -64,14 +68,17 @@ flutter_launcher_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
-  # Barcha assets packages/qizlar_academy_kit/assets dan olinadi.
-  # assets: (root da assets yo'q — kit dan ishlatiladi)
+  assets:
+    - assets/profile/profile_badges.json
+
+  # Boshqa raster/svg assetlar packages/qizlar_academy_kit/assets dan (kit).
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

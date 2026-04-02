@@ -15,6 +15,22 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
 
   final LeaderboardRepository _repository;
 
+  String _cacheKey({
+    required String courseId,
+    required LeaderboardTimeframe timeframe,
+  }) =>
+      '$courseId|${timeframe.name}';
+
+  LeaderboardState _stateFromList(LeaderboardState current, List<LeaderboardUserModel> list) {
+    final topThree = list.take(3).toList();
+    return current.copyWith(
+      status: LeaderboardStatus.success,
+      topThree: topThree,
+      fullList: list,
+      message: null,
+    );
+  }
+
   Future<void> _onStarted(
     LeaderboardStarted event,
     Emitter<LeaderboardState> emit,
@@ -32,18 +48,21 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
         ));
         return;
       }
-      final list = await _repository.getLeaderboard(
-        timeframe: state.timeframe,
-        courseId: courseId,
+      final timeframe = state.timeframe;
+      final list = await _repository.getLeaderboard(timeframe: timeframe, courseId: courseId);
+      final key = _cacheKey(courseId: courseId, timeframe: timeframe);
+      final nextCache = Map<String, List<LeaderboardUserModel>>.from(state.leaderboardCache)..[key] = list;
+      emit(
+        _stateFromList(
+          state.copyWith(
+            courseOptions: courses,
+            selectedCourseId: courseId,
+            timeframe: timeframe,
+            leaderboardCache: nextCache,
+          ),
+          list,
+        ),
       );
-      final topThree = list.take(3).toList();
-      emit(state.copyWith(
-        status: LeaderboardStatus.success,
-        courseOptions: courses,
-        selectedCourseId: courseId,
-        topThree: topThree,
-        fullList: list,
-      ));
     } catch (e) {
       emit(state.copyWith(
         status: LeaderboardStatus.failure,
@@ -62,18 +81,27 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
       emit(state.copyWith(timeframe: event.timeframe));
       return;
     }
-    emit(state.copyWith(status: LeaderboardStatus.loading, timeframe: event.timeframe));
+    // Tab o'zgarganda har safar yuklamaymiz: cache bo'lsa shu bilan ko'rsatamiz.
+    final key = _cacheKey(courseId: courseId, timeframe: event.timeframe);
+    final cached = state.leaderboardCache[key];
+    if (cached != null) {
+      emit(_stateFromList(state.copyWith(timeframe: event.timeframe), cached));
+      return;
+    }
+
+    emit(state.copyWith(status: LeaderboardStatus.loading, timeframe: event.timeframe, message: null));
     try {
       final list = await _repository.getLeaderboard(
         timeframe: event.timeframe,
         courseId: courseId,
       );
-      final topThree = list.take(3).toList();
-      emit(state.copyWith(
-        status: LeaderboardStatus.success,
-        topThree: topThree,
-        fullList: list,
-      ));
+      final nextCache = Map<String, List<LeaderboardUserModel>>.from(state.leaderboardCache)..[key] = list;
+      emit(
+        _stateFromList(
+          state.copyWith(leaderboardCache: nextCache),
+          list,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(
         status: LeaderboardStatus.failure,
@@ -87,21 +115,33 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
     Emitter<LeaderboardState> emit,
   ) async {
     if (state.selectedCourseId == event.courseId) return;
-    emit(state.copyWith(
-      status: LeaderboardStatus.loading,
-      selectedCourseId: event.courseId,
-    ));
+    final timeframe = state.timeframe;
+    final key = _cacheKey(courseId: event.courseId, timeframe: timeframe);
+    final cached = state.leaderboardCache[key];
+    if (cached != null) {
+      emit(_stateFromList(state.copyWith(selectedCourseId: event.courseId), cached));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        status: LeaderboardStatus.loading,
+        selectedCourseId: event.courseId,
+        message: null,
+      ),
+    );
     try {
       final list = await _repository.getLeaderboard(
         timeframe: state.timeframe,
         courseId: event.courseId,
       );
-      final topThree = list.take(3).toList();
-      emit(state.copyWith(
-        status: LeaderboardStatus.success,
-        topThree: topThree,
-        fullList: list,
-      ));
+      final nextCache = Map<String, List<LeaderboardUserModel>>.from(state.leaderboardCache)..[key] = list;
+      emit(
+        _stateFromList(
+          state.copyWith(leaderboardCache: nextCache),
+          list,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(
         status: LeaderboardStatus.failure,

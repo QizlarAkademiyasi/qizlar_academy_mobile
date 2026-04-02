@@ -10,6 +10,7 @@ class LeaderboardState extends Equatable {
     this.timeframe = LeaderboardTimeframe.overall,
     this.topThree = const [],
     this.fullList = const [],
+    this.leaderboardCache = const {},
     this.message,
   });
 
@@ -19,6 +20,7 @@ class LeaderboardState extends Equatable {
   final LeaderboardTimeframe timeframe;
   final List<LeaderboardUserModel> topThree;
   final List<LeaderboardUserModel> fullList;
+  final Map<String, List<LeaderboardUserModel>> leaderboardCache;
   final String? message;
 
   LeaderboardState copyWith({
@@ -28,6 +30,7 @@ class LeaderboardState extends Equatable {
     LeaderboardTimeframe? timeframe,
     List<LeaderboardUserModel>? topThree,
     List<LeaderboardUserModel>? fullList,
+    Map<String, List<LeaderboardUserModel>>? leaderboardCache,
     String? message,
   }) {
     return LeaderboardState(
@@ -37,6 +40,7 @@ class LeaderboardState extends Equatable {
       timeframe: timeframe ?? this.timeframe,
       topThree: topThree ?? this.topThree,
       fullList: fullList ?? this.fullList,
+      leaderboardCache: leaderboardCache ?? this.leaderboardCache,
       message: message,
     );
   }
@@ -49,6 +53,7 @@ class LeaderboardState extends Equatable {
         timeframe,
         topThree,
         fullList,
+        leaderboardCache,
         message,
       ];
 }

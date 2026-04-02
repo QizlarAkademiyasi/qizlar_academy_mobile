@@ -10,4 +10,7 @@ abstract interface class HomeDatasource {
   Future<List<TeacherModel>> getTeachers();
   Future<List<CourseModel>> getCourses();
   Future<List<BannerModel>> getBanners();
+
+  /// Ro‘yxatdan o‘tgan foydalanuvchi story ko‘rganda — `POST .../story/{id}/view`.
+  Future<void> postStoryView(String storyId);
 }

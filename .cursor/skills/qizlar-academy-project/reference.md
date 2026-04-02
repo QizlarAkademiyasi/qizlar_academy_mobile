@@ -48,6 +48,23 @@ Each feature: **feature/feature_name/**
 
 Use **screens** or **page** consistently (this project uses `screens/` and `*_screen.dart` in existing code).
 
+### 4.1 Ichki ekran moduli (nested screen folder)
+
+Agar feature ichida **alohida sub-flow ekran** bo‘lsa (masalan: profil ro‘yxati → profilni tahrirlash), shu ekran bilan bog‘liq barcha presentation qatlamlarini **bitta ichki papkada** jamlang: `presentation/screens/<screen_slug>/`.
+
+**Tuzilma (namuna):** `feature/profile/presentation/screens/edit_information/`
+
+- `edit_information_screen.dart` — ekran (Stateful/Stateless + `build`).
+- `edit_information_screen_mixin.dart` — navigatsiya, listenerlar, lifecycle, controllerlar; ekran fayli mixinni import qiladi, **komponentlarni to‘g‘ridan-to‘g‘ri emas** (§5.1).
+- `bloc/` — **faqat shu ichki ekranga** xos `*_bloc.dart` + `part` event/state (`edit_information_bloc.dart`, `edit_information_event.dart`, `edit_information_state.dart`). Feature bo‘ylab ulashiladigan bloclar esa `presentation/bloc/` da qoladi.
+- `components/` — **faqat shu ichki ekran** ishlatadigan widgetlar (`edit_information_avatar.dart` va hokazo). Feature bo‘ylab ishlatiladigan widgetlar `presentation/components/` da.
+
+**Qoidalar:**
+
+- Ichki papka nomi — **snake_case**, odatda marshrut/sahifa ma’nosi bilan mos (`edit_information`, `course_lesson_player_args` alohida args fayli bo‘lsa ham asosiy ekran o‘z papkasida).
+- Router va DI: marshrut `app_routes.dart` dan ichki `*_screen.dart` ga import; `EditInformationBloc` (yoki shu slugdagi bloc) `setup_locator.dart` da `registerFactory`.
+- Domain/data (repository, model) odatda **feature ildizida** qoladi; ichki papka faqat **shu ekran UI + uning bloc** si uchun.
+
 ---
 
 ## 5. Page / View / Mixin pattern
@@ -65,7 +82,7 @@ Listener naming: `xxxBlocListener(BuildContext context, XxxState state)` or `blo
 - **Mixin’ga ko‘chirish:** Ekrandagi `_buildXxx(BuildContext)` kabi UI qismlarini qaytaruvchi metodlar **mixin**ga ko‘chiriladi. Mixin `buildCenterContent(BuildContext)`, `buildBottomPartners(BuildContext)` kabi metodlar orqali faqat shu feature komponentlarini qaytaradi (`return const XxxComponent();`). Ekran o‘zi faqat layout (Column, Stack, …) va animatsiya/lifecycle bilan shug‘ullanadi; kontent mixin orqali olinadi.
 - **Juda katta komponentlar uchun:** Murakkab kompozitsiya (masalan sliver + tab + CTA) bitta `components/*` faylga sig‘may qolsa, `presentation/components/` ichida alohida `*_mixin.dart` fayl yaratib, shu komponentning ichki `buildXxx` logikasini mixin ichiga ko‘chirish mumkin. Bu ham Single Responsibility va tsiklik importdan qochishga yordam beradi.
 - **Tsiklik importdan qochish:** Mixin fayli ekran faylini import qilmasin. Bunun uchun mixin **generic** bo‘ladi: `mixin XxxScreenMixin<T extends StatefulWidget> on State<T>`. Ekranda: `class _XxxScreenState extends State<XxxScreen> with XxxScreenMixin<XxxScreen>`.
-- **Joylashuv:** Mixin — `presentation/screens/` da, ekran yonida (`*_screen_mixin.dart`). Komponentlar — `presentation/components/` da, aniq nom bilan (`*_center_content.dart`, `*_bottom_partners.dart` va h.k.).
+- **Joylashuv:** Mixin — `presentation/screens/` da (yoki **ichki ekran** bo‘lsa `presentation/screens/<slug>/` ichida), ekran yonida (`*_screen_mixin.dart`). Komponentlar — umumiy holda `presentation/components/`; **faqat ichki ekranga** tegishli bo‘lsa `presentation/screens/<slug>/components/` (§4.1).
 - **Import:** Komponentlar va mixin `app_components` (yoki config) va kerak bo‘lsa kit import qiladi; ekran mixin va router’ni import qiladi, komponentlarni to‘g‘ridan-to‘g‘ri import qilmaydi (faqat mixin orqali ishlatadi).
 
 ---
@@ -79,6 +96,7 @@ Listener naming: `xxxBlocListener(BuildContext context, XxxState state)` or `blo
 ### 6.1 Exception screens va yuklanish (skeleton)
 
 - **Fail holatlari (failure/error):** Xato yoki muvaffaqiyatsiz yuklanish ekranlari uchun **feature/exception_screens/presentation/components/** dagi widgetlardan foydalaning. [TgsFailureContent](lib/feature/exception_screens/presentation/components/tgs_failure_content.dart) — `.tgs` animatsiya + xabar va "Qayta urinish" tugmasi; `message`, `onRetry`, ixtiyoriy `retryLabel`.
+- **Bo'sh holatlar (empty):** Ro‘yxat yoki bo‘limda ma’lumot bo‘lmaganda **statik ikon** (`Icon`, `LucideIcons` doira ichida va hokazo) ishlatilmaydi. Buning o‘rnida [TgsEmptyContent](lib/feature/exception_screens/presentation/components/tgs_empty_content.dart) — `Lottie.asset` bilan **quyon `.tgs`** (`UiKitAssets.lottie.rabbit.*`). Parametrlar: `message` (majburiy), ixtiyoriy `subtitle` (ikki qatorli matn), `tgsAsset` (berilmasa default `boredRabbit`), `animationSize` (default 72). Kontekstga mos TGS tanlash: umumiy bo‘sh ro‘yxat / kutilmagan bo‘shlik — `boredRabbit` (default); kutish, hali yangilik yo‘q (masalan bildirishnomalar) — `sleepRabbit`; fikrlash / noaniq bo‘sh holat — `hmmmRabbit`. Yangi sticker kerak bo‘lsa faylni `packages/qizlar_academy_kit/assets/lottie/rabbit/` ga qo‘shing va `flutter_gen` bilan asset ro‘yxatini yangilang.
 - **Yuklanish (loading):** **CircularProgressIndicator ishlatilmasin.** O‘rniga **skeleton** (skeletonizer) ishlatiladi:
   - Butun sahifa dastlabki yuklanayotganda (masalan ro‘yxat hali bo‘sh): [PageLoadingSkeleton](lib/feature/exception_screens/presentation/components/page_loading_skeleton.dart) — umumiy sahifa skeleti (sarlavha, tablar, karta, ro‘yxat).
   - Sahifa ichidagi alohida blok yuklanayotganda: feature’ning `presentation/components/` da shu blok uchun skeleton widget (masalan [LeaderboardTopPerformersSkeleton](lib/feature/leaderboard/presentation/components/leaderboard_top_performers_skeleton.dart)); Skeletonizer.zone va Bone widgetlari (Bone.text, Bone.circle, Bone.button va h.k.) dan foydalaning.

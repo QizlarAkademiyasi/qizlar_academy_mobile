@@ -19,7 +19,7 @@ class SignInSocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PrimaryButton.icon(
+    return PrimaryButton.elevated(
       label: label,
       onPressed: onPressed,
       isLoading: isLoading,

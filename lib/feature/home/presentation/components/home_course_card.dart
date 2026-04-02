@@ -26,13 +26,7 @@ class HomeCourseCard extends StatelessWidget {
           color: context.appColors.onContainer,
           border: Border.all(color: context.appColors.stroke),
           borderRadius: AppRadius.radius3xl,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow.withValues(alpha: 0.05),
-              blurRadius: 2,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: AppColors.shadow.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 2))],
         ),
         child: Row(
           children: [
@@ -42,42 +36,28 @@ class HomeCourseCard extends StatelessWidget {
                 enabled: isLoading,
                 child: ClipRRect(
                   borderRadius: AppRadius.radiusXl,
-                  child: CachedNetworkImage(
-                    imageUrl: course.imageUrl,
-                    width: 90,
-                    height: 90,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      width: 90,
-                      height: 90,
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      child: const Icon(
-                        LucideIcons.bookOpen,
-                        color: AppColors.primary,
-                        size: 32,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      width: 90,
-                      height: 90,
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      child: const Icon(
-                        LucideIcons.bookOpen,
-                        color: AppColors.primary,
-                        size: 32,
-                      ),
-                    ),
-                  ),
+                  child: course.imageUrl.trim().isEmpty
+                      ? Container(
+                          width: 90,
+                          height: 90,
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          child: const Icon(LucideIcons.bookOpen, color: AppColors.primary, size: 32),
+                        )
+                      : AppCachedNetworkImage(
+                          imageUrl: course.imageUrl.trim(),
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.centerRight,
+                          fallback: const AppNetworkImageFallbackCourse(iconSize: 32, tintAlpha: 0.1),
+                        ),
                 ),
               ),
             ),
 
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 4,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -85,9 +65,7 @@ class HomeCourseCard extends StatelessWidget {
                       enabled: isLoading,
                       child: Text(
                         course.title,
-                        style: context.textTheme.bodyLargeBold.copyWith(
-                          color: context.appColors.text,
-                        ),
+                        style: context.textTheme.bodyLargeBold.copyWith(color: context.appColors.text),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -95,46 +73,23 @@ class HomeCourseCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Skeletonizer(
                       enabled: isLoading,
-                      child: Text(
-                        course.author,
-                        style: context.textTheme.bodySmallRegular.copyWith(
-                          color: AppColors.secondaryGrey,
-                        ),
-                      ),
+                      child: Text(course.author, style: context.textTheme.bodySmallRegular.copyWith(color: AppColors.secondaryGrey)),
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(
-                          LucideIcons.clock,
-                          size: 13,
-                          color: AppColors.secondaryGrey,
-                        ),
+                        const Icon(LucideIcons.clock, size: 13, color: AppColors.secondaryGrey),
                         const SizedBox(width: 4),
                         Skeletonizer(
                           enabled: isLoading,
-                          child: Text(
-                            '${course.durationHours} soat',
-                            style: context.textTheme.bodySmallRegular.copyWith(
-                              color: AppColors.secondaryGrey,
-                            ),
-                          ),
+                          child: Text('${course.durationHours} soat', style: context.textTheme.bodySmallRegular.copyWith(color: AppColors.secondaryGrey)),
                         ),
                         const SizedBox(width: 12),
-                        const Icon(
-                          LucideIcons.users,
-                          size: 13,
-                          color: AppColors.secondaryGrey,
-                        ),
+                        const Icon(LucideIcons.users, size: 13, color: AppColors.secondaryGrey),
                         const SizedBox(width: 4),
                         Skeletonizer(
                           enabled: isLoading,
-                          child: Text(
-                            _formatStudents(course.studentCount),
-                            style: context.textTheme.bodySmallRegular.copyWith(
-                              color: AppColors.secondaryGrey,
-                            ),
-                          ),
+                          child: Text(_formatStudents(course.studentCount), style: context.textTheme.bodySmallRegular.copyWith(color: AppColors.secondaryGrey)),
                         ),
                       ],
                     ),

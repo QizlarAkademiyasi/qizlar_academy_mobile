@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class CoursesTopBar extends StatelessWidget {
@@ -14,7 +15,7 @@ class CoursesTopBar extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Barcha kurslar',
+              context.l10n.coursesAllTitle,
               style: context.textTheme.heading5.copyWith(
                 color: context.appColors.text,
               ),

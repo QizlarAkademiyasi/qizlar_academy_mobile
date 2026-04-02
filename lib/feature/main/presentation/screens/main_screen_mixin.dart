@@ -1,17 +1,24 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/colors.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
-import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/assets/assets.gen.dart';
-import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
-import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/bottom_bar_version_one.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/bottom_bar_version_two.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
 
 /// Main shell ekrani uchun tab tanlashi va pastki bar qismini qaytaruvchi mixin.
 mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
+  bool get isGuestMode;
+
   int get selectedIndex => _selectedIndex;
   int _selectedIndex = 0;
+
+  /// Pastki bar orqali tab almashganda oshadi — [MainScreen] fade faqat shu bilan ishlaydi.
+  int get tabBarFadeNonce => _tabBarFadeNonce;
+  int _tabBarFadeNonce = 0;
+
   late final PageController pageController;
 
   @override
@@ -34,25 +41,14 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
     // Gaimon.light();
     if (_selectedIndex == index) return;
 
-    final shouldGateProfile = index == 3 && getIt<AuthSessionCubit>().state.isAnonymous;
-    if (shouldGateProfile) {
-      final canOpen = await getIt<GuestTapGateService>().allowAction(
-        context,
-        key: 'tab_profile',
-        title: 'Profil uchun ro‘yxatdan o‘ting',
-      );
-      if (!canOpen) return;
+    if (isGuestMode && index == 3) {
+      context.go(Routes.signIn);
+      return;
     }
 
-    // Bottom bar UI first yangilansin; og'ir sahifa build bo'lsa ham
-    // tanlangan tab "qotib qolgan"dek ko'rinmasin.
-    setState(() => _selectedIndex = index);
-
-    // Yangi og'ir sahifani qurish (jumpToPage) pastki bardagi
-    // vizual o'zgarish/animatsiya tugagandan so'ng amalga oshiriladi
-    Future.delayed(const Duration(milliseconds: 150), () {
-      if (!mounted || !pageController.hasClients) return;
-      pageController.jumpToPage(index);
+    setState(() {
+      _tabBarFadeNonce++;
+      _selectedIndex = index;
     });
   }
 
@@ -73,50 +69,45 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
       ),
 
       child: ClipOval(
-        child: UiKitAssets.images.logo.image(
-          fit: BoxFit.cover,
-          color: selected
-              ? context.appColors.bigOpacity.withValues(alpha: 0.1)
-              : context.appColors.bigOpacity.withValues(alpha: 0.6),
-        ),
+        child: UiKitAssets.images.logo.image(fit: BoxFit.cover, color: selected ? context.appColors.bigOpacity.withValues(alpha: 0.1) : context.appColors.bigOpacity.withValues(alpha: 0.6)),
       ),
     );
   }
 
   Widget buildBottomNavigationBar(BuildContext context) {
+    final theme = Theme.of(context);
+    final barTheme = theme.bottomNavigationBarTheme;
+    final selectedColor = barTheme.selectedItemColor ?? theme.colorScheme.primary;
+    final unselectedColor = barTheme.unselectedItemColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.64);
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: context.theme.scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.shadow.withValues(alpha: 0.4),
-            blurRadius: 10,
-            offset: const Offset(0, 9),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.4), blurRadius: 10, offset: const Offset(0, 9))],
       ),
       child: BottomNavigationBar(
-        // showSelectedLabels: false,
-        // showUnselectedLabels: false,
         currentIndex: selectedIndex,
         onTap: onTabTap,
         items: [
-          const BottomNavigationBarItem(
-            icon: Icon(LucideIcons.house),
-            label: 'Home',
+          BottomNavigationBarItem(
+            icon: MainBottomNavKitIcons.home(unselectedColor, 24, false),
+            activeIcon: MainBottomNavKitIcons.home(selectedColor, 24, true),
+            label: context.l10n.mainTabHome,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(LucideIcons.bookOpen),
-            label: 'Courses',
+          BottomNavigationBarItem(
+            icon: MainBottomNavKitIcons.courses(unselectedColor, 24, false),
+            activeIcon: MainBottomNavKitIcons.courses(selectedColor, 24, true),
+            label: context.l10n.mainTabCourses,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(LucideIcons.crown),
-            label: 'Leaderboard',
+          BottomNavigationBarItem(
+            icon: MainBottomNavKitIcons.leaderboard(unselectedColor, 24, false),
+            activeIcon: MainBottomNavKitIcons.leaderboard(selectedColor, 24, true),
+            label: context.l10n.mainTabLeaderboard,
           ),
           BottomNavigationBarItem(
             icon: _buildProfileTabIcon(context, selected: false),
             activeIcon: _buildProfileTabIcon(context, selected: true),
-            label: 'Profile',
+            label: context.l10n.mainTabProfile,
           ),
         ],
       ),
@@ -124,46 +115,42 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   Widget buildNavigationBar(BuildContext context) {
+    const selectedColor = AppColors.white;
+    final unselectedColor = AppColors.white.withValues(alpha: 0.65);
+
     return NavigationBar(
       selectedIndex: selectedIndex,
       onDestinationSelected: onTabTap,
       destinations: [
-        const NavigationDestination(
-          icon: Icon(LucideIcons.house),
-          selectedIcon: Icon(LucideIcons.house, color: AppColors.white),
-          label: 'Home',
+        NavigationDestination(
+          icon: MainBottomNavKitIcons.home(unselectedColor, 24, false),
+          selectedIcon: MainBottomNavKitIcons.home(selectedColor, 24, true),
+          label: context.l10n.mainTabHome,
         ),
-        const NavigationDestination(
-          icon: Icon(LucideIcons.bookOpen),
-          selectedIcon: Icon(LucideIcons.bookOpen, color: AppColors.white),
-          label: 'Courses',
+        NavigationDestination(
+          icon: MainBottomNavKitIcons.courses(unselectedColor, 24, false),
+          selectedIcon: MainBottomNavKitIcons.courses(selectedColor, 24, true),
+          label: context.l10n.mainTabCourses,
         ),
-        const NavigationDestination(
-          icon: Icon(LucideIcons.crown),
-          selectedIcon: Icon(LucideIcons.crown, color: AppColors.white),
-          label: 'Leaderboard',
+        NavigationDestination(
+          icon: MainBottomNavKitIcons.leaderboard(unselectedColor, 24, false),
+          selectedIcon: MainBottomNavKitIcons.leaderboard(selectedColor, 24, true),
+          label: context.l10n.mainTabLeaderboard,
         ),
         NavigationDestination(
           icon: _buildProfileTabIcon(context, selected: false),
           selectedIcon: _buildProfileTabIcon(context, selected: true),
-          label: 'Profile',
+          label: context.l10n.mainTabProfile,
         ),
       ],
     );
   }
 
   Widget buildGlassBottomBarVersionOne(BuildContext context) {
-    return GlassBottomNavigationVersionOne(
-      currentIndex: _selectedIndex,
-      onTap: onTabTap,
-      fake: false,
-    );
+    return GlassBottomNavigationVersionOne(currentIndex: _selectedIndex, onTap: onTabTap, fake: false);
   }
 
   Widget buildGlassBottomBarVersionTwo(BuildContext context) {
-    return GlassBottomNavigationVersionTwo(
-      currentIndex: _selectedIndex,
-      onTap: onTabTap,
-    );
+    return GlassBottomNavigationVersionTwo(currentIndex: _selectedIndex, onTap: onTabTap);
   }
 }

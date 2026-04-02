@@ -1,1 +1,389 @@
-{}
+{
+  "@@locale": "en",
+  "appTitle": "Qizlar Academy",
+  "signInTitle": "Sign in",
+  "signInSubtitle": "Enter your phone number",
+  "signInStart": "Get started",
+  "orDivider": "or",
+  "termsPrefix": "By continuing you agree to the",
+  "termsLink": "Terms of use",
+  "termsSuffix": ".",
+  "comingSoonTitle": "Coming soon",
+  "termsComingSoonMessage": "The terms page will open in a later update.",
+  "signInPhoneTitle": "Phone number",
+  "signInPhoneIncompleteMessage": "Please enter your full phone number.",
+  "authPhoneOperatorRestrictedMessage": "This number is not supported for SMS verification.",
+  "authOtpTooManyRequestsMessage": "Too many attempts. Please wait a bit and try again.",
+  "connectionErrorMessage": "Connection error. Please try again.",
+  "googleSignInErrorMessage": "Google sign-in failed. Please try again.",
+  "telegramSignInComingSoonMessage": "Telegram sign-in will be available in a later update.",
+  "signInWithGoogle": "Continue with Google",
+  "signInWithTelegram": "Continue with Telegram",
+  "registerTitle": "Personal details",
+  "registerSubtitle": "Enter your personal information",
+  "firstNameHint": "First name",
+  "lastNameHint": "Last name",
+  "registerContinue": "Continue",
+  "enterFirstName": "Enter your first name",
+  "enterLastName": "Enter your last name",
+  "saveProfileErrorMessage": "Could not save your details. Please try again.",
+  "verificationTitle": "Verification code",
+  "verificationCodeSentTo": "A verification code was sent to {phone}.",
+  "@verificationCodeSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "resendCode": "Resend code",
+  "resending": "Sending…",
+  "resendCodeCountdown": "Resend code: {time}",
+  "@resendCodeCountdown": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "otpDigitsOnlyMessage": "The code must contain only digits.",
+  "otpInvalidOrExpiredMessage": "The code is incorrect or has expired.",
+  "otpSentAgain": "Verification code was sent again.",
+  "mainTabHome": "Home",
+  "mainTabCourses": "Courses",
+  "mainTabLeaderboard": "Leaderboard",
+  "mainTabProfile": "Profile",
+  "guestSignInCta": "Sign in",
+  "homeWelcomeGuestTitle": "Welcome!",
+  "homeWelcomeGuestSubtitle": "to Qizlar Academy",
+  "homeWelcomeBack": "Welcome!",
+  "homeRegisteredUserFallback": "Registered user",
+  "homePopularCourses": "Popular courses",
+  "homeGuestCoursesGate": "Sign up to view courses in full",
+  "homeGuestNotificationsGate": "Sign up for notifications",
+  "homeLoadErrorMessage": "Connection error. Please try again.",
+  "coursesAllTitle": "All courses",
+  "coursesSearchHint": "Search courses…",
+  "coursesNoResults": "No matching courses",
+  "coursesNotificationsComingSoonMessage": "Notifications will be available soon.",
+  "coursesLastViewed": "Last viewed",
+  "coursesInProgress": "In progress",
+  "courseEnroll": "Enroll in course",
+  "courseEnrollConfirmTitle": "Enroll in this course?",
+  "courseEnrollConfirmBody": "After enrolling you can open and watch all available lessons.",
+  "courseEnrollConfirmPrimary": "Enroll",
+  "courseEnrollConfirmCancel": "Not now",
+  "courseGuestFirstLessonCta": "Watch first lesson",
+  "courseGuestMoreLessonsTitle": "Sign in for more lessons",
+  "courseGuestMoreLessonsBody": "You can watch the first lesson as a guest. Sign in to unlock the full course.",
+  "courseContinue": "Continue",
+  "courseTabLessons": "Lessons ({count})",
+  "@courseTabLessons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "courseTabInfo": "About",
+  "courseTabReviews": "Reviews ({count})",
+  "@courseTabReviews": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonEmpty": "No open lessons yet",
+  "lessonBackTooltip": "Back",
+  "lessonProgress": "Lesson {current} of {total}",
+  "@lessonProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonCompleted": "Completed",
+  "lessonMarkComplete": "Complete lesson",
+  "coursePillTabLessons": "Lessons",
+  "coursePillTabInfo": "About",
+  "coursePillTabReviews": "Reviews",
+  "lessonQuizTestRowTitle": "Test",
+  "lessonQuizGoToTest": "Go to test",
+  "lessonQuizTitle": "Test",
+  "lessonQuizQuestionLabel": "Question",
+  "lessonQuizQuestionProgress": "{current}/{total}",
+  "@lessonQuizQuestionProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonQuizPercentComplete": "{percent}% completed",
+  "@lessonQuizPercentComplete": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonQuizTypeSingle": "Single choice",
+  "lessonQuizTypeMultiple": "Multiple choice",
+  "lessonQuizMark": "Mark answer",
+  "lessonQuizNext": "Next",
+  "lessonQuizFinish": "Finish",
+  "lessonQuizExitTitle": "Leave the test?",
+  "lessonQuizExitBody": "If you leave now, your results will not be saved.",
+  "lessonQuizExitStay": "Stay",
+  "lessonQuizExitLeave": "Leave",
+  "lessonQuizResultGreat": "Great result!",
+  "lessonQuizResultPoor": "Unsatisfactory result",
+  "lessonQuizStatCorrect": "Correct",
+  "lessonQuizStatWrong": "Wrong",
+  "lessonQuizStatTime": "Time",
+  "lessonQuizContinue": "Continue",
+  "lessonQuizErrorEmpty": "This lesson has no test yet.",
+  "lessonQuizErrorLoad": "Could not load the test.",
+  "lessonQuizErrorCheck": "Could not verify the answer.",
+  "lessonQuizErrorSubmit": "Could not submit the test.",
+  "lessonQuizErrorGeneric": "Something went wrong.",
+  "lessonQuizAlreadyTaken": "You have already completed this test. Retakes are not allowed.",
+  "leaderboardTitle": "Top learners",
+  "leaderboardSubtitle": "Ranking of the best students",
+  "leaderboardTabOverall": "Overall",
+  "leaderboardTabWeekly": "Weekly",
+  "leaderboardTabMonthly": "Monthly",
+  "leaderboardSelectCourse": "Choose a course",
+  "leaderboardFullRanking": "Full ranking",
+  "leaderboardNoCourses": "No courses yet",
+  "refresh": "Refresh",
+  "leaderboardNoRatingYet": "No ranking for this course yet",
+  "promotionTitle": "Join in!",
+  "promotionSubtitle": "Finish courses and earn points",
+  "promotionStart": "Start",
+  "profileStatCourses": "Courses",
+  "profileStatCertificates": "Certificates",
+  "profileStatRating": "Rating",
+  "profileStatPoints": "Points",
+  "profileMenuCertificates": "My certificates",
+  "profileMenuMyCourses": "My courses",
+  "profileMenuMyActivity": "My activity",
+  "profileMenuProfileInfo": "Profile information",
+  "profileMenuLanguage": "Language",
+  "profileMenuShareApp": "Share the app",
+  "profileMenuAbout": "About us",
+  "profileMenuHelp": "Help center",
+  "profileMenuPrivacy": "Privacy policy",
+  "profileSectionAccount": "ACCOUNT",
+  "profileCertificatesCountSubtitle": "{count} certificates",
+  "@profileCertificatesCountSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileActiveCoursesCountSubtitle": "{count} active courses",
+  "@profileActiveCoursesCountSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSectionSettings": "SETTINGS",
+  "profileSectionGeneral": "GENERAL",
+  "profileNotifications": "Notifications",
+  "profileNotificationsSubtitle": "Push messages",
+  "profileDarkMode": "Dark mode",
+  "profileDarkModeSubtitle": "Dark interface",
+  "profileLogout": "Log out",
+  "profileLogoutConfirmTitle": "Do you want to leave the app?",
+  "profileLogoutConfirmBody": "We'll be waiting for you in new lessons.\nDo you want to log out now?",
+  "profileLogoutStay": "Stay",
+  "profileVersion": "Version {version}",
+  "@profileVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDataMissing": "Profile data is not available.",
+  "profileInformationTitle": "Edit",
+  "profileInformationSave": "Save",
+  "profileInformationSaveSuccess": "Profile updated",
+  "profileInformationNameRequired": "Enter your first and last name",
+  "profileInformationNoChanges": "No changes to save",
+  "profileInformationPhotoUploadFailed": "Could not upload the photo. Try again.",
+  "profileInformationPhotoPermissionDenied": "Photo access is off. You can enable it in Settings.",
+  "profileInformationPhotoPickFailed": "Could not select the photo. Try again.",
+  "profileInformationStatusTitle": "Profile status",
+  "profileInformationPhoneLabel": "Phone number",
+  "profileInformationPhoneNationalHint": "XX XXX XX XX",
+  "aboutBrandTitle": "QIZLAR AKADEMIYASI",
+  "aboutSectionProjectTitle": "About the Qizlar Academy project",
+  "aboutProjectLead": "Qizlar Academy",
+  "aboutProjectBody": " – is an interactive platform offering free learning courses for women and girls of all ages. It covers health, modern professions, crafts, education, entrepreneurship, psychology, and law. Sign up and grow your knowledge and skills across many fields through the platform.",
+  "aboutSectionSupportersTitle": "Supporting us",
+  "aboutSupporterSadullaName": "Alisher Sadullayev",
+  "aboutSupporterSadullaRole": "Director of the Youth Affairs Agency of the Republic of Uzbekistan",
+  "aboutSupporterKattaxonName": "Dilnoza Kattaxonova",
+  "aboutSupporterKattaxonRole": "First deputy director of the Youth Affairs Agency. Doctor of Philosophy in political science",
+  "aboutSectionSocialTitle": "Social networks",
+  "aboutSocialInstagramTitle": "Instagram",
+  "aboutSocialInstagramSubtitle": "Official Qizlar Academy Instagram channel",
+  "aboutSocialTelegramTitle": "Telegram",
+  "aboutSocialTelegramSubtitle": "Official Qizlar Academy Telegram channel",
+  "aboutSocialYoutubeTitle": "YouTube",
+  "aboutSocialYoutubeSubtitle": "Official Qizlar Academy YouTube channel",
+  "aboutUsLoadError": "Could not load content. Try again.",
+  "aboutUsLinkOpenError": "Could not open the link.",
+  "guestGateNotificationSettings": "Sign up to manage notification settings",
+  "guestGateSaveSettings": "Sign up to save settings",
+  "guestGateProfileFeatures": "Sign up to use profile features",
+  "profileAppLanguageTitle": "App language",
+  "languageUzbek": "Uzbek",
+  "languageRussian": "Russian",
+  "languageEnglish": "English",
+  "notificationsTitle": "Notifications",
+  "notificationsEmpty": "No notifications yet",
+  "notificationsEmptySubtitle": "New messages will appear here.",
+  "guestGateMarkAllRead": "Sign up to mark all as read",
+  "guestGateManageNotifications": "Sign up to manage notifications",
+  "guestModeTitle": "Guest mode",
+  "guestModeDescription": "Create an account or sign in to use every feature.",
+  "errorGeneric": "Something went wrong",
+  "retry": "Try again",
+  "homeGuestCardSignIn": "Sign in",
+  "myCoursesTitle": "My courses",
+  "myCoursesRatingReviewsLine": "{rating} ({reviewsCount} reviews)",
+  "@myCoursesRatingReviewsLine": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "reviewsCount": {
+        "type": "String"
+      }
+    }
+  },
+  "myCoursesDurationHours": "{hours} h",
+  "@myCoursesDurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "myCoursesEmptyTitle": "No courses yet",
+  "myCoursesEmptySubtitle": "Enroll in a course and it will show up here.",
+  "myCoursesLoadError": "Could not load your courses. Try again.",
+  "myCoursesLoadMoreError": "Could not load more. Scroll to try again.",
+  "certificatesBadgeGold": "Gold certificate",
+  "certificatesBadgeSilver": "Silver certificate",
+  "certificatesBadgeBronze": "Bronze certificate",
+  "certificatesView": "View",
+  "certificatesSheetHeading": "{courseName} certificate",
+  "@certificatesSheetHeading": {
+    "placeholders": {
+      "courseName": {
+        "type": "String"
+      }
+    }
+  },
+  "certificatesSheetDescription": "You have successfully completed the course and earned a certificate. May your knowledge always stay with you!",
+  "certificatesSheetDownload": "Download",
+  "certificatesEmptyTitle": "No certificates yet",
+  "certificatesEmptySubtitle": "When you finish a course, your certificate will appear here.",
+  "certificatesLoadError": "Could not load certificates. Try again.",
+  "certificatesFileActionError": "Could not download or share the file.",
+  "courseReviewsSummaryCount": "{count} reviews",
+  "@courseReviewsSummaryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "courseReviewsEmptyTitle": "No reviews yet",
+  "courseReviewsEmptySubtitle": "When learners leave feedback, it will show up here.",
+  "courseLeaveReviewCta": "Leave a review",
+  "courseSubmitReviewTitle": "Leave a review",
+  "courseSubmitReviewRateTitle": "Rate this course",
+  "courseSubmitReviewRateSubtitle": "What do you think about what you learned and the lesson quality? Share your thoughts.",
+  "courseSubmitReviewYourCommentLabel": "Your review",
+  "courseSubmitReviewCommentHint": "Did you enjoy the course? Share your impressions",
+  "courseSubmitReviewCharCount": "{current}/{max}",
+  "@courseSubmitReviewCharCount": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "courseSubmitReviewSubmit": "Submit review",
+  "courseSubmitReviewSuccess": "Your review was sent",
+  "courseSubmitReviewError": "Could not submit the review. Please try again.",
+  "courseSubmitReviewSelectRating": "Please select a rating",
+  "reviewTimeJustNow": "Just now",
+  "reviewTimeMinutesAgo": "{count} min ago",
+  "@reviewTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeHoursAgo": "{count} h ago",
+  "@reviewTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeDaysAgo": "{count} d ago",
+  "@reviewTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeWeeksAgo": "{count} wk ago",
+  "@reviewTimeWeeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeMonthsAgo": "{count} mo ago",
+  "@reviewTimeMonthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeYearsAgo": "{count} y ago",
+  "@reviewTimeYearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

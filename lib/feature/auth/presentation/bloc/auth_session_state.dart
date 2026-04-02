@@ -6,6 +6,8 @@ class AuthSessionState extends Equatable {
   const AuthSessionState({
     required this.isInitialized,
     required this.userType,
+    required this.profileGateResolved,
+    required this.needsProfileRegistration,
     this.accessToken,
     this.refreshToken,
     this.tokenType = 'Bearer',
@@ -13,19 +15,23 @@ class AuthSessionState extends Equatable {
 
   const AuthSessionState.initial()
     : isInitialized = false,
-      userType = UserType.anonymous,
+      userType = UserType.guest,
+      profileGateResolved = false,
+      needsProfileRegistration = false,
       accessToken = null,
       refreshToken = null,
       tokenType = 'Bearer';
 
   final bool isInitialized;
   final UserType userType;
+  final bool profileGateResolved;
+  final bool needsProfileRegistration;
   final String? accessToken;
   final String? refreshToken;
   final String tokenType;
 
-  bool get isAnonymous => userType == UserType.anonymous;
-  bool get isRegistered => userType == UserType.registered;
+  bool get isAnonymous => userType == UserType.guest;
+  bool get isRegistered => userType == UserType.user;
 
   AuthSessionModel toSessionModel() {
     return AuthSessionModel(
@@ -36,19 +42,35 @@ class AuthSessionState extends Equatable {
     );
   }
 
-  AuthSessionState fromModel(AuthSessionModel model, {bool initialized = true}) {
+  AuthSessionState fromModel(
+    AuthSessionModel model, {
+    bool initialized = true,
+    bool resetProfileGate = true,
+  }) {
+    final isGuest = model.userType == UserType.guest;
+    final nextProfileGateResolved = resetProfileGate
+        ? (isGuest ? true : false)
+        : profileGateResolved;
+    final nextNeedsProfileRegistration = resetProfileGate
+        ? false
+        : needsProfileRegistration;
+
     return copyWith(
       isInitialized: initialized,
       userType: model.userType,
       accessToken: model.accessToken,
       refreshToken: model.refreshToken,
       tokenType: model.tokenType,
+      profileGateResolved: nextProfileGateResolved,
+      needsProfileRegistration: nextNeedsProfileRegistration,
     );
   }
 
   AuthSessionState copyWith({
     bool? isInitialized,
     UserType? userType,
+    bool? profileGateResolved,
+    bool? needsProfileRegistration,
     String? accessToken,
     String? refreshToken,
     String? tokenType,
@@ -56,6 +78,9 @@ class AuthSessionState extends Equatable {
     return AuthSessionState(
       isInitialized: isInitialized ?? this.isInitialized,
       userType: userType ?? this.userType,
+      profileGateResolved: profileGateResolved ?? this.profileGateResolved,
+      needsProfileRegistration:
+          needsProfileRegistration ?? this.needsProfileRegistration,
       accessToken: accessToken ?? this.accessToken,
       refreshToken: refreshToken ?? this.refreshToken,
       tokenType: tokenType ?? this.tokenType,
@@ -66,6 +91,8 @@ class AuthSessionState extends Equatable {
   List<Object?> get props => [
     isInitialized,
     userType,
+    profileGateResolved,
+    needsProfileRegistration,
     accessToken,
     refreshToken,
     tokenType,

@@ -11,10 +11,7 @@ void main() {
   // main_dev.dart yoki main_prod.dart orqali ishga tushirilmagan bo'lsa,
   // prod konfiguratsiya bilan ishga tushiriladi.
   if (!EnvConfig.isInitialized) {
-    EnvConfig.initialize(
-      appName: 'Qizlar Akademiyasi',
-      flavor: AppFlavors.prod,
-    );
+    EnvConfig.initialize(appName: 'Qizlar Akademiyasi', flavor: AppFlavors.prod);
   }
 
   runZonedGuarded<Future<void>>(
@@ -31,36 +28,28 @@ void main() {
       // Flutter framework xatolarini (build, layout, render) Crashlytics ga yuborish
       FlutterError.onError = (FlutterErrorDetails details) {
         FlutterError.presentError(details);
-        AppLogger.e(
-          'Flutter framework error',
-          error: details.exception,
-          stackTrace: details.stack,
-        );
+        AppLogger.e('Flutter framework error', error: details.exception, stackTrace: details.stack);
         FirebaseCrashlytics.instance.recordFlutterFatalError(details);
       };
 
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
       runApp(const MyApp());
     },
     (Object error, StackTrace stackTrace) {
       AppLogger.f('Uncaught zone error', error: error, stackTrace: stackTrace);
       try {
-        FirebaseCrashlytics.instance.recordError(
-          error,
-          stackTrace,
-          fatal: true,
-        );
+        FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
       } catch (firebaseError, firebaseStackTrace) {
-        AppLogger.e(
-          'Crashlytics recordError failed',
-          error: firebaseError,
-          stackTrace: firebaseStackTrace,
-        );
+        AppLogger.e('Crashlytics recordError failed', error: firebaseError, stackTrace: firebaseStackTrace);
       }
     },
   );
 }
+
+
+
+
+
+// For app assets generation:
+// cd packages/qizlar_academy_kit && dart run build_runner build --delete-conflicting-outputs

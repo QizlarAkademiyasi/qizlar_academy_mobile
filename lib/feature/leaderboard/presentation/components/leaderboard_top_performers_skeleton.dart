@@ -20,35 +20,11 @@ class LeaderboardTopPerformersSkeleton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: Column(
-                children: [
-                  Bone.circle(size: 40),
-                  const SizedBox(height: 8),
-                  Bone.text(words: 1),
-                ],
-              ),
-            ),
+            Expanded(child: Column(children: [Bone.circle(size: 40), const SizedBox(height: 8), Bone.text(words: 1)])),
             const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                children: [
-                  Bone.circle(size: 48),
-                  const SizedBox(height: 8),
-                  Bone.text(words: 1),
-                ],
-              ),
-            ),
+            Expanded(child: Column(children: [Bone.circle(size: 48), const SizedBox(height: 8), Bone.text(words: 1)])),
             const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                children: [
-                  Bone.circle(size: 40),
-                  const SizedBox(height: 8),
-                  Bone.text(words: 1),
-                ],
-              ),
-            ),
+            Expanded(child: Column(children: [Bone.circle(size: 40), const SizedBox(height: 8), Bone.text(words: 1)])),
           ],
         ),
       ),

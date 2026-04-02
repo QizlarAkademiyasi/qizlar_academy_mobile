@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class LeaderboardPromotionBanner extends StatelessWidget {
@@ -44,14 +45,14 @@ class LeaderboardPromotionBanner extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Siz ham qatnashing!',
+                  context.l10n.promotionTitle,
                   style: context.textTheme.bodyMediumBold.copyWith(
                     color: context.appColors.text,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Kurslarni yakunlab ball to\'plang',
+                  context.l10n.promotionSubtitle,
                   style: context.textTheme.bodyXSmallRegular.copyWith(
                     color: context.appColors.grey,
                   ),
@@ -72,7 +73,7 @@ class LeaderboardPromotionBanner extends StatelessWidget {
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
-                'Boshlash',
+                context.l10n.promotionStart,
                 style: context.textTheme.bodySmallSemibold.copyWith(
                   color: AppColors.white,
                 ),

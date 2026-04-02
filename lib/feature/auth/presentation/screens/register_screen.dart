@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/register_screen_mixin.dart';
 
@@ -34,31 +35,37 @@ class _RegisterScreenState extends State<RegisterScreen>
               AppBackButton.glass(onTap: onBackTap),
               const SizedBox(height: 24),
               Text(
-                'Shaxsiy ma\'lumotlar',
+                context.l10n.registerTitle,
                 style: context.textTheme.heading3.copyWith(
                   color: context.appColors.text,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Shaxsiy ma\'lumotlaringizni kiriting',
+                context.l10n.registerSubtitle,
                 style: context.textTheme.bodyLargeRegular.copyWith(
                   color: context.appColors.secondaryGrey,
                 ),
               ),
               const SizedBox(height: 28),
-              _buildTextField(
+              AppTextField(
                 controller: _firstNameController,
-                label: 'Ism',
+                hintText: context.l10n.firstNameHint,
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.name,
+                textCapitalization: TextCapitalization.words,
               ),
               const SizedBox(height: 16),
-              _buildTextField(
+              AppTextField(
                 controller: _lastNameController,
-                label: 'Familya',
+                hintText: context.l10n.lastNameHint,
+                textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.name,
+                textCapitalization: TextCapitalization.words,
               ),
               const Spacer(),
               PrimaryButton.elevated(
-                label: 'Davom etish',
+                label: context.l10n.registerContinue,
                 isLoading: isSubmitting,
                 onPressed: () {
                   onContinueTap(
@@ -70,44 +77,6 @@ class _RegisterScreenState extends State<RegisterScreen>
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-  }) {
-    return Container(
-      height: 58,
-      decoration: BoxDecoration(
-        color: context.appColors.onContainer,
-        borderRadius: AppRadius.radiusXl,
-        border: Border.all(color: context.appColors.stroke),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: controller,
-              textInputAction: TextInputAction.next,
-              keyboardType: TextInputType.name,
-              style: context.textTheme.bodyLargeMedium.copyWith(
-                color: context.appColors.text,
-              ),
-              decoration: InputDecoration(
-                isDense: true,
-                labelText: label,
-                labelStyle: context.textTheme.bodyLargeMedium.copyWith(
-                  color: context.appColors.secondaryGrey,
-                ),
-                border: InputBorder.none,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

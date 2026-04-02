@@ -8,15 +8,19 @@ class CoursesListSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeletonizer(
       enabled: true,
-      child: ListView(
+      child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 130),
-        children: [
-          _skeletonBox(context, height: 190),
-          const SizedBox(height: 16),
-          _skeletonBox(context, height: 254),
-          const SizedBox(height: 16),
-          _skeletonBox(context, height: 254),
-        ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _skeletonBox(context, height: 190),
+            const SizedBox(height: 16),
+            _skeletonBox(context, height: 254),
+            const SizedBox(height: 16),
+            _skeletonBox(context, height: 254),
+          ],
+        ),
       ),
     );
   }

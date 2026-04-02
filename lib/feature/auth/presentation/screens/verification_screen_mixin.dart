@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
+import 'package:qizlar_academy_mobile/core/format/phone_display_format.dart';
+import 'package:qizlar_academy_mobile/core/network/auth_otp_phone_api_error.dart';
+import 'package:qizlar_academy_mobile/core/network/auth_signin_api_error.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
@@ -15,8 +19,20 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
   int resendSecondsLeft = _defaultCountdown;
   bool isVerifying = false;
   bool isResending = false;
+  bool otpPinError = false;
 
   bool get canResendCode => resendSecondsLeft <= 0 && !isResending;
+
+  /// Bo'sh maydonlarda qizil holatni saqlab, foydalanuvchi yozishni boshlaganda errorni olib tashlaydi.
+  void onOtpPinEdited(String value) {
+    if (!otpPinError || value.isEmpty) return;
+    setState(() => otpPinError = false);
+  }
+
+  void resetOtpPinErrorState() {
+    if (!otpPinError) return;
+    setState(() => otpPinError = false);
+  }
 
   void startResendCountdown({int seconds = _defaultCountdown}) {
     _resendTimer?.cancel();
@@ -40,21 +56,13 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
     return '$minute:$second';
   }
 
-  String formatPhoneForUi(String fullPhone) {
-    final digits = fullPhone.replaceAll(RegExp(r'[^0-9]'), '');
-    if (digits.length < 12) return fullPhone;
-    final code = digits.substring(0, 3);
-    final first = digits.substring(3, 5);
-    final second = digits.substring(5, 8);
-    final third = digits.substring(8, 10);
-    final fourth = digits.substring(10, 12);
-    return '+$code $first $second-$third-$fourth';
-  }
+  String formatPhoneForUi(String fullPhone) => formatPhoneForDisplay(fullPhone);
 
   Future<void> verifyCode({
     required String phone,
     required String keyHash,
     required String code,
+    VoidCallback? onOtpRejectedByServer,
   }) async {
     if (isVerifying) return;
     if (code.length != 6) return;
@@ -63,7 +71,7 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
     if (parsedCode == null) {
       AppToast.warning(
         context,
-        message: 'Kod faqat raqamlardan iborat bo‘lishi kerak.',
+        message: context.l10n.otpDigitsOnlyMessage,
       );
       return;
     }
@@ -84,10 +92,21 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
         stackTrace: stackTrace,
       );
       if (!mounted) return;
-      AppToast.error(
-        context,
-        message: 'Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.',
-      );
+      if (isAuthSignInOtpRejectedResponse(error)) {
+        Gaimon.error();
+        onOtpRejectedByServer?.call();
+        setState(() => otpPinError = true);
+        AppToast.error(
+          context,
+          message: context.l10n.otpInvalidOrExpiredMessage,
+        );
+        return;
+      }
+      setState(() => otpPinError = false);
+      final message = isAuthOtpPhoneOperatorRestrictedResponse(error)
+          ? context.l10n.authPhoneOperatorRestrictedMessage
+          : context.l10n.connectionErrorMessage;
+      AppToast.error(context, message: message);
     } catch (error, stackTrace) {
       AppLogger.e(
         'Unexpected OTP verification failure',
@@ -95,9 +114,10 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
         stackTrace: stackTrace,
       );
       if (!mounted) return;
+      setState(() => otpPinError = false);
       AppToast.error(
         context,
-        message: 'Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.',
+        message: context.l10n.connectionErrorMessage,
       );
     } finally {
       if (mounted) setState(() => isVerifying = false);
@@ -106,6 +126,7 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> _navigateAfterAuth() async {
     getIt<GuestTapGateService>().reset();
+    await getIt<AuthSessionCubit>().ensureProfileGateResolved();
     if (!mounted) return;
     context.go(Routes.main);
   }
@@ -119,7 +140,7 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
       );
       if (!mounted) return keyHash;
       startResendCountdown();
-      AppToast.success(context, message: 'Tasdiqlash kodi qayta yuborildi.');
+      AppToast.success(context, message: context.l10n.otpSentAgain);
       return keyHash;
     } on DioException catch (error, stackTrace) {
       AppLogger.e(
@@ -127,10 +148,14 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
         error: _buildDioLogPayload(error),
         stackTrace: stackTrace,
       );
-      AppToast.error(
-        context,
-        message: 'Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.',
-      );
+      if (mounted) {
+        final message = isAuthOtpPhoneThrottledResponse(error)
+            ? context.l10n.authOtpTooManyRequestsMessage
+            : isAuthOtpPhoneOperatorRestrictedResponse(error)
+            ? context.l10n.authPhoneOperatorRestrictedMessage
+            : context.l10n.connectionErrorMessage;
+        AppToast.error(context, message: message);
+      }
       return null;
     } catch (error, stackTrace) {
       AppLogger.e(
@@ -140,7 +165,7 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
       );
       AppToast.error(
         context,
-        message: 'Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.',
+        message: context.l10n.connectionErrorMessage,
       );
       return null;
     } finally {

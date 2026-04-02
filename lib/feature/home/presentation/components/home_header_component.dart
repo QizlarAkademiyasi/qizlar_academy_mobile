@@ -4,11 +4,13 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 class HomeHeaderComponent extends StatelessWidget {
   const HomeHeaderComponent({
     super.key,
-    required this.userName,
+    required this.title,
+    required this.subtitle,
     required this.onNotificationTap,
   });
 
-  final String userName;
+  final String title;
+  final String subtitle;
   final VoidCallback onNotificationTap;
 
   @override
@@ -27,14 +29,14 @@ class HomeHeaderComponent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Xush kelibsiz!',
+                    subtitle,
                     style: context.textTheme.bodyMediumMedium.copyWith(
                       color: context.appColors.grey,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    userName,
+                    title,
                     maxLines: 1,
                     style: context.textTheme.heading4.copyWith(
                       overflow: TextOverflow.ellipsis,

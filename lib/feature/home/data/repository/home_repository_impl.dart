@@ -1,3 +1,4 @@
+import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/home/data/datasource/home_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
@@ -36,4 +37,20 @@ class HomeRepositoryImpl implements HomeRepository {
   @override
   Future<List<BannerModel>> getBanners() =>
       _apiDatasource.getBannersByUserType(_authSessionCubit.state.userType);
+
+  @override
+  Future<void> postStoryView(String storyId) async {
+    if (!_authSessionCubit.state.isRegistered) return;
+    final id = storyId.trim();
+    if (id.isEmpty) return;
+    try {
+      await _apiDatasource.postStoryView(id);
+    } catch (error, stackTrace) {
+      AppLogger.w(
+        'Story view POST failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
 }

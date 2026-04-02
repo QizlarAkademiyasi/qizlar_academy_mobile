@@ -106,18 +106,13 @@ class _LeadingAvatar extends StatelessWidget {
         child: SizedBox(
           width: 48,
           height: 48,
-          child: CachedNetworkImage(
+          child: AppCachedNetworkImage(
             imageUrl: item.avatarUrl ?? '',
             fit: BoxFit.cover,
-            placeholder: (context, url) =>
-                ColoredBox(color: context.appColors.stroke),
-            errorWidget: (context, url, error) => ColoredBox(
-              color: context.appColors.stroke,
-              child: Icon(
-                LucideIcons.userRound,
-                size: 18,
-                color: context.appColors.grey,
-              ),
+            fallback: const AppNetworkImageFallbackAvatar(
+              icon: LucideIcons.userRound,
+              iconSize: 18,
+              placeholderShowsIcon: false,
             ),
           ),
         ),

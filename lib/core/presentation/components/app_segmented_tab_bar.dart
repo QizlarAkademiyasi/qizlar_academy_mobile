@@ -4,12 +4,7 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 /// Global segmentli tab bar — pill ko‘rinishida, primary indikator.
 /// Leaderboard, filtrlarda va boshqa ekranlarda qayta ishlatish uchun.
 class AppSegmentedTabBar extends StatelessWidget {
-  const AppSegmentedTabBar({
-    super.key,
-    required this.controller,
-    required this.tabLabels,
-    this.onTap,
-  });
+  const AppSegmentedTabBar({super.key, required this.controller, required this.tabLabels, this.onTap});
 
   final TabController controller;
   final List<String> tabLabels;
@@ -24,13 +19,7 @@ class AppSegmentedTabBar extends StatelessWidget {
         color: context.appColors.onContainer,
         borderRadius: AppRadius.radius5xl,
         border: Border.all(color: context.appColors.stroke),
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.shadow.withValues(alpha: 0.05),
-            blurRadius: 2,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 2))],
       ),
       child: TabBar(
         controller: controller,
@@ -38,10 +27,7 @@ class AppSegmentedTabBar extends StatelessWidget {
           Gaimon.light();
           onTap?.call(index);
         },
-        indicator: BoxDecoration(
-          borderRadius: AppRadius.radius5xl,
-          color: AppColors.primary,
-        ),
+        indicator: BoxDecoration(borderRadius: AppRadius.radius5xl, color: AppColors.primary),
         indicatorSize: TabBarIndicatorSize.tab,
         dividerColor: Colors.transparent,
         labelColor: AppColors.white,

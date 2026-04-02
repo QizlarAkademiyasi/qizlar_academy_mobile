@@ -15,5 +15,5 @@ class AuthSessionModel {
 
   bool get hasAccessToken => (accessToken ?? '').isNotEmpty;
   bool get hasRefreshToken => (refreshToken ?? '').isNotEmpty;
-  bool get isRegistered => userType == UserType.registered;
+  bool get isRegistered => userType == UserType.user;
 }

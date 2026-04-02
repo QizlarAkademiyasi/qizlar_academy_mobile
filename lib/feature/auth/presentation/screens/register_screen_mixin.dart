@@ -1,8 +1,10 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
 
 mixin RegisterScreenMixin<T extends StatefulWidget> on State<T> {
@@ -26,11 +28,11 @@ mixin RegisterScreenMixin<T extends StatefulWidget> on State<T> {
     final trimmedLast = lastName.trim();
 
     if (trimmedFirst.isEmpty) {
-      AppToast.warning(context, message: "Ism kiriting");
+      AppToast.warning(context, message: context.l10n.enterFirstName);
       return;
     }
     if (trimmedLast.isEmpty) {
-      AppToast.warning(context, message: "Familya kiriting");
+      AppToast.warning(context, message: context.l10n.enterLastName);
       return;
     }
 
@@ -42,6 +44,8 @@ mixin RegisterScreenMixin<T extends StatefulWidget> on State<T> {
       );
 
       if (!mounted) return;
+      getIt<AuthSessionCubit>().markProfileRegistrationComplete();
+      if (!mounted) return;
       context.go(Routes.main);
     } on DioException catch (error, stackTrace) {
       AppLogger.e(
@@ -52,7 +56,7 @@ mixin RegisterScreenMixin<T extends StatefulWidget> on State<T> {
       if (!mounted) return;
       AppToast.error(
         context,
-        message: 'Ma\'lumotlarni saqlashda xatolik yuz berdi. Iltimos qayta urinib ko\'ring.',
+        message: context.l10n.saveProfileErrorMessage,
       );
     } catch (error, stackTrace) {
       AppLogger.e(
@@ -63,7 +67,7 @@ mixin RegisterScreenMixin<T extends StatefulWidget> on State<T> {
       if (!mounted) return;
       AppToast.error(
         context,
-        message: 'Ma\'lumotlarni saqlashda xatolik yuz berdi. Iltimos qayta urinib ko\'ring.',
+        message: context.l10n.saveProfileErrorMessage,
       );
     } finally {
       if (mounted) setState(() => isSubmitting = false);

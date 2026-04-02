@@ -1,1 +1,344 @@
-{}
+{
+  "@@locale": "uz",
+  "appTitle": "Qizlar Akademiyasi",
+  "signInTitle": "Kirish",
+  "signInSubtitle": "Telefon raqamingizni kiriting",
+  "signInStart": "Boshlash",
+  "orDivider": "yoki",
+  "termsPrefix": "Davom etib siz",
+  "termsLink": "Foydalanuvchi shartlari",
+  "termsSuffix": "ga rozilik bildirasiz.",
+  "comingSoonTitle": "Tez orada",
+  "termsComingSoonMessage": "Foydalanuvchi shartlari sahifasi keyingi bosqichda ochiladi.",
+  "signInPhoneTitle": "Telefon raqam",
+  "signInPhoneIncompleteMessage": "Iltimos, telefon raqamni to‘liq kiriting.",
+  "authPhoneOperatorRestrictedMessage": "Bundan raqam mavjud emas!",
+  "authOtpTooManyRequestsMessage": "Juda ko‘p urinish qildingiz. Birozdan keyin qayta urinib ko‘ring.",
+  "connectionErrorMessage": "Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.",
+  "googleSignInErrorMessage": "Google orqali kirishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.",
+  "telegramSignInComingSoonMessage": "Telegram orqali kirish keyingi bosqichda ulanadi.",
+  "signInWithGoogle": "Google bilan kirish",
+  "signInWithTelegram": "Telegram bilan kirish",
+  "registerTitle": "Shaxsiy ma'lumotlar",
+  "registerSubtitle": "Shaxsiy ma'lumotlaringizni kiriting",
+  "firstNameHint": "Ism",
+  "lastNameHint": "Familya",
+  "registerContinue": "Davom etish",
+  "enterFirstName": "Ism kiriting",
+  "enterLastName": "Familya kiriting",
+  "saveProfileErrorMessage": "Ma'lumotlarni saqlashda xatolik yuz berdi. Iltimos qayta urinib ko'ring.",
+  "verificationTitle": "Tasdiqlash kodi",
+  "verificationCodeSentTo": "Tasdiqlash kodini {phone} raqamiga yuborildi.",
+  "resendCode": "Kodni qayta yuborish",
+  "resending": "Yuborilmoqda...",
+  "resendCodeCountdown": "Kodni qayta yuborish: {time}",
+  "otpDigitsOnlyMessage": "Kod faqat raqamlardan iborat bo‘lishi kerak.",
+  "otpInvalidOrExpiredMessage": "OTP kodi noto‘g‘ri yoki muddati o‘tgan.",
+  "otpSentAgain": "Tasdiqlash kodi qayta yuborildi.",
+  "mainTabHome": "Asosiy",
+  "mainTabCourses": "Kurslar",
+  "mainTabLeaderboard": "Liderlar",
+  "mainTabProfile": "Profil",
+  "guestSignInCta": "Kirish",
+  "homeWelcomeGuestTitle": "Xush kelibsiz!",
+  "homeWelcomeGuestSubtitle": "Qizlar akademiyasiga",
+  "homeWelcomeBack": "Xush kelibsiz!",
+  "homeRegisteredUserFallback": "Ro‘yxatdan o‘tgan foydalanuvchi",
+  "homePopularCourses": "Mashhur kurslar",
+  "homeGuestCoursesGate": "Kurslarni to‘liq ko‘rish uchun ro‘yxatdan o‘ting",
+  "homeGuestNotificationsGate": "Bildirishnomalar uchun ro‘yxatdan o‘ting",
+  "homeLoadErrorMessage": "Ulanishda xatolik yuz berdi. Qayta urinib ko‘ring.",
+  "coursesAllTitle": "Barcha kurslar",
+  "coursesSearchHint": "Kurslarni izlash...",
+  "coursesNoResults": "Mos kurs topilmadi",
+  "coursesNotificationsComingSoonMessage": "Bildirishnomalar bo‘limi tez orada qo‘shiladi.",
+  "coursesLastViewed": "Oxirgi ko‘rilgan",
+  "coursesInProgress": "Jarayonda",
+  "courseEnroll": "Kursga yozilish",
+  "courseEnrollConfirmTitle": "Kursga yozilmoqchimisiz?",
+  "courseEnrollConfirmBody": "Yozilgach, mavjud barcha darslarni ochib ko‘rishingiz mumkin.",
+  "courseEnrollConfirmPrimary": "Yozilish",
+  "courseEnrollConfirmCancel": "Bekor qilish",
+  "courseGuestFirstLessonCta": "Birinchi darsni ko'rish",
+  "courseGuestMoreLessonsTitle": "Boshqa darslar uchun kiring",
+  "courseGuestMoreLessonsBody": "Mehmon sifatida faqat birinchi darsni ko'rishingiz mumkin. To'liq kurs uchun tizimga kiring.",
+  "courseContinue": "Davom etish",
+  "courseTabLessons": "Darslar ({count})",
+  "courseTabInfo": "Ma'lumot",
+  "courseTabReviews": "Sharhlar ({count})",
+  "lessonEmpty": "Hali ochiq darslar yo‘q",
+  "lessonBackTooltip": "Orqaga",
+  "lessonProgress": "Dars {current}/{total}",
+  "lessonCompleted": "Bajarildi",
+  "lessonMarkComplete": "Darsni yakunlash",
+  "coursePillTabLessons": "Darslar",
+  "coursePillTabInfo": "Ma'lumot",
+  "coursePillTabReviews": "Sharhlar",
+  "lessonQuizTestRowTitle": "Test",
+  "lessonQuizGoToTest": "Testga o'tish",
+  "lessonQuizTitle": "Test",
+  "lessonQuizQuestionLabel": "Savol",
+  "lessonQuizQuestionProgress": "{current}/{total}",
+  "@lessonQuizQuestionProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonQuizPercentComplete": "{percent}% yakunlangan",
+  "@lessonQuizPercentComplete": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonQuizTypeSingle": "Bitta variant",
+  "lessonQuizTypeMultiple": "Bir nechta variant",
+  "lessonQuizMark": "Belgilash",
+  "lessonQuizNext": "Keyingi",
+  "lessonQuizFinish": "Yakunlash",
+  "lessonQuizExitTitle": "Testdan chiqmoqchimisiz?",
+  "lessonQuizExitBody": "Agar hozir chiqsangiz, natijalaringiz saqlanmaydi.",
+  "lessonQuizExitStay": "Qolish",
+  "lessonQuizExitLeave": "Chiqish",
+  "lessonQuizResultGreat": "Ajoyib natija!",
+  "lessonQuizResultPoor": "Qoniqarsiz natija!",
+  "lessonQuizStatCorrect": "To'g'ri",
+  "lessonQuizStatWrong": "Xato",
+  "lessonQuizStatTime": "Vaqt",
+  "lessonQuizContinue": "Davom qilish",
+  "lessonQuizErrorEmpty": "Bu dars uchun test hali yo'q.",
+  "lessonQuizErrorLoad": "Testni yuklab bo'lmadi.",
+  "lessonQuizErrorCheck": "Javobni tekshirib bo'lmadi.",
+  "lessonQuizErrorSubmit": "Testni yuborib bo'lmadi.",
+  "lessonQuizErrorGeneric": "Xatolik yuz berdi.",
+  "lessonQuizAlreadyTaken": "Siz bu testni allaqachon topshirgansiz. Qayta topshirish mumkin emas.",
+  "leaderboardTitle": "Peshqadamlar",
+  "leaderboardSubtitle": "Eng yaxshi o'quvchilar reytingi",
+  "leaderboardTabOverall": "Umumiy",
+  "leaderboardTabWeekly": "Haftalik",
+  "leaderboardTabMonthly": "Oylik",
+  "leaderboardSelectCourse": "Kursni tanlang",
+  "leaderboardFullRanking": "To'liq reyting",
+  "leaderboardNoCourses": "Hozircha kurslar topilmadi",
+  "refresh": "Yangilash",
+  "leaderboardNoRatingYet": "Bu kurs bo‘yicha hozircha reyting yo‘q",
+  "promotionTitle": "Siz ham qatnashing!",
+  "promotionSubtitle": "Kurslarni yakunlab ball to'plang",
+  "promotionStart": "Boshlash",
+  "profileStatCourses": "Kurslar",
+  "profileStatCertificates": "Sertifikatlar",
+  "profileStatRating": "Reyting",
+  "profileStatPoints": "Ballar",
+  "profileMenuCertificates": "Sertifikatlarim",
+  "profileMenuMyCourses": "Mening kurslarim",
+  "profileMenuMyActivity": "Mening faolligim",
+  "profileMenuProfileInfo": "Profil ma'lumotlari",
+  "profileMenuLanguage": "Til",
+  "profileMenuShareApp": "Ilovani ulashish",
+  "profileMenuAbout": "Biz haqimizda",
+  "profileMenuHelp": "Yordam markazi",
+  "profileMenuPrivacy": "Maxfiylik siyosati",
+  "profileSectionAccount": "HISOB",
+  "profileCertificatesCountSubtitle": "{count} ta sertifikat",
+  "@profileCertificatesCountSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileActiveCoursesCountSubtitle": "{count} ta aktiv kurslar",
+  "@profileActiveCoursesCountSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSectionSettings": "SOZLAMALAR",
+  "profileSectionGeneral": "UMUMIY",
+  "profileNotifications": "Bildirishnomalar",
+  "profileNotificationsSubtitle": "Push-xabarlar",
+  "profileDarkMode": "Tungi rejim",
+  "profileDarkModeSubtitle": "Qorong'i interfeys",
+  "profileLogout": "Chiqish",
+  "profileLogoutConfirmTitle": "Ilovadan chiqmoqchimisiz?",
+  "profileLogoutConfirmBody": "Biz sizni yangi darslarda kutib qolamiz.\nHozir tizimdan chiqmoqchimisiz?",
+  "profileLogoutStay": "Qolish",
+  "profileVersion": "Versiya {version}",
+  "profileDataMissing": "Profil ma'lumotlari mavjud emas.",
+  "profileInformationTitle": "Tahrirlash",
+  "profileInformationSave": "Saqlash",
+  "profileInformationSaveSuccess": "Profil yangilandi",
+  "profileInformationNameRequired": "Ism va familiyangizni kiriting",
+  "profileInformationNoChanges": "Saqlash uchun o‘zgarish yo‘q",
+  "profileInformationPhotoUploadFailed": "Rasmni yuklab bo‘lmadi. Qayta urinib ko‘ring.",
+  "profileInformationPhotoPermissionDenied": "Rasmga kirish o‘chiq. Sozlamalarda yoqishingiz mumkin.",
+  "profileInformationPhotoPickFailed": "Rasmni tanlab bo‘lmadi. Qayta urinib ko‘ring.",
+  "profileInformationStatusTitle": "Profil status",
+  "profileInformationPhoneLabel": "Telefon raqami",
+  "profileInformationPhoneNationalHint": "XX XXX XX XX",
+  "aboutBrandTitle": "QIZLAR AKADEMIYASI",
+  "aboutSectionProjectTitle": "Qizlar Akademiyasi loyihasi haqida",
+  "aboutProjectLead": "Qizlar akademiyasi",
+  "aboutProjectBody": " – barcha yoshdagi xotin-qizlar uchun bepul o'quv kurslarni o'z ichiga jamlagan interaktiv platforma. Platforma o'z ichiga salomatlik, zamonaviy kasblar, hunarmandchilik, ta'lim, tadbirkorlik, psixologik hamda huquqiy yo'nalishlarni o'z ichiga olgan. Ro'yxatdan o'ting va platforma orqali turli yo'nalishlarda bilim va ko'nikmangizni oshirib boring.",
+  "aboutSectionSupportersTitle": "Bizni qo'llab-quvvatlamoqda",
+  "aboutSupporterSadullaName": "Alisher Sadullayev",
+  "aboutSupporterSadullaRole": "O'zbekiston Respublikasi Yoshlar ishlari agentligi direktori",
+  "aboutSupporterKattaxonName": "Dilnoza Kattaxonova",
+  "aboutSupporterKattaxonRole": "Yoshlar ishlari agentligi direktorining birinchi o'rinbosari. Siyosiy fanlar bo'yicha falsafa doktori",
+  "aboutSectionSocialTitle": "Ijtimoiy tarmoqlar",
+  "aboutSocialInstagramTitle": "Instagram",
+  "aboutSocialInstagramSubtitle": "Qizlar Akademiyasi rasmiy Instagram kanali",
+  "aboutSocialTelegramTitle": "Telegram",
+  "aboutSocialTelegramSubtitle": "Qizlar Akademiyasi rasmiy Telegram kanali",
+  "aboutSocialYoutubeTitle": "Youtube",
+  "aboutSocialYoutubeSubtitle": "Qizlar Akademiyasi rasmiy Youtube kanali",
+  "aboutUsLoadError": "Ma'lumot yuklanmadi. Qayta urinib ko'ring.",
+  "aboutUsLinkOpenError": "Havolani ochib bo'lmadi.",
+  "guestGateNotificationSettings": "Bildirishnoma sozlamalari uchun ro‘yxatdan o‘ting",
+  "guestGateSaveSettings": "Sozlamalarni saqlash uchun ro‘yxatdan o‘ting",
+  "guestGateProfileFeatures": "Profil funksiyalari uchun ro‘yxatdan o‘ting",
+  "profileAppLanguageTitle": "Ilova tili",
+  "languageUzbek": "O'zbekcha",
+  "languageRussian": "Русский",
+  "languageEnglish": "English",
+  "notificationsTitle": "Bildirishnoma",
+  "notificationsEmpty": "Hozircha bildirishnomalar yo'q",
+  "notificationsEmptySubtitle": "Yangi xabarlar paydo bo'lishi bilan shu yerda ko'rinadi.",
+  "guestGateMarkAllRead": "Barchasini o‘qilgan qilish uchun ro‘yxatdan o‘ting",
+  "guestGateManageNotifications": "Bildirishnomalarni boshqarish uchun ro‘yxatdan o‘ting",
+  "guestModeTitle": "Mehmon rejimi",
+  "guestModeDescription": "Barcha imkoniyatlardan foydalanish uchun akkaunt\nyarating yoki tizimga kiring.",
+  "errorGeneric": "Xatolik yuz berdi",
+  "retry": "Qayta urinish",
+  "homeGuestCardSignIn": "Kirish",
+  "myCoursesTitle": "Mening kurslarim",
+  "myCoursesRatingReviewsLine": "{rating} ({reviewsCount} izohlar)",
+  "@myCoursesRatingReviewsLine": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "reviewsCount": {
+        "type": "String"
+      }
+    }
+  },
+  "myCoursesDurationHours": "{hours} soat",
+  "@myCoursesDurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "myCoursesEmptyTitle": "Hozircha kurslar yo'q",
+  "myCoursesEmptySubtitle": "Kursga yoziling — u shu yerda paydo bo'ladi.",
+  "myCoursesLoadError": "Kurslarni yuklab bo'lmadi. Qayta urinib ko'ring.",
+  "myCoursesLoadMoreError": "Yana yuklab bo'lmadi. Qayta scroll qiling.",
+  "certificatesBadgeGold": "Oltin sertifikat",
+  "certificatesBadgeSilver": "Kumush sertifikat",
+  "certificatesBadgeBronze": "Bronza sertifikat",
+  "certificatesView": "Ko'rish",
+  "certificatesSheetHeading": "{courseName} sertifikati",
+  "@certificatesSheetHeading": {
+    "placeholders": {
+      "courseName": {
+        "type": "String"
+      }
+    }
+  },
+  "certificatesSheetDescription": "Siz kursni muvaffaqiyatli yakunladingiz va maxsus sertifikatga ega bo'ldingiz. Bilimlaringiz doim hamroh bo'lsin!",
+  "certificatesSheetDownload": "Yuklab olish",
+  "certificatesEmptyTitle": "Hozircha sertifikatlar yo'q",
+  "certificatesEmptySubtitle": "Kursni tugatganingizdan keyin sertifikatingiz shu yerda paydo bo'ladi.",
+  "certificatesLoadError": "Sertifikatlarni yuklab bo'lmadi. Qayta urinib ko'ring.",
+  "certificatesFileActionError": "Faylni yuklab yoki ulashib bo'lmadi.",
+  "courseReviewsSummaryCount": "{count} ta sharh",
+  "@courseReviewsSummaryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "courseReviewsEmptyTitle": "Hozircha sharhlar yo'q",
+  "courseReviewsEmptySubtitle": "O'quvchilar fikr qoldirganda, ular shu yerda ko'rinadi.",
+  "courseLeaveReviewCta": "Izoh qoldirish",
+  "courseSubmitReviewTitle": "Sharh qoldirish",
+  "courseSubmitReviewRateTitle": "Kursni baholang",
+  "courseSubmitReviewRateSubtitle": "Olingan bilimlar va dars sifati haqida nima deysiz? O'z fikringizni yozib qoldiring.",
+  "courseSubmitReviewYourCommentLabel": "Sharhingiz",
+  "courseSubmitReviewCommentHint": "Kurs sizga yoqdimi? Taassurotlaringiz bilan o'rtoqlashing",
+  "courseSubmitReviewCharCount": "{current}/{max}",
+  "@courseSubmitReviewCharCount": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "courseSubmitReviewSubmit": "Sharhni yuborish",
+  "courseSubmitReviewSuccess": "Sharhingiz yuborildi",
+  "courseSubmitReviewError": "Sharhni yuborib bo'lmadi. Qayta urinib ko'ring.",
+  "courseSubmitReviewSelectRating": "Iltimos, kursni baholang",
+  "reviewTimeJustNow": "Hozirgina",
+  "reviewTimeMinutesAgo": "{count} daqiqa oldin",
+  "@reviewTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeHoursAgo": "{count} soat oldin",
+  "@reviewTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeDaysAgo": "{count} kun oldin",
+  "@reviewTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeWeeksAgo": "{count} hafta oldin",
+  "@reviewTimeWeeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeMonthsAgo": "{count} oy oldin",
+  "@reviewTimeMonthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeYearsAgo": "{count} yil oldin",
+  "@reviewTimeYearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

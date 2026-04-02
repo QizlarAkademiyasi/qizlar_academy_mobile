@@ -37,6 +37,8 @@ Per feature: **feature/feature_name/**
 
 This project uses **screens/** and `*_screen.dart` consistently.
 
+**Nested sub-screen (ichki ekran):** When a feature has a dedicated sub-flow screen (e.g. profile list → edit profile), colocate its screen, mixin, bloc (part files), and screen-only components under **`presentation/screens/<slug>/`** with `bloc/` and `components/` subfolders. Shared feature blocs stay in `presentation/bloc/`. See **.cursor/skills/qizlar-academy-project/reference.md** section **4.1**.
+
 ---
 
 ## 4. Page / View / Mixin pattern
@@ -53,7 +55,7 @@ Listener naming: `xxxBlocListener(BuildContext context, XxxState state)` or `blo
 - **Komponent:** Logical UI blocks (e.g. center logo, bottom partners) as separate **StatelessWidget** in `feature/.../presentation/components/`, one file per component (e.g. `splash_center_content.dart`, `splash_bottom_partners.dart`).
 - **Mixin:** Move `_buildXxx(BuildContext)`-style methods into the mixin. Mixin exposes e.g. `buildCenterContent(BuildContext)`, `buildBottomPartners(BuildContext)` that return `const XxxComponent();`. Screen handles layout (Column, Stack) and animation/lifecycle; content comes from mixin.
 - **No circular imports:** Mixin must not import the screen. Use **generic mixin:** `mixin XxxScreenMixin<T extends StatefulWidget> on State<T>`. Screen: `class _XxxScreenState extends State<XxxScreen> with XxxScreenMixin<XxxScreen>`.
-- **Placement:** Mixin in `presentation/screens/` (`*_screen_mixin.dart`). Components in `presentation/components/` with clear names.
+- **Placement:** Mixin in `presentation/screens/` or `presentation/screens/<slug>/` (`*_screen_mixin.dart`). Components in `presentation/components/` or, for a nested screen only, in `presentation/screens/<slug>/components/` (see reference 4.1).
 - **Imports:** Components and mixin import app_components/config and kit as needed. Screen imports mixin and router; does not import components directly (only via mixin).
 
 ---

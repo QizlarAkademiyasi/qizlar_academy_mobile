@@ -16,23 +16,29 @@ class CoursesCatalogApiDatasource implements CoursesCatalogDatasource {
     required UserType userType,
   }) async {
     final response = await _dio.get<dynamic>(
-      userType == UserType.registered
-          ? Apis.coursesClient
-          : Apis.coursesClientPublic,
-      queryParameters: const <String, dynamic>{'pageNumber': 1, 'pageSize': 100},
+      userType == UserType.user
+          ? UserApis.coursesClient
+          : AnonymousApis.coursesClientPublic,
+      queryParameters: const <String, dynamic>{
+        'pageNumber': 1,
+        'pageSize': 100,
+      },
     );
 
     final envelope = _asMap(response.data);
     final data = _asMap(envelope['data']);
-    final courses = _asList(data['data']).map(_mapCourse).where((item) {
-      final normalizedQuery = query.trim().toLowerCase();
-      if (normalizedQuery.isEmpty) return true;
-      return item.title.toLowerCase().contains(normalizedQuery) ||
-          item.mentorName.toLowerCase().contains(normalizedQuery);
-    }).toList(growable: false);
+    final courses = _asList(data['data'])
+        .map(_mapCourse)
+        .where((item) {
+          final normalizedQuery = query.trim().toLowerCase();
+          if (normalizedQuery.isEmpty) return true;
+          return item.title.toLowerCase().contains(normalizedQuery) ||
+              item.mentorName.toLowerCase().contains(normalizedQuery);
+        })
+        .toList(growable: false);
 
     CourseInProgressModel? lastViewed;
-    if (userType == UserType.registered) {
+    if (userType == UserType.user) {
       final lastViewedRaw = _asMapOrNull(data['lastProgressedCourse']);
       if (lastViewedRaw != null) {
         final progress = _parseInt(lastViewedRaw['progressPercent']);
@@ -40,7 +46,7 @@ class CoursesCatalogApiDatasource implements CoursesCatalogDatasource {
           courseId: (lastViewedRaw['courseId'] ?? '').toString(),
           title: (lastViewedRaw['name'] ?? '').toString(),
           moduleTitle: (lastViewedRaw['moduleName'] ?? '').toString(),
-          imageUrl: (lastViewedRaw['bannerImage'] ?? '').toString(),
+          imageUrl: _resolveCourseImageUrl(lastViewedRaw),
           progressPercent: progress,
           progressLabel: '$progress%',
           actionLabel: 'Davom qilish',
@@ -55,21 +61,27 @@ class CoursesCatalogApiDatasource implements CoursesCatalogDatasource {
   }
 
   @override
-  Future<CoursesCatalogOverviewModel> fetchCatalog({
-    required String query,
-  }) => fetchCatalogByUserType(query: query, userType: UserType.registered);
+  Future<CoursesCatalogOverviewModel> fetchCatalog({required String query}) =>
+      fetchCatalogByUserType(query: query, userType: UserType.user);
 
   CourseCatalogItemModel _mapCourse(Map<String, dynamic> parsed) {
     return CourseCatalogItemModel(
       id: (parsed['id'] ?? '').toString(),
       title: (parsed['name'] ?? '').toString(),
       mentorName: (parsed['teacherFullname'] ?? '').toString(),
-      imageUrl: (parsed['bannerImage'] ?? '').toString(),
+      imageUrl: _resolveCourseImageUrl(parsed),
       rating: _parseDouble(parsed['avgRating']),
       reviewsCount: _parseInt(parsed['totalRatings']),
       durationHours: _parseInt(parsed['totalDuration']),
       tagLabel: null,
     );
+  }
+
+  String _resolveCourseImageUrl(Map<String, dynamic> item) {
+    final icon = (item['icon'] ?? '').toString().trim();
+    final banner = (item['bannerImage'] ?? '').toString().trim();
+    final selected = icon.isNotEmpty ? icon : banner;
+    return Apis.resolveUrl(selected);
   }
 
   Map<String, dynamic> _asMap(dynamic data) {

@@ -60,7 +60,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String phone,
   }) async {
     final response = await _dio.post<dynamic>(
-      Apis.authOtpPhoneNumber,
+      AnonymousApis.authOtpPhoneNumber,
       data: <String, dynamic>{'phone': phone},
       options: Options(extra: <String, dynamic>{skipAuthRefresh: true}),
     );
@@ -78,7 +78,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String keyHash,
   }) async {
     final response = await _dio.post<dynamic>(
-      Apis.authSignIn,
+      AnonymousApis.authSignIn,
       data: <String, dynamic>{'phone': phone, 'code': code, 'keyHash': keyHash},
       options: Options(extra: <String, dynamic>{skipAuthRefresh: true}),
     );
@@ -106,7 +106,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String lastname,
   }) async {
     final response = await _dio.post<dynamic>(
-      Apis.authGoogle,
+      AnonymousApis.authGoogle,
       data: <String, dynamic>{
         'idToken': idToken,
         'firstname': firstname,
@@ -136,7 +136,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String refreshToken,
   }) async {
     final response = await _dio.post<dynamic>(
-      Apis.authRefresh,
+      AnonymousApis.authRefresh,
       data: <String, dynamic>{'token': refreshToken},
       options: Options(extra: <String, dynamic>{skipAuthRefresh: true}),
     );

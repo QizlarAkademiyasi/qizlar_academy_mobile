@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_args.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_screen_mixin.dart';
@@ -31,7 +32,14 @@ class _VerificationScreenState extends State<VerificationScreen>
   }
 
   Future<void> _onCodeCompleted(String value) async {
-    await verifyCode(phone: widget.args.phone, keyHash: _keyHash, code: value);
+    await verifyCode(
+      phone: widget.args.phone,
+      keyHash: _keyHash,
+      code: value,
+      onOtpRejectedByServer: () {
+        if (mounted) _pinController.clear();
+      },
+    );
   }
 
   Future<void> _onResendTap() async {
@@ -39,6 +47,7 @@ class _VerificationScreenState extends State<VerificationScreen>
     if (nextHash == null || nextHash.isEmpty) return;
     _keyHash = nextHash;
     _pinController.clear();
+    resetOtpPinErrorState();
   }
 
   @override
@@ -57,12 +66,14 @@ class _VerificationScreenState extends State<VerificationScreen>
               _buildBackButton(context),
               const SizedBox(height: 24),
               Text(
-                'Tasdiqlash kodi',
+                context.l10n.verificationTitle,
                 style: context.textTheme.heading3.copyWith(color: textColor),
               ),
               const SizedBox(height: 10),
               Text(
-                'Tasdiqlash kodini ${formatPhoneForUi(widget.args.phone)} raqamiga yuborildi.',
+                context.l10n.verificationCodeSentTo(
+                  formatPhoneForUi(widget.args.phone),
+                ),
                 style: context.textTheme.bodyXLargeRegular.copyWith(
                   color: secondary,
                   height: 1.35,
@@ -75,28 +86,38 @@ class _VerificationScreenState extends State<VerificationScreen>
                 autofocus: true,
                 enabled: !isVerifying,
                 keyboardType: TextInputType.number,
+                onChanged: onOtpPinEdited,
                 onCompleted: _onCodeCompleted,
+                forceErrorState: otpPinError,
+                showErrorWhenFocused: true,
                 defaultPinTheme: _pinTheme(context),
                 focusedPinTheme: _pinTheme(
                   context,
                   borderColor: context.appColors.primary,
                 ),
                 submittedPinTheme: _pinTheme(context),
+                errorPinTheme: _pinTheme(
+                  context,
+                  borderColor: context.appColors.error,
+                  textColor: context.appColors.error,
+                ),
               ),
               const Spacer(),
               Center(
                 child: canResendCode
                     ? PrimaryButton.text(
                         label: isResending
-                            ? 'Yuborilmoqda...'
-                            : 'Kodni qayta yuborish',
+                            ? context.l10n.resending
+                            : context.l10n.resendCode,
                         onPressed: isResending ? null : _onResendTap,
                         textStyle: context.textTheme.bodyLargeSemibold.copyWith(
                           color: context.appColors.text,
                         ),
                       )
                     : Text(
-                        'Kodni qayta yuborish: ${formatResendCountdown()}s',
+                        context.l10n.resendCodeCountdown(
+                          formatResendCountdown(),
+                        ),
                         style: context.textTheme.bodyLargeRegular.copyWith(
                           color: textColor,
                         ),
@@ -110,12 +131,16 @@ class _VerificationScreenState extends State<VerificationScreen>
     );
   }
 
-  PinTheme _pinTheme(BuildContext context, {Color? borderColor}) {
+  PinTheme _pinTheme(
+    BuildContext context, {
+    Color? borderColor,
+    Color? textColor,
+  }) {
     return PinTheme(
       width: 52,
       height: 56,
       textStyle: context.textTheme.bodyXLargeSemibold.copyWith(
-        color: context.appColors.text,
+        color: textColor ?? context.appColors.text,
       ),
       decoration: BoxDecoration(
         color: context.appColors.onContainer,

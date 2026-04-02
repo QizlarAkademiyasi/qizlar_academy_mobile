@@ -10,13 +10,13 @@ class NotificationApiDatasource implements NotificationDatasource {
 
   @override
   Future<List<NotificationSectionModel>> fetchNotificationSections() async {
-    final response = await _dio.get<dynamic>(Apis.notifications);
+    final response = await _dio.get<dynamic>(UserApis.notifications);
     return _parseSections(response.data);
   }
 
   @override
   Future<List<NotificationSectionModel>> markAllAsRead() async {
-    await _dio.post<dynamic>(Apis.notificationsReadAll);
+    await _dio.post<dynamic>(UserApis.notificationsReadAll);
     return fetchNotificationSections();
   }
 
@@ -24,7 +24,7 @@ class NotificationApiDatasource implements NotificationDatasource {
   Future<List<NotificationSectionModel>> markAsRead({
     required String notificationId,
   }) async {
-    await _dio.post<dynamic>(Apis.notificationsReadById(notificationId));
+    await _dio.post<dynamic>(UserApis.notificationsReadById(notificationId));
     return fetchNotificationSections();
   }
 

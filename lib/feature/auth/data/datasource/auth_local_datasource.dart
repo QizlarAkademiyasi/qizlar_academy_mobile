@@ -37,30 +37,32 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
     final hasRefreshToken = (refreshToken ?? '').isNotEmpty;
 
     // userType saqlanmagan yoki session to'liq emas bo'lsa, xavfsiz default — anonymous.
-    if (resolvedUserType == UserType.registered && hasAccessToken && hasRefreshToken) {
+    if (resolvedUserType == UserType.user &&
+        hasAccessToken &&
+        hasRefreshToken) {
       return AuthSessionModel(
-        userType: UserType.registered,
+        userType: UserType.user,
         accessToken: accessToken,
         refreshToken: refreshToken,
         tokenType: tokenType,
       );
     }
 
-    if (resolvedUserType == UserType.anonymous) {
-      return const AuthSessionModel(userType: UserType.anonymous);
+    if (resolvedUserType == UserType.guest) {
+      return const AuthSessionModel(userType: UserType.guest);
     }
 
     await clearSession();
-    return const AuthSessionModel(userType: UserType.anonymous);
+    return const AuthSessionModel(userType: UserType.guest);
   }
 
   @override
   Future<AuthSessionModel> saveAnonymousSession() async {
-    await _prefs.setString(StorageKey.userType.name, UserType.anonymous.name);
+    await _prefs.setString(StorageKey.userType.name, UserType.guest.name);
     await _prefs.remove(StorageKey.accessToken.name);
     await _prefs.remove(StorageKey.refreshToken.name);
     await _prefs.remove(StorageKey.tokenType.name);
-    return const AuthSessionModel(userType: UserType.anonymous);
+    return const AuthSessionModel(userType: UserType.guest);
   }
 
   @override
@@ -69,12 +71,12 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
     required String refreshToken,
     String tokenType = _defaultTokenType,
   }) async {
-    await _prefs.setString(StorageKey.userType.name, UserType.registered.name);
+    await _prefs.setString(StorageKey.userType.name, UserType.user.name);
     await _prefs.setString(StorageKey.accessToken.name, accessToken);
     await _prefs.setString(StorageKey.refreshToken.name, refreshToken);
     await _prefs.setString(StorageKey.tokenType.name, tokenType);
     return AuthSessionModel(
-      userType: UserType.registered,
+      userType: UserType.user,
       accessToken: accessToken,
       refreshToken: refreshToken,
       tokenType: tokenType,

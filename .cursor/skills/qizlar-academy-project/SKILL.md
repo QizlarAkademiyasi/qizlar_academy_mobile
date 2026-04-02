@@ -22,6 +22,7 @@ This skill applies **only** to the qizlar_academy_mobile project. Follow it toge
 - Follow the structure and patterns in **[reference.md](reference.md)** for this repo.
 - **lib:** `main.dart`, `app.dart`, `config/` (shu jumladan `config/enum/` — shared enumlar), `core/`, `feature/`.
 - **Feature:** `domain/`, `data/`, `presentation/` (screens/, bloc/, components/ as in reference).
+- **Ichki ekran (nested screen):** Sub-flow ekran (masalan profil tahriri) bo‘lsa, `presentation/screens/<slug>/` ichida ekran + mixin, `bloc/`, `components/` — batafsil **reference.md §4.1**.
 - **Router:** `config/router/app_routes.dart`, `path_routes.dart` (part of app_routes).
 - **DI:** `config/di/setup_locator.dart` (GetIt); register repositories and blocs in the kit or in app config as per reference.
 - **Logging:** all app logs must go through `lib/config/logs/` (central logger). Use `AppLogger` there; do not instantiate `Logger` directly in features/screens/blocs.
@@ -38,6 +39,6 @@ See **[reference.md](reference.md)** for:
 - Kit package list and import conventions
 - Feature, config, and core structure
 - Bloc, mixin, and component rules (including mixin/component ajratish qonuniyatlari, §5.1) for this project
-- **Exception screens va skeleton (§6.1):** fail holatlari uchun `.tgs` animatsiyali `exception_screens` komponentlari (TgsFailureContent); yuklanishda CircularProgressIndicator o‘rniga skeleton (PageLoadingSkeleton yoki feature-specific skeleton) ishlatiladi.
+- **Exception screens va skeleton (§6.1):** fail holatlari uchun `.tgs` animatsiyali `exception_screens` komponentlari (TgsFailureContent); **bo‘sh holatlar** uchun ham `TgsEmptyContent` + quyon `.tgs` (`UiKitAssets.lottie.rabbit.*`) — statik empty ikonlar yozilmaydi; yuklanishda CircularProgressIndicator o‘rniga skeleton (PageLoadingSkeleton yoki feature-specific skeleton) ishlatiladi.
 
 Do not deviate from reference.md when adding or refactoring code in this project.

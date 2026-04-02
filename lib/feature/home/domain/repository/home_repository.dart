@@ -10,4 +10,7 @@ abstract interface class HomeRepository {
   Future<List<TeacherModel>> getTeachers();
   Future<List<CourseModel>> getCourses();
   Future<List<BannerModel>> getBanners();
+
+  /// Mehmonda no-op; user uchun `POST` [UserApis.storyViewById].
+  Future<void> postStoryView(String storyId);
 }

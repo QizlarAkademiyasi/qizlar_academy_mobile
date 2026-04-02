@@ -10,13 +10,7 @@ import 'package:qizlar_academy_mobile/config/settings/settings_data_source.dart'
 typedef ThemeDataBuilder = ThemeData Function(BuildContext context);
 
 class AppOptions extends Equatable {
-  const AppOptions(
-    this._settingsDataSource, {
-    required this.locale,
-    required this.themeMode,
-    required this.themeLightData,
-    required this.themeDarkData,
-  });
+  const AppOptions(this._settingsDataSource, {required this.locale, required this.themeMode, required this.themeLightData, required this.themeDarkData});
 
   factory AppOptions.fromSettings(SettingsDataSource settingsDataSource) {
     return AppOptions(
@@ -42,20 +36,12 @@ class AppOptions extends Equatable {
       case ThemeMode.dark:
         brightness = Brightness.dark;
       case ThemeMode.system:
-        brightness =
-            WidgetsBinding.instance.platformDispatcher.platformBrightness;
+        brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
     }
-    return brightness == Brightness.dark
-        ? SystemUiOverlayStyle.dark
-        : SystemUiOverlayStyle.light;
+    return brightness == Brightness.dark ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light;
   }
 
-  AppOptions copyWith({
-    Locale? locale,
-    ThemeMode? themeMode,
-    ThemeDataBuilder? themeLightData,
-    ThemeDataBuilder? themeDarkData,
-  }) => AppOptions(
+  AppOptions copyWith({Locale? locale, ThemeMode? themeMode, ThemeDataBuilder? themeLightData, ThemeDataBuilder? themeDarkData}) => AppOptions(
     _settingsDataSource,
     locale: locale ?? this.locale,
     themeMode: themeMode ?? this.themeMode,
@@ -64,30 +50,22 @@ class AppOptions extends Equatable {
   );
 
   static AppOptions of(BuildContext context) {
-    final scope = context
-        .dependOnInheritedWidgetOfExactType<_ModelBindingScope>()!;
+    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope>()!;
     return scope.modelBindingState.currentModel;
   }
 
   static void update(BuildContext context, AppOptions newModel) {
-    final scope = context
-        .dependOnInheritedWidgetOfExactType<_ModelBindingScope>()!;
+    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope>()!;
     scope.modelBindingState.updateModel(newModel);
   }
 
   static ThemeData darkThemeData(BuildContext context) {
-    final base = ThemeData(
-      useMaterial3: true,
-      colorScheme: AppColors.darkColorScheme,
-      brightness: Brightness.dark,
-    );
+    final base = ThemeData(useMaterial3: true, colorScheme: AppColors.darkColorScheme, brightness: Brightness.dark);
     final textTheme = context.textTheme.theme;
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.darkBackground,
       textTheme: textTheme,
-      textSelectionTheme: const TextSelectionThemeData(
-        cursorColor: AppColors.white,
-      ),
+      textSelectionTheme: const TextSelectionThemeData(cursorColor: AppColors.white),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.darkBackground,
         surfaceTintColor: Colors.transparent,
@@ -96,9 +74,7 @@ class AppOptions extends Equatable {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.darkBackground,
         indicatorColor: AppColors.primary,
-        indicatorShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
-        ),
+        indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.darkBackground,
@@ -113,48 +89,27 @@ class AppOptions extends Equatable {
         backgroundColor: Colors.transparent,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       ),
       dropdownMenuTheme: DropdownMenuThemeData(
-        menuStyle: MenuStyle(
-          backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),
-          surfaceTintColor: WidgetStateProperty.all(AppColors.darkBackground),
-        ),
+        menuStyle: MenuStyle(backgroundColor: WidgetStateProperty.all(AppColors.darkBackground), surfaceTintColor: WidgetStateProperty.all(AppColors.darkBackground)),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        },
-      ),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder(), TargetPlatform.iOS: CupertinoPageTransitionsBuilder()}),
     );
   }
 
   static ThemeData lightThemeData(BuildContext context) {
-    final base = ThemeData(
-      useMaterial3: true,
-      colorScheme: AppColors.lightColorScheme,
-      brightness: Brightness.light,
-    );
+    final base = ThemeData(useMaterial3: true, colorScheme: AppColors.lightColorScheme, brightness: Brightness.light);
     final textTheme = context.textTheme.theme;
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.lightBackground,
       textTheme: textTheme,
-      textSelectionTheme: const TextSelectionThemeData(
-        cursorColor: AppColors.primary,
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primary,
-        surfaceTintColor: Colors.transparent,
-      ),
+      textSelectionTheme: const TextSelectionThemeData(cursorColor: AppColors.primary),
+      appBarTheme: const AppBarTheme(backgroundColor: AppColors.lightBackground, surfaceTintColor: Colors.transparent),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.lightBackground,
         indicatorColor: AppColors.primary,
-        indicatorShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
-        ),
+        indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.lightBackground,
@@ -165,35 +120,18 @@ class AppOptions extends Equatable {
         showSelectedLabels: true,
         showUnselectedLabels: true,
       ),
-      tabBarTheme: TabBarThemeData(
-        indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: Colors.transparent,
-        labelColor: AppColors.white,
-        unselectedLabelColor: AppColors.lightText,
-      ),
+      tabBarTheme: TabBarThemeData(indicatorSize: TabBarIndicatorSize.tab, dividerColor: Colors.transparent, labelColor: AppColors.white, unselectedLabelColor: AppColors.lightText),
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.transparent,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       ),
       dropdownMenuTheme: DropdownMenuThemeData(
-        inputDecorationTheme: const InputDecorationTheme(
-          fillColor: AppColors.black,
-        ),
-        menuStyle: MenuStyle(
-          backgroundColor: WidgetStateProperty.all(AppColors.primary),
-          surfaceTintColor: WidgetStateProperty.all(AppColors.primary),
-        ),
+        inputDecorationTheme: const InputDecorationTheme(fillColor: AppColors.black),
+        menuStyle: MenuStyle(backgroundColor: WidgetStateProperty.all(AppColors.primary), surfaceTintColor: WidgetStateProperty.all(AppColors.primary)),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        },
-      ),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder(), TargetPlatform.iOS: CupertinoPageTransitionsBuilder()}),
     );
   }
 
@@ -202,10 +140,7 @@ class AppOptions extends Equatable {
 }
 
 class _ModelBindingScope extends InheritedWidget {
-  const _ModelBindingScope({
-    required this.modelBindingState,
-    required super.child,
-  });
+  const _ModelBindingScope({required this.modelBindingState, required super.child});
 
   final _ModelBindingState modelBindingState;
 
@@ -214,11 +149,7 @@ class _ModelBindingScope extends InheritedWidget {
 }
 
 class ModelBinding extends StatefulWidget {
-  const ModelBinding({
-    super.key,
-    required this.initialModel,
-    required this.builder,
-  });
+  const ModelBinding({super.key, required this.initialModel, required this.builder});
 
   final AppOptions initialModel;
   final WidgetBuilder builder;
@@ -240,17 +171,14 @@ class _ModelBindingState extends State<ModelBinding> {
   }
 
   void _setupListeners() {
-    _themeModeSubscription = currentModel._settingsDataSource.themeModeStream
-        .listen((themeMode) {
-          if (themeMode != currentModel.themeMode) {
-            setState(() {
-              currentModel = currentModel.copyWith(themeMode: themeMode);
-            });
-          }
+    _themeModeSubscription = currentModel._settingsDataSource.themeModeStream.listen((themeMode) {
+      if (themeMode != currentModel.themeMode) {
+        setState(() {
+          currentModel = currentModel.copyWith(themeMode: themeMode);
         });
-    _localeSubscription = currentModel._settingsDataSource.localeStream.listen((
-      locale,
-    ) {
+      }
+    });
+    _localeSubscription = currentModel._settingsDataSource.localeStream.listen((locale) {
       if (locale != currentModel.locale) {
         setState(() {
           currentModel = currentModel.copyWith(locale: locale);

@@ -1,7 +1,18 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/config/constants/app_radius.dart';
+import 'package:qizlar_academy_mobile/config/constants/colors.dart';
+import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 
-enum _PrimaryButtonType { elevated, icon, text }
+enum _PrimaryButtonType { elevated, text }
+
+/// Asosiy tugma shakli: stadion (pill) yoki yumaloq to‘rtburchak ([RoundedRectangleBorder]).
+enum AppPrimaryButtonShape {
+  /// `StadiumBorder` — tugma ikki uchidan to‘liq yumaloq.
+  stadium,
+
+  /// [borderRadius] (standart: [AppRadius.radius3xl]) bo‘yicha yumaloq burchaklar.
+  roundedRectangle,
+}
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton.elevated({
@@ -18,23 +29,9 @@ class PrimaryButton extends StatelessWidget {
     this.padding,
     this.height = 56,
     this.expand = true,
+    this.shape = AppPrimaryButtonShape.stadium,
+    this.borderRadius,
   }) : _type = _PrimaryButtonType.elevated;
-
-  const PrimaryButton.icon({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    required this.leading,
-    this.isEnabled = true,
-    this.isLoading = false,
-    this.backgroundColor,
-    this.foregroundColor,
-    this.borderColor,
-    this.textStyle,
-    this.padding,
-    this.height = 56,
-    this.expand = true,
-  }) : _type = _PrimaryButtonType.icon;
 
   const PrimaryButton.text({
     super.key,
@@ -50,6 +47,8 @@ class PrimaryButton extends StatelessWidget {
     this.padding,
     this.height = 44,
     this.expand = false,
+    this.shape = AppPrimaryButtonShape.stadium,
+    this.borderRadius,
   }) : _type = _PrimaryButtonType.text;
 
   final _PrimaryButtonType _type;
@@ -65,6 +64,21 @@ class PrimaryButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double height;
   final bool expand;
+  final AppPrimaryButtonShape shape;
+  final BorderRadius? borderRadius;
+
+  OutlinedBorder _buttonShape(Color resolvedBorder) {
+    final side = BorderSide(color: resolvedBorder);
+    switch (shape) {
+      case AppPrimaryButtonShape.stadium:
+        return StadiumBorder(side: side);
+      case AppPrimaryButtonShape.roundedRectangle:
+        return RoundedRectangleBorder(
+          borderRadius: borderRadius ?? AppRadius.radius3xl,
+          side: side,
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +100,10 @@ class PrimaryButton extends StatelessWidget {
 
     final child = isLoading
         ? SizedBox(
-            width: 18,
-            height: 18,
+            width: 22,
+            height: 22,
             child: CircularProgressIndicator(
-              strokeWidth: 2,
+              strokeWidth: 2.5,
               color: resolvedForeground,
             ),
           )
@@ -97,7 +111,7 @@ class PrimaryButton extends StatelessWidget {
             mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (_type == _PrimaryButtonType.icon && leading != null) ...[
+              if (leading != null) ...[
                 leading!,
                 const SizedBox(width: 10),
               ],
@@ -113,6 +127,11 @@ class PrimaryButton extends StatelessWidget {
         : null;
 
     if (_type == _PrimaryButtonType.text) {
+      final OutlinedBorder textShape = shape == AppPrimaryButtonShape.roundedRectangle
+          ? RoundedRectangleBorder(
+              borderRadius: borderRadius ?? AppRadius.radiusLg,
+            )
+          : const StadiumBorder();
       return Bounce(
         child: TextButton(
           onPressed: handler,
@@ -123,7 +142,7 @@ class PrimaryButton extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             foregroundColor: resolvedForeground,
             overlayColor: resolvedForeground.withValues(alpha: 0.08),
-            shape: const StadiumBorder(),
+            shape: textShape,
           ),
           child: child,
         ),
@@ -143,7 +162,7 @@ class PrimaryButton extends StatelessWidget {
           backgroundColor: resolvedBackground,
           disabledBackgroundColor: resolvedBackground.withValues(alpha: 0.55),
           foregroundColor: resolvedForeground,
-          shape: StadiumBorder(side: BorderSide(color: resolvedBorder)),
+          shape: _buttonShape(resolvedBorder),
         ),
         child: child,
       ),

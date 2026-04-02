@@ -1,5 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/components/sign_in_phone_field.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/sign_in_screen_mixin.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -24,7 +26,7 @@ class _SignInScreenState extends State<SignInScreen>
 
   void _onPhoneChanged(String value) {
     final onlyDigits = value.replaceAll(RegExp(r'[^0-9]'), '');
-    final isValid = onlyDigits.length == 9;
+    final isValid = onlyDigits.length == SignInPhoneField.nationalDigitsLength;
     if (_isPhoneValid == isValid) return;
     setState(() => _isPhoneValid = isValid);
   }
@@ -73,14 +75,14 @@ class _SignInScreenState extends State<SignInScreen>
               _buildBackButton(context),
               const SizedBox(height: 24),
               Text(
-                'Kirish',
+                context.l10n.signInTitle,
                 style: context.textTheme.heading3.copyWith(
                   color: context.appColors.text,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Telefon raqamingizni kiriting',
+                context.l10n.signInSubtitle,
                 style: context.textTheme.bodyLargeRegular.copyWith(
                   color: context.appColors.secondaryGrey,
                 ),
@@ -95,7 +97,7 @@ class _SignInScreenState extends State<SignInScreen>
               Transform.translate(
                 offset: Offset(0, -liftOffset),
                 child: PrimaryButton.elevated(
-                  label: 'Boshlash',
+                  label: context.l10n.signInStart,
                   onPressed: (_isPhoneValid && !_isSendingOtp)
                       ? _onStartTap
                       : null,
@@ -147,7 +149,7 @@ class _SignInScreenState extends State<SignInScreen>
         Expanded(child: Divider(color: context.appColors.stroke, thickness: 1)),
         const SizedBox(width: 12),
         Text(
-          'yoki',
+          context.l10n.orDivider,
           style: context.textTheme.bodyMediumMedium.copyWith(
             color: context.appColors.secondaryGrey,
           ),
@@ -166,19 +168,18 @@ class _SignInScreenState extends State<SignInScreen>
         spacing: 2,
         children: [
           Text(
-            'Davom etib siz',
+            context.l10n.termsPrefix,
             style: context.textTheme.bodyMediumRegular.copyWith(
               color: context.appColors.secondaryGrey,
             ),
           ),
           PrimaryButton.text(
-            label: 'Foydalanuvchi shartlari',
+            label: context.l10n.termsLink,
             onPressed: () {
               AppToast.info(
                 context,
-                title: 'Tez orada',
-                message:
-                    'Foydalanuvchi shartlari sahifasi keyingi bosqichda ochiladi.',
+                title: context.l10n.comingSoonTitle,
+                message: context.l10n.termsComingSoonMessage,
               );
             },
             height: 24,
@@ -188,7 +189,7 @@ class _SignInScreenState extends State<SignInScreen>
             ),
           ),
           Text(
-            'ga rozilik bildirasiz.',
+            context.l10n.termsSuffix,
             style: context.textTheme.bodyMediumRegular.copyWith(
               color: context.appColors.secondaryGrey,
             ),

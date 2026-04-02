@@ -4,7 +4,6 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_state.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
-import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/bloc/home_bloc.dart';
@@ -19,48 +18,18 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with HomeScreenMixin<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with HomeScreenMixin<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
-  static const List<StoryModel> _skeletonCategories = [
-    StoryModel(id: 's1', name: 'Arab tili', imageUrl: '', thumbnailUrl: ''),
-    StoryModel(id: 's2', name: 'Tikuvchilik', imageUrl: '', thumbnailUrl: ''),
-    StoryModel(id: 's3', name: 'Pazandachilik', imageUrl: '', thumbnailUrl: ''),
-    StoryModel(id: 's4', name: 'Psixologiya', imageUrl: '', thumbnailUrl: ''),
-  ];
-  static const HomeStatsModel _skeletonStats = HomeStatsModel(
-    coins: 1200,
-    grade: 12,
-    rating: 8,
-    lastLessonCategory: 'Arab tili',
-    lastLessonProgress: 0.6,
-  );
+  static const HomeStatsModel _skeletonStats = HomeStatsModel(coins: 1200, grade: 12, rating: 8, lastLessonCategory: 'Arab tili', lastLessonProgress: 0.6);
   static const List<CourseModel> _skeletonCourses = [
-    CourseModel(
-      id: 'c1',
-      title: 'Arab tiliga kirish',
-      author: 'Mentor',
-      imageUrl: '',
-      durationHours: 24,
-      studentCount: 1000,
-    ),
-    CourseModel(
-      id: 'c2',
-      title: 'Ayollar psixologiyasi',
-      author: 'Mentor',
-      imageUrl: '',
-      durationHours: 16,
-      studentCount: 740,
-    ),
+    CourseModel(id: 'c1', title: 'Arab tiliga kirish', author: 'Mentor', imageUrl: '', durationHours: 24, studentCount: 1000),
+    CourseModel(id: 'c2', title: 'Ayollar psixologiyasi', author: 'Mentor', imageUrl: '', durationHours: 16, studentCount: 740),
   ];
-  static const List<BannerModel> _skeletonBanners = [
-    BannerModel(
-      id: 'b1',
-      title: 'Skleton Banner Titli',
-      subtitle: 'Skleton Banner uzunroq matni',
-      imageUrl: '',
-    ),
-  ];
+  static const List<BannerModel> _skeletonBanners = [BannerModel(id: 'b1', title: 'Skleton Banner Titli', subtitle: 'Skleton Banner uzunroq matni', imageUrl: '')];
+
+  Widget _staggeredSection({required int position, required Widget child}) {
+    return AppStaggeredListItem(position: position, child: child);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +40,7 @@ class _HomeScreenState extends State<HomeScreen>
         return BlocConsumer<HomeBloc, HomeState>(
           listener: homeBlocListener,
           builder: (context, state) {
-            final isLoading =
-                state.status == HomeStatus.initial ||
-                state.status == HomeStatus.loading;
+            final isLoading = state.status == HomeStatus.initial || state.status == HomeStatus.loading;
 
             return Scaffold(
               backgroundColor: context.theme.scaffoldBackgroundColor,
@@ -85,63 +52,73 @@ class _HomeScreenState extends State<HomeScreen>
                   },
                   child: NotificationListener<UserScrollNotification>(
                     onNotification: (notification) {
-                      bool shouldAnimate =
-                          _scrollController.hasClients &&
-                          _scrollController.offset.isFinite &&
-                          _scrollController.offset <= 1.8 * kToolbarHeight;
+                      bool shouldAnimate = _scrollController.hasClients && _scrollController.offset.isFinite && _scrollController.offset <= 1.8 * kToolbarHeight;
                       if (!shouldAnimate) return false;
                       if (notification.direction == ScrollDirection.idle) {
-                        bool isToTop =
-                            _scrollController.offset <= 0.8 * kToolbarHeight;
-                        _scrollController.animateTo(
-                          isToTop ? 0 : 1.8 * kToolbarHeight,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOut,
-                        );
+                        bool isToTop = _scrollController.offset <= 0.8 * kToolbarHeight;
+                        _scrollController.animateTo(isToTop ? 0 : 1.8 * kToolbarHeight, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                       }
                       return false;
                     },
-                    child: CustomScrollView(
-                      controller: _scrollController,
-                      slivers: [
-                        StoryBarWidget(
-                          scrollController: _scrollController,
-                          isLoading: isLoading,
-                          list: isLoading ? _skeletonCategories : state.categories,
-                          appBar: buildHeader(context, resolveUserName()),
-                        ),
-                        if (isAnonymous)
-                          SliverToBoxAdapter(
-                            child: buildGuestCard(context),
-                          ),
-                        if (!isAnonymous) ...[
-                          const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                          SliverToBoxAdapter(
-                            child: buildStatsSection(
+                    child: AppStaggeredScrollLimiter(
+                      child: CustomScrollView(
+                        controller: _scrollController,
+                        slivers: [
+                          StoryBarWidget(
+                            scrollController: _scrollController,
+                            isLoading: state.categoriesLoading,
+                            list: state.categories,
+                            onNotificationTap: () => onNotificationTap(context),
+                            appBar: buildHeader(
                               context,
-                              state.homeStats ?? _skeletonStats,
-                              isLoading: isLoading,
+                              userGreetingName: state.userGreetingName,
                             ),
                           ),
+                          if (isAnonymous)
+                            SliverToBoxAdapter(
+                              child: _staggeredSection(
+                                position: 0,
+                                child: buildGuestCard(context),
+                              ),
+                            ),
+                          if (!isAnonymous) ...[
+                            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                            SliverToBoxAdapter(
+                              child: _staggeredSection(
+                                position: 0,
+                                child: buildStatsSection(
+                                  context,
+                                  state.homeStats ?? _skeletonStats,
+                                  isLoading: isLoading,
+                                ),
+                              ),
+                            ),
+                          ],
+                          const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                          SliverToBoxAdapter(
+                            child: _staggeredSection(
+                              position: 1,
+                              child: buildBannersSection(
+                                context,
+                                isLoading ? _skeletonBanners : state.banners,
+                                isLoading: isLoading,
+                              ),
+                            ),
+                          ),
+                          const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                          SliverToBoxAdapter(
+                            child: _staggeredSection(
+                              position: 2,
+                              child: buildCoursesSection(
+                                context,
+                                isLoading ? _skeletonCourses : state.courses,
+                                isLoading: isLoading,
+                              ),
+                            ),
+                          ),
+                          const SliverToBoxAdapter(child: SizedBox(height: 100)),
                         ],
-                        const SliverToBoxAdapter(child: SizedBox(height: 20)),
-                        SliverToBoxAdapter(
-                          child: buildBannersSection(
-                            context,
-                            isLoading ? _skeletonBanners : state.banners,
-                            isLoading: isLoading,
-                          ),
-                        ),
-                        const SliverToBoxAdapter(child: SizedBox(height: 20)),
-                        SliverToBoxAdapter(
-                          child: buildCoursesSection(
-                            context,
-                            isLoading ? _skeletonCourses : state.courses,
-                            isLoading: isLoading,
-                          ),
-                        ),
-                        const SliverToBoxAdapter(child: SizedBox(height: 100)),
-                      ],
+                      ),
                     ),
                   ),
                 ),

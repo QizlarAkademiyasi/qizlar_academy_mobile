@@ -22,7 +22,7 @@ class TokenRefreshInterceptor extends Interceptor {
     }
 
     final requestOptions = err.requestOptions;
-    final bool isRefreshCall = requestOptions.path == Apis.authRefresh;
+    final bool isRefreshCall = requestOptions.path == AnonymousApis.authRefresh;
     final bool skipRefresh = requestOptions.extra[skipAuthRefresh] == true;
     final bool hasRetried = requestOptions.extra[_retryKey] == true;
 

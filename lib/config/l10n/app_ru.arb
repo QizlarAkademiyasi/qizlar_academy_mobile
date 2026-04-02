@@ -1,1 +1,344 @@
-{}
+{
+  "@@locale": "ru",
+  "appTitle": "Академия Qizlar",
+  "signInTitle": "Вход",
+  "signInSubtitle": "Введите номер телефона",
+  "signInStart": "Начать",
+  "orDivider": "или",
+  "termsPrefix": "Продолжая, вы принимаете",
+  "termsLink": "Пользовательское соглашение",
+  "termsSuffix": ".",
+  "comingSoonTitle": "Скоро",
+  "termsComingSoonMessage": "Страница условий откроется в следующем обновлении.",
+  "signInPhoneTitle": "Номер телефона",
+  "signInPhoneIncompleteMessage": "Пожалуйста, введите полный номер телефона.",
+  "authPhoneOperatorRestrictedMessage": "Этот номер не поддерживается для SMS.",
+  "authOtpTooManyRequestsMessage": "Слишком много попыток. Подождите немного и попробуйте снова.",
+  "connectionErrorMessage": "Ошибка соединения. Попробуйте ещё раз.",
+  "googleSignInErrorMessage": "Не удалось войти через Google. Попробуйте ещё раз.",
+  "telegramSignInComingSoonMessage": "Вход через Telegram будет доступен позже.",
+  "signInWithGoogle": "Войти через Google",
+  "signInWithTelegram": "Войти через Telegram",
+  "registerTitle": "Личные данные",
+  "registerSubtitle": "Введите личные данные",
+  "firstNameHint": "Имя",
+  "lastNameHint": "Фамилия",
+  "registerContinue": "Продолжить",
+  "enterFirstName": "Введите имя",
+  "enterLastName": "Введите фамилию",
+  "saveProfileErrorMessage": "Не удалось сохранить данные. Попробуйте ещё раз.",
+  "verificationTitle": "Код подтверждения",
+  "verificationCodeSentTo": "Код подтверждения отправлен на номер {phone}.",
+  "resendCode": "Отправить код снова",
+  "resending": "Отправка…",
+  "resendCodeCountdown": "Повторная отправка: {time}",
+  "otpDigitsOnlyMessage": "Код должен содержать только цифры.",
+  "otpInvalidOrExpiredMessage": "Неверный код или срок его действия истёк.",
+  "otpSentAgain": "Код подтверждения отправлен повторно.",
+  "mainTabHome": "Главная",
+  "mainTabCourses": "Курсы",
+  "mainTabLeaderboard": "Лидеры",
+  "mainTabProfile": "Профиль",
+  "guestSignInCta": "Войти",
+  "homeWelcomeGuestTitle": "Добро пожаловать!",
+  "homeWelcomeGuestSubtitle": "в Академию Qizlar",
+  "homeWelcomeBack": "Добро пожаловать!",
+  "homeRegisteredUserFallback": "Зарегистрированный пользователь",
+  "homePopularCourses": "Популярные курсы",
+  "homeGuestCoursesGate": "Зарегистрируйтесь, чтобы полностью смотреть курсы",
+  "homeGuestNotificationsGate": "Зарегистрируйтесь для уведомлений",
+  "homeLoadErrorMessage": "Ошибка соединения. Попробуйте ещё раз.",
+  "coursesAllTitle": "Все курсы",
+  "coursesSearchHint": "Поиск курсов…",
+  "coursesNoResults": "Подходящих курсов нет",
+  "coursesNotificationsComingSoonMessage": "Раздел уведомлений скоро появится.",
+  "coursesLastViewed": "Недавно просмотренные",
+  "coursesInProgress": "В процессе",
+  "courseEnroll": "Записаться на курс",
+  "courseEnrollConfirmTitle": "Записаться на курс?",
+  "courseEnrollConfirmBody": "После записи вы сможете открывать и смотреть все доступные уроки.",
+  "courseEnrollConfirmPrimary": "Записаться",
+  "courseEnrollConfirmCancel": "Отмена",
+  "courseGuestFirstLessonCta": "Смотреть первый урок",
+  "courseGuestMoreLessonsTitle": "Войдите для остальных уроков",
+  "courseGuestMoreLessonsBody": "Гости могут смотреть только первый урок. Войдите, чтобы открыть весь курс.",
+  "courseContinue": "Продолжить",
+  "courseTabLessons": "Уроки ({count})",
+  "courseTabInfo": "О курсе",
+  "courseTabReviews": "Отзывы ({count})",
+  "lessonEmpty": "Пока нет доступных уроков",
+  "lessonBackTooltip": "Назад",
+  "lessonProgress": "Урок {current} из {total}",
+  "lessonCompleted": "Выполнено",
+  "lessonMarkComplete": "Завершить урок",
+  "coursePillTabLessons": "Уроки",
+  "coursePillTabInfo": "О курсе",
+  "coursePillTabReviews": "Отзывы",
+  "lessonQuizTestRowTitle": "Тест",
+  "lessonQuizGoToTest": "Перейти к тесту",
+  "lessonQuizTitle": "Тест",
+  "lessonQuizQuestionLabel": "Вопрос",
+  "lessonQuizQuestionProgress": "{current}/{total}",
+  "@lessonQuizQuestionProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonQuizPercentComplete": "{percent}% завершено",
+  "@lessonQuizPercentComplete": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonQuizTypeSingle": "Один вариант",
+  "lessonQuizTypeMultiple": "Несколько вариантов",
+  "lessonQuizMark": "Отметить",
+  "lessonQuizNext": "Далее",
+  "lessonQuizFinish": "Завершить",
+  "lessonQuizExitTitle": "Выйти из теста?",
+  "lessonQuizExitBody": "Если выйти сейчас, результаты не сохранятся.",
+  "lessonQuizExitStay": "Остаться",
+  "lessonQuizExitLeave": "Выйти",
+  "lessonQuizResultGreat": "Отличный результат!",
+  "lessonQuizResultPoor": "Результат неудовлетворительный",
+  "lessonQuizStatCorrect": "Верно",
+  "lessonQuizStatWrong": "Ошибки",
+  "lessonQuizStatTime": "Время",
+  "lessonQuizContinue": "Продолжить",
+  "lessonQuizErrorEmpty": "Для этого урока пока нет теста.",
+  "lessonQuizErrorLoad": "Не удалось загрузить тест.",
+  "lessonQuizErrorCheck": "Не удалось проверить ответ.",
+  "lessonQuizErrorSubmit": "Не удалось отправить тест.",
+  "lessonQuizErrorGeneric": "Что-то пошло не так.",
+  "lessonQuizAlreadyTaken": "Вы уже прошли этот тест. Повторная попытка недоступна.",
+  "leaderboardTitle": "Лидеры",
+  "leaderboardSubtitle": "Рейтинг лучших учеников",
+  "leaderboardTabOverall": "Общий",
+  "leaderboardTabWeekly": "Неделя",
+  "leaderboardTabMonthly": "Месяц",
+  "leaderboardSelectCourse": "Выберите курс",
+  "leaderboardFullRanking": "Полный рейтинг",
+  "leaderboardNoCourses": "Курсов пока нет",
+  "refresh": "Обновить",
+  "leaderboardNoRatingYet": "По этому курсу пока нет рейтинга",
+  "promotionTitle": "Участвуйте и вы!",
+  "promotionSubtitle": "Завершайте курсы и зарабатывайте баллы",
+  "promotionStart": "Начать",
+  "profileStatCourses": "Курсы",
+  "profileStatCertificates": "Сертификаты",
+  "profileStatRating": "Рейтинг",
+  "profileStatPoints": "Баллы",
+  "profileMenuCertificates": "Мои сертификаты",
+  "profileMenuMyCourses": "Мои курсы",
+  "profileMenuMyActivity": "Моя активность",
+  "profileMenuProfileInfo": "Данные профиля",
+  "profileMenuLanguage": "Язык",
+  "profileMenuShareApp": "Поделиться приложением",
+  "profileMenuAbout": "О нас",
+  "profileMenuHelp": "Центр помощи",
+  "profileMenuPrivacy": "Политика конфиденциальности",
+  "profileSectionAccount": "АККАУНТ",
+  "profileCertificatesCountSubtitle": "{count} сертификатов",
+  "@profileCertificatesCountSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileActiveCoursesCountSubtitle": "{count} активных курсов",
+  "@profileActiveCoursesCountSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSectionSettings": "НАСТРОЙКИ",
+  "profileSectionGeneral": "ОБЩЕЕ",
+  "profileNotifications": "Уведомления",
+  "profileNotificationsSubtitle": "Push-уведомления",
+  "profileDarkMode": "Тёмная тема",
+  "profileDarkModeSubtitle": "Тёмный интерфейс",
+  "profileLogout": "Выйти",
+  "profileLogoutConfirmTitle": "Выйти из приложения?",
+  "profileLogoutConfirmBody": "Мы будем ждать вас на новых уроках.\nВыйти из системы сейчас?",
+  "profileLogoutStay": "Остаться",
+  "profileVersion": "Версия {version}",
+  "profileDataMissing": "Данные профиля недоступны.",
+  "profileInformationTitle": "Редактирование",
+  "profileInformationSave": "Сохранить",
+  "profileInformationSaveSuccess": "Профиль обновлён",
+  "profileInformationNameRequired": "Введите имя и фамилию",
+  "profileInformationNoChanges": "Нет изменений для сохранения",
+  "profileInformationPhotoUploadFailed": "Не удалось загрузить фото. Попробуйте снова.",
+  "profileInformationPhotoPermissionDenied": "Доступ к фото отключён. Включите его в настройках.",
+  "profileInformationPhotoPickFailed": "Не удалось выбрать фото. Попробуйте снова.",
+  "profileInformationStatusTitle": "Статус профиля",
+  "profileInformationPhoneLabel": "Номер телефона",
+  "profileInformationPhoneNationalHint": "XX XXX XX XX",
+  "aboutBrandTitle": "QIZLAR AKADEMIYASI",
+  "aboutSectionProjectTitle": "О проекте Qizlar Academy",
+  "aboutProjectLead": "Qizlar Academy",
+  "aboutProjectBody": " — интерактивная платформа с бесплатными учебными курсами для женщин и девушек всех возрастов. Платформа объединяет направления: здоровье, современные профессии, ремёсла, образование, предпринимательство, психология и право. Зарегистрируйтесь и развивайте знания и навыки в разных сферах.",
+  "aboutSectionSupportersTitle": "Нас поддерживают",
+  "aboutSupporterSadullaName": "Алишер Садуллаев",
+  "aboutSupporterSadullaRole": "Директор Агентства по делам молодёжи Республики Узбекистан",
+  "aboutSupporterKattaxonName": "Дилноза Каттаханова",
+  "aboutSupporterKattaxonRole": "Первый заместитель директора Агентства по делам молодёжи. Доктор философии по политическим наукам",
+  "aboutSectionSocialTitle": "Социальные сети",
+  "aboutSocialInstagramTitle": "Instagram",
+  "aboutSocialInstagramSubtitle": "Официальный канал Qizlar Academy в Instagram",
+  "aboutSocialTelegramTitle": "Telegram",
+  "aboutSocialTelegramSubtitle": "Официальный канал Qizlar Academy в Telegram",
+  "aboutSocialYoutubeTitle": "YouTube",
+  "aboutSocialYoutubeSubtitle": "Официальный канал Qizlar Academy на YouTube",
+  "aboutUsLoadError": "Не удалось загрузить данные. Попробуйте снова.",
+  "aboutUsLinkOpenError": "Не удалось открыть ссылку.",
+  "guestGateNotificationSettings": "Зарегистрируйтесь, чтобы настроить уведомления",
+  "guestGateSaveSettings": "Зарегистрируйтесь, чтобы сохранить настройки",
+  "guestGateProfileFeatures": "Зарегистрируйтесь для функций профиля",
+  "profileAppLanguageTitle": "Язык приложения",
+  "languageUzbek": "Узбекский",
+  "languageRussian": "Русский",
+  "languageEnglish": "Английский",
+  "notificationsTitle": "Уведомления",
+  "notificationsEmpty": "Пока нет уведомлений",
+  "notificationsEmptySubtitle": "Новые сообщения появятся здесь.",
+  "guestGateMarkAllRead": "Зарегистрируйтесь, чтобы отметить всё прочитанным",
+  "guestGateManageNotifications": "Зарегистрируйтесь, чтобы управлять уведомлениями",
+  "guestModeTitle": "Гостевой режим",
+  "guestModeDescription": "Создайте аккаунт или войдите, чтобы пользоваться всеми возможностями.",
+  "errorGeneric": "Произошла ошибка",
+  "retry": "Повторить",
+  "homeGuestCardSignIn": "Войти",
+  "myCoursesTitle": "Мои курсы",
+  "myCoursesRatingReviewsLine": "{rating} ({reviewsCount} отзывов)",
+  "@myCoursesRatingReviewsLine": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "reviewsCount": {
+        "type": "String"
+      }
+    }
+  },
+  "myCoursesDurationHours": "{hours} ч",
+  "@myCoursesDurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "myCoursesEmptyTitle": "Пока нет курсов",
+  "myCoursesEmptySubtitle": "Запишитесь на курс — он появится здесь.",
+  "myCoursesLoadError": "Не удалось загрузить курсы. Попробуйте снова.",
+  "myCoursesLoadMoreError": "Не удалось подгрузить. Прокрутите ещё раз.",
+  "certificatesBadgeGold": "Золотой сертификат",
+  "certificatesBadgeSilver": "Серебряный сертификат",
+  "certificatesBadgeBronze": "Бронзовый сертификат",
+  "certificatesView": "Смотреть",
+  "certificatesSheetHeading": "Сертификат: {courseName}",
+  "@certificatesSheetHeading": {
+    "placeholders": {
+      "courseName": {
+        "type": "String"
+      }
+    }
+  },
+  "certificatesSheetDescription": "Вы успешно завершили курс и получили сертификат. Пусть знания всегда остаются с вами!",
+  "certificatesSheetDownload": "Скачать",
+  "certificatesEmptyTitle": "Пока нет сертификатов",
+  "certificatesEmptySubtitle": "После завершения курса сертификат появится здесь.",
+  "certificatesLoadError": "Не удалось загрузить сертификаты. Попробуйте снова.",
+  "certificatesFileActionError": "Не удалось скачать или поделиться файлом.",
+  "courseReviewsSummaryCount": "{count} отзывов",
+  "@courseReviewsSummaryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "courseReviewsEmptyTitle": "Пока нет отзывов",
+  "courseReviewsEmptySubtitle": "Когда ученики оставят отзывы, они появятся здесь.",
+  "courseLeaveReviewCta": "Оставить отзыв",
+  "courseSubmitReviewTitle": "Оставить отзыв",
+  "courseSubmitReviewRateTitle": "Оцените курс",
+  "courseSubmitReviewRateSubtitle": "Что скажете о полученных знаниях и качестве уроков? Поделитесь мнением.",
+  "courseSubmitReviewYourCommentLabel": "Ваш отзыв",
+  "courseSubmitReviewCommentHint": "Вам понравился курс? Поделитесь впечатлениями",
+  "courseSubmitReviewCharCount": "{current}/{max}",
+  "@courseSubmitReviewCharCount": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "courseSubmitReviewSubmit": "Отправить отзыв",
+  "courseSubmitReviewSuccess": "Отзыв отправлен",
+  "courseSubmitReviewError": "Не удалось отправить отзыв. Попробуйте снова.",
+  "courseSubmitReviewSelectRating": "Пожалуйста, выберите оценку",
+  "reviewTimeJustNow": "Только что",
+  "reviewTimeMinutesAgo": "{count} мин. назад",
+  "@reviewTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeHoursAgo": "{count} ч. назад",
+  "@reviewTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeDaysAgo": "{count} дн. назад",
+  "@reviewTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeWeeksAgo": "{count} нед. назад",
+  "@reviewTimeWeeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeMonthsAgo": "{count} мес. назад",
+  "@reviewTimeMonthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewTimeYearsAgo": "{count} г. назад",
+  "@reviewTimeYearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

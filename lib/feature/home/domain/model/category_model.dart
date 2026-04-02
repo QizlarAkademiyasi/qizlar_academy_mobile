@@ -6,13 +6,15 @@ class StoryModel extends Equatable {
     required this.name,
     required this.imageUrl,
     required this.thumbnailUrl,
+    this.isViewed = false,
   });
 
   final String id;
   final String name;
   final String imageUrl;
   final String thumbnailUrl;
+  final bool isViewed;
 
   @override
-  List<Object?> get props => [id, name, imageUrl, thumbnailUrl];
+  List<Object?> get props => [id, name, imageUrl, thumbnailUrl, isViewed];
 }

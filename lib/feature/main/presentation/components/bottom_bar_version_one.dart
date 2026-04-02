@@ -4,7 +4,9 @@
 import 'dart:math' as math;
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
 
 Widget _buildProfileTabIcon(BuildContext context, {required bool selected}) {
   return Container(
@@ -168,14 +170,19 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
 class LiquidGlassBottomBarTab {
   const LiquidGlassBottomBarTab({
     required this.label,
-    required this.icon,
+    this.icon,
     this.selectedIcon,
+    this.iconBuilder,
     this.glowColor,
-  });
+  }) : assert(
+          icon != null || iconBuilder != null,
+          'LiquidGlassBottomBarTab requires icon or iconBuilder',
+        );
 
   final String label;
-  final IconData icon;
+  final IconData? icon;
   final IconData? selectedIcon;
+  final Widget Function(BuildContext context, Color color, double size, bool selected)? iconBuilder;
   final Color? glowColor;
 }
 
@@ -266,12 +273,12 @@ class _BottomBarTab extends StatelessWidget {
                     AnimatedScale(
                       scale: 1,
                       duration: const Duration(milliseconds: 150),
-                      child: tab.label == 'Profil'
-                          ? _buildProfileTabIcon(context, selected: selected)
+                      child: tab.iconBuilder != null
+                          ? tab.iconBuilder!(context, iconColor, 24, selected)
                           : Icon(
                               selected
-                                  ? (tab.selectedIcon ?? tab.icon)
-                                  : tab.icon,
+                                  ? (tab.selectedIcon ?? tab.icon!)
+                                  : tab.icon!,
                               color: iconColor,
                               size: 24,
                             ),
@@ -690,18 +697,27 @@ class GlassBottomNavigationVersionOne extends StatelessWidget {
   final ValueChanged<int> onTap;
   final bool fake;
 
-  static final List<LiquidGlassBottomBarTab> _tabs = [
-    const LiquidGlassBottomBarTab(
-      label: 'Bosh sahifa',
-      icon: LucideIcons.house,
-    ),
-    const LiquidGlassBottomBarTab(label: 'Kurslar', icon: LucideIcons.bookOpen),
-    const LiquidGlassBottomBarTab(
-      label: 'Peshqadamlar',
-      icon: LucideIcons.trophy,
-    ),
-    const LiquidGlassBottomBarTab(label: 'Profil', icon: LucideIcons.user),
-  ];
+  static List<LiquidGlassBottomBarTab> _tabs(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      LiquidGlassBottomBarTab(
+        label: l10n.mainTabHome,
+        iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.home(color, size, selected),
+      ),
+      LiquidGlassBottomBarTab(
+        label: l10n.mainTabCourses,
+        iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.courses(color, size, selected),
+      ),
+      LiquidGlassBottomBarTab(
+        label: l10n.mainTabLeaderboard,
+        iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.leaderboard(color, size, selected),
+      ),
+      LiquidGlassBottomBarTab(
+        label: l10n.mainTabProfile,
+        iconBuilder: (_, color, size, selected) => _buildProfileTabIcon(context, selected: selected),
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -711,7 +727,7 @@ class GlassBottomNavigationVersionOne extends StatelessWidget {
       child: Align(
         alignment: Alignment.bottomCenter,
         child: LiquidGlassBottomBar(
-          tabs: _tabs,
+          tabs: _tabs(context),
           selectedIndex: currentIndex,
           onTabSelected: onTap,
           fake: fake,

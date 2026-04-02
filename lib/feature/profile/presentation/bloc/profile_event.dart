@@ -32,12 +32,3 @@ final class ProfileDarkModeToggled extends ProfileEvent {
   @override
   List<Object?> get props => [enabled];
 }
-
-final class ProfileLanguageChanged extends ProfileEvent {
-  const ProfileLanguageChanged({required this.code});
-
-  final String code;
-
-  @override
-  List<Object?> get props => [code];
-}

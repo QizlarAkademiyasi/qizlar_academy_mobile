@@ -1,7 +1,9 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
+import 'package:qizlar_academy_mobile/core/network/auth_otp_phone_api_error.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/components/sign_in_phone_field.dart';
@@ -12,11 +14,11 @@ import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_t
 mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
   Future<void> onSignInTap({required String localPhone}) async {
     final normalizedPhone = _digitsOnly(localPhone);
-    if (normalizedPhone.length != 9) {
+    if (normalizedPhone.length != SignInPhoneField.nationalDigitsLength) {
       AppToast.warning(
         context,
-        title: 'Telefon raqam',
-        message: 'Iltimos, telefon raqamni to‘liq kiriting.',
+        title: context.l10n.signInPhoneTitle,
+        message: context.l10n.signInPhoneIncompleteMessage,
       );
       return;
     }
@@ -37,19 +39,23 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
         error: _buildDioLogPayload(error),
         stackTrace: stackTrace,
       );
-      AppToast.error(
-        context,
-        message: 'Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.',
-      );
+      if (!mounted) return;
+      final message = isAuthOtpPhoneThrottledResponse(error)
+          ? context.l10n.authOtpTooManyRequestsMessage
+          : isAuthOtpPhoneOperatorRestrictedResponse(error)
+          ? context.l10n.authPhoneOperatorRestrictedMessage
+          : context.l10n.connectionErrorMessage;
+      AppToast.error(context, message: message);
     } catch (error, stackTrace) {
       AppLogger.e(
         'Unexpected sign-in OTP request failure',
         error: error,
         stackTrace: stackTrace,
       );
+      if (!mounted) return;
       AppToast.error(
         context,
-        message: 'Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.',
+        message: context.l10n.connectionErrorMessage,
       );
     }
   }
@@ -117,8 +123,7 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
       if (mounted) {
         AppToast.error(
           context,
-          message:
-              'Google orqali kirishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.',
+          message: context.l10n.googleSignInErrorMessage,
         );
       }
     } catch (error, stackTrace) {
@@ -130,8 +135,7 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
       if (mounted) {
         AppToast.error(
           context,
-          message:
-              'Google orqali kirishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.',
+          message: context.l10n.googleSignInErrorMessage,
         );
       }
     }
@@ -139,6 +143,7 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> _navigateAfterAuth() async {
     getIt<GuestTapGateService>().reset();
+    await getIt<AuthSessionCubit>().ensureProfileGateResolved();
     if (!mounted) return;
     context.go(Routes.main);
   }
@@ -146,8 +151,8 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
   void onTelegramTap() {
     AppToast.info(
       context,
-      title: 'Tez orada',
-      message: 'Telegram orqali kirish keyingi bosqichda ulanadi.',
+      title: context.l10n.comingSoonTitle,
+      message: context.l10n.telegramSignInComingSoonMessage,
     );
   }
 
@@ -166,7 +171,7 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
   }) {
     return SignInSocialButton(
       provider: SignInSocialProvider.google,
-      label: 'Google bilan kirish',
+      label: context.l10n.signInWithGoogle,
       onPressed: onPressed ?? () => onGoogleTap(),
       isLoading: isLoading,
     );
@@ -175,7 +180,7 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
   Widget buildTelegramButton(BuildContext context) {
     return SignInSocialButton(
       provider: SignInSocialProvider.telegram,
-      label: 'Telegram bilan kirish',
+      label: context.l10n.signInWithTelegram,
       onPressed: onTelegramTap,
     );
   }

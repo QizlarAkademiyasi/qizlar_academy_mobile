@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_gap.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_margin.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_radius.dart';
@@ -36,14 +37,14 @@ class HomeGuestCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Mehmon rejimi',
+            context.l10n.guestModeTitle,
             style: context.textTheme.bodyLargeBold.copyWith(
               color: context.appColors.text,
             ),
           ),
           const SizedBox(height: AppGap.gapSm),
           Text(
-            "Barcha imkoniyatlardan foydalanish uchun akkaunt\nyarating yoki tizimga kiring.",
+            context.l10n.guestModeDescription,
             style: context.textTheme.bodySmallRegular.copyWith(
               color: AppColors.secondaryGrey.withValues(alpha: 0.9),
               height: 1.35,
@@ -65,7 +66,7 @@ class HomeGuestCard extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Kirish',
+                context.l10n.homeGuestCardSignIn,
                 style: context.textTheme.bodyMediumSemibold.copyWith(
                   color: AppColors.white,
                 ),

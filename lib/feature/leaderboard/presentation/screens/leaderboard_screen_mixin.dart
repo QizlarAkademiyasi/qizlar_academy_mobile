@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/domain/model/leaderboard_course_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/domain/model/leaderboard_user_model.dart';
@@ -26,42 +27,86 @@ mixin LeaderboardScreenMixin<T extends StatefulWidget> on State<T> {
     required String? selectedId,
   }) {
     if (options.isEmpty) return;
+    final bloc = context.read<LeaderboardBloc>();
+    final maxHeight = MediaQuery.of(context).size.height * 0.7;
     showAppBottomSheet<void>(
       context,
       child: AppBottomSheetContainer(
-        title: 'Kursni tanlang',
-        child: Container(
-          decoration: BoxDecoration(
-            color: context.appColors.onContainer.withValues(alpha: 0.9),
-            borderRadius: AppRadius.radiusXl,
-            border: Border.all(color: context.appColors.stroke),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: options.map((option) {
-              final isSelected = option.id == selectedId;
-              return ListTile(
-                title: Text(
-                  option.name,
-                  style: context.textTheme.bodyMediumSemibold.copyWith(
-                    color: context.appColors.text,
+        title: context.l10n.leaderboardSelectCourse,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxHeight),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: context.appColors.onContainer.withValues(alpha: 0.9),
+              borderRadius: AppRadius.radiusXl,
+              border: Border.all(color: context.appColors.stroke),
+            ),
+            child: ClipRRect(
+              borderRadius: AppRadius.radiusXl,
+              child: Stack(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.only(bottom: 28),
+                    itemCount: options.length,
+                    itemBuilder: (context, index) {
+                      final option = options[index];
+                      final isSelected = option.id == selectedId;
+                      return ListTile(
+                        title: Text(
+                          option.name,
+                          style: context.textTheme.bodyMediumSemibold.copyWith(
+                            color: context.appColors.text,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? Icon(
+                                LucideIcons.check,
+                                color: context.appColors.primary,
+                                size: 18,
+                              )
+                            : null,
+                        onTap: () {
+                          Navigator.pop(context);
+                          bloc.add(
+                            LeaderboardCourseSelected(courseId: option.id),
+                          );
+                        },
+                      );
+                    },
                   ),
-                ),
-                trailing: isSelected
-                    ? Icon(
-                        LucideIcons.check,
-                        color: context.appColors.primary,
-                        size: 18,
-                      )
-                    : null,
-                onTap: () {
-                  Navigator.pop(context);
-                  context.read<LeaderboardBloc>().add(
-                    LeaderboardCourseSelected(courseId: option.id),
-                  );
-                },
-              );
-            }).toList(),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: IgnorePointer(
+                      child: Container(
+                        height: 34,
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 0.1,
+                        ),
+                        alignment: Alignment.bottomCenter,
+                        decoration: BoxDecoration(
+                          borderRadius: AppRadius.radius5xl,
+                          color: context.appColors.onContainer,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Icon(
+                            LucideIcons.chevronsDown,
+                            size: 18,
+                            color: context.appColors.grey.withValues(
+                              alpha: 0.9,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -76,7 +121,15 @@ mixin LeaderboardScreenMixin<T extends StatefulWidget> on State<T> {
   void onLeaderboardUserTap(BuildContext context, LeaderboardUserModel user) {
     showAppBottomSheet<void>(
       context,
-      child: LeaderboardUserDetailsBottomSheet(user: user),
+      child: LeaderboardUserDetailsBottomSheet(
+        user: user,
+        courseName: context.read<LeaderboardBloc>().state.courseOptions
+            .where((c) => c.id == context.read<LeaderboardBloc>().state.selectedCourseId)
+            .map((c) => c.name)
+            .cast<String?>()
+            .firstWhere((_) => true, orElse: () => null) ??
+            context.l10n.leaderboardSelectCourse,
+      ),
     );
   }
 
@@ -87,14 +140,14 @@ mixin LeaderboardScreenMixin<T extends StatefulWidget> on State<T> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Peshqadamlar',
+            context.l10n.leaderboardTitle,
             style: context.textTheme.heading4.copyWith(
               color: context.appColors.text,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            'Eng yaxshi o\'quvchilar reytingi',
+            context.l10n.leaderboardSubtitle,
             style: context.textTheme.bodyMediumRegular.copyWith(
               color: context.appColors.grey,
             ),
@@ -109,9 +162,14 @@ mixin LeaderboardScreenMixin<T extends StatefulWidget> on State<T> {
     required TabController tabController,
     required ValueChanged<LeaderboardTimeframe> onChanged,
   }) {
+    final l10n = context.l10n;
     return AppSegmentedTabBar(
       controller: tabController,
-      tabLabels: const ['Umumiy', 'Haftalik', 'Oylik'],
+      tabLabels: [
+        l10n.leaderboardTabOverall,
+        l10n.leaderboardTabWeekly,
+        l10n.leaderboardTabMonthly,
+      ],
       onTap: (index) => onChanged(LeaderboardTimeframe.values[index]),
     );
   }
@@ -147,18 +205,21 @@ mixin LeaderboardScreenMixin<T extends StatefulWidget> on State<T> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'To\'liq reyting',
+          context.l10n.leaderboardFullRanking,
           style: context.textTheme.bodyLargeBold.copyWith(
             color: context.appColors.text,
           ),
         ),
         const SizedBox(height: 12),
-        ...fullList.map<Widget>(
-          (user) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: LeaderboardListItem(
-              user: user,
-              onTap: () => onUserTap(user),
+        ...fullList.asMap().entries.map<Widget>(
+          (entry) => AppStaggeredListItem(
+            position: entry.key,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: LeaderboardListItem(
+                user: entry.value,
+                onTap: () => onUserTap(entry.value),
+              ),
             ),
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:qizlar_academy_mobile/feature/profile/domain/exception/profile_r
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_language_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_menu_item_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
+import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_user_public_model.dart';
 
 class ProfileApiDatasource implements ProfileDatasource {
   const ProfileApiDatasource(this._dio);
@@ -13,7 +14,7 @@ class ProfileApiDatasource implements ProfileDatasource {
 
   @override
   Future<ProfileOverviewModel> getProfileOverview() async {
-    final response = await _dio.get<dynamic>(Apis.userMe);
+    final response = await _dio.get<dynamic>(UserApis.userMe);
     final envelope = _asMap(response.data);
     final data = _asMapOrNull(envelope['data']);
     if (data == null || data.isEmpty) {
@@ -23,20 +24,33 @@ class ProfileApiDatasource implements ProfileDatasource {
   }
 
   @override
-  Future<ProfileOverviewModel> updateDarkMode({required bool enabled}) async {
-    await _dio.patch<dynamic>(
-      Apis.userMe,
-      data: <String, dynamic>{'dark_mode': enabled},
+  Future<ProfileUserPublicModel> getUserProfileById(String id) async {
+    final response = await _dio.get<dynamic>(UserApis.userProfileById(id));
+    final envelope = _asMap(response.data);
+    final data = _asMapOrNull(envelope['data']);
+    if (data == null || data.isEmpty) {
+      throw const FormatException('Unexpected user profile payload');
+    }
+    return ProfileUserPublicModel(
+      id: (data['id'] ?? '').toString(),
+      firstname: (data['firstname'] ?? '').toString(),
+      lastname: (data['lastname'] ?? '').toString(),
+      rating: _parseInt(data['rating']),
+      certificateCount: _parseInt(data['certificateCount']),
+      enrolledCourseCount: _parseInt(data['enrolledCourseCount']),
+      badge: _parseBadgeId(data['badge']),
     );
+  }
+
+  @override
+  Future<ProfileOverviewModel> updateDarkMode({required bool enabled}) async {
+    await _dio.patch<dynamic>(UserApis.userMe, data: <String, dynamic>{'dark_mode': enabled});
     return getProfileOverview();
   }
 
   @override
   Future<ProfileOverviewModel> updateLanguage({required String code}) async {
-    await _dio.patch<dynamic>(
-      Apis.profileLanguage,
-      data: <String, dynamic>{'code': code},
-    );
+    await _dio.patch<dynamic>(UserApis.profileLanguage, data: <String, dynamic>{'code': code});
     return getProfileOverview();
   }
 
@@ -45,22 +59,49 @@ class ProfileApiDatasource implements ProfileDatasource {
     required String firstName,
     required String lastName,
   }) async {
-    await _dio.patch<dynamic>(
-      Apis.userMe,
-      data: <String, dynamic>{
-        'firstname': firstName,
-        'lastname': lastName,
-      },
-    );
+    await patchUserMe(<String, dynamic>{
+      'firstname': firstName.trim(),
+      'lastname': lastName.trim(),
+    });
     return getProfileOverview();
   }
 
   @override
+  Future<void> patchUserMe(Map<String, dynamic> body) async {
+    if (body.isEmpty) return;
+    await _dio.patch<dynamic>(UserApis.userMe, data: body);
+  }
+
+  @override
+  Future<String> uploadProfilePhoto(String localFilePath) async {
+    final segments = localFilePath.replaceAll(r'\', '/').split('/');
+    final filename = segments.isNotEmpty ? segments.last : 'photo.jpg';
+    final formData = FormData.fromMap(<String, dynamic>{
+      'file': await MultipartFile.fromFile(localFilePath, filename: filename),
+    });
+    final response = await _dio.post<dynamic>(UserApis.fileUpload, data: formData);
+    return _parseUploadedFilename(response.data);
+  }
+
+  String _parseUploadedFilename(dynamic raw) {
+    final root = _asMap(raw);
+    final dataField = root['data'];
+    if (dataField is String && dataField.trim().isNotEmpty) {
+      return dataField.trim();
+    }
+    final nested = _asMapOrNull(dataField);
+    if (nested != null) {
+      final inner = nested['data'];
+      if (inner is String && inner.trim().isNotEmpty) {
+        return inner.trim();
+      }
+    }
+    throw FormatException('Unexpected file upload payload', raw);
+  }
+
+  @override
   Future<ProfileOverviewModel> updateNotifications({required bool enabled}) async {
-    await _dio.patch<dynamic>(
-      Apis.profileNotifications,
-      data: <String, dynamic>{'enabled': enabled},
-    );
+    await _dio.patch<dynamic>(UserApis.profileNotifications, data: <String, dynamic>{'enabled': enabled});
     return getProfileOverview();
   }
 
@@ -74,79 +115,92 @@ class ProfileApiDatasource implements ProfileDatasource {
     final educationDistrict = _asMapOrNull(education?['district']);
     final educationType = (education?['type'] ?? '').toString();
     final educationOrganization = (education?['organization'] ?? '').toString();
-    final educationLocation = [
-      (educationRegion?['name'] ?? '').toString(),
-      (educationDistrict?['name'] ?? '').toString(),
-    ].where((item) => item.trim().isNotEmpty).join(', ');
+    final educationLocation = [(educationRegion?['name'] ?? '').toString(), (educationDistrict?['name'] ?? '').toString()].where((item) => item.trim().isNotEmpty).join(', ');
     final profileInfoSubtitle = [
       if (educationType.isNotEmpty) educationType,
       if (educationOrganization.isNotEmpty) educationOrganization,
       if (educationLocation.isNotEmpty) educationLocation,
     ].join(' • ');
 
+    final phoneRaw = (data['phone'] ?? data['phone_number'] ?? data['mobile'] ?? '').toString().trim();
+
+    final nestedStats = _asMapOrNull(data['stats']) ??
+        _asMapOrNull(data['statistics']) ??
+        _asMapOrNull(data['summary']);
+    final certificatesCount = _readNonNegativeInt(data, const [
+          'certificates_count',
+          'certificate_count',
+          'total_certificates',
+          'certificates_total',
+        ]) ??
+        (nestedStats != null
+            ? _readNonNegativeInt(nestedStats, const [
+                'certificates_count',
+                'certificates',
+                'certificate_count',
+                'total_certificates',
+              ])
+            : null);
+    final activeCoursesCount = _readNonNegativeInt(data, const [
+          'active_courses_count',
+          'active_courses',
+          'courses_active_count',
+          'enrolled_courses_count',
+        ]) ??
+        (nestedStats != null
+            ? _readNonNegativeInt(nestedStats, const [
+                'active_courses',
+                'active_courses_count',
+                'courses_count',
+                'enrolled_courses',
+                'total_courses',
+              ])
+            : null);
+    final ratingRaw = _readNonNegativeInt(data, const [
+          'rating',
+          'rating_value',
+          'rank',
+          'leaderboard_rank',
+          'user_rating',
+        ]) ??
+        (nestedStats != null
+            ? _readNonNegativeInt(nestedStats, const [
+                'rating',
+                'rank',
+              ])
+            : null);
+    final rating = ratingRaw ?? (points != 0 ? points : null);
+
     return ProfileOverviewModel(
       user: ProfileUserModel(
+        firstName: firstName,
+        lastName: lastName,
         fullName: fullName,
         userId: (data['id'] ?? '').toString(),
+        phoneNumber: phoneRaw,
         avatarUrl: (data['photo'] ?? '').toString(),
+        badgeId: _parseBadgeId(data['badge']),
       ),
-      stats: [
-        ProfileStatModel(value: '$points', label: 'Ballar'),
-      ],
+      stats: const [],
       bankFilters: const [],
-      achievements: const <ProfileMenuItemModel>[],
+      achievements: kDefaultProfileAchievementItems,
+      certificatesCount: certificatesCount,
+      activeCoursesCount: activeCoursesCount,
+      rating: rating,
       settings: [
-        ProfileMenuItemModel(
-          id: 'profile-info',
-          type: ProfileMenuItemType.profileInfo,
-          title: 'Profil ma\'lumotlari',
-          subtitle: profileInfoSubtitle.isEmpty ? null : profileInfoSubtitle,
-        ),
-        const ProfileMenuItemModel(
-          id: 'language',
-          type: ProfileMenuItemType.language,
-          title: 'Til',
-          subtitle: 'O\'zbekcha',
-        ),
+        ProfileMenuItemModel(id: 'profile-info', type: ProfileMenuItemType.profileInfo, title: 'Profil ma\'lumotlari', subtitle: profileInfoSubtitle.isEmpty ? null : profileInfoSubtitle),
+        const ProfileMenuItemModel(id: 'language', type: ProfileMenuItemType.language, title: 'Til', subtitle: 'O\'zbekcha'),
       ],
       general: const <ProfileMenuItemModel>[
-        ProfileMenuItemModel(
-          id: 'share',
-          type: ProfileMenuItemType.shareApp,
-          title: 'Ilovani ulashish',
-        ),
-        ProfileMenuItemModel(
-          id: 'about',
-          type: ProfileMenuItemType.aboutApp,
-          title: 'Biz haqimizda',
-        ),
-        ProfileMenuItemModel(
-          id: 'help',
-          type: ProfileMenuItemType.helpCenter,
-          title: 'Yordam markazi',
-        ),
-        ProfileMenuItemModel(
-          id: 'privacy',
-          type: ProfileMenuItemType.privacyPolicy,
-          title: 'Maxfiylik siyosati',
-        ),
+        ProfileMenuItemModel(id: 'share', type: ProfileMenuItemType.shareApp, title: 'Ilovani ulashish'),
+        ProfileMenuItemModel(id: 'about', type: ProfileMenuItemType.aboutApp, title: 'Biz haqimizda'),
+        ProfileMenuItemModel(id: 'help', type: ProfileMenuItemType.helpCenter, title: 'Yordam markazi'),
+        ProfileMenuItemModel(id: 'privacy', type: ProfileMenuItemType.privacyPolicy, title: 'Maxfiylik siyosati'),
       ],
       languageOptions: const [
-        ProfileLanguageOptionModel(
-          code: 'uz',
-          title: 'O\'zbekcha',
-          flagEmoji: '🇺🇿',
-        ),
-        ProfileLanguageOptionModel(
-          code: 'ru',
-          title: 'Русский',
-          flagEmoji: '🇷🇺',
-        ),
-        ProfileLanguageOptionModel(
-          code: 'en',
-          title: 'English',
-          flagEmoji: '🇬🇧',
-        ),
+        ProfileLanguageOptionModel(code: 'uz', title: 'O\'zbekcha', flagEmoji: '🇺🇿'),
+        ProfileLanguageOptionModel(code: 'ru', title: 'Русский', flagEmoji: '🇷🇺'),
+        ProfileLanguageOptionModel(code: 'en', title: 'English', flagEmoji: '🇬🇧'),
       ],
       selectedLanguageCode: 'uz',
       notificationsEnabled: false,
@@ -169,4 +223,22 @@ class ProfileApiDatasource implements ProfileDatasource {
   }
 
   int _parseInt(dynamic value) => int.tryParse('${value ?? 0}') ?? 0;
+
+  int _parseBadgeId(dynamic value) {
+    if (value == null) return 0;
+    final n = int.tryParse(value.toString());
+    if (n == null || n < 0) return 0;
+    return n;
+  }
+
+  int? _readNonNegativeInt(Map<String, dynamic> map, List<String> keys) {
+    for (final key in keys) {
+      if (!map.containsKey(key)) continue;
+      final raw = map[key];
+      if (raw == null) continue;
+      final n = int.tryParse(raw.toString());
+      if (n != null && n >= 0) return n;
+    }
+    return null;
+  }
 }

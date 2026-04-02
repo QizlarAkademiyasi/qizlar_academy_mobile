@@ -14,14 +14,15 @@ class ProfileStatsCard extends StatelessWidget {
         final stat = stats[index];
         return Expanded(
           child: Container(
-            height: 70,
+            height: 76,
             margin: EdgeInsets.only(right: index == stats.length - 1 ? 0 : 8),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
             decoration: BoxDecoration(
               color: context.appColors.onContainer,
               borderRadius: AppRadius.radiusLg,
               border: Border.all(color: context.appColors.stroke),
             ),
+            alignment: Alignment.center,
             child: _StatItem(stat: stat),
           ),
         );
@@ -39,17 +40,25 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           stat.value,
-          style: context.textTheme.bodyLargeBold.copyWith(
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.textTheme.heading5.copyWith(
             color: context.appColors.text,
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 4),
         Text(
           stat.label,
-          style: context.textTheme.bodyXSmallRegular.copyWith(
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: context.textTheme.bodySmallRegular.copyWith(
             color: context.appColors.secondaryGrey,
           ),
         ),

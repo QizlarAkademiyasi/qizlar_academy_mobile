@@ -1,9 +1,12 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
+import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_session_model.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/repository/auth_repository.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_state.dart';
+import 'package:qizlar_academy_mobile/feature/profile/domain/exception/profile_registration_required_exception.dart';
+import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
 
 class AuthSessionCubit extends Cubit<AuthSessionState> {
   AuthSessionCubit(this._repository) : super(const AuthSessionState.initial());
@@ -65,7 +68,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
 
   Future<void> clearSession() async {
     await _repository.clearSession();
-    emit(state.fromModel(const AuthSessionModel(userType: UserType.anonymous)));
+    emit(state.fromModel(const AuthSessionModel(userType: UserType.guest)));
   }
 
   Future<String?> refreshAccessToken() async {
@@ -73,12 +76,66 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     if ((refreshToken ?? '').isEmpty) return null;
     try {
       final model = await _repository.refreshToken(refreshToken: refreshToken!);
-      emit(state.fromModel(model));
+      emit(state.fromModel(model, resetProfileGate: false));
       return model.accessToken;
     } catch (error, stackTrace) {
       AppLogger.w('Token refresh failed', error: error, stackTrace: stackTrace);
       await clearSession();
       return null;
     }
+  }
+
+  Future<void> ensureProfileGateResolved() async {
+    if (!state.isRegistered) {
+      if (!state.profileGateResolved) {
+        emit(
+          state.copyWith(
+            profileGateResolved: true,
+            needsProfileRegistration: false,
+          ),
+        );
+      }
+      return;
+    }
+    if (state.profileGateResolved) return;
+
+    try {
+      final overview = await getIt<ProfileRepository>().getProfileOverview();
+      final needs = overview.user.firstName.trim().isEmpty;
+      emit(
+        state.copyWith(
+          profileGateResolved: true,
+          needsProfileRegistration: needs,
+        ),
+      );
+    } on ProfileRegistrationRequiredException {
+      emit(
+        state.copyWith(
+          profileGateResolved: true,
+          needsProfileRegistration: true,
+        ),
+      );
+    } catch (error, stackTrace) {
+      AppLogger.w(
+        'Profile gate check failed; allowing main',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      emit(
+        state.copyWith(
+          profileGateResolved: true,
+          needsProfileRegistration: false,
+        ),
+      );
+    }
+  }
+
+  void markProfileRegistrationComplete() {
+    emit(
+      state.copyWith(
+        profileGateResolved: true,
+        needsProfileRegistration: false,
+      ),
+    );
   }
 }

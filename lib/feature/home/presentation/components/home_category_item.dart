@@ -33,15 +33,11 @@ class StoryBoardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final random = Random();
-    final firstGradientColor =
-        _gradientColors[random.nextInt(_gradientColors.length)];
-    var secondGradientColor =
-        _gradientColors[random.nextInt(_gradientColors.length)];
+    final firstGradientColor = _gradientColors[random.nextInt(_gradientColors.length)];
+    var secondGradientColor = _gradientColors[random.nextInt(_gradientColors.length)];
 
-    while (secondGradientColor == firstGradientColor &&
-        _gradientColors.length > 1) {
-      secondGradientColor =
-          _gradientColors[random.nextInt(_gradientColors.length)];
+    while (secondGradientColor == firstGradientColor && _gradientColors.length > 1) {
+      secondGradientColor = _gradientColors[random.nextInt(_gradientColors.length)];
     }
 
     return Padding(
@@ -69,45 +65,41 @@ class StoryBoardItem extends StatelessWidget {
               ),
               padding: const EdgeInsets.all(2),
               child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: story.thumbnailUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    child: const Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.primary,
-                        ),
+                child: story.thumbnailUrl.trim().isEmpty
+                    ? const _StoryImageSkeleton()
+                    : AppCachedNetworkImage(
+                        imageUrl: story.thumbnailUrl.trim(),
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const _StoryImageSkeleton(),
+                        errorWidget: (context, url, error) => const _StoryImageSkeleton(),
                       ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    child: const Icon(
-                      LucideIcons.image,
-                      color: AppColors.primary,
-                      size: 24,
-                    ),
-                  ),
-                ),
               ),
             ),
           ),
           const SizedBox(height: 6),
           Text(
             story.name,
-            style: context.textTheme.bodySmallMedium.copyWith(
-              color: context.appColors.text,
-            ),
+            style: context.textTheme.bodySmallMedium.copyWith(color: context.appColors.text),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _StoryImageSkeleton extends StatelessWidget {
+  const _StoryImageSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Skeletonizer(
+      enabled: true,
+      child: Container(
+        decoration: BoxDecoration(color: context.appColors.onContainer, shape: BoxShape.circle),
+        child: const SizedBox.expand(),
       ),
     );
   }

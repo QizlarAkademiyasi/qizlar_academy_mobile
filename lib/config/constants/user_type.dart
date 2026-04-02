@@ -1,1 +1,1 @@
-enum UserType { anonymous, registered }
+enum UserType { guest, user }

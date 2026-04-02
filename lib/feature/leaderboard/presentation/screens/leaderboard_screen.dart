@@ -1,11 +1,14 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/failure_content.dart';
-import 'package:qizlar_academy_mobile/feature/leaderboard/domain/model/leaderboard_course_option_model.dart';
-import 'package:qizlar_academy_mobile/feature/leaderboard/domain/model/leaderboard_user_model.dart';
+import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_empty_content.dart';
+import 'package:qizlar_academy_mobile/feature/leaderboard/domain/repository/leaderboard_repository.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/bloc/leaderboard_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/components/leaderboard_full_list_skeleton.dart';
+import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/components/leaderboard_top_performers_skeleton.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen_mixin.dart';
 
 class LeaderboardScreen extends StatelessWidget {
@@ -13,10 +16,7 @@ class LeaderboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<LeaderboardBloc>()..add(const LeaderboardStarted()),
-      child: const _LeaderboardView(),
-    );
+    return BlocProvider(create: (_) => getIt<LeaderboardBloc>()..add(const LeaderboardStarted()), child: const _LeaderboardView());
   }
 }
 
@@ -27,92 +27,24 @@ class _LeaderboardView extends StatefulWidget {
   State<_LeaderboardView> createState() => _LeaderboardViewState();
 }
 
-class _LeaderboardViewState extends State<_LeaderboardView>
-    with
-        LeaderboardScreenMixin<_LeaderboardView>,
-        SingleTickerProviderStateMixin {
+class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScreenMixin<_LeaderboardView>, SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  static const List<LeaderboardCourseOptionModel> _skeletonCourses = [
-    LeaderboardCourseOptionModel(id: 'skeleton-course', name: 'Vizajistlik kursi'),
-  ];
-
-  static const List<LeaderboardUserModel> _skeletonUsers = [
-    LeaderboardUserModel(
-      id: 's-1',
-      userCode: '000001',
-      fullName: 'Lola Rahimova',
-      avatarUrl: 'https://example.com/avatar-1.png',
-      rank: 1,
-      score: 9850,
-      courseName: 'Vizajistlik kursi',
-      finishedCoursesCount: 12,
-      certificatesCount: 12,
-      followerCount: '1.9k',
-      rating: 5.0,
-    ),
-    LeaderboardUserModel(
-      id: 's-2',
-      userCode: '000002',
-      fullName: 'Nodira Karimova',
-      avatarUrl: 'https://example.com/avatar-2.png',
-      rank: 2,
-      score: 8790,
-      courseName: 'Vizajistlik kursi',
-      finishedCoursesCount: 10,
-      certificatesCount: 10,
-      followerCount: '1.2k',
-      rating: 5.0,
-    ),
-    LeaderboardUserModel(
-      id: 's-3',
-      userCode: '000003',
-      fullName: 'Malika Nazarova',
-      avatarUrl: 'https://example.com/avatar-3.png',
-      rank: 3,
-      score: 8420,
-      courseName: 'Vizajistlik kursi',
-      finishedCoursesCount: 9,
-      certificatesCount: 9,
-      followerCount: '980',
-      rating: 5.0,
-    ),
-    LeaderboardUserModel(
-      id: 's-4',
-      userCode: '000004',
-      fullName: 'Dilnoza Rahimova',
-      avatarUrl: 'https://example.com/avatar-4.png',
-      rank: 4,
-      score: 8100,
-      courseName: 'Vizajistlik kursi',
-      finishedCoursesCount: 8,
-      certificatesCount: 8,
-      followerCount: '740',
-      rating: 5.0,
-    ),
-    LeaderboardUserModel(
-      id: 's-5',
-      userCode: '000005',
-      fullName: 'Sevinch Karimova',
-      avatarUrl: 'https://example.com/avatar-5.png',
-      rank: 5,
-      score: 7820,
-      courseName: 'Vizajistlik kursi',
-      finishedCoursesCount: 7,
-      certificatesCount: 7,
-      followerCount: '630',
-      rating: 5.0,
-    ),
-  ];
+  late final PageController _timeframePageController;
+  bool _syncingFromBloc = false;
+  bool _syncingFromPage = false;
+  static const double _pinnedFiltersHeight = 132;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _timeframePageController = PageController(initialPage: _tabController.index);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _timeframePageController.dispose();
     super.dispose();
   }
 
@@ -130,10 +62,15 @@ class _LeaderboardViewState extends State<_LeaderboardView>
               }
             });
           }
+
+          if (_timeframePageController.hasClients && _timeframePageController.page?.round() != state.timeframe.index) {
+            _syncingFromBloc = true;
+            _timeframePageController.jumpToPage(state.timeframe.index);
+            _syncingFromBloc = false;
+          }
         },
         builder: (context, state) {
-          if (state.status == LeaderboardStatus.failure &&
-              state.courseOptions.isEmpty) {
+          if (state.status == LeaderboardStatus.failure && state.courseOptions.isEmpty) {
             return FailureContent(
               message: state.message,
               onRetry: () {
@@ -142,35 +79,54 @@ class _LeaderboardViewState extends State<_LeaderboardView>
             );
           }
 
-          final isSkeleton = state.status == LeaderboardStatus.loading;
-          final displayCourseOptions = state.courseOptions.isNotEmpty
-              ? state.courseOptions
-              : _skeletonCourses;
-          final displayFullList = state.fullList.isNotEmpty
-              ? state.fullList
-              : _skeletonUsers;
-          final displayTopThree = state.topThree.isNotEmpty
-              ? state.topThree
-              : displayFullList.take(3).toList();
+          final isLoading = state.status == LeaderboardStatus.loading;
+          final awaitingFirstPayload = state.courseOptions.isEmpty && state.fullList.isEmpty && state.topThree.isEmpty;
+          // initial: PageView + KeepAlive — birinchi buildda event hali
+          // qayta ishlanmaguncha status `initial` bo‘lib qoladi; skeleton shu
+          // paytda ham ko‘rinishi kerak.
+          final isBootstrapping = awaitingFirstPayload && (state.status == LeaderboardStatus.initial || state.status == LeaderboardStatus.loading);
 
-          final matched = displayCourseOptions
-              .where((c) => c.id == state.selectedCourseId)
-              .toList();
+          final matched = state.courseOptions.where((c) => c.id == state.selectedCourseId).toList();
           final selectedCourse = matched.isEmpty ? null : matched.first;
-          final selectedCourseName =
-              selectedCourse?.name ?? 'Vizajistlik kursi';
+          final l10n = context.l10n;
+          final selectedCourseName = isBootstrapping
+              ? l10n.leaderboardSelectCourse
+              : (selectedCourse?.name ?? (state.courseOptions.isNotEmpty ? state.courseOptions.first.name : l10n.leaderboardSelectCourse));
+
+          final displayTopThree = state.topThree.isNotEmpty ? state.topThree : state.fullList.take(3).toList();
 
           final bottomInset = MediaQuery.paddingOf(context).bottom;
 
-          final content = SafeArea(
+          if (!isLoading && state.status == LeaderboardStatus.success) {
+            if (state.courseOptions.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: AppPadding.paddingXl,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TgsEmptyContent(message: context.l10n.leaderboardNoCourses, animationSize: 92),
+                      const SizedBox(height: 14),
+                      FilledButton(
+                        onPressed: () {
+                          context.read<LeaderboardBloc>().add(const LeaderboardStarted());
+                        },
+                        child: Text(context.l10n.refresh),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          return SafeArea(
             bottom: false,
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                // Yuqori sarlavha — scroll bilan ketadi
-                SliverPadding(
-                  padding: AppPadding.paddingHorizontalLg,
-                  sliver: SliverToBoxAdapter(
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: AppPadding.paddingHorizontalLg,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -180,78 +136,111 @@ class _LeaderboardViewState extends State<_LeaderboardView>
                     ),
                   ),
                 ),
-                // Tabs + dropdown — pin: scroll qilganda yuqorida qotib qoladi
                 SliverPersistentHeader(
                   pinned: true,
-                  delegate: _PinnedFilterDelegate(
-                    backgroundColor: context.theme.scaffoldBackgroundColor,
-                    paddingHorizontal: 20,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        buildLeaderboardTabs(
-                          context,
-                          tabController: _tabController,
-                          onChanged: onTimeframeChanged,
-                        ),
-                        const SizedBox(height: 16),
-                        buildLeaderboardCategoryDropdown(
-                          context,
-                          selectedCourseName: selectedCourseName,
-                          onTap: isSkeleton
-                              ? () {}
-                              : () => onCategoryTap(
-                                    context,
-                                    options: displayCourseOptions,
-                                    selectedId: state.selectedCourseId,
-                                  ),
-                        ),
-                      ],
+                  delegate: _PinnedFiltersDelegate(
+                    height: _pinnedFiltersHeight,
+                    child: Padding(
+                      padding: AppPadding.paddingHorizontalLg,
+                      child: Column(
+                        children: [
+                          buildLeaderboardTabs(
+                            context,
+                            tabController: _tabController,
+                            onChanged: (index) {
+                              if (_syncingFromPage) return;
+                              onTimeframeChanged(index);
+                              _syncingFromBloc = true;
+                              _timeframePageController.jumpToPage(index.index);
+                              _syncingFromBloc = false;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          buildLeaderboardCategoryDropdown(
+                            context,
+                            selectedCourseName: selectedCourseName,
+                            onTap: isBootstrapping || isLoading
+                                ? () {}
+                                : () => onCategoryTap(
+                                      context,
+                                      options: state.courseOptions,
+                                      selectedId: state.selectedCourseId,
+                                    ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                // Qolgan kontent — podium, reyting, banner
-                SliverPadding(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 24 + bottomInset),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
+              ],
+              body: PageView.builder(
+                controller: _timeframePageController,
+                itemCount: 3,
+                onPageChanged: (index) {
+                  if (_syncingFromBloc) return;
+                  _syncingFromPage = true;
+                  onTimeframeChanged(LeaderboardTimeframe.values[index]);
+                  if (_tabController.index != index) {
+                    _tabController.animateTo(index);
+                  }
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _syncingFromPage = false;
+                  });
+                },
+                itemBuilder: (context, pageIndex) {
+                  // UX: hozirgi timeframe'dan boshqa sahifalarda ham bir xil layout ko'rinadi;
+                  // timeframe o'zgarganda bloc state yangilanadi va PageView animatsiya bilan
+                  // yangi data ko'rsatadi.
+                  if (isBootstrapping) {
+                    return ListView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
+                      children: const [
+                        LeaderboardTopPerformersSkeleton(),
+                        SizedBox(height: 24),
+                        LeaderboardFullListSkeleton(),
+                      ],
+                    );
+                  }
+
+                  if (!isLoading && state.fullList.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: AppPadding.paddingHorizontalLg,
+                        child: TgsEmptyContent(
+                          message: context.l10n.leaderboardNoRatingYet,
+                          animationSize: 150,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
+                    children: [
                       buildLeaderboardTopPerformers(
                         context,
                         topThree: displayTopThree,
                         onUserTap: (user) {
-                          if (isSkeleton) return;
+                          if (isLoading) return;
                           onLeaderboardUserTap(context, user);
                         },
                       ),
                       const SizedBox(height: 24),
                       buildLeaderboardFullList(
                         context,
-                        fullList: displayFullList,
+                        fullList: state.fullList,
                         onUserTap: (user) {
-                          if (isSkeleton) return;
+                          if (isLoading) return;
                           onLeaderboardUserTap(context, user);
                         },
                       ),
-                      const SizedBox(height: 20),
-                      buildLeaderboardPromotionBanner(
-                        context,
-                        onStartTap: isSkeleton ? () {} : onStartTap,
-                      ),
-                    ]),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: SizedBox(height: MediaQuery.paddingOf(context).bottom),
-                ),
-              ],
-            ),
-          );
-
-          if (!isSkeleton) return content;
-
-          return Skeletonizer.zone(
-            child: IgnorePointer(
-              child: content,
+                    ],
+                  );
+                },
+              ),
             ),
           );
         },
@@ -260,45 +249,32 @@ class _LeaderboardViewState extends State<_LeaderboardView>
   }
 }
 
-/// Tabs va category dropdown uchun pin qilingan boshqaruv — scroll da yuqorida qotib turadi.
-class _PinnedFilterDelegate extends SliverPersistentHeaderDelegate {
-  _PinnedFilterDelegate({
-    required this.backgroundColor,
-    required this.paddingHorizontal,
+class _PinnedFiltersDelegate extends SliverPersistentHeaderDelegate {
+  _PinnedFiltersDelegate({
+    required this.height,
     required this.child,
   });
 
-  final Color backgroundColor;
-  final double paddingHorizontal;
+  final double height;
   final Widget child;
 
-  /// layoutExtent == paintExtent bo'lishi kerak; child haqiqiy o'lchami (~122) bilan mos.
-  static const double _height = 122; // 56 (tabs) + 16 + 50 (dropdown)
+  @override
+  double get minExtent => height;
 
   @override
-  double get minExtent => _height;
+  double get maxExtent => height;
 
   @override
-  double get maxExtent => _height;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      height: _height,
-      color: backgroundColor,
-      padding: EdgeInsets.symmetric(horizontal: paddingHorizontal),
+      height: height,
+      color: context.theme.scaffoldBackgroundColor,
       child: child,
     );
   }
 
   @override
-  bool shouldRebuild(covariant _PinnedFilterDelegate oldDelegate) {
-    return oldDelegate.backgroundColor != backgroundColor ||
-        oldDelegate.paddingHorizontal != paddingHorizontal ||
-        oldDelegate.child != child;
+  bool shouldRebuild(covariant _PinnedFiltersDelegate oldDelegate) {
+    return height != oldDelegate.height || child != oldDelegate.child;
   }
 }

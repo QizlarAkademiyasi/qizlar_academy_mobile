@@ -1,0 +1,34 @@
+{
+  "badges": [
+    {
+      "id": 0,
+      "key": "ring",
+      "file": "ring.tgs"
+    },
+    {
+      "id": 1,
+      "key": "crown",
+      "file": "crown.tgs"
+    },
+    {
+      "id": 2,
+      "key": "girls_wallet",
+      "file": "girls_wallet.tgs"
+    },
+    {
+      "id": 3,
+      "key": "high_heeled_shoes",
+      "file": "high-heeled shoes.tgs"
+    },
+    {
+      "id": 4,
+      "key": "lover_rabbit",
+      "file": "lover_rabbit.tgs"
+    },
+    {
+      "id": 5,
+      "key": "heart_of_love_rabbit",
+      "file": "heart_of_love_rabbit.tgs"
+    }
+  ]
+}

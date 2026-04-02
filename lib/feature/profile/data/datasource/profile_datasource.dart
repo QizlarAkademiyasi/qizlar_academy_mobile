@@ -1,7 +1,10 @@
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
+import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_user_public_model.dart';
 
 abstract interface class ProfileDatasource {
   Future<ProfileOverviewModel> getProfileOverview();
+
+  Future<ProfileUserPublicModel> getUserProfileById(String id);
 
   Future<ProfileOverviewModel> updateNotifications({required bool enabled});
 
@@ -13,4 +16,10 @@ abstract interface class ProfileDatasource {
     required String firstName,
     required String lastName,
   });
+
+  /// Multipart yuklash; javobdan fayl nomi (`data`) qaytariladi.
+  Future<String> uploadProfilePhoto(String localFilePath);
+
+  /// PATCH `/user/me` — faqat [body] ichidagi kalitlar yuboriladi.
+  Future<void> patchUserMe(Map<String, dynamic> body);
 }
