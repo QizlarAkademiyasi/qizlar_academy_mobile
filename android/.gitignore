@@ -12,3 +12,5 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+# Play upload key (binary, no standard extension in legacy export)
+app/girls_play_upload.keystore

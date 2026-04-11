@@ -62,18 +62,40 @@ android {
         }
     }
 
+    val releaseSigningConfigured = run {
+        val alias = keystoreProperties["keyAlias"] as? String
+        val storePass = keystoreProperties["storePassword"] as? String
+        val keyPass = keystoreProperties["keyPassword"] as? String
+        val storePath = keystoreProperties["storeFile"] as? String
+        if (alias.isNullOrBlank() || storePass.isNullOrBlank() || keyPass.isNullOrBlank() || storePath.isNullOrBlank()) {
+            false
+        } else {
+            file(storePath).isFile
+        }
+    }
+
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String?
+            if (releaseSigningConfigured) {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storePassword = keystoreProperties["storePassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                val storeType = keystoreProperties["storeType"] as? String
+                if (!storeType.isNullOrBlank()) {
+                    this.storeType = storeType
+                }
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (releaseSigningConfigured) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

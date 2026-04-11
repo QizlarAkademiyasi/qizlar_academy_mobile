@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.5.0+27
+version: 1.7.1+35
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
@@ -51,8 +51,10 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
 
 # pdfrx_engine ↔ lottie_tgs uchun archive major mosligi (kit ichida ham override bor).
+# path_provider_foundation 2.6.0 objective_c FFI — ba'zi iOS simulator/SDK larda .framework topilmay crash.
 dependency_overrides:
   archive: ^4.0.7
+  path_provider_foundation: 2.5.1
 
 flutter_launcher_icons:
   android: true
@@ -77,6 +79,8 @@ flutter:
 
   assets:
     - assets/profile/profile_badges.json
+    # Kitdagi .md ba'zan faqat paket pubspec'i bilan simulator/debugda manifestga tushmaydi — host orqali majburiy qo'shamiz.
+    - packages/qizlar_academy_kit/assets/markdown/privacy-policy.md
 
   # Boshqa raster/svg assetlar packages/qizlar_academy_kit/assets dan (kit).
 

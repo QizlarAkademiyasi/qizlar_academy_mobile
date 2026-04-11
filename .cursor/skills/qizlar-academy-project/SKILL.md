@@ -31,6 +31,23 @@ This skill applies **only** to the qizlar_academy_mobile project. Follow it toge
 - **Global toast:** SnackBar o‘rniga `core/presentation/components/app_toast.dart` dagi `AppToast` ishlatiladi (`success`, `error`, `warning`, `info`), va toast ichida `.tgs` animatsiyalar ishlatiladi.
 - **Error UX + logging:** API/exception xatoliklarida userga backend xabari yoki stack trace ko‘rsatilmaydi. UI’da faqat umumiy, xavfsiz matn beriladi (masalan: `Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.`). Texnik tafsilotlar esa faqat `AppLogger` orqali loglanadi.
 
+## Store release builds (Play / App Store)
+
+**Maqsad:** store’ga chiqariladigan artefaktlarni [Dart obfuscation](https://docs.flutter.dev/deployment/obfuscate) bilan yig‘ish — tahlil vositalarida paket/sinf nomlari kamroq ochiq ko‘rinadi. Loyiha `android/app/build.gradle.kts` da release uchun **R8** (`isMinifyEnabled`, `isShrinkResources`, `proguard-rules.pro`) allaqachon yoqilgan.
+
+Loyiha ildizidan ( `./` ):
+
+```bash
+flutter pub get
+flutter build appbundle --flavor prod --obfuscate --split-debug-info=build/debug-info
+flutter build ipa --export-method app-store --obfuscate --split-debug-info=build/debug-info
+```
+
+- **AAB:** `build/app/outputs/bundle/prodRelease/app-prod-release.aab`
+- **iOS:** `build/ios/archive/Runner.xcarchive`, IPA `build/ios/ipa/` ichida
+
+**Muhim:** `build/debug-info/` dagi fayllar **store’ga yuklanmaydi**; ularni jamoa ichida xavfsiz saqlang (crash dekodlash / profil). Agar ikon tree-shaking muammo qilishi aniqlansa, `uma_mobile` dagi kabi qo‘shimcha `--no-tree-shake-icons` qo‘llanishi mumkin.
+
 ## Full project rules
 
 See **[reference.md](reference.md)** for:

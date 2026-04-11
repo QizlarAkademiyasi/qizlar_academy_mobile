@@ -39,6 +39,14 @@
 				<string>com.googleusercontent.apps.17451483765-igr4sughli1vjv54iltokl8ke6v2guhr</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb1262098222769251</string>
+			</array>
+		</dict>
 	</array>
 	<key>FLTEnableImpeller</key>
 	<false/>
@@ -49,10 +57,28 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>FacebookAppID</key>
+	<string>1262098222769251</string>
+	<key>FacebookDisplayName</key>
+	<string>Qizlar Akademiyasi</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>instagram</string>
+		<string>instagram-stories</string>
+		<string>ig</string>
+		<string>fb</string>
+		<string>fbapi</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+		<string>facebook-reels</string>
+		<string>facebook-stories</string>
+		<string>fb-messenger-share-api</string>
+		<string>fb-messenger</string>
+	</array>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need your permission to save images to your photo library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need your permission to access your photo library</string>
+	<string>This app needs access to your Photo Library so you can upload and set your profile picture in Qizlar Akademiyasi. For example, you can select a photo from your library to use as your personal avatar or update your profile image.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera access required</string>
 	<key>NSContactsUsageDescription</key>

@@ -87,4 +87,23 @@ Use equatable and bloc/flutter_bloc from the kit (import via kit when re-exporte
 
 ---
 
+## 8. Store release builds (obfuscation)
+
+Play Console va App Store uchun **release** artefaktlarni Dart **obfuscation** (`--obfuscate` + `--split-debug-info`) bilan yig‘ing — `uma_mobile` kabi loyihalarda shu yondashuv qo‘llaniladi. Android tomonda release **R8** (`android/app/build.gradle.kts`: `isMinifyEnabled`, `isShrinkResources`, `proguard-rules.pro`) alohida yoqilgan.
+
+Loyiha ildizidan:
+
+```bash
+flutter pub get
+flutter build appbundle --flavor prod --obfuscate --split-debug-info=build/debug-info
+flutter build ipa --export-method app-store --obfuscate --split-debug-info=build/debug-info
+```
+
+- **AAB (prod):** `build/app/outputs/bundle/prodRelease/app-prod-release.aab`
+- **iOS:** archive `build/ios/archive/Runner.xcarchive`, IPA `build/ios/ipa/`
+
+**split-debug-info:** `build/debug-info/` papkasini store paketlariga qo‘shmang; crash/stack trace dekodlash uchun saqlang. Ikon tree-shaking bilan bog‘liq muammo bo‘lsa, build ga ixtiyoriy `--no-tree-shake-icons` qo‘shiladi.
+
+---
+
 Do not deviate from this or from **.cursor/skills/qizlar-academy-project/reference.md** when adding or refactoring code.
