@@ -62,8 +62,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Google sign-in failed. Please try again.';
 
   @override
-  String get telegramSignInComingSoonMessage =>
-      'Telegram sign-in will be available in a later update.';
+  String get telegramSignInInvalidLinkMessage =>
+      'Could not open Telegram: invalid link from server.';
+
+  @override
+  String get telegramSignInLaunchFailedMessage =>
+      'Could not open Telegram. Please try again.';
+
+  @override
+  String get telegramSignInOpenBotTitle => 'Telegram';
+
+  @override
+  String get telegramSignInEnterCodeHintMessage =>
+      'Open the bot, then enter the code you receive here.';
 
   @override
   String get signInWithGoogle => 'Continue with Google';
@@ -126,6 +137,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otpSentAgain => 'Verification code was sent again.';
 
   @override
+  String get verificationBackConfirmTitle => 'Go back?';
+
+  @override
+  String get verificationBackConfirmMessage =>
+      'If you leave, you will need to request a new code to continue signing in.';
+
+  @override
+  String get verificationBackConfirmStay => 'Stay';
+
+  @override
+  String get verificationBackConfirmLeave => 'Go back';
+
+  @override
   String get mainTabHome => 'Home';
 
   @override
@@ -165,10 +189,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeLoadErrorMessage => 'Connection error. Please try again.';
 
   @override
+  String get coursesCatalogLoadError =>
+      'Couldn’t load courses. Please try again.';
+
+  @override
+  String get leaderboardLoadError =>
+      'Couldn’t load the leaderboard. Please try again.';
+
+  @override
+  String get profileOverviewLoadError =>
+      'Couldn’t load your profile. Please try again.';
+
+  @override
+  String get profilePreferenceUpdateError =>
+      'Couldn’t update settings. Please try again.';
+
+  @override
+  String get notificationListLoadError =>
+      'Couldn’t load notifications. Please try again.';
+
+  @override
+  String get notificationActionError =>
+      'Couldn’t update notifications. Please try again.';
+
+  @override
+  String get courseDetailsLoadError =>
+      'Couldn’t load course details. Please try again.';
+
+  @override
+  String get editProfileLoadError =>
+      'Couldn’t load profile information. Please try again.';
+
+  @override
+  String get editProfileSaveError => 'Couldn’t save changes. Please try again.';
+
+  @override
   String get coursesAllTitle => 'All courses';
 
   @override
   String get coursesSearchHint => 'Search courses…';
+
+  @override
+  String get coursesSearchScreenTitle => 'Search courses';
+
+  @override
+  String get coursesSearchIdleHint => 'Type a course name to search';
 
   @override
   String get coursesNoResults => 'No matching courses';
@@ -241,6 +306,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lessonMarkComplete => 'Complete lesson';
+
+  @override
+  String get lessonVideoPlaybackError => 'Could not load the video.';
+
+  @override
+  String get lessonVideoPlaybackErrorYoutube =>
+      'YouTube may temporarily block in-app playback. Open the video in your browser or the YouTube app.';
+
+  @override
+  String get lessonVideoOpenExternal => 'Open in browser';
 
   @override
   String get coursePillTabLessons => 'Lessons';
@@ -320,6 +395,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lessonQuizContinue => 'Continue';
 
   @override
+  String get lessonQuizRetry => 'Try again';
+
+  @override
   String get lessonQuizErrorEmpty => 'This lesson has no test yet.';
 
   @override
@@ -337,6 +415,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get lessonQuizAlreadyTaken =>
       'You have already completed this test. Retakes are not allowed.';
+
+  @override
+  String get courseModuleLockedMessage =>
+      'Finish all lessons and tests in the previous module to continue.';
+
+  @override
+  String get courseLessonSequentialLockedMessage =>
+      'Complete the previous lesson and its test (if any) before continuing.';
+
+  @override
+  String get courseCompleteCongratsTitle => 'Congratulations!';
+
+  @override
+  String get courseCompleteCongratsDescription =>
+      'You have completed this course. Claim your certificate in the certificates section.';
+
+  @override
+  String get courseCompleteGetCertificate => 'Get certificate';
+
+  @override
+  String get courseCompleteClose => 'Close';
 
   @override
   String get leaderboardTitle => 'Top learners';
@@ -399,6 +498,114 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileMenuMyActivity => 'My activity';
 
   @override
+  String get profileMenuVacancies => 'Vacancies';
+
+  @override
+  String get vacanciesTitle => 'Vacancies';
+
+  @override
+  String get vacancyDetailCta => 'Details';
+
+  @override
+  String get vacancySalaryNegotiable => 'Salary negotiable';
+
+  @override
+  String vacancySalaryRange(String from, String to, String currency) {
+    return '$from – $to $currency';
+  }
+
+  @override
+  String get vacancyPostedMomentsAgo => 'Just now';
+
+  @override
+  String vacancyPostedMinutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String vacancyPostedHoursAgo(int count) {
+    return '$count h ago';
+  }
+
+  @override
+  String get vacancyPostedYesterday => 'Yesterday';
+
+  @override
+  String vacancyPostedDaysAgo(int count) {
+    return '$count days ago';
+  }
+
+  @override
+  String get vacancyEmploymentIntern => 'Internship';
+
+  @override
+  String get vacancyEmploymentPartTime => 'Part-time';
+
+  @override
+  String get vacancyEmploymentFullTime => 'Full-time';
+
+  @override
+  String get vacancyEmploymentRemote => 'Remote';
+
+  @override
+  String get vacancyEmploymentOnsite => 'On-site';
+
+  @override
+  String get vacancyEmploymentContract => 'Contract';
+
+  @override
+  String get vacanciesEmptyTitle => 'No vacancies yet';
+
+  @override
+  String get vacanciesEmptySubtitle => 'Please check back later';
+
+  @override
+  String get vacanciesLoadError => 'Could not load vacancies';
+
+  @override
+  String get vacanciesLoadMoreError => 'Could not load more';
+
+  @override
+  String get vacancyDetailsTitle => 'Vacancy';
+
+  @override
+  String get vacancySheetEmploymentType => 'Employment type';
+
+  @override
+  String get vacancySheetSalary => 'Salary';
+
+  @override
+  String get vacancySheetLocation => 'Location';
+
+  @override
+  String get vacancySheetCategory => 'Category';
+
+  @override
+  String get vacancySheetPosted => 'Posted';
+
+  @override
+  String get vacancyDetailAbout => 'About the vacancy';
+
+  @override
+  String get vacancyDetailSkills => 'Skills';
+
+  @override
+  String get vacancyDetailRequirements => 'Requirements';
+
+  @override
+  String get vacancyApplyCta => 'Apply';
+
+  @override
+  String get vacancySalaryPerMonth => '/ month';
+
+  @override
+  String get vacancyDetailLoadError => 'Could not load vacancy';
+
+  @override
+  String get vacancyApplyPlaceholder =>
+      'Coming soon — application will be available here';
+
+  @override
   String get profileMenuProfileInfo => 'Profile information';
 
   @override
@@ -406,6 +613,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileMenuShareApp => 'Share the app';
+
+  @override
+  String get profileShareAppSubtitle => 'Invite friends and family';
+
+  @override
+  String profileShareAppMessage(String link) {
+    return 'Qizlar Academy brings free courses, a vibrant community, and room to grow for women and girls — all in one app.\n\nDownload and learn together:\n$link';
+  }
 
   @override
   String get profileMenuAbout => 'About us';
@@ -440,6 +655,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileNotificationsSubtitle => 'Push messages';
+
+  @override
+  String get profileNotificationsEnableFailed =>
+      'Could not turn on notifications. Check permissions and try again.';
 
   @override
   String get profileDarkMode => 'Dark mode';
@@ -505,6 +724,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileInformationPhoneNationalHint => 'XX XXX XX XX';
 
   @override
+  String get editProfileUnsavedTitle => 'Unsaved changes';
+
+  @override
+  String get editProfileUnsavedMessage =>
+      'You have unsaved changes to your profile. Save before leaving?';
+
+  @override
+  String get editProfileUnsavedSave => 'Save';
+
+  @override
+  String get editProfileUnsavedDiscard => 'Discard and leave';
+
+  @override
+  String get editProfileUnsavedContinue => 'Keep editing';
+
+  @override
   String get aboutBrandTitle => 'QIZLAR AKADEMIYASI';
 
   @override
@@ -565,6 +800,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutUsLinkOpenError => 'Could not open the link.';
 
   @override
+  String get appUpdateAvailableTitle => 'Update available!';
+
+  @override
+  String get appUpdateAvailableBody =>
+      'We\'ve improved the app even more! Update the app to use new features and enjoy a more comfortable experience.';
+
+  @override
+  String get appUpdateLater => 'Later';
+
+  @override
+  String get appUpdateCta => 'Update';
+
+  @override
   String get guestGateNotificationSettings =>
       'Sign up to manage notification settings';
 
@@ -576,6 +824,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileAppLanguageTitle => 'App language';
+
+  @override
+  String get profileBadgePickerTitle => 'Your badges';
+
+  @override
+  String get profileTezKundaTitle => 'Coming soon';
+
+  @override
+  String get profileTezKundaMessage =>
+      'This section is not available yet. We\'re working on it — check back soon.';
 
   @override
   String get languageUzbek => 'Uzbek';
@@ -594,6 +852,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsEmptySubtitle => 'New messages will appear here.';
+
+  @override
+  String get notificationTabPlatform => 'Platform';
+
+  @override
+  String get notificationTabCommunity => 'Community';
+
+  @override
+  String get notificationDetailsMore => 'Details';
+
+  @override
+  String get notificationsEmptyThisTab => 'No notifications in this tab';
+
+  @override
+  String get notificationsEmptyThisTabSubtitle =>
+      'Switch tabs or check back later.';
 
   @override
   String get guestGateMarkAllRead => 'Sign up to mark all as read';
@@ -654,6 +928,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get certificatesBadgeBronze => 'Bronze certificate';
 
   @override
+  String get linkPromptYes => 'Yes';
+
+  @override
+  String get linkPromptNo => 'No';
+
+  @override
+  String get communityTelegramInviteTitle => 'Join our community';
+
+  @override
+  String get communityTelegramInviteDescription =>
+      'You can find answers to your questions on our Telegram channel. Open our Telegram channel?';
+
+  @override
   String get certificatesView => 'View';
 
   @override
@@ -679,8 +966,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get certificatesLoadError => 'Could not load certificates. Try again.';
 
   @override
+  String get certificateClaimError =>
+      'Could not get your certificate. Try again later.';
+
+  @override
   String get certificatesFileActionError =>
       'Could not download or share the file.';
+
+  @override
+  String get certificatesInstagramStoryNotConfigured =>
+      'Instagram Story needs a Facebook App ID. Add FACEBOOK_APP_ID when building the app.';
+
+  @override
+  String get certificatesInstagramShareFailed =>
+      'Could not open Instagram. Check that Instagram is installed and try again.';
 
   @override
   String courseReviewsSummaryCount(int count) {

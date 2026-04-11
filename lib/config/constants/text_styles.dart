@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-/// Plus Jakarta Sans — design system typography (rasmdagi typography tizimi).
-TextStyle _plusJakarta(double fontSize, FontWeight weight) =>
-    GoogleFonts.plusJakartaSans(fontSize: fontSize, fontWeight: weight);
+/// Plus Jakarta Sans — `qizlar_academy_kit` `pubspec` orqali bundle qilingan;
+/// tarmoq / gstatic talab qilinmaydi (Crashlytics: "Failed to load font" oldini).
+TextStyle _plusJakarta(double fontSize, FontWeight weight) => TextStyle(fontFamily: 'Plus Jakarta Sans', fontSize: fontSize, fontWeight: weight);
 
 class AppTextTheme {
   // --- Heading ---
@@ -137,28 +136,16 @@ class AppTextTheme {
     bodySmall: bodySmallRegular,
   );
 
-  Map<String, TextStyle> get htmlStyle => {
-    'h1': heading1,
-    'h2': heading2,
-    'h3': heading3,
-    'h4': heading4,
-    'h5': heading5,
-    'h6': heading6,
-    'p': bodyLargeRegular,
-  };
+  Map<String, TextStyle> get htmlStyle => {'h1': heading1, 'h2': heading2, 'h3': heading3, 'h4': heading4, 'h5': heading5, 'h6': heading6, 'p': bodyLargeRegular};
 }
 
 class _AppThemeInheritedWidget extends InheritedWidget {
-  const _AppThemeInheritedWidget({
-    required this.textTheme,
-    required super.child,
-  });
+  const _AppThemeInheritedWidget({required this.textTheme, required super.child});
 
   final AppTextTheme textTheme;
 
   static _AppThemeInheritedWidget of(BuildContext context) {
-    final _AppThemeInheritedWidget? result = context
-        .dependOnInheritedWidgetOfExactType<_AppThemeInheritedWidget>();
+    final _AppThemeInheritedWidget? result = context.dependOnInheritedWidgetOfExactType<_AppThemeInheritedWidget>();
     assert(result != null, 'No ChessThemeWidget found in context');
     return result!;
   }

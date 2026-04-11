@@ -29,7 +29,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<ProfileUserPublicModel> getUserProfileById(String id) {
-    _ensureRegistered();
     return _apiDatasource.getUserProfileById(id);
   }
 

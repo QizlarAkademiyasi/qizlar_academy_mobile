@@ -8,6 +8,7 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/bloc/courses_
 import 'package:qizlar_academy_mobile/feature/courses/presentation/components/courses_in_progress_card.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/components/courses_search_field.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/components/courses_top_bar.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/search/courses_search_args.dart';
 
 mixin CoursesScreenMixin<T extends StatefulWidget> on State<T> {
   late final TextEditingController searchController;
@@ -25,14 +26,27 @@ mixin CoursesScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void coursesBlocListener(BuildContext context, CoursesCatalogState state) {
-    if (state.status != CoursesCatalogStatus.failure || state.message == null) {
+    if (state.status != CoursesCatalogStatus.failure || !state.hasData) {
       return;
     }
-    AppToast.error(context, message: state.message!);
+    AppToast.error(context, message: context.l10n.coursesCatalogLoadError);
   }
 
   void onSearchChanged(BuildContext context, String value) {
     context.read<CoursesCatalogBloc>().add(CoursesCatalogSearchChanged(query: value));
+  }
+
+  void openCoursesSearch(BuildContext context) {
+    final bloc = context.read<CoursesCatalogBloc>();
+    final initial = bloc.state.query;
+    context
+        .push(Routes.coursesSearch, extra: CoursesSearchArgs(catalogBloc: bloc, initialQuery: initial))
+        .then((_) {
+      if (!mounted) return;
+      setState(() {
+        searchController.text = context.read<CoursesCatalogBloc>().state.query;
+      });
+    });
   }
 
   void onNotificationTap(BuildContext context) {
@@ -47,12 +61,24 @@ mixin CoursesScreenMixin<T extends StatefulWidget> on State<T> {
     context.read<CoursesCatalogBloc>().add(const CoursesCatalogRetryRequested());
   }
 
+  Future<void> onPullRefresh(BuildContext context) async {
+    final bloc = context.read<CoursesCatalogBloc>();
+    bloc.add(const CoursesCatalogRefreshRequested());
+    await bloc.stream.firstWhere((s) => !s.isRefreshing);
+  }
+
   Widget buildTopBar(BuildContext context) {
     return CoursesTopBar(onNotificationTap: () => onNotificationTap(context));
   }
 
   Widget buildSearchField(BuildContext context) {
-    return CoursesSearchField(controller: searchController, onChanged: (value) => onSearchChanged(context, value));
+    return CoursesSearchField(
+      controller: searchController,
+      readOnly: true,
+      onTap: () => openCoursesSearch(context),
+      onChanged: (_) {},
+      heroTag: CoursesSearchField.kHeroTag,
+    );
   }
 
   Widget buildInProgressCard(BuildContext context, CourseInProgressModel model) {

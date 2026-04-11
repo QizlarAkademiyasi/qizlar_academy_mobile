@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_mobile/feature/auth/data/datasource/auth_local_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/datasource/auth_remote_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_otp_bot_response.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_session_model.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/repository/auth_repository.dart';
 
@@ -21,6 +22,11 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<String> sendOtpToPhoneNumber({required String phone}) async {
     final response = await _remoteDatasource.sendOtpToPhoneNumber(phone: phone);
     return response.keyHash;
+  }
+
+  @override
+  Future<AuthOtpBotResponse> sendOtpViaTelegramBot({required String phone}) {
+    return _remoteDatasource.sendOtpViaTelegramBot(phone: phone);
   }
 
   @override

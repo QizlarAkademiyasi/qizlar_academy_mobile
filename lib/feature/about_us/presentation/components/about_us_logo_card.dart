@@ -17,7 +17,10 @@ class AboutUsLogoCard extends StatelessWidget {
         borderRadius: AppRadius.radiusLg,
         border: Border.all(color: context.appColors.stroke),
       ),
-      child: UiKitAssets.images.splashLogoSvg.svg(colorFilter: ColorFilter.mode(context.appColors.text, BlendMode.srcIn)),
+      child: Padding(
+        padding: AppPadding.paddingXl,
+        child: UiKitAssets.images.splashLogoSvg.svg(colorFilter: ColorFilter.mode(context.appColors.text, BlendMode.srcIn)),
+      ),
     );
   }
 }

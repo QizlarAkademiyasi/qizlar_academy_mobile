@@ -20,13 +20,13 @@ class ProfileLogoutTile extends StatelessWidget {
         borderRadius: AppRadius.radiusXl,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 13),
           child: Row(
             children: [
               Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(color: context.appColors.error.withValues(alpha: 0.09), borderRadius: AppRadius.radiusXs),
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(color: context.appColors.error.withValues(alpha: 0.09), borderRadius: AppRadius.radiusMd),
                 child: Icon(LucideIcons.logOut, size: 15, color: context.appColors.error),
               ),
               const SizedBox(width: 12),

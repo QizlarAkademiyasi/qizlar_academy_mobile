@@ -4,13 +4,7 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 enum SignInSocialProvider { google, telegram }
 
 class SignInSocialButton extends StatelessWidget {
-  const SignInSocialButton({
-    super.key,
-    required this.provider,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-  });
+  const SignInSocialButton({super.key, required this.provider, required this.label, required this.onPressed, this.isLoading = false});
 
   final SignInSocialProvider provider;
   final String label;
@@ -27,9 +21,7 @@ class SignInSocialButton extends StatelessWidget {
       backgroundColor: context.appColors.onContainer,
       foregroundColor: context.appColors.text,
       borderColor: context.appColors.stroke,
-      textStyle: context.textTheme.bodyLargeSemibold.copyWith(
-        color: context.appColors.text,
-      ),
+      textStyle: context.textTheme.bodyLargeSemibold.copyWith(color: context.appColors.text),
     );
   }
 
@@ -44,22 +36,14 @@ class SignInSocialButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(11),
           border: Border.all(color: context.appColors.stroke),
         ),
-        child: Text(
-          'G',
-          style: context.textTheme.bodyMediumBold.copyWith(
-            color: const Color(0xFFEA4335),
-          ),
-        ),
+        child: UiKitAssets.images.google.image(width: 22, height: 22, fit: BoxFit.fill),
       ),
       SignInSocialProvider.telegram => Container(
         width: 22,
         height: 22,
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: const Color(0xFF29A9EA),
-          borderRadius: BorderRadius.circular(11),
-        ),
-        child: const Icon(LucideIcons.send, size: 13, color: AppColors.white),
+        decoration: BoxDecoration(color: const Color(0xFF29A9EA), borderRadius: BorderRadius.circular(11)),
+        child: UiKitAssets.images.telegramPng.image(width: 22, height: 22, fit: BoxFit.fill),
       ),
     };
   }

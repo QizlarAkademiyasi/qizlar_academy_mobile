@@ -19,21 +19,23 @@ class LessonQuizResultScreen extends StatefulWidget {
 class _LessonQuizResultScreenState extends State<LessonQuizResultScreen> {
   bool _submitting = false;
 
+  void _onRetryQuiz() {
+    if (mounted) context.pop(LessonQuizResultOutcome.retry);
+  }
+
   Future<void> _onContinue() async {
     final args = widget.args;
     if (!args.pendingSubmit) {
-      Gaimon.light();
-      if (mounted) context.pop();
+      if (mounted) context.pop(args.result);
       return;
     }
 
     if (_submitting) return;
     setState(() => _submitting = true);
-    Gaimon.light();
     try {
-      await getIt<LessonQuizRepository>().submitLessonQuiz(lessonId: args.lessonId, answers: args.answers);
+      final serverResult = await getIt<LessonQuizRepository>().submitLessonQuiz(lessonId: args.lessonId, answers: args.answers);
       getIt<LessonQuizRepository>().clearCacheForLesson(args.lessonId);
-      if (mounted) context.pop(args.result);
+      if (mounted) context.pop(serverResult);
     } on LessonQuizAlreadySubmittedException {
       if (mounted) {
         AppToast.info(context, message: context.l10n.lessonQuizAlreadyTaken);
@@ -65,85 +67,106 @@ class _LessonQuizResultScreenState extends State<LessonQuizResultScreen> {
 
         final shouldLeave = await showLessonQuizExitDialog(context);
         if (shouldLeave == true && context.mounted) {
-           context.pop();
+          context.pop();
         }
       },
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const SizedBox(height: 24),
-              Lottie.asset(
-                r.isFail 
-                    ? UiKitAssets.lottie.rabbit.cryedRabbit 
-                    : UiKitAssets.lottie.rabbit.greatRabbit,
-                width: 160,
-                height: 160,
-                fit: BoxFit.contain,
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text('$pct', style: context.textTheme.heading2.copyWith(color: context.appColors.text)),
-                  Text('%', style: context.textTheme.heading2.copyWith(color: AppColors.primary)),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                r.isFail ? l10n.lessonQuizResultPoor : l10n.lessonQuizResultGreat,
-                textAlign: TextAlign.center,
-                style: context.textTheme.bodyLargeBold.copyWith(color: context.appColors.text),
-              ),
-              const SizedBox(height: 28),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                decoration: BoxDecoration(
-                  color: context.appColors.onContainer,
-                  borderRadius: AppRadius.radius2xl,
-                  border: Border.all(color: context.appColors.stroke),
-                  boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 4))],
-                ),
-                child: Row(
+        body: SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(child: _StatColumn(icon: LucideIcons.circleCheck, iconColor: const Color(0xFF22C55E), label: l10n.lessonQuizStatCorrect, value: '${r.correctAnswerCount}')),
-                    Container(width: 1, height: 52, color: context.appColors.stroke),
-                    Expanded(child: _StatColumn(icon: LucideIcons.circleX, iconColor: const Color(0xFFEF4444), label: l10n.lessonQuizStatWrong, value: '$wrong')),
-                    Container(width: 1, height: 52, color: context.appColors.stroke),
-                    Expanded(child: _StatColumn(icon: LucideIcons.clock, iconColor: AppColors.primary, label: l10n.lessonQuizStatTime, value: timeLabel)),
+                    const Spacer(),
+                    Lottie.asset(r.isFail ? UiKitAssets.lottie.rabbit.cryedRabbit : UiKitAssets.lottie.rabbit.greatRabbit, width: 160, height: 160, fit: BoxFit.contain),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text('$pct', style: context.textTheme.heading1.copyWith(color: context.appColors.text)),
+                        Text('%', style: context.textTheme.heading1.copyWith(color: AppColors.primary)),
+                      ],
+                    ),
+                    // const SizedBox(height: 10),
+                    Text(
+                      r.isFail ? l10n.lessonQuizResultPoor : l10n.lessonQuizResultGreat,
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.bodyXLargeBold.copyWith(color: context.appColors.text),
+                    ),
+                    const SizedBox(height: 28),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      decoration: BoxDecoration(
+                        color: context.appColors.onContainer,
+                        borderRadius: AppRadius.radius2xl,
+                        border: Border.all(color: context.appColors.stroke),
+                        boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 4))],
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _StatColumn(icon: LucideIcons.circleCheck, iconColor: const Color(0xFF22C55E), label: l10n.lessonQuizStatCorrect, value: '${r.correctAnswerCount}'),
+                          ),
+                          Container(width: 1, height: 52, color: context.appColors.stroke),
+                          Expanded(
+                            child: _StatColumn(icon: LucideIcons.circleX, iconColor: const Color(0xFFEF4444), label: l10n.lessonQuizStatWrong, value: '$wrong'),
+                          ),
+                          Container(width: 1, height: 52, color: context.appColors.stroke),
+                          Expanded(
+                            child: _StatColumn(icon: LucideIcons.clock, iconColor: AppColors.primary, label: l10n.lessonQuizStatTime, value: timeLabel),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                    const Spacer(),
                   ],
                 ),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(borderRadius: AppRadius.radius3xl),
-                  ),
-                  onPressed: _submitting ? null : _onContinue,
-                  child: _submitting
-                      ? SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.white),
-                        )
-                      : Text(l10n.lessonQuizContinue, style: context.textTheme.bodyLargeBold.copyWith(color: AppColors.white)),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (r.isFail) ...[
+                      PrimaryButton.outlined(
+                        label: l10n.lessonQuizRetry,
+                        onPressed: _onRetryQuiz,
+                        isEnabled: !_submitting,
+                        expand: true,
+                        applyTabletMaxWidth: false,
+                        height: 54,
+                        shape: AppPrimaryButtonShape.roundedRectangle,
+                        borderRadius: AppRadius.radius3xl,
+                        foregroundColor: AppColors.primary,
+                        borderColor: AppColors.primary,
+                        textStyle: context.textTheme.bodyLargeBold.copyWith(color: AppColors.primary),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    PrimaryButton.elevated(
+                      label: l10n.lessonQuizContinue,
+                      onPressed: _onContinue,
+                      isLoading: _submitting,
+                      expand: true,
+                      applyTabletMaxWidth: false,
+                      height: 54,
+                      shape: AppPrimaryButtonShape.roundedRectangle,
+                      borderRadius: AppRadius.radius3xl,
+                      textStyle: context.textTheme.bodyLargeBold.copyWith(color: AppColors.white),
+                    ),
+                    SizedBox(height: MediaQuery.paddingOf(context).bottom + 12),
+                  ],
                 ),
-              ),
-              SizedBox(height: MediaQuery.paddingOf(context).bottom + 12),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

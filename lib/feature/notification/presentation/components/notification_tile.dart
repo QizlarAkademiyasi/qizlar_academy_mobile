@@ -2,6 +2,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/notification/domain/model/notification_item_model.dart';
+import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_photo_resolution.dart';
 
 class NotificationTile extends StatelessWidget {
   const NotificationTile({
@@ -46,7 +47,7 @@ class NotificationTile extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            item.description,
+                            item.timeLabel,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: context.textTheme.bodySmallMedium.copyWith(
@@ -101,32 +102,39 @@ class _LeadingAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (item.senderType == NotificationSenderType.user) {
-      return ClipOval(
-        child: SizedBox(
-          width: 48,
-          height: 48,
-          child: AppCachedNetworkImage(
-            imageUrl: item.avatarUrl ?? '',
-            fit: BoxFit.cover,
-            fallback: const AppNetworkImageFallbackAvatar(
-              icon: LucideIcons.userRound,
-              iconSize: 18,
-              placeholderShowsIcon: false,
-            ),
-          ),
+    final raw = item.avatarUrl?.trim() ?? '';
+    if (raw.isEmpty) {
+      return Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: context.appColors.primary,
         ),
+        child: const Icon(LucideIcons.flower2, color: Colors.white, size: 22),
       );
     }
 
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: context.appColors.primary,
+    final photo = notificationPhotoRequest(raw);
+    return ClipOval(
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: AppCachedNetworkImage(
+          imageUrl: photo.url,
+          httpHeaders: photo.headers,
+          fit: BoxFit.cover,
+          placeholder: (ctx, _) => _placeholder(ctx),
+          errorWidget: (ctx, url, _) => _placeholder(ctx),
+        ),
       ),
-      child: const Icon(LucideIcons.flower2, color: Colors.white, size: 20),
+    );
+  }
+
+  Widget _placeholder(BuildContext context) {
+    return ColoredBox(
+      color: context.appColors.primary,
+      child: const Icon(LucideIcons.flower2, color: Colors.white, size: 22),
     );
   }
 }

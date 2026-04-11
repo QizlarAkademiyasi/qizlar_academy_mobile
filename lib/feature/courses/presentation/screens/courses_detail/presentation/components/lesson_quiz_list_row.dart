@@ -14,6 +14,8 @@ class LessonQuizListRow extends StatefulWidget {
     this.forceEnrollmentLock = false,
     this.guestPreviewLessonId,
     this.onGuestAuthRequired,
+    this.modulePrerequisiteLocked = false,
+    this.onModulePrerequisiteBlocked,
   });
 
   final CourseLessonModel lesson;
@@ -21,6 +23,8 @@ class LessonQuizListRow extends StatefulWidget {
   final bool forceEnrollmentLock;
   final String? guestPreviewLessonId;
   final VoidCallback? onGuestAuthRequired;
+  final bool modulePrerequisiteLocked;
+  final VoidCallback? onModulePrerequisiteBlocked;
 
   @override
   State<LessonQuizListRow> createState() => _LessonQuizListRowState();
@@ -63,6 +67,8 @@ class _LessonQuizListRowState extends State<LessonQuizListRow> {
           forceEnrollmentLock: widget.forceEnrollmentLock,
           guestBlocked: guestBlocked,
           onGuestAuthRequired: widget.onGuestAuthRequired,
+          modulePrerequisiteLocked: widget.modulePrerequisiteLocked,
+          onModulePrerequisiteBlocked: widget.onModulePrerequisiteBlocked,
           onTap: () => widget.onOpenQuiz(widget.lesson.id),
         );
       },

@@ -10,15 +10,22 @@ class LeaderboardTopPerformersCard extends StatelessWidget {
   final List<LeaderboardUserModel> topThree;
   final ValueChanged<LeaderboardUserModel> onUserTap;
 
+  /// 1-o'rin kartasini biroz yuqoriga — klassik podium sillueti.
+  static const double _centerLift = 20;
+
   @override
   Widget build(BuildContext context) {
     final first = topThree.isNotEmpty ? topThree[0] : null;
     final second = topThree.length > 1 ? topThree[1] : null;
     final third = topThree.length > 2 ? topThree[2] : null;
 
+    if (first == null && second == null && third == null) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: EdgeInsets.fromLTRB(16, first != null ? 20 + _centerLift : 20, 16, 20),
       decoration: BoxDecoration(
         color: context.appColors.onContainer,
         borderRadius: AppRadius.radius3xl,
@@ -32,23 +39,30 @@ class LeaderboardTopPerformersCard extends StatelessWidget {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (second != null)
-            Expanded(
-              child: _PodiumItem(user: second, rank: 2, isFirst: false, onTap: () => onUserTap(second)),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: second != null ? _PodiumItem(user: second, rank: 2, isFirst: false, onTap: () => onUserTap(second)) : const SizedBox.shrink(),
             ),
-          if (first != null) ...[
-            const SizedBox(width: 8),
-            Expanded(
-              child: _PodiumItem(user: first, rank: 1, isFirst: true, onTap: () => onUserTap(first)),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: first != null
+                  ? Transform.translate(
+                      offset: const Offset(0, -_centerLift),
+                      child: _PodiumItem(user: first, rank: 1, isFirst: true, onTap: () => onUserTap(first)),
+                    )
+                  : const SizedBox.shrink(),
             ),
-            const SizedBox(width: 8),
-          ],
-          if (third != null)
-            Expanded(
-              child: _PodiumItem(user: third, rank: 3, isFirst: false, onTap: () => onUserTap(third)),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: third != null ? _PodiumItem(user: third, rank: 3, isFirst: false, onTap: () => onUserTap(third)) : const SizedBox.shrink(),
             ),
+          ),
         ],
       ),
     );

@@ -13,29 +13,19 @@ class MyCertificateTierBadge extends StatelessWidget {
     final style = _styleFor(tier);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: style.background,
-        borderRadius: AppRadius.radiusSm,
-      ),
-      child: Text(
-        label,
-        style: context.textTheme.bodyXSmallRegular.copyWith(
-          color: style.foreground,
-          fontWeight: FontWeight.w600,
-          height: 1.1,
-        ),
-      ),
+      decoration: BoxDecoration(color: style.background, borderRadius: AppRadius.radiusSm),
+      child: Text(label, style: context.textTheme.bodyXSmallBold.copyWith(color: context.appColors.background)),
     );
   }
 
   _BadgeStyle _styleFor(CertificateTier tier) {
     switch (tier) {
       case CertificateTier.gold:
-        return const _BadgeStyle(background: Color(0xFFFFD700), foreground: AppColors.black);
+        return _BadgeStyle(background: AppColors.otherAmber, foreground: AppColors.otherAmber);
       case CertificateTier.silver:
-        return const _BadgeStyle(background: Color(0xFF4A4A4A), foreground: AppColors.white);
+        return _BadgeStyle(background: AppColors.grey, foreground: AppColors.grey);
       case CertificateTier.bronze:
-        return const _BadgeStyle(background: Color(0xFFFF5722), foreground: AppColors.white);
+        return _BadgeStyle(background: AppColors.otherOrange, foreground: AppColors.otherOrange);
     }
   }
 }

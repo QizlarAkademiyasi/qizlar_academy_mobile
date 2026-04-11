@@ -58,6 +58,20 @@ mixin VerificationScreenMixin<T extends StatefulWidget> on State<T> {
 
   String formatPhoneForUi(String fullPhone) => formatPhoneForDisplay(fullPhone);
 
+  Future<void> requestVerificationExit(BuildContext context) async {
+    final l10n = context.l10n;
+    final confirmed = await showAppPrimaryConfirmDialog(
+      context,
+      title: l10n.verificationBackConfirmTitle,
+      description: l10n.verificationBackConfirmMessage,
+      cancelLabel: l10n.verificationBackConfirmStay,
+      confirmLabel: l10n.verificationBackConfirmLeave,
+    );
+    if (confirmed == true && context.mounted) {
+      context.pop();
+    }
+  }
+
   Future<void> verifyCode({
     required String phone,
     required String keyHash,

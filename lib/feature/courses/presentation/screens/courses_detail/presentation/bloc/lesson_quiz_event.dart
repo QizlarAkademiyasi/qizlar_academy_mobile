@@ -20,6 +20,21 @@ final class LessonQuizOptionToggled extends LessonQuizEvent {
   List<Object?> get props => [optionId];
 }
 
+/// Faqat [LessonQuizQuestionType.singleChoice]: variant tanlanganda darhol tekshiruv va keyin kechikish bilan o‘tish.
+final class LessonQuizSingleOptionChosen extends LessonQuizEvent {
+  const LessonQuizSingleOptionChosen(this.optionId);
+
+  final String optionId;
+
+  @override
+  List<Object?> get props => [optionId];
+}
+
 final class LessonQuizPrimaryPressed extends LessonQuizEvent {
   const LessonQuizPrimaryPressed();
+}
+
+/// Natija oynasidan «Qayta ishlash» — savollar nol holatda qayta yuklanadi.
+final class LessonQuizRestartRequested extends LessonQuizEvent {
+  const LessonQuizRestartRequested();
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/constants/remote_config_force_update_keys.dart';
 import 'package:qizlar_academy_mobile/config/flavor/env_config.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 
@@ -24,14 +25,13 @@ final class AppRemoteConfig {
     final remoteConfig = FirebaseRemoteConfig.instance;
     await remoteConfig.ensureInitialized();
 
-    await remoteConfig.setConfigSettings(
-      RemoteConfigSettings(
-        fetchTimeout: const Duration(seconds: 60),
-        minimumFetchInterval: EnvConfig.instance.isDev
-            ? Duration.zero
-            : const Duration(hours: 1),
-      ),
-    );
+    await remoteConfig.setConfigSettings(RemoteConfigSettings(fetchTimeout: const Duration(seconds: 60), minimumFetchInterval: EnvConfig.instance.isDev ? Duration.zero : const Duration(hours: 1)));
+
+    await remoteConfig.setDefaults(<String, Object>{
+      RemoteConfigForceUpdateKeys.applicationStoreLink: 'https://onelink.to/4h9hr9',
+      RemoteConfigForceUpdateKeys.currentAppVersion: '1.7.0',
+      RemoteConfigForceUpdateKeys.minimumSupportedAppVersion: '1.7.0',
+    });
 
     await remoteConfig.fetchAndActivate();
 
@@ -45,15 +45,20 @@ final class AppRemoteConfig {
 
     _instance = AppRemoteConfig._(resolvedDomain);
 
-    AppLogger.i(
-      'Remote config domain resolved',
-      error: <String, dynamic>{
-        'flavor': EnvConfig.instance.flavor.name,
-        'baseDomain': baseDomain,
-        'devDomain': devDomain,
-        'resolvedDomain': resolvedDomain,
-      },
-    );
+    final forceUpdateStoreLink = remoteConfig.getString(RemoteConfigForceUpdateKeys.applicationStoreLink).trim();
+    final forceUpdateCurrent = remoteConfig.getString(RemoteConfigForceUpdateKeys.currentAppVersion).trim();
+    final forceUpdateMinimum = remoteConfig.getString(RemoteConfigForceUpdateKeys.minimumSupportedAppVersion).trim();
+
+    AppLogger.i(<String, dynamic>{
+      'remoteConfig': 'domain + force_update (startup, after fetchAndActivate)',
+      'flavor': EnvConfig.instance.flavor.name,
+      'baseDomain': baseDomain,
+      'devDomain': devDomain,
+      'resolvedDomain': resolvedDomain,
+      RemoteConfigForceUpdateKeys.applicationStoreLink: forceUpdateStoreLink,
+      RemoteConfigForceUpdateKeys.currentAppVersion: forceUpdateCurrent,
+      RemoteConfigForceUpdateKeys.minimumSupportedAppVersion: forceUpdateMinimum,
+    });
   }
 
   static String _extractDomain(String raw) {
@@ -77,9 +82,7 @@ final class AppRemoteConfig {
       // Remote Config qiymati JSON bo'lmasa, quyida regex bilan tekshiriladi.
     }
 
-    final match = RegExp(
-      r'https?:\/\/[A-Za-z0-9\.\-:_~\/\?#\[\]@!\$&\(\)\*\+,;=%]+',
-    ).firstMatch(value);
+    final match = RegExp(r'https?:\/\/[A-Za-z0-9\.\-:_~\/\?#\[\]@!\$&\(\)\*\+,;=%]+').firstMatch(value);
     return match?.group(0)?.trim() ?? '';
   }
 }

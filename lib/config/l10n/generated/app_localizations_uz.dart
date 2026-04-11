@@ -62,8 +62,19 @@ class AppLocalizationsUz extends AppLocalizations {
       'Google orqali kirishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.';
 
   @override
-  String get telegramSignInComingSoonMessage =>
-      'Telegram orqali kirish keyingi bosqichda ulanadi.';
+  String get telegramSignInInvalidLinkMessage =>
+      'Telegramni ochib bo‘lmadi: serverdan noto‘g‘ri havola.';
+
+  @override
+  String get telegramSignInLaunchFailedMessage =>
+      'Telegram ochilmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get telegramSignInOpenBotTitle => 'Telegram';
+
+  @override
+  String get telegramSignInEnterCodeHintMessage =>
+      'Botni oching, keyin kelgan kodni shu yerga kiriting.';
 
   @override
   String get signInWithGoogle => 'Google bilan kirish';
@@ -127,6 +138,19 @@ class AppLocalizationsUz extends AppLocalizations {
   String get otpSentAgain => 'Tasdiqlash kodi qayta yuborildi.';
 
   @override
+  String get verificationBackConfirmTitle => 'Orqaga qaytishni xohlaysizmi?';
+
+  @override
+  String get verificationBackConfirmMessage =>
+      'Chiqsangiz, kirishni davom ettirish uchun kodni qayta olishingiz kerak bo‘ladi.';
+
+  @override
+  String get verificationBackConfirmStay => 'Qolish';
+
+  @override
+  String get verificationBackConfirmLeave => 'Orqaga';
+
+  @override
   String get mainTabHome => 'Asosiy';
 
   @override
@@ -169,10 +193,51 @@ class AppLocalizationsUz extends AppLocalizations {
       'Ulanishda xatolik yuz berdi. Qayta urinib ko‘ring.';
 
   @override
+  String get coursesCatalogLoadError =>
+      'Kurslarni yuklashda xatolik yuz berdi.';
+
+  @override
+  String get leaderboardLoadError => 'Reytingni yuklashda xatolik.';
+
+  @override
+  String get profileOverviewLoadError =>
+      'Profil ma\'lumotlarini yuklashda xatolik.';
+
+  @override
+  String get profilePreferenceUpdateError =>
+      'Sozlamalarni yangilab bo\'lmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get notificationListLoadError =>
+      'Bildirishnomalarni yuklashda xatolik yuz berdi.';
+
+  @override
+  String get notificationActionError =>
+      'Bildirishnomalarni yangilashda xatolik yuz berdi.';
+
+  @override
+  String get courseDetailsLoadError =>
+      'Kurs ma\'lumotlarini yuklashda xatolik.';
+
+  @override
+  String get editProfileLoadError =>
+      'Profil ma\'lumotlarini yuklashda xatolik.';
+
+  @override
+  String get editProfileSaveError =>
+      'Ma\'lumotlarni saqlab bo\'lmadi. Qayta urinib ko\'ring.';
+
+  @override
   String get coursesAllTitle => 'Barcha kurslar';
 
   @override
   String get coursesSearchHint => 'Kurslarni izlash...';
+
+  @override
+  String get coursesSearchScreenTitle => 'Kurslarni qidirish';
+
+  @override
+  String get coursesSearchIdleHint => 'Qidiruv uchun kurs nomini kiriting';
 
   @override
   String get coursesNoResults => 'Mos kurs topilmadi';
@@ -245,6 +310,16 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get lessonMarkComplete => 'Darsni yakunlash';
+
+  @override
+  String get lessonVideoPlaybackError => 'Videoni yuklab bo\'lmadi.';
+
+  @override
+  String get lessonVideoPlaybackErrorYoutube =>
+      'YouTube vaqtincha ilova ichida ijro etishni cheklashi mumkin. Videoni brauzer yoki YouTube ilovasida oching.';
+
+  @override
+  String get lessonVideoOpenExternal => 'Brauzerda ochish';
 
   @override
   String get coursePillTabLessons => 'Darslar';
@@ -324,6 +399,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get lessonQuizContinue => 'Davom qilish';
 
   @override
+  String get lessonQuizRetry => 'Qayta ishlash';
+
+  @override
   String get lessonQuizErrorEmpty => 'Bu dars uchun test hali yo\'q.';
 
   @override
@@ -341,6 +419,27 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get lessonQuizAlreadyTaken =>
       'Siz bu testni allaqachon topshirgansiz. Qayta topshirish mumkin emas.';
+
+  @override
+  String get courseModuleLockedMessage =>
+      'Keyingi modulga o‘tish uchun avvalgi moduldagi barcha dars va testlarni yakunlang.';
+
+  @override
+  String get courseLessonSequentialLockedMessage =>
+      'Keyingi darsga o‘tish uchun avvalgi darsni yakunlang va testini topshiring (test bo‘lsa).';
+
+  @override
+  String get courseCompleteCongratsTitle => 'Tabriklaymiz!';
+
+  @override
+  String get courseCompleteCongratsDescription =>
+      'Siz bu kursni muvaffaqiyatli tugatdingiz. Sertifikatingizni «Sertifikatlarim» bo‘limidan oling.';
+
+  @override
+  String get courseCompleteGetCertificate => 'Sertifikatni olish';
+
+  @override
+  String get courseCompleteClose => 'Yopish';
 
   @override
   String get leaderboardTitle => 'Peshqadamlar';
@@ -403,6 +502,114 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileMenuMyActivity => 'Mening faolligim';
 
   @override
+  String get profileMenuVacancies => 'Vakansiyalar';
+
+  @override
+  String get vacanciesTitle => 'Vakansiyalar';
+
+  @override
+  String get vacancyDetailCta => 'Batafsil';
+
+  @override
+  String get vacancySalaryNegotiable => 'Maosh kelishiladi';
+
+  @override
+  String vacancySalaryRange(String from, String to, String currency) {
+    return '$from – $to $currency';
+  }
+
+  @override
+  String get vacancyPostedMomentsAgo => 'Hozirgina';
+
+  @override
+  String vacancyPostedMinutesAgo(int count) {
+    return '$count daqiqa avval';
+  }
+
+  @override
+  String vacancyPostedHoursAgo(int count) {
+    return '$count soat avval';
+  }
+
+  @override
+  String get vacancyPostedYesterday => 'Kecha';
+
+  @override
+  String vacancyPostedDaysAgo(int count) {
+    return '$count kun avval';
+  }
+
+  @override
+  String get vacancyEmploymentIntern => 'Amaliyot';
+
+  @override
+  String get vacancyEmploymentPartTime => 'Yarim stavka';
+
+  @override
+  String get vacancyEmploymentFullTime => 'To‘liq stavka';
+
+  @override
+  String get vacancyEmploymentRemote => 'Masofadan';
+
+  @override
+  String get vacancyEmploymentOnsite => 'Ofisda';
+
+  @override
+  String get vacancyEmploymentContract => 'Shartnoma';
+
+  @override
+  String get vacanciesEmptyTitle => 'Hozircha vakansiya yo‘q';
+
+  @override
+  String get vacanciesEmptySubtitle => 'Keyinroq qayta tekshiring';
+
+  @override
+  String get vacanciesLoadError => 'Vakansiyalarni yuklab bo‘lmadi';
+
+  @override
+  String get vacanciesLoadMoreError => 'Yana yuklashda xatolik';
+
+  @override
+  String get vacancyDetailsTitle => 'Vakansiya';
+
+  @override
+  String get vacancySheetEmploymentType => 'Ish turi';
+
+  @override
+  String get vacancySheetSalary => 'Maosh';
+
+  @override
+  String get vacancySheetLocation => 'Manzil';
+
+  @override
+  String get vacancySheetCategory => 'Yo‘nalish';
+
+  @override
+  String get vacancySheetPosted => 'E‘lon qilingan';
+
+  @override
+  String get vacancyDetailAbout => 'Vakansiya haqida';
+
+  @override
+  String get vacancyDetailSkills => 'Ko\'nikmalar';
+
+  @override
+  String get vacancyDetailRequirements => 'Majburiyatlar';
+
+  @override
+  String get vacancyApplyCta => 'Ariza berish';
+
+  @override
+  String get vacancySalaryPerMonth => '/ oyiga';
+
+  @override
+  String get vacancyDetailLoadError => 'Vakansiyani yuklab bo\'lmadi';
+
+  @override
+  String get vacancyApplyPlaceholder =>
+      'Tez orada — ariza qabul qilish ulanadi';
+
+  @override
   String get profileMenuProfileInfo => 'Profil ma\'lumotlari';
 
   @override
@@ -410,6 +617,14 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get profileMenuShareApp => 'Ilovani ulashish';
+
+  @override
+  String get profileShareAppSubtitle => 'Do‘stlaringiz bilan ulashing';
+
+  @override
+  String profileShareAppMessage(String link) {
+    return 'Qizlar Akademiyasi — ayol-qizlar uchun bepul o‘quv kurslari, faol hamjamiyat va rivojlanish imkoniyatlari barchasi bitta ilovada.\n\nYuklab oling va birga o‘rganing:\n$link';
+  }
 
   @override
   String get profileMenuAbout => 'Biz haqimizda';
@@ -444,6 +659,10 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get profileNotificationsSubtitle => 'Push-xabarlar';
+
+  @override
+  String get profileNotificationsEnableFailed =>
+      'Bildirishnomalarni yoqib bo‘lmadi. Ruxsatlarni tekshiring va qayta urinib ko‘ring.';
 
   @override
   String get profileDarkMode => 'Tungi rejim';
@@ -509,6 +728,22 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileInformationPhoneNationalHint => 'XX XXX XX XX';
 
   @override
+  String get editProfileUnsavedTitle => 'Saqlanmagan o‘zgarishlar';
+
+  @override
+  String get editProfileUnsavedMessage =>
+      'Profilda saqlanmagan o‘zgarishlar bor. Chiqishdan oldin ularni saqlaysizmi?';
+
+  @override
+  String get editProfileUnsavedSave => 'Saqlash';
+
+  @override
+  String get editProfileUnsavedDiscard => 'Saqlamasdan chiqish';
+
+  @override
+  String get editProfileUnsavedContinue => 'Tahrirlashni davom ettirish';
+
+  @override
   String get aboutBrandTitle => 'QIZLAR AKADEMIYASI';
 
   @override
@@ -569,6 +804,19 @@ class AppLocalizationsUz extends AppLocalizations {
   String get aboutUsLinkOpenError => 'Havolani ochib bo\'lmadi.';
 
   @override
+  String get appUpdateAvailableTitle => 'Yangilanish mavjud!';
+
+  @override
+  String get appUpdateAvailableBody =>
+      'Biz ilovani yanada yaxshiladik! Yangi imkoniyatlardan foydalanish va qulayroq o‘qish uchun ilovani yangilang.';
+
+  @override
+  String get appUpdateLater => 'Keyinroq';
+
+  @override
+  String get appUpdateCta => 'Yangilash';
+
+  @override
   String get guestGateNotificationSettings =>
       'Bildirishnoma sozlamalari uchun ro‘yxatdan o‘ting';
 
@@ -582,6 +830,16 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get profileAppLanguageTitle => 'Ilova tili';
+
+  @override
+  String get profileBadgePickerTitle => 'Mening nishonlarim';
+
+  @override
+  String get profileTezKundaTitle => 'Tez kunda';
+
+  @override
+  String get profileTezKundaMessage =>
+      'Bu bo‘lim hozircha mavjud emas. U ustida ishlayapmiz — tez orada qaytib keling.';
 
   @override
   String get languageUzbek => 'O\'zbekcha';
@@ -601,6 +859,23 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get notificationsEmptySubtitle =>
       'Yangi xabarlar paydo bo\'lishi bilan shu yerda ko\'rinadi.';
+
+  @override
+  String get notificationTabPlatform => 'Platforma';
+
+  @override
+  String get notificationTabCommunity => 'Jamiyat';
+
+  @override
+  String get notificationDetailsMore => 'Batafsil';
+
+  @override
+  String get notificationsEmptyThisTab =>
+      'Ushbu bo‘limda bildirishnomalar yo‘q';
+
+  @override
+  String get notificationsEmptyThisTabSubtitle =>
+      'Boshqa yorliqqa o‘ting yoki keyinroq qaytib keling.';
 
   @override
   String get guestGateMarkAllRead =>
@@ -664,6 +939,19 @@ class AppLocalizationsUz extends AppLocalizations {
   String get certificatesBadgeBronze => 'Bronza sertifikat';
 
   @override
+  String get linkPromptYes => 'Ha';
+
+  @override
+  String get linkPromptNo => 'Yo\'q';
+
+  @override
+  String get communityTelegramInviteTitle => 'Bizning hamjamiyatga qo‘shiling';
+
+  @override
+  String get communityTelegramInviteDescription =>
+      'Telegram kanalimizda barcha savollaringizga javob topishingiz mumkin. Telegram kanalimizga o‘tmoqchimisiz?';
+
+  @override
   String get certificatesView => 'Ko\'rish';
 
   @override
@@ -690,8 +978,20 @@ class AppLocalizationsUz extends AppLocalizations {
       'Sertifikatlarni yuklab bo\'lmadi. Qayta urinib ko\'ring.';
 
   @override
+  String get certificateClaimError =>
+      'Sertifikatni olishda xatolik. Keyinroq urinib ko\'ring.';
+
+  @override
   String get certificatesFileActionError =>
       'Faylni yuklab yoki ulashib bo\'lmadi.';
+
+  @override
+  String get certificatesInstagramStoryNotConfigured =>
+      'Instagram Story uchun Facebook App ID kerak. Ilovani yig‘ishda FACEBOOK_APP_ID qo‘shing.';
+
+  @override
+  String get certificatesInstagramShareFailed =>
+      'Instagram ochilmadi. Instagram o‘rnatilganligini tekshirib, qayta urinib ko‘ring.';
 
   @override
   String courseReviewsSummaryCount(int count) {

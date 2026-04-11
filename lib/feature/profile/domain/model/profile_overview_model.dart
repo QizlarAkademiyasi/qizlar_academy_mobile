@@ -19,6 +19,11 @@ const List<ProfileMenuItemModel> kDefaultProfileAchievementItems = <ProfileMenuI
     type: ProfileMenuItemType.myActivity,
     title: '',
   ),
+  ProfileMenuItemModel(
+    id: 'achievements-vacancies',
+    type: ProfileMenuItemType.vacancies,
+    title: '',
+  ),
 ];
 
 class ProfileOverviewModel extends Equatable {

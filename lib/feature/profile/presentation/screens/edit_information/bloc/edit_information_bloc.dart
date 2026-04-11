@@ -101,7 +101,7 @@ class EditInformationBloc extends Bloc<EditInformationEvent, EditInformationStat
       emit(
         state.copyWith(
           status: EditInformationStatus.failure,
-          loadMessage: 'Profil ma’lumotlarini yuklashda xatolik.',
+          clearLoadMessage: true,
         ),
       );
     }
@@ -203,7 +203,9 @@ class EditInformationBloc extends Bloc<EditInformationEvent, EditInformationStat
       emit(
         state.copyWith(
           isSaving: false,
-          saveError: 'Ma’lumotlarni saqlab bo‘lmadi. Qayta urinib ko‘ring.',
+          clearSaveError: true,
+          notice: EditInformationNotice.saveFailed,
+          noticeSeq: state.noticeSeq + 1,
         ),
       );
     }

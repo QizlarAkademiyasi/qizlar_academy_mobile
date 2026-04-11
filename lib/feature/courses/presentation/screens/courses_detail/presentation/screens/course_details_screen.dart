@@ -2,7 +2,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/courses_page_loading_skeleton.dart';
-import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_failure_content.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/bloc/course_details_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_details_screen_mixin.dart';
 
@@ -60,7 +60,7 @@ class _CoursesViewState extends State<_CoursesView> with CourseDetailsScreenMixi
           }
 
           if (state.status == CoursesStatus.failure && !hasCourse) {
-            return TgsFailureContent(message: state.message, onRetry: () => retryLoad(context));
+            return AppFailureState(message: context.l10n.courseDetailsLoadError, onRetry: () => retryLoad(context));
           }
 
           if (!hasCourse) {

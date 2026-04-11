@@ -62,8 +62,19 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось войти через Google. Попробуйте ещё раз.';
 
   @override
-  String get telegramSignInComingSoonMessage =>
-      'Вход через Telegram будет доступен позже.';
+  String get telegramSignInInvalidLinkMessage =>
+      'Не удалось открыть Telegram: неверная ссылка от сервера.';
+
+  @override
+  String get telegramSignInLaunchFailedMessage =>
+      'Не удалось открыть Telegram. Попробуйте снова.';
+
+  @override
+  String get telegramSignInOpenBotTitle => 'Telegram';
+
+  @override
+  String get telegramSignInEnterCodeHintMessage =>
+      'Откройте бота и введите полученный код здесь.';
 
   @override
   String get signInWithGoogle => 'Войти через Google';
@@ -126,6 +137,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get otpSentAgain => 'Код подтверждения отправлен повторно.';
 
   @override
+  String get verificationBackConfirmTitle => 'Вернуться назад?';
+
+  @override
+  String get verificationBackConfirmMessage =>
+      'Если вы выйдете, нужно будет снова запросить код для входа.';
+
+  @override
+  String get verificationBackConfirmStay => 'Остаться';
+
+  @override
+  String get verificationBackConfirmLeave => 'Назад';
+
+  @override
   String get mainTabHome => 'Главная';
 
   @override
@@ -166,10 +190,52 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeLoadErrorMessage => 'Ошибка соединения. Попробуйте ещё раз.';
 
   @override
+  String get coursesCatalogLoadError =>
+      'Не удалось загрузить курсы. Попробуйте ещё раз.';
+
+  @override
+  String get leaderboardLoadError =>
+      'Не удалось загрузить рейтинг. Попробуйте ещё раз.';
+
+  @override
+  String get profileOverviewLoadError =>
+      'Не удалось загрузить профиль. Попробуйте ещё раз.';
+
+  @override
+  String get profilePreferenceUpdateError =>
+      'Не удалось обновить настройки. Попробуйте ещё раз.';
+
+  @override
+  String get notificationListLoadError =>
+      'Не удалось загрузить уведомления. Попробуйте ещё раз.';
+
+  @override
+  String get notificationActionError =>
+      'Не удалось обновить уведомления. Попробуйте ещё раз.';
+
+  @override
+  String get courseDetailsLoadError =>
+      'Не удалось загрузить данные курса. Попробуйте ещё раз.';
+
+  @override
+  String get editProfileLoadError =>
+      'Не удалось загрузить данные профиля. Попробуйте ещё раз.';
+
+  @override
+  String get editProfileSaveError =>
+      'Не удалось сохранить изменения. Попробуйте ещё раз.';
+
+  @override
   String get coursesAllTitle => 'Все курсы';
 
   @override
   String get coursesSearchHint => 'Поиск курсов…';
+
+  @override
+  String get coursesSearchScreenTitle => 'Поиск курсов';
+
+  @override
+  String get coursesSearchIdleHint => 'Введите название курса для поиска';
 
   @override
   String get coursesNoResults => 'Подходящих курсов нет';
@@ -242,6 +308,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get lessonMarkComplete => 'Завершить урок';
+
+  @override
+  String get lessonVideoPlaybackError => 'Не удалось загрузить видео.';
+
+  @override
+  String get lessonVideoPlaybackErrorYoutube =>
+      'YouTube может временно ограничить воспроизведение в приложении. Откройте видео в браузере или в приложении YouTube.';
+
+  @override
+  String get lessonVideoOpenExternal => 'Открыть в браузере';
 
   @override
   String get coursePillTabLessons => 'Уроки';
@@ -321,6 +397,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lessonQuizContinue => 'Продолжить';
 
   @override
+  String get lessonQuizRetry => 'Попробовать снова';
+
+  @override
   String get lessonQuizErrorEmpty => 'Для этого урока пока нет теста.';
 
   @override
@@ -338,6 +417,27 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get lessonQuizAlreadyTaken =>
       'Вы уже прошли этот тест. Повторная попытка недоступна.';
+
+  @override
+  String get courseModuleLockedMessage =>
+      'Чтобы перейти к следующему модулю, завершите все уроки и тесты в предыдущем.';
+
+  @override
+  String get courseLessonSequentialLockedMessage =>
+      'Чтобы перейти к следующему уроку, завершите предыдущий урок и тест (если есть).';
+
+  @override
+  String get courseCompleteCongratsTitle => 'Поздравляем!';
+
+  @override
+  String get courseCompleteCongratsDescription =>
+      'Вы завершили курс. Получите сертификат в разделе «Мои сертификаты».';
+
+  @override
+  String get courseCompleteGetCertificate => 'Получить сертификат';
+
+  @override
+  String get courseCompleteClose => 'Закрыть';
 
   @override
   String get leaderboardTitle => 'Лидеры';
@@ -400,6 +500,114 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileMenuMyActivity => 'Моя активность';
 
   @override
+  String get profileMenuVacancies => 'Вакансии';
+
+  @override
+  String get vacanciesTitle => 'Вакансии';
+
+  @override
+  String get vacancyDetailCta => 'Подробнее';
+
+  @override
+  String get vacancySalaryNegotiable => 'По договорённости';
+
+  @override
+  String vacancySalaryRange(String from, String to, String currency) {
+    return '$from – $to $currency';
+  }
+
+  @override
+  String get vacancyPostedMomentsAgo => 'Только что';
+
+  @override
+  String vacancyPostedMinutesAgo(int count) {
+    return '$count мин. назад';
+  }
+
+  @override
+  String vacancyPostedHoursAgo(int count) {
+    return '$count ч. назад';
+  }
+
+  @override
+  String get vacancyPostedYesterday => 'Вчера';
+
+  @override
+  String vacancyPostedDaysAgo(int count) {
+    return '$count дн. назад';
+  }
+
+  @override
+  String get vacancyEmploymentIntern => 'Стажировка';
+
+  @override
+  String get vacancyEmploymentPartTime => 'Частичная занятость';
+
+  @override
+  String get vacancyEmploymentFullTime => 'Полная занятость';
+
+  @override
+  String get vacancyEmploymentRemote => 'Удалённо';
+
+  @override
+  String get vacancyEmploymentOnsite => 'В офисе';
+
+  @override
+  String get vacancyEmploymentContract => 'Контракт';
+
+  @override
+  String get vacanciesEmptyTitle => 'Пока нет вакансий';
+
+  @override
+  String get vacanciesEmptySubtitle => 'Загляните позже';
+
+  @override
+  String get vacanciesLoadError => 'Не удалось загрузить вакансии';
+
+  @override
+  String get vacanciesLoadMoreError => 'Не удалось подгрузить список';
+
+  @override
+  String get vacancyDetailsTitle => 'Вакансия';
+
+  @override
+  String get vacancySheetEmploymentType => 'Тип занятости';
+
+  @override
+  String get vacancySheetSalary => 'Зарплата';
+
+  @override
+  String get vacancySheetLocation => 'Локация';
+
+  @override
+  String get vacancySheetCategory => 'Направление';
+
+  @override
+  String get vacancySheetPosted => 'Опубликовано';
+
+  @override
+  String get vacancyDetailAbout => 'О вакансии';
+
+  @override
+  String get vacancyDetailSkills => 'Навыки';
+
+  @override
+  String get vacancyDetailRequirements => 'Обязанности';
+
+  @override
+  String get vacancyApplyCta => 'Откликнуться';
+
+  @override
+  String get vacancySalaryPerMonth => '/ в месяц';
+
+  @override
+  String get vacancyDetailLoadError => 'Не удалось загрузить вакансию';
+
+  @override
+  String get vacancyApplyPlaceholder =>
+      'Скоро — здесь появится возможность отклика';
+
+  @override
   String get profileMenuProfileInfo => 'Данные профиля';
 
   @override
@@ -407,6 +615,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileMenuShareApp => 'Поделиться приложением';
+
+  @override
+  String get profileShareAppSubtitle => 'Поделитесь с близкими';
+
+  @override
+  String profileShareAppMessage(String link) {
+    return 'Qizlar Akademiyasi — бесплатные курсы, активное сообщество и возможности для роста для женщин и девушек в одном приложении.\n\nСкачайте и учитесь вместе:\n$link';
+  }
 
   @override
   String get profileMenuAbout => 'О нас';
@@ -441,6 +657,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileNotificationsSubtitle => 'Push-уведомления';
+
+  @override
+  String get profileNotificationsEnableFailed =>
+      'Не удалось включить уведомления. Проверьте разрешения и попробуйте снова.';
 
   @override
   String get profileDarkMode => 'Тёмная тема';
@@ -506,6 +726,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileInformationPhoneNationalHint => 'XX XXX XX XX';
 
   @override
+  String get editProfileUnsavedTitle => 'Несохранённые изменения';
+
+  @override
+  String get editProfileUnsavedMessage =>
+      'В профиле есть несохранённые изменения. Сохранить перед выходом?';
+
+  @override
+  String get editProfileUnsavedSave => 'Сохранить';
+
+  @override
+  String get editProfileUnsavedDiscard => 'Выйти без сохранения';
+
+  @override
+  String get editProfileUnsavedContinue => 'Продолжить редактирование';
+
+  @override
   String get aboutBrandTitle => 'QIZLAR AKADEMIYASI';
 
   @override
@@ -567,6 +803,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aboutUsLinkOpenError => 'Не удалось открыть ссылку.';
 
   @override
+  String get appUpdateAvailableTitle => 'Доступно обновление!';
+
+  @override
+  String get appUpdateAvailableBody =>
+      'Мы ещё больше улучшили приложение! Обновите его, чтобы пользоваться новыми возможностями и удобнее учиться.';
+
+  @override
+  String get appUpdateLater => 'Позже';
+
+  @override
+  String get appUpdateCta => 'Обновить';
+
+  @override
   String get guestGateNotificationSettings =>
       'Зарегистрируйтесь, чтобы настроить уведомления';
 
@@ -580,6 +829,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileAppLanguageTitle => 'Язык приложения';
+
+  @override
+  String get profileBadgePickerTitle => 'Ваши значки';
+
+  @override
+  String get profileTezKundaTitle => 'Скоро';
+
+  @override
+  String get profileTezKundaMessage =>
+      'Этот раздел пока недоступен. Мы над ним работаем — загляните позже.';
 
   @override
   String get languageUzbek => 'Узбекский';
@@ -598,6 +857,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationsEmptySubtitle => 'Новые сообщения появятся здесь.';
+
+  @override
+  String get notificationTabPlatform => 'Платформа';
+
+  @override
+  String get notificationTabCommunity => 'Сообщество';
+
+  @override
+  String get notificationDetailsMore => 'Подробнее';
+
+  @override
+  String get notificationsEmptyThisTab => 'В этой вкладке нет уведомлений';
+
+  @override
+  String get notificationsEmptyThisTabSubtitle =>
+      'Переключите вкладку или загляните позже.';
 
   @override
   String get guestGateMarkAllRead =>
@@ -661,6 +936,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get certificatesBadgeBronze => 'Бронзовый сертификат';
 
   @override
+  String get linkPromptYes => 'Да';
+
+  @override
+  String get linkPromptNo => 'Нет';
+
+  @override
+  String get communityTelegramInviteTitle => 'Присоединяйтесь к сообществу';
+
+  @override
+  String get communityTelegramInviteDescription =>
+      'На нашем канале в Telegram вы найдёте ответы на вопросы. Перейти в канал?';
+
+  @override
   String get certificatesView => 'Смотреть';
 
   @override
@@ -687,8 +975,20 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось загрузить сертификаты. Попробуйте снова.';
 
   @override
+  String get certificateClaimError =>
+      'Не удалось получить сертификат. Попробуйте позже.';
+
+  @override
   String get certificatesFileActionError =>
       'Не удалось скачать или поделиться файлом.';
+
+  @override
+  String get certificatesInstagramStoryNotConfigured =>
+      'Для истории в Instagram нужен Facebook App ID. Укажите FACEBOOK_APP_ID при сборке приложения.';
+
+  @override
+  String get certificatesInstagramShareFailed =>
+      'Не удалось открыть Instagram. Убедитесь, что приложение установлено, и попробуйте снова.';
 
   @override
   String courseReviewsSummaryCount(int count) {

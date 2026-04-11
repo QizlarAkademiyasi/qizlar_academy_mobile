@@ -14,41 +14,20 @@ class LessonQuizApiDatasource {
     final envelope = _asMap(response.data);
     final data = envelope['data'];
     if (data is! List) return const [];
-    return data.map((e) => _parseQuestion(_asMap(e))).where((q) => q.id.isNotEmpty).toList(growable: false);
+    return data
+        .asMap()
+        .entries
+        .map((e) => _parseQuestion(_asMap(e.value), lessonId: lessonId, index: e.key))
+        .where((q) => q.id.isNotEmpty)
+        .toList(growable: false);
   }
 
-  Future<bool> checkAnswer({required String quizId, required List<String> selectedOptionIds}) async {
-    final response = await _dio.post<dynamic>(
-      UserApis.quizCheckAnswer,
-      data: <String, dynamic>{
-        'quizId': quizId,
-        'selectedOptionIds': selectedOptionIds,
-      },
-    );
-    final envelope = _asMap(response.data);
-    final inner = _asMap(envelope['data']);
-    return inner['isCorrect'] == true;
-  }
-
-  Future<LessonQuizSubmitResultModel> submitLessonQuiz({
-    required String lessonId,
-    required List<Map<String, dynamic>> answers,
-  }) async {
+  Future<LessonQuizSubmitResultModel> submitLessonQuiz({required String lessonId, required List<Map<String, dynamic>> answers}) async {
     try {
-      final response = await _dio.post<dynamic>(
-        UserApis.quizSubmit,
-        data: <String, dynamic>{
-          'lessonId': lessonId,
-          'answers': answers,
-        },
-      );
+      final response = await _dio.post<dynamic>(UserApis.quizSubmit, data: <String, dynamic>{'lessonId': lessonId, 'answers': answers});
       final envelope = _asMap(response.data);
       final inner = _asMap(envelope['data']);
-      return LessonQuizSubmitResultModel(
-        correctAnswerCount: _parseInt(inner['correctAnswerCount']),
-        totalCount: _parseInt(inner['totalCount']),
-        isFail: inner['isFail'] == true,
-      );
+      return LessonQuizSubmitResultModel(correctAnswerCount: _parseInt(inner['correctAnswerCount']), totalCount: _parseInt(inner['totalCount']), isFail: inner['isFail'] == true);
     } on DioException catch (e) {
       if (_isQuizAlreadySubmittedResponse(e)) {
         throw const LessonQuizAlreadySubmittedException();
@@ -70,12 +49,14 @@ class LessonQuizApiDatasource {
     return lower.contains('already submitted') || lower.contains('already_submitted');
   }
 
-  LessonQuizQuestionModel _parseQuestion(Map<String, dynamic> raw) {
+  LessonQuizQuestionModel _parseQuestion(Map<String, dynamic> raw, {required String lessonId, required int index}) {
     final typeRaw = (raw['type'] ?? '').toString().toUpperCase().trim();
     final type = typeRaw.contains('MULTIPLE') ? LessonQuizQuestionType.multipleChoice : LessonQuizQuestionType.singleChoice;
 
     final mediaRaw = (raw['mediaType'] ?? '').toString().toUpperCase().trim();
     final mediaType = mediaRaw.contains('IMAGE') ? LessonQuizMediaType.image : LessonQuizMediaType.text;
+
+    final quizId = _resolveQuestionId(raw, lessonId, index);
 
     final optionsRaw = raw['options'];
     final options = <LessonQuizOptionModel>[];
@@ -84,26 +65,34 @@ class LessonQuizApiDatasource {
       for (final o in optionsRaw) {
         final m = _asMap(o);
         var id = (m['id'] ?? '').toString();
-        if (id.isEmpty) id = 'opt_${raw['id']}_$i';
+        if (id.isEmpty) id = 'opt_${quizId}_$i';
         i++;
+        final dynamic correctRaw = m['isCorrect'];
+        final bool? optionCorrect = correctRaw is bool ? correctRaw : null;
         options.add(
           LessonQuizOptionModel(
             id: id,
             value: (m['value'] ?? '').toString(),
             link: Apis.resolveUrl((m['link'] ?? '').toString()),
             type: (m['type'] ?? 'TEXT').toString(),
+            isCorrect: optionCorrect,
           ),
         );
       }
     }
 
-    return LessonQuizQuestionModel(
-      id: (raw['id'] ?? '').toString(),
-      type: type,
-      mediaType: mediaType,
-      question: (raw['question'] ?? '').toString(),
-      options: options,
-    );
+    return LessonQuizQuestionModel(id: quizId, type: type, mediaType: mediaType, question: (raw['question'] ?? '').toString(), options: options);
+  }
+
+  String _resolveQuestionId(Map<String, dynamic> raw, String lessonId, int index) {
+    var id = (raw['id'] ?? raw['quizId'] ?? '').toString().trim();
+    if (id.isNotEmpty) return id;
+    final fromLesson = (raw['lessonId'] ?? '').toString().trim();
+    if (fromLesson.isNotEmpty) {
+      return index == 0 ? fromLesson : '${fromLesson}_$index';
+    }
+    final key = lessonId.trim();
+    return key.isEmpty ? 'q_$index' : '${key}_q$index';
   }
 
   Map<String, dynamic> _asMap(dynamic value) {

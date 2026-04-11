@@ -1,3 +1,4 @@
+import 'package:qizlar_academy_mobile/config/constants/app_share_links.dart';
 import 'package:qizlar_academy_mobile/feature/about_us/domain/model/about_social_link_model.dart';
 import 'package:qizlar_academy_mobile/feature/about_us/domain/model/about_social_platform.dart';
 import 'package:qizlar_academy_mobile/feature/about_us/domain/model/about_supporter_model.dart';
@@ -20,9 +21,9 @@ class AboutUsLocalDatasource {
         ),
       ],
       socialLinks: const [
-        AboutSocialLinkModel(platform: AboutSocialPlatform.instagram, url: 'https://www.instagram.com/qizlarakademiyasi'),
-        AboutSocialLinkModel(platform: AboutSocialPlatform.telegram, url: 'https://t.me/qizlarakademiyasi'),
-        AboutSocialLinkModel(platform: AboutSocialPlatform.youtube, url: 'https://www.youtube.com/@qizlarakademiyasi'),
+        AboutSocialLinkModel(platform: AboutSocialPlatform.instagram, url: AppShareLinks.instagramProfile),
+        AboutSocialLinkModel(platform: AboutSocialPlatform.telegram, url: AppShareLinks.telegramCommunityChannel),
+        AboutSocialLinkModel(platform: AboutSocialPlatform.youtube, url: AppShareLinks.youtubeChannel),
       ],
     );
   }

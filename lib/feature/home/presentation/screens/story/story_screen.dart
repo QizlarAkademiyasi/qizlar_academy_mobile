@@ -56,9 +56,6 @@ class _StoryScreenState extends State<StoryScreen> {
         backgroundColor: Colors.transparent,
         body: Stack(
           children: [
-            Positioned.fill(
-              child: ColoredBox(color: Colors.black.withValues(alpha: (1 - _dismissProgress).clamp(0.0, 1.0))),
-            ),
             Dismissible(
               key: const Key('story_dismissible'),
               direction: DismissDirection.down,
@@ -103,6 +100,9 @@ class _StoryScreenState extends State<StoryScreen> {
                     child: Material(
                       type: MaterialType.transparency,
                       child: StoryPageView(
+                        indicatorVisitedColor: context.appColors.primary,
+                        indicatorUnvisitedColor: context.appColors.primary.withValues(alpha: 0.12),
+                        indicatorHeight: 3,
                         initialPage: widget.initialIndex,
                         itemBuilder: (context, pageIndex, storyIndex) {
                           final category = widget.categories[pageIndex];
@@ -111,26 +111,22 @@ class _StoryScreenState extends State<StoryScreen> {
                               Positioned.fill(
                                 child: category.imageUrl.trim().isEmpty
                                     ? ColoredBox(color: context.appColors.onContainer)
-                                    : AppCachedNetworkImage(
-                                        imageUrl: category.imageUrl.trim(),
-                                        fit: BoxFit.contain,
-                                        fallback: const AppNetworkImageFallbackSurface(),
-                                      ),
+                                    : AppCachedNetworkImage(imageUrl: category.imageUrl.trim(), fit: BoxFit.contain, fallback: const AppNetworkImageFallbackSurface()),
                               ),
                               Positioned.fill(
                                 child: DecoratedBox(
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent, Colors.black.withValues(alpha: 0.8)],
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      stops: const [0.0, 0.4, 0.8],
-                                    ),
+                                    // gradient: LinearGradient(
+                                    //   colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent, Colors.black.withValues(alpha: 0.8)],
+                                    //   begin: Alignment.topCenter,
+                                    //   end: Alignment.bottomCenter,
+                                    //   stops: const [0.0, 0.4, 0.8],
+                                    // ),
                                   ),
                                 ),
                               ),
                               Positioned(
-                                top: 60,
+                                top: 50,
                                 left: 16,
                                 right: 16,
                                 child: LayoutBuilder(
@@ -147,18 +143,13 @@ class _StoryScreenState extends State<StoryScreen> {
                                     return Row(
                                       children: [
                                         Container(
-                                          height: 40,
-                                          width: 40,
+                                          height: 24,
+                                          width: 24,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: category.thumbnailUrl.trim().isEmpty ? context.appColors.onContainer : null,
                                             border: Border.all(color: Colors.white, width: 1.5),
-                                            image: category.thumbnailUrl.trim().isEmpty
-                                                ? null
-                                                : DecorationImage(
-                                                    image: CachedNetworkImageProvider(category.thumbnailUrl.trim()),
-                                                    fit: BoxFit.cover,
-                                                  ),
+                                            image: category.thumbnailUrl.trim().isEmpty ? null : DecorationImage(image: CachedNetworkImageProvider(category.thumbnailUrl.trim()), fit: BoxFit.cover),
                                           ),
                                         ),
                                         if (!isTight) const SizedBox(width: 8),
@@ -168,7 +159,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                               category.name,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                              style: context.textTheme.bodyMediumBold.copyWith(color: Colors.white),
+                                              style: context.textTheme.bodySmallBold.copyWith(color: context.appColors.text),
                                             ),
                                           ),
                                       ],

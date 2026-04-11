@@ -11,6 +11,7 @@ class CoursesCatalogBloc
     on<CoursesCatalogStarted>(_onStarted);
     on<CoursesCatalogRetryRequested>(_onRetryRequested);
     on<CoursesCatalogSearchChanged>(_onSearchChanged);
+    on<CoursesCatalogRefreshRequested>(_onRefreshRequested);
   }
 
   final CoursesCatalogRepository _repository;
@@ -39,6 +40,33 @@ class CoursesCatalogBloc
     await _loadCatalog(emit, query: event.query);
   }
 
+  Future<void> _onRefreshRequested(
+    CoursesCatalogRefreshRequested event,
+    Emitter<CoursesCatalogState> emit,
+  ) async {
+    if (state.isRefreshing) return;
+    emit(state.copyWith(isRefreshing: true, clearMessage: true));
+    try {
+      final overview = await _repository.fetchCatalog(query: state.query);
+      emit(
+        state.copyWith(
+          isRefreshing: false,
+          status: CoursesCatalogStatus.success,
+          overview: overview,
+          clearMessage: true,
+        ),
+      );
+    } catch (_) {
+      emit(
+        state.copyWith(
+          isRefreshing: false,
+          status: CoursesCatalogStatus.failure,
+          clearMessage: true,
+        ),
+      );
+    }
+  }
+
   Future<void> _loadCatalog(
     Emitter<CoursesCatalogState> emit, {
     required String query,
@@ -64,7 +92,7 @@ class CoursesCatalogBloc
       emit(
         state.copyWith(
           status: CoursesCatalogStatus.failure,
-          message: 'Kurslarni yuklashda xatolik yuz berdi.',
+          clearMessage: true,
         ),
       );
     }

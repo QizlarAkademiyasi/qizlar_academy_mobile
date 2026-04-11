@@ -22,7 +22,7 @@ class HomeLastLessonCard extends StatelessWidget {
     return Bounce(
       onTap: () {
         Gaimon.light();
-        onTap!();
+        onTap?.call();
       },
       child: Container(
         height: 220,

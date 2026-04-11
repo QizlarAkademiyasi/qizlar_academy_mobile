@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/core/format/course_duration_format.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
 import 'package:qizlar_academy_mobile/feature/home/data/datasource/home_datasource.dart';
@@ -102,7 +103,7 @@ class HomeApiDatasource implements HomeDatasource {
       title: (item['name'] ?? '').toString(),
       author: (item['teacherFullname'] ?? '').toString(),
       imageUrl: _resolveCourseImageUrl(item),
-      durationHours: _parseInt(item['totalDuration']),
+      durationHours: CourseDurationFormat.displayHoursFromApiMinutes(_parseInt(item['totalDuration'])),
       studentCount: _parseInt(item['enrollmentCount']),
     );
   }

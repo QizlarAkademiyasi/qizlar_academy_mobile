@@ -2,13 +2,7 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/repository/lesson_quiz_repository.dart';
 
 class LessonQuizResultArgs {
-  const LessonQuizResultArgs({
-    required this.result,
-    required this.elapsed,
-    this.pendingSubmit = false,
-    this.lessonId = '',
-    this.answers = const [],
-  });
+  const LessonQuizResultArgs({required this.result, required this.elapsed, this.pendingSubmit = false, this.lessonId = '', this.answers = const []});
 
   /// Ko‘rinadigan statistika (oldindan tekshiruv asosida yoki serverdan keyin).
   final LessonQuizSubmitResultModel result;
@@ -19,3 +13,6 @@ class LessonQuizResultArgs {
   final String lessonId;
   final List<LessonQuizAnswerPayload> answers;
 }
+
+/// [LessonQuizResultScreen] dan quizni boshidan boshlash uchun `context.pop` qiymati.
+enum LessonQuizResultOutcome { retry }

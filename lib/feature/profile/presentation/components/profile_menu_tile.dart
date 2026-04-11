@@ -2,15 +2,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class ProfileMenuTile extends StatelessWidget {
-  const ProfileMenuTile({
-    super.key,
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    this.badgeCount,
-    this.onTap,
-    this.showDivider = true,
-  });
+  const ProfileMenuTile({super.key, required this.icon, required this.title, this.subtitle, this.badgeCount, this.onTap, this.showDivider = true});
 
   final IconData icon;
   final String title;
@@ -35,32 +27,22 @@ class ProfileMenuTile extends StatelessWidget {
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
-                      color: context.appColors.iconSecondary,
-                      borderRadius: AppRadius.radiusMd,
-                    ),
-                    child: Icon(icon, size: 18, color: context.appColors.grey),
+                    decoration: BoxDecoration(color: context.appColors.iconSecondary, borderRadius: AppRadius.radiusMd),
+                    child: Icon(icon, size: 18, color: badgeCount != null ? AppColors.primary : context.appColors.grey),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          title,
-                          style: context.textTheme.bodyMediumSemibold.copyWith(
-                            color: context.appColors.text,
-                          ),
-                        ),
+                        Text(title, style: context.textTheme.bodyMediumSemibold.copyWith(color: context.appColors.text)),
                         if (subtitle != null && subtitle!.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
                             subtitle!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodySmallRegular.copyWith(
-                              color: context.appColors.secondaryGrey,
-                            ),
+                            style: context.textTheme.bodySmallRegular.copyWith(color: context.appColors.secondaryGrey),
                           ),
                         ],
                       ],
@@ -68,40 +50,19 @@ class ProfileMenuTile extends StatelessWidget {
                   ),
                   if (badgeCount != null) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: context.appColors.primary,
-                        borderRadius: AppRadius.radiusXl,
-                      ),
-                      child: Text(
-                        '$badgeCount',
-                        style: context.textTheme.bodySmallSemibold.copyWith(
-                          color: AppColors.white,
-                        ),
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                      decoration: BoxDecoration(color: context.appColors.primary, borderRadius: AppRadius.radiusXl),
+                      child: Text('$badgeCount', style: context.textTheme.bodySmallBold.copyWith(color: AppColors.white)),
                     ),
                     const SizedBox(width: 10),
                   ],
-                  Icon(
-                    LucideIcons.chevronRight,
-                    size: 18,
-                    color: context.appColors.secondaryGrey,
-                  ),
+                  Icon(LucideIcons.chevronRight, size: 18, color: context.appColors.secondaryGrey),
                 ],
               ),
             ),
           ),
         ),
-        if (showDivider)
-          Divider(
-            height: 1,
-            thickness: 1,
-            color: context.appColors.stroke,
-            indent: 54,
-          ),
+        if (showDivider) Divider(height: 1, thickness: 1, color: context.appColors.stroke, indent: 54),
       ],
     );
   }

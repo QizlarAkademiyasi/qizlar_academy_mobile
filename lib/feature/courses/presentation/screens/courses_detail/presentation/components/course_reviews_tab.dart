@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/format/review_relative_time.dart';
@@ -14,50 +15,75 @@ class CourseReviewsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final reviews = course.reviews;
     return Column(
       children: [
-        _SummaryCard(course: course, l10n: l10n),
+        AppStaggeredListItem(
+          position: 0,
+          duration: AppStaggeredListAnimation.duration,
+          delay: AppStaggeredListAnimation.staggerDelay,
+          verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+          child: _SummaryCard(course: course, l10n: l10n),
+        ),
         const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          padding: AppPadding.paddingLg,
-          decoration: BoxDecoration(
-            color: context.appColors.onContainer,
-            borderRadius: AppRadius.radius3xl,
-            border: Border.all(color: context.appColors.stroke),
-            boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 2))],
-          ),
-          child: course.reviews.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Column(
+        AppStaggeredListItem(
+          position: 1,
+          duration: AppStaggeredListAnimation.duration,
+          delay: AppStaggeredListAnimation.staggerDelay,
+          verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+          child: Container(
+            width: double.infinity,
+            padding: AppPadding.paddingLg,
+            decoration: BoxDecoration(
+              color: context.appColors.onContainer,
+              borderRadius: AppRadius.radius3xl,
+              border: Border.all(color: context.appColors.stroke),
+              boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 2))],
+            ),
+            child: reviews.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Column(
+                      children: [
+                        Text(
+                          l10n.courseReviewsEmptyTitle,
+                          textAlign: TextAlign.center,
+                          style: context.textTheme.bodyLargeSemibold.copyWith(color: context.appColors.text),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          l10n.courseReviewsEmptySubtitle,
+                          textAlign: TextAlign.center,
+                          style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey, height: 1.4),
+                        ),
+                      ],
+                    ),
+                  )
+                : Column(
                     children: [
-                      Text(
-                        l10n.courseReviewsEmptyTitle,
-                        textAlign: TextAlign.center,
-                        style: context.textTheme.bodyLargeSemibold.copyWith(color: context.appColors.text),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        l10n.courseReviewsEmptySubtitle,
-                        textAlign: TextAlign.center,
-                        style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey, height: 1.4),
-                      ),
+                      for (var i = 0; i < reviews.length; i++) ...[
+                        AppStaggeredListItem(
+                          position: 2 + i,
+                          duration: AppStaggeredListAnimation.duration,
+                          delay: AppStaggeredListAnimation.staggerDelay,
+                          verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _ReviewItem(review: reviews[i], l10n: l10n),
+                              if (i != reviews.length - 1)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  child: Divider(height: 1, color: context.appColors.stroke),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                )
-              : Column(
-                  children: [
-                    for (var i = 0; i < course.reviews.length; i++) ...[
-                      _ReviewItem(review: course.reviews[i], l10n: l10n),
-                      if (i != course.reviews.length - 1)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          child: Divider(height: 1, color: context.appColors.stroke),
-                        ),
-                    ],
-                  ],
-                ),
+          ),
         ),
       ],
     );
@@ -162,19 +188,37 @@ class _ReviewItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final timeLabel = reviewRelativeTimeLabel(l10n, review.createdAt);
     final grey = context.appColors.grey;
+    final rawPhoto = review.userPhotoUrl?.trim() ?? '';
+    final photoUrl = rawPhoto.isEmpty ? '' : Apis.resolveUrl(rawPhoto);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: 42,
           height: 42,
-          alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: context.appColors.background,
             border: Border.all(color: context.appColors.stroke),
           ),
-          child: Text(review.userInitials, style: context.textTheme.bodyMediumSemibold.copyWith(color: grey)),
+          child: ClipOval(
+            child: photoUrl.isEmpty
+                ? Center(child: Text(review.userInitials, style: context.textTheme.bodyMediumSemibold.copyWith(color: grey)))
+                : AppCachedNetworkImage(
+                    imageUrl: photoUrl,
+                    width: 42,
+                    height: 42,
+                    fit: BoxFit.cover,
+                    placeholder: (ctx, url) => ColoredBox(color: context.appColors.stroke),
+                    errorWidget: (ctx, url, err) => ColoredBox(
+                      color: context.appColors.background,
+                      child: Center(
+                        child: Text(review.userInitials, style: context.textTheme.bodySmallSemibold.copyWith(color: grey)),
+                      ),
+                    ),
+                    fallback: const AppNetworkImageFallbackAvatar(iconSize: 18, placeholderShowsIcon: false),
+                  ),
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(

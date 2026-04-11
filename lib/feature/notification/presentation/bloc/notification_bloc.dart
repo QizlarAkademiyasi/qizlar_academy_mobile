@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/feature/notification/domain/model/notification_item_model.dart';
 import 'package:qizlar_academy_mobile/feature/notification/domain/repository/notification_repository.dart';
 
@@ -11,6 +12,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<NotificationRetryRequested>(_onRetryRequested);
     on<NotificationMarkAllReadRequested>(_onMarkAllReadRequested);
     on<NotificationItemOpened>(_onNotificationItemOpened);
+    on<NotificationTabSelected>(_onTabSelected);
   }
 
   final NotificationRepository _repository;
@@ -27,12 +29,10 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       emit(
         state.copyWith(status: NotificationStatus.success, sections: sections),
       );
-    } catch (_) {
+    } catch (e, st) {
+      AppLogger.e('NotificationBloc: load failed', error: e, stackTrace: st);
       emit(
-        state.copyWith(
-          status: NotificationStatus.failure,
-          message: 'Bildirishnomalarni yuklashda xatolik yuz berdi.',
-        ),
+        state.copyWith(status: NotificationStatus.failure, clearMessage: true),
       );
     }
   }
@@ -57,14 +57,23 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       emit(
         state.copyWith(status: NotificationStatus.success, sections: sections),
       );
-    } catch (_) {
+    } catch (e, st) {
+      AppLogger.e(
+        'NotificationBloc: mark all read failed',
+        error: e,
+        stackTrace: st,
+      );
       emit(
-        state.copyWith(
-          status: NotificationStatus.failure,
-          message: 'Barchasini o\'qilgan qilishda xatolik yuz berdi.',
-        ),
+        state.copyWith(status: NotificationStatus.failure, clearMessage: true),
       );
     }
+  }
+
+  void _onTabSelected(
+    NotificationTabSelected event,
+    Emitter<NotificationState> emit,
+  ) {
+    emit(state.copyWith(selectedTab: event.tab));
   }
 
   Future<void> _onNotificationItemOpened(
@@ -74,20 +83,46 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     final selectedItem = _findNotification(event.notificationId);
     if (selectedItem == null || selectedItem.isRead) return;
     try {
-      final sections = await _repository.markAsRead(
-        notificationId: event.notificationId,
-      );
-      emit(
-        state.copyWith(status: NotificationStatus.success, sections: sections),
-      );
-    } catch (_) {
+      await _repository.markAsRead(notificationId: event.notificationId);
       emit(
         state.copyWith(
-          status: NotificationStatus.failure,
-          message: 'Bildirishnomani yangilashda xatolik yuz berdi.',
+          status: NotificationStatus.success,
+          sections: _sectionsWithNotificationMarkedRead(
+            state.sections,
+            event.notificationId,
+          ),
         ),
       );
+    } catch (e, st) {
+      AppLogger.e(
+        'NotificationBloc: mark read failed',
+        error: e,
+        stackTrace: st,
+      );
+      emit(
+        state.copyWith(status: NotificationStatus.failure, clearMessage: true),
+      );
     }
+  }
+
+  List<NotificationSectionModel> _sectionsWithNotificationMarkedRead(
+    List<NotificationSectionModel> sections,
+    String notificationId,
+  ) {
+    return sections
+        .map(
+          (section) => NotificationSectionModel(
+            title: section.title,
+            items: section.items
+                .map(
+                  (item) => item.id == notificationId
+                      ? item.copyWith(isRead: true)
+                      : item,
+                )
+                .toList(),
+          ),
+        )
+        .toList(growable: false);
   }
 
   NotificationItemModel? _findNotification(String notificationId) {

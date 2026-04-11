@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:qizlar_academy_mobile/config/logs/app_log_config.dart';
 
 enum AppFlavors {
   dev(remoteConfigKey: 'devUrl'),
@@ -19,15 +20,15 @@ final class EnvConfig {
 
   static EnvConfig? _instance;
 
-  static void initialize({
-    required String appName,
-    required AppFlavors flavor,
-  }) {
+  static void initialize({required String appName, required AppFlavors flavor}) {
     _instance = EnvConfig._(appName: appName, flavor: flavor);
-    debugPrint(
-      '[EnvConfig] Flavor: ${_instance!.flavor.name.toUpperCase()} | '
-      'App: ${_instance!.appName}',
-    );
+    AppLogConfig.loggingEnabled = flavor == AppFlavors.dev;
+    if (AppLogConfig.loggingEnabled) {
+      debugPrint(
+        '[EnvConfig] Flavor: ${_instance!.flavor.name.toUpperCase()} | '
+        'App: ${_instance!.appName}',
+      );
+    }
   }
 
   static bool get isInitialized => _instance != null;

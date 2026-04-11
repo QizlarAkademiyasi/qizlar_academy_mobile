@@ -1,6 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/core/network/token_refresh_interceptor.dart';
+import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_otp_bot_response.dart';
 
 class AuthRefreshResponseModel {
   const AuthRefreshResponseModel({
@@ -34,6 +35,8 @@ class AuthSignInResponseModel {
 
 abstract interface class AuthRemoteDatasource {
   Future<AuthOtpResponseModel> sendOtpToPhoneNumber({required String phone});
+
+  Future<AuthOtpBotResponse> sendOtpViaTelegramBot({required String phone});
 
   Future<AuthSignInResponseModel> signInWithOtp({
     required String phone,
@@ -69,6 +72,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       throw const FormatException('OTP response keyHash is missing');
     }
     return AuthOtpResponseModel(keyHash: keyHash);
+  }
+
+  @override
+  Future<AuthOtpBotResponse> sendOtpViaTelegramBot({required String phone}) async {
+    final response = await _dio.post<dynamic>(
+      AnonymousApis.authOtpBotPhoneNumber,
+      data: <String, dynamic>{'phone': phone},
+      options: Options(extra: <String, dynamic>{skipAuthRefresh: true}),
+    );
+    final map = _extractDataMap(response.data);
+    final keyHash = map['keyHash']?.toString() ?? '';
+    final link = map['link']?.toString() ?? '';
+    if (keyHash.isEmpty || link.isEmpty) {
+      throw const FormatException('Telegram bot OTP response keyHash or link is missing');
+    }
+    return AuthOtpBotResponse(keyHash: keyHash, link: link);
   }
 
   @override

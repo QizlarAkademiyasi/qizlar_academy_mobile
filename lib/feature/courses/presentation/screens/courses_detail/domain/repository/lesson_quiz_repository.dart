@@ -10,8 +10,6 @@ class LessonQuizAnswerPayload {
 abstract class LessonQuizRepository {
   Future<List<LessonQuizQuestionModel>> fetchQuestionsForLesson(String lessonId);
 
-  Future<bool> checkAnswer({required String quizId, required List<String> selectedOptionIds});
-
   Future<LessonQuizSubmitResultModel> submitLessonQuiz({
     required String lessonId,
     required List<LessonQuizAnswerPayload> answers,

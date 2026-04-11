@@ -1,6 +1,10 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 
-enum NotificationSenderType { user, system }
+/// API `type`: `push` — «Platforma», `global` — «Jamiyat».
+enum NotificationChannelType { push, global }
+
+/// Bildirishnomalar ekrani yorlig‘i.
+enum NotificationListTab { platform, community }
 
 class NotificationItemModel extends Equatable {
   const NotificationItemModel({
@@ -9,9 +13,10 @@ class NotificationItemModel extends Equatable {
     required this.description,
     required this.timeLabel,
     required this.createdAt,
-    required this.senderType,
+    required this.channelType,
     required this.isRead,
     this.avatarUrl,
+    this.targetId,
   });
 
   final String id;
@@ -19,9 +24,10 @@ class NotificationItemModel extends Equatable {
   final String description;
   final String timeLabel;
   final DateTime createdAt;
-  final NotificationSenderType senderType;
+  final NotificationChannelType channelType;
   final bool isRead;
   final String? avatarUrl;
+  final String? targetId;
 
   NotificationItemModel copyWith({
     String? id,
@@ -29,9 +35,10 @@ class NotificationItemModel extends Equatable {
     String? description,
     String? timeLabel,
     DateTime? createdAt,
-    NotificationSenderType? senderType,
+    NotificationChannelType? channelType,
     bool? isRead,
     String? avatarUrl,
+    String? targetId,
   }) {
     return NotificationItemModel(
       id: id ?? this.id,
@@ -39,9 +46,10 @@ class NotificationItemModel extends Equatable {
       description: description ?? this.description,
       timeLabel: timeLabel ?? this.timeLabel,
       createdAt: createdAt ?? this.createdAt,
-      senderType: senderType ?? this.senderType,
+      channelType: channelType ?? this.channelType,
       isRead: isRead ?? this.isRead,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+      targetId: targetId ?? this.targetId,
     );
   }
 
@@ -52,9 +60,10 @@ class NotificationItemModel extends Equatable {
     description,
     timeLabel,
     createdAt,
-    senderType,
+    channelType,
     isRead,
     avatarUrl,
+    targetId,
   ];
 }
 

@@ -7,13 +7,7 @@ import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overv
 
 /// Tahrirlash ekranidagi dumaloq avatar, pushti hoshiya va kamera tugmasi.
 class EditInformationAvatar extends StatelessWidget {
-  const EditInformationAvatar({
-    super.key,
-    required this.user,
-    this.localFilePath,
-    required this.isBusy,
-    required this.onCameraTap,
-  });
+  const EditInformationAvatar({super.key, required this.user, this.localFilePath, required this.isBusy, required this.onCameraTap});
 
   final ProfileUserModel user;
   final String? localFilePath;
@@ -42,76 +36,44 @@ class EditInformationAvatar extends StatelessWidget {
               height: _avatarSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: context.appColors.primary,
-                  width: 4,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: context.appColors.shadow.withValues(alpha: 0.08),
-                    blurRadius: 24,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+                border: Border.all(color: context.appColors.primary, width: 4),
+                boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.08), blurRadius: 24, offset: const Offset(0, 10))],
               ),
-              child: ClipOval(
-                child: hasLocal
-                    ? Image.file(
-                        File(localPath),
-                        fit: BoxFit.cover,
-                        width: _avatarSize,
-                        height: _avatarSize,
-                        errorBuilder: (_, _, _) => _placeholder(context),
-                      )
-                    : remote.isEmpty
-                    ? _placeholder(context)
-                    : AppCachedNetworkImage(
-                        imageUrl: remote,
-                        fit: BoxFit.cover,
-                        width: _avatarSize,
-                        height: _avatarSize,
-                        placeholder: (_, _) => ColoredBox(color: context.appColors.stroke),
-                        errorWidget: (_, _, _) => _placeholder(context),
-                      ),
+              child: AppTappableProfileAvatar(
+                size: _avatarSize,
+                borderWidth: 0,
+                heroId: 'edit_profile_${user.userId}',
+                resolvedNetworkUrl: hasLocal ? '' : remote,
+                localFileAbsolutePath: hasLocal ? localPath : null,
+                placeholder: _placeholder(context),
               ),
             ),
             Positioned(
-              right: 0,
+              right: 8,
               bottom: 0,
               child: Material(
                 color: Colors.transparent,
+                type: MaterialType.transparency,
+                shape: CircleBorder(),
                 child: InkWell(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
                   onTap: isBusy ? null : onCameraTap,
                   customBorder: const CircleBorder(),
                   child: Ink(
                     width: _fabSize,
                     height: _fabSize,
                     decoration: BoxDecoration(
+                      border: Border.all(color: context.appColors.background, width: 3),
                       color: context.appColors.primary,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: context.appColors.shadow.withValues(
-                            alpha: 0.12,
-                          ),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
                     ),
                     child: isBusy
                         ? Padding(
                             padding: const EdgeInsets.all(8),
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: context.theme.colorScheme.onPrimary,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2, color: context.theme.colorScheme.onPrimary),
                           )
-                        : Icon(
-                            LucideIcons.camera,
-                            size: 18,
-                            color: context.theme.colorScheme.onPrimary,
-                          ),
+                        : Icon(LucideIcons.camera, size: 18, color: AppColors.white),
                   ),
                 ),
               ),
@@ -125,11 +87,7 @@ class EditInformationAvatar extends StatelessWidget {
   Widget _placeholder(BuildContext context) {
     return ColoredBox(
       color: context.appColors.stroke,
-      child: Icon(
-        LucideIcons.user,
-        color: context.appColors.grey,
-        size: 48,
-      ),
+      child: Icon(LucideIcons.user, color: context.appColors.grey, size: 48),
     );
   }
 }

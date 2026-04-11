@@ -36,21 +36,7 @@ class HomeCourseCard extends StatelessWidget {
                 enabled: isLoading,
                 child: ClipRRect(
                   borderRadius: AppRadius.radiusXl,
-                  child: course.imageUrl.trim().isEmpty
-                      ? Container(
-                          width: 90,
-                          height: 90,
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          child: const Icon(LucideIcons.bookOpen, color: AppColors.primary, size: 32),
-                        )
-                      : AppCachedNetworkImage(
-                          imageUrl: course.imageUrl.trim(),
-                          width: 90,
-                          height: 90,
-                          fit: BoxFit.cover,
-                          alignment: Alignment.centerRight,
-                          fallback: const AppNetworkImageFallbackCourse(iconSize: 32, tintAlpha: 0.1),
-                        ),
+                  child: _homeCourseThumbnail(),
                 ),
               ),
             ),
@@ -102,6 +88,25 @@ class HomeCourseCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _homeCourseThumbnail() {
+    final Widget image = course.imageUrl.trim().isEmpty
+        ? Container(
+            width: 90,
+            height: 90,
+            color: AppColors.primary.withValues(alpha: 0.1),
+            child: const Icon(LucideIcons.bookOpen, color: AppColors.primary, size: 32),
+          )
+        : AppCachedNetworkImage(
+            imageUrl: course.imageUrl.trim(),
+            width: 90,
+            height: 90,
+            fit: BoxFit.cover,
+            alignment: Alignment.centerRight,
+            fallback: const AppNetworkImageFallbackCourse(iconSize: 32, tintAlpha: 0.1),
+          );
+    return image;
   }
 
   String _formatStudents(int count) {

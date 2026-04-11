@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
+import 'package:qizlar_academy_mobile/core/format/course_duration_format.dart';
 import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/domain/model/course_catalog_item_model.dart';
@@ -11,18 +12,10 @@ class CoursesCatalogApiDatasource implements CoursesCatalogDatasource {
 
   final Dio _dio;
 
-  Future<CoursesCatalogOverviewModel> fetchCatalogByUserType({
-    required String query,
-    required UserType userType,
-  }) async {
+  Future<CoursesCatalogOverviewModel> fetchCatalogByUserType({required String query, required UserType userType}) async {
     final response = await _dio.get<dynamic>(
-      userType == UserType.user
-          ? UserApis.coursesClient
-          : AnonymousApis.coursesClientPublic,
-      queryParameters: const <String, dynamic>{
-        'pageNumber': 1,
-        'pageSize': 100,
-      },
+      userType == UserType.user ? UserApis.coursesClient : AnonymousApis.coursesClientPublic,
+      queryParameters: const <String, dynamic>{'pageNumber': 1, 'pageSize': 100},
     );
 
     final envelope = _asMap(response.data);
@@ -32,8 +25,7 @@ class CoursesCatalogApiDatasource implements CoursesCatalogDatasource {
         .where((item) {
           final normalizedQuery = query.trim().toLowerCase();
           if (normalizedQuery.isEmpty) return true;
-          return item.title.toLowerCase().contains(normalizedQuery) ||
-              item.mentorName.toLowerCase().contains(normalizedQuery);
+          return item.title.toLowerCase().contains(normalizedQuery) || item.mentorName.toLowerCase().contains(normalizedQuery);
         })
         .toList(growable: false);
 
@@ -49,20 +41,16 @@ class CoursesCatalogApiDatasource implements CoursesCatalogDatasource {
           imageUrl: _resolveCourseImageUrl(lastViewedRaw),
           progressPercent: progress,
           progressLabel: '$progress%',
-          actionLabel: 'Davom qilish',
+          actionLabel: 'Davom etish',
         );
       }
     }
 
-    return CoursesCatalogOverviewModel(
-      lastViewedCourse: lastViewed,
-      courses: courses,
-    );
+    return CoursesCatalogOverviewModel(lastViewedCourse: lastViewed, courses: courses);
   }
 
   @override
-  Future<CoursesCatalogOverviewModel> fetchCatalog({required String query}) =>
-      fetchCatalogByUserType(query: query, userType: UserType.user);
+  Future<CoursesCatalogOverviewModel> fetchCatalog({required String query}) => fetchCatalogByUserType(query: query, userType: UserType.user);
 
   CourseCatalogItemModel _mapCourse(Map<String, dynamic> parsed) {
     return CourseCatalogItemModel(
@@ -72,7 +60,7 @@ class CoursesCatalogApiDatasource implements CoursesCatalogDatasource {
       imageUrl: _resolveCourseImageUrl(parsed),
       rating: _parseDouble(parsed['avgRating']),
       reviewsCount: _parseInt(parsed['totalRatings']),
-      durationHours: _parseInt(parsed['totalDuration']),
+      durationHours: CourseDurationFormat.displayHoursFromApiMinutes(_parseInt(parsed['totalDuration'])),
       tagLabel: null,
     );
   }

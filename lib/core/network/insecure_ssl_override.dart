@@ -11,7 +11,7 @@ void applyInsecureSslOverride(Dio dio) {
   if (adapter is IOHttpClientAdapter) {
     adapter.createHttpClient = () {
       final client = HttpClient();
-      client.badCertificateCallback = (_, __, ___) => true;
+      client.badCertificateCallback = (_, _, _) => true;
       return client;
     };
   }

@@ -15,9 +15,6 @@ dependencies:
   lucide_icons_flutter: ^3.1.10
   flutter_pannable_rating_bar: ^2.7.2+1
   
-  # Fonts
-  google_fonts: ^8.0.2
-
   # Routing
   go_router: ^17.1.0
 
@@ -70,6 +67,7 @@ dependencies:
 
   # Device information and locale
   devicelocale: ^0.8.2
+  package_info_plus: ^9.0.0
 
   # Local storage
   shared_preferences: ^2.5.4
@@ -86,6 +84,8 @@ dependencies:
   octo_image: ^2.1.0
   flutter_screenutil: ^5.9.3
   flutter_html: ^3.0.0
+  flutter_markdown: ^0.7.7+1
+  markdown: ^7.3.1
   liquid_glass_renderer: ^0.2.0-dev.4
   # Fork: `iconBuilder` (SVG bottom nav) — pub.dev versiyasida yo'q.
   liquid_glass_widgets:
@@ -122,8 +122,17 @@ dependencies:
   story: ^1.1.0
   chewie: ^1.13.0
   omni_video_player: ^3.9.0
+  youtube_player_flutter: ^9.1.3
+  flutter_inappwebview: ^6.1.5
   google_sign_in: ^7.2.0
   adaptive_media_picker: ^0.0.10
+  youtube_explode_dart: ^3.0.5
+  smooth_sheets: ^0.17.0
+  expand: ^1.2.0
+  appinio_social_share: ^0.3.2
+  youtube_player_iframe: ^5.2.2
+  photo_viewer: ^1.0.0
+  firebase_messaging: ^16.1.3
 
 dev_dependencies:
   flutter_test:
@@ -137,8 +146,10 @@ dev_dependencies:
   flutter_gen_runner: ^5.13.0+1
 
 # lottie_tgs (archive ^3) va flutter_gen (image → archive ^4) uchun bitta versiya.
+# path_provider_foundation 2.6.0 → objective_c FFI; dev/pod sim larda dynamic library xato berishi mumkin.
 dependency_overrides:
   archive: ^4.0.7
+  path_provider_foundation: 2.5.1
 
 flutter_gen:
   output: lib/gen/
@@ -157,6 +168,11 @@ flutter_gen:
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+    - family: Plus Jakarta Sans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-VariableFont_wght.ttf
+
   assets:
     - assets/images/
     - assets/images/bottom_sheet/

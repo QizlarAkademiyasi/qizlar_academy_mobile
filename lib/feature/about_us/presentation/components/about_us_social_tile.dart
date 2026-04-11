@@ -20,37 +20,35 @@ class AboutUsSocialTile extends StatelessWidget {
         borderRadius: AppRadius.radiusLg,
         onTap: onTap,
         child: Container(
-          height: 185,
-          padding: AppPadding.paddingMd,
+          width: double.infinity,
+          padding: AppPadding.paddingXl,
           decoration: BoxDecoration(
             color: context.appColors.onContainer,
             borderRadius: AppRadius.radiusLg,
             border: Border.all(color: context.appColors.stroke),
           ),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(color: style.background, borderRadius: AppRadius.radiusSm),
-                child: Icon(style.icon, color: style.iconColor, size: 22),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(color: style.background, shape: BoxShape.circle),
+                    alignment: Alignment.center,
+                    child: style.icon,
+                  ),
+                  Icon(LucideIcons.squareArrowOutUpRight, size: 18, color: context.appColors.grey),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: context.textTheme.bodyMediumSemibold.copyWith(color: context.appColors.text)),
-                    const SizedBox(height: 4),
-                    Text(subtitle, style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey, height: 1.35)),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Icon(LucideIcons.squareArrowOutUpRight, size: 18, color: context.appColors.grey),
-              ),
+              const SizedBox(height: 14),
+              Text(title, style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
+              const SizedBox(height: 4),
+              Text(subtitle, style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.secondaryGrey, height: 1.35)),
             ],
           ),
         ),
@@ -59,21 +57,24 @@ class AboutUsSocialTile extends StatelessWidget {
   }
 
   _SocialIconStyle _iconStyle(AboutSocialPlatform platform) {
+    Widget assetIcon(AssetGenImage asset) {
+      return asset.image(width: 48, height: 48, fit: BoxFit.fill);
+    }
+
     switch (platform) {
       case AboutSocialPlatform.instagram:
-        return const _SocialIconStyle(icon: LucideIcons.instagram, background: Color(0x33E4405F), iconColor: Color(0xFFE4405F));
+        return _SocialIconStyle(icon: assetIcon(UiKitAssets.images.instagramPng), background: const Color(0x33E4405F));
       case AboutSocialPlatform.telegram:
-        return const _SocialIconStyle(icon: LucideIcons.send, background: Color(0x330088CC), iconColor: Color(0xFF0088CC));
+        return _SocialIconStyle(icon: assetIcon(UiKitAssets.images.telegramPng), background: const Color(0x330088CC));
       case AboutSocialPlatform.youtube:
-        return const _SocialIconStyle(icon: LucideIcons.youtube, background: Color(0x33FF0000), iconColor: Color(0xFFFF0000));
+        return _SocialIconStyle(icon: assetIcon(UiKitAssets.images.youTubePng), background: const Color(0x33FF0000));
     }
   }
 }
 
 class _SocialIconStyle {
-  const _SocialIconStyle({required this.icon, required this.background, required this.iconColor});
+  const _SocialIconStyle({required this.icon, required this.background});
 
-  final IconData icon;
+  final Widget icon;
   final Color background;
-  final Color iconColor;
 }

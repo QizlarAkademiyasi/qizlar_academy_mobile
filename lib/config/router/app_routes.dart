@@ -10,6 +10,7 @@ import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/register
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_details_screen.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_screen.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_launch_context.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_result_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_result_screen.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_screen.dart';
@@ -18,9 +19,14 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/presentation/screens/my_courses_screen.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/search/courses_search_args.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/search/courses_search_screen.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
 import 'package:qizlar_academy_mobile/feature/about_us/presentation/screens/about_us_screen.dart';
+import 'package:qizlar_academy_mobile/feature/privacy_policy/presentation/screens/privacy_policy_screen.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/screens/my_certificates_screen.dart';
+import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacancies_screen.dart';
+import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacancy_detail/vacancy_detail_screen.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/edit_information/screens/edit_information_screen.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/notification_screen.dart';
 import 'package:qizlar_academy_mobile/feature/splash/presentation/screens/splash_screen.dart';
@@ -36,7 +42,7 @@ class AppRoute {
 
   static GoRouter createRouter(AuthSessionCubit authSessionCubit) {
     return GoRouter(
-      debugLogDiagnostics: true,
+      // debugLogDiagnostics: true,
       navigatorKey: rootNavigatorKey,
       initialLocation: initialLocation,
       refreshListenable: _RouterRefreshNotifier(authSessionCubit.stream),
@@ -59,12 +65,8 @@ class AppRoute {
           return Routes.splash;
         }
 
+        // Splash o‘zi animatsiya + minimal vaqt tugagach yo‘naltiradi — ro‘yxatdan o‘tganlar ham har safar splash ko‘radi.
         if (location == Routes.splash) {
-          if (isGuest) return Routes.mainGuest;
-          if (isRegistered && needsProfileRegistration) {
-            return Routes.register;
-          }
-          if (isRegistered) return Routes.mainUser;
           return null;
         }
 
@@ -104,6 +106,12 @@ class AppRoute {
         if (location == Routes.myCertificates && isGuest) {
           return Routes.signIn;
         }
+        if (location == Routes.vacancies && isGuest) {
+          return Routes.signIn;
+        }
+        if (RegExp(r'^/vacancies/[^/]+$').hasMatch(state.uri.path) && isGuest) {
+          return Routes.signIn;
+        }
         if (location == Routes.profileInformation && isGuest) {
           return Routes.signIn;
         }
@@ -125,7 +133,10 @@ class AppRoute {
           if (location == Routes.lessonQuizResult) return Routes.register;
           if (location == Routes.notification) return Routes.register;
           if (location == Routes.myCourses) return Routes.register;
+          if (location == Routes.coursesSearch) return Routes.register;
           if (location == Routes.myCertificates) return Routes.register;
+          if (location == Routes.vacancies) return Routes.register;
+          if (RegExp(r'^/vacancies/[^/]+$').hasMatch(state.uri.path)) return Routes.register;
           if (location == Routes.profileInformation) return Routes.register;
           if (location == Routes.mainUser) return Routes.register;
         }
@@ -188,7 +199,9 @@ class AppRoute {
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) {
             final lessonId = state.pathParameters['lessonId'] ?? '';
-            return LessonQuizScreen(lessonId: lessonId);
+            final extra = state.extra;
+            final launch = extra is LessonQuizLaunchContext ? extra : null;
+            return LessonQuizScreen(lessonId: lessonId, launchContext: launch);
           },
         ),
         GoRoute(
@@ -209,7 +222,36 @@ class AppRoute {
         ),
         GoRoute(path: Routes.notification, name: Routes.notificationName, parentNavigatorKey: rootNavigatorKey, builder: (_, _) => const NotificationScreen()),
         GoRoute(path: Routes.myCourses, name: Routes.myCoursesName, parentNavigatorKey: rootNavigatorKey, builder: (_, _) => const MyCoursesScreen()),
+        GoRoute(
+          path: Routes.coursesSearch,
+          name: Routes.coursesSearchName,
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final extra = state.extra;
+            if (extra is! CoursesSearchArgs) {
+              return Scaffold(
+                appBar: AppBar(
+                  leading: IconButton(icon: const Icon(Icons.close), onPressed: () => context.pop()),
+                ),
+              );
+            }
+            return BlocProvider.value(
+              value: extra.catalogBloc,
+              child: CoursesSearchScreen(initialQuery: extra.initialQuery),
+            );
+          },
+        ),
         GoRoute(path: Routes.myCertificates, name: Routes.myCertificatesName, parentNavigatorKey: rootNavigatorKey, builder: (_, _) => const MyCertificatesScreen()),
+        GoRoute(path: Routes.vacancies, name: Routes.vacanciesName, parentNavigatorKey: rootNavigatorKey, builder: (_, _) => const VacanciesScreen()),
+        GoRoute(
+          path: '/vacancies/:vacancyId',
+          name: Routes.vacancyDetailName,
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final id = state.pathParameters['vacancyId'] ?? '';
+            return VacancyDetailScreen(vacancyId: id);
+          },
+        ),
         GoRoute(
           path: Routes.profileInformation,
           name: Routes.profileInformationName,
@@ -221,6 +263,7 @@ class AppRoute {
           },
         ),
         GoRoute(path: Routes.aboutUs, name: Routes.aboutUsName, parentNavigatorKey: rootNavigatorKey, builder: (_, _) => const AboutUsScreen()),
+        GoRoute(path: Routes.privacyPolicy, name: Routes.privacyPolicyName, parentNavigatorKey: rootNavigatorKey, builder: (_, _) => const PrivacyPolicyScreen()),
         GoRoute(path: Routes.signIn, name: Routes.signIn, parentNavigatorKey: rootNavigatorKey, builder: (_, _) => const SignInScreen()),
         GoRoute(
           path: Routes.verification,

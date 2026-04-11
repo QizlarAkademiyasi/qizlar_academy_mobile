@@ -18,12 +18,14 @@ mixin CourseDetailsContentMixin on State<CourseDetailsContent> {
     bool lessonsLockedUntilEnroll = false,
     String? guestPreviewLessonId,
     VoidCallback? onGuestLessonAuthRequired,
+    String? selectedCurriculumLessonId,
   }) {
     switch (tab) {
       case CoursesTab.lessons:
         return CourseLessonsTab(
           key: const ValueKey('lessons'),
           course: _course,
+          selectedLessonId: selectedCurriculumLessonId,
           lessonsLockedUntilEnroll: lessonsLockedUntilEnroll,
           guestPreviewLessonId: guestPreviewLessonId,
           onGuestLessonAuthRequired: onGuestLessonAuthRequired,

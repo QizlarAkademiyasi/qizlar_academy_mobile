@@ -16,7 +16,10 @@
   "authOtpTooManyRequestsMessage": "Слишком много попыток. Подождите немного и попробуйте снова.",
   "connectionErrorMessage": "Ошибка соединения. Попробуйте ещё раз.",
   "googleSignInErrorMessage": "Не удалось войти через Google. Попробуйте ещё раз.",
-  "telegramSignInComingSoonMessage": "Вход через Telegram будет доступен позже.",
+  "telegramSignInInvalidLinkMessage": "Не удалось открыть Telegram: неверная ссылка от сервера.",
+  "telegramSignInLaunchFailedMessage": "Не удалось открыть Telegram. Попробуйте снова.",
+  "telegramSignInOpenBotTitle": "Telegram",
+  "telegramSignInEnterCodeHintMessage": "Откройте бота и введите полученный код здесь.",
   "signInWithGoogle": "Войти через Google",
   "signInWithTelegram": "Войти через Telegram",
   "registerTitle": "Личные данные",
@@ -35,6 +38,10 @@
   "otpDigitsOnlyMessage": "Код должен содержать только цифры.",
   "otpInvalidOrExpiredMessage": "Неверный код или срок его действия истёк.",
   "otpSentAgain": "Код подтверждения отправлен повторно.",
+  "verificationBackConfirmTitle": "Вернуться назад?",
+  "verificationBackConfirmMessage": "Если вы выйдете, нужно будет снова запросить код для входа.",
+  "verificationBackConfirmStay": "Остаться",
+  "verificationBackConfirmLeave": "Назад",
   "mainTabHome": "Главная",
   "mainTabCourses": "Курсы",
   "mainTabLeaderboard": "Лидеры",
@@ -48,8 +55,19 @@
   "homeGuestCoursesGate": "Зарегистрируйтесь, чтобы полностью смотреть курсы",
   "homeGuestNotificationsGate": "Зарегистрируйтесь для уведомлений",
   "homeLoadErrorMessage": "Ошибка соединения. Попробуйте ещё раз.",
+  "coursesCatalogLoadError": "Не удалось загрузить курсы. Попробуйте ещё раз.",
+  "leaderboardLoadError": "Не удалось загрузить рейтинг. Попробуйте ещё раз.",
+  "profileOverviewLoadError": "Не удалось загрузить профиль. Попробуйте ещё раз.",
+  "profilePreferenceUpdateError": "Не удалось обновить настройки. Попробуйте ещё раз.",
+  "notificationListLoadError": "Не удалось загрузить уведомления. Попробуйте ещё раз.",
+  "notificationActionError": "Не удалось обновить уведомления. Попробуйте ещё раз.",
+  "courseDetailsLoadError": "Не удалось загрузить данные курса. Попробуйте ещё раз.",
+  "editProfileLoadError": "Не удалось загрузить данные профиля. Попробуйте ещё раз.",
+  "editProfileSaveError": "Не удалось сохранить изменения. Попробуйте ещё раз.",
   "coursesAllTitle": "Все курсы",
   "coursesSearchHint": "Поиск курсов…",
+  "coursesSearchScreenTitle": "Поиск курсов",
+  "coursesSearchIdleHint": "Введите название курса для поиска",
   "coursesNoResults": "Подходящих курсов нет",
   "coursesNotificationsComingSoonMessage": "Раздел уведомлений скоро появится.",
   "coursesLastViewed": "Недавно просмотренные",
@@ -71,6 +89,9 @@
   "lessonProgress": "Урок {current} из {total}",
   "lessonCompleted": "Выполнено",
   "lessonMarkComplete": "Завершить урок",
+  "lessonVideoPlaybackError": "Не удалось загрузить видео.",
+  "lessonVideoPlaybackErrorYoutube": "YouTube может временно ограничить воспроизведение в приложении. Откройте видео в браузере или в приложении YouTube.",
+  "lessonVideoOpenExternal": "Открыть в браузере",
   "coursePillTabLessons": "Уроки",
   "coursePillTabInfo": "О курсе",
   "coursePillTabReviews": "Отзывы",
@@ -112,12 +133,19 @@
   "lessonQuizStatWrong": "Ошибки",
   "lessonQuizStatTime": "Время",
   "lessonQuizContinue": "Продолжить",
+  "lessonQuizRetry": "Попробовать снова",
   "lessonQuizErrorEmpty": "Для этого урока пока нет теста.",
   "lessonQuizErrorLoad": "Не удалось загрузить тест.",
   "lessonQuizErrorCheck": "Не удалось проверить ответ.",
   "lessonQuizErrorSubmit": "Не удалось отправить тест.",
   "lessonQuizErrorGeneric": "Что-то пошло не так.",
   "lessonQuizAlreadyTaken": "Вы уже прошли этот тест. Повторная попытка недоступна.",
+  "courseModuleLockedMessage": "Чтобы перейти к следующему модулю, завершите все уроки и тесты в предыдущем.",
+  "courseLessonSequentialLockedMessage": "Чтобы перейти к следующему уроку, завершите предыдущий урок и тест (если есть).",
+  "courseCompleteCongratsTitle": "Поздравляем!",
+  "courseCompleteCongratsDescription": "Вы завершили курс. Получите сертификат в разделе «Мои сертификаты».",
+  "courseCompleteGetCertificate": "Получить сертификат",
+  "courseCompleteClose": "Закрыть",
   "leaderboardTitle": "Лидеры",
   "leaderboardSubtitle": "Рейтинг лучших учеников",
   "leaderboardTabOverall": "Общий",
@@ -138,9 +166,85 @@
   "profileMenuCertificates": "Мои сертификаты",
   "profileMenuMyCourses": "Мои курсы",
   "profileMenuMyActivity": "Моя активность",
+  "profileMenuVacancies": "Вакансии",
+  "vacanciesTitle": "Вакансии",
+  "vacancyDetailCta": "Подробнее",
+  "vacancySalaryNegotiable": "По договорённости",
+  "vacancySalaryRange": "{from} – {to} {currency}",
+  "@vacancySalaryRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "vacancyPostedMomentsAgo": "Только что",
+  "vacancyPostedMinutesAgo": "{count} мин. назад",
+  "@vacancyPostedMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyPostedHoursAgo": "{count} ч. назад",
+  "@vacancyPostedHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyPostedYesterday": "Вчера",
+  "vacancyPostedDaysAgo": "{count} дн. назад",
+  "@vacancyPostedDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyEmploymentIntern": "Стажировка",
+  "vacancyEmploymentPartTime": "Частичная занятость",
+  "vacancyEmploymentFullTime": "Полная занятость",
+  "vacancyEmploymentRemote": "Удалённо",
+  "vacancyEmploymentOnsite": "В офисе",
+  "vacancyEmploymentContract": "Контракт",
+  "vacanciesEmptyTitle": "Пока нет вакансий",
+  "vacanciesEmptySubtitle": "Загляните позже",
+  "vacanciesLoadError": "Не удалось загрузить вакансии",
+  "vacanciesLoadMoreError": "Не удалось подгрузить список",
+  "vacancyDetailsTitle": "Вакансия",
+  "vacancySheetEmploymentType": "Тип занятости",
+  "vacancySheetSalary": "Зарплата",
+  "vacancySheetLocation": "Локация",
+  "vacancySheetCategory": "Направление",
+  "vacancySheetPosted": "Опубликовано",
+  "vacancyDetailAbout": "О вакансии",
+  "vacancyDetailSkills": "Навыки",
+  "vacancyDetailRequirements": "Обязанности",
+  "vacancyApplyCta": "Откликнуться",
+  "vacancySalaryPerMonth": "/ в месяц",
+  "vacancyDetailLoadError": "Не удалось загрузить вакансию",
+  "vacancyApplyPlaceholder": "Скоро — здесь появится возможность отклика",
   "profileMenuProfileInfo": "Данные профиля",
   "profileMenuLanguage": "Язык",
   "profileMenuShareApp": "Поделиться приложением",
+  "profileShareAppSubtitle": "Поделитесь с близкими",
+  "profileShareAppMessage": "Qizlar Akademiyasi — бесплатные курсы, активное сообщество и возможности для роста для женщин и девушек в одном приложении.\n\nСкачайте и учитесь вместе:\n{link}",
+  "@profileShareAppMessage": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "profileMenuAbout": "О нас",
   "profileMenuHelp": "Центр помощи",
   "profileMenuPrivacy": "Политика конфиденциальности",
@@ -165,6 +269,7 @@
   "profileSectionGeneral": "ОБЩЕЕ",
   "profileNotifications": "Уведомления",
   "profileNotificationsSubtitle": "Push-уведомления",
+  "profileNotificationsEnableFailed": "Не удалось включить уведомления. Проверьте разрешения и попробуйте снова.",
   "profileDarkMode": "Тёмная тема",
   "profileDarkModeSubtitle": "Тёмный интерфейс",
   "profileLogout": "Выйти",
@@ -184,6 +289,11 @@
   "profileInformationStatusTitle": "Статус профиля",
   "profileInformationPhoneLabel": "Номер телефона",
   "profileInformationPhoneNationalHint": "XX XXX XX XX",
+  "editProfileUnsavedTitle": "Несохранённые изменения",
+  "editProfileUnsavedMessage": "В профиле есть несохранённые изменения. Сохранить перед выходом?",
+  "editProfileUnsavedSave": "Сохранить",
+  "editProfileUnsavedDiscard": "Выйти без сохранения",
+  "editProfileUnsavedContinue": "Продолжить редактирование",
   "aboutBrandTitle": "QIZLAR AKADEMIYASI",
   "aboutSectionProjectTitle": "О проекте Qizlar Academy",
   "aboutProjectLead": "Qizlar Academy",
@@ -202,16 +312,28 @@
   "aboutSocialYoutubeSubtitle": "Официальный канал Qizlar Academy на YouTube",
   "aboutUsLoadError": "Не удалось загрузить данные. Попробуйте снова.",
   "aboutUsLinkOpenError": "Не удалось открыть ссылку.",
+  "appUpdateAvailableTitle": "Доступно обновление!",
+  "appUpdateAvailableBody": "Мы ещё больше улучшили приложение! Обновите его, чтобы пользоваться новыми возможностями и удобнее учиться.",
+  "appUpdateLater": "Позже",
+  "appUpdateCta": "Обновить",
   "guestGateNotificationSettings": "Зарегистрируйтесь, чтобы настроить уведомления",
   "guestGateSaveSettings": "Зарегистрируйтесь, чтобы сохранить настройки",
   "guestGateProfileFeatures": "Зарегистрируйтесь для функций профиля",
   "profileAppLanguageTitle": "Язык приложения",
+  "profileBadgePickerTitle": "Ваши значки",
+  "profileTezKundaTitle": "Скоро",
+  "profileTezKundaMessage": "Этот раздел пока недоступен. Мы над ним работаем — загляните позже.",
   "languageUzbek": "Узбекский",
   "languageRussian": "Русский",
   "languageEnglish": "Английский",
   "notificationsTitle": "Уведомления",
   "notificationsEmpty": "Пока нет уведомлений",
   "notificationsEmptySubtitle": "Новые сообщения появятся здесь.",
+  "notificationTabPlatform": "Платформа",
+  "notificationTabCommunity": "Сообщество",
+  "notificationDetailsMore": "Подробнее",
+  "notificationsEmptyThisTab": "В этой вкладке нет уведомлений",
+  "notificationsEmptyThisTabSubtitle": "Переключите вкладку или загляните позже.",
   "guestGateMarkAllRead": "Зарегистрируйтесь, чтобы отметить всё прочитанным",
   "guestGateManageNotifications": "Зарегистрируйтесь, чтобы управлять уведомлениями",
   "guestModeTitle": "Гостевой режим",
@@ -246,6 +368,10 @@
   "certificatesBadgeGold": "Золотой сертификат",
   "certificatesBadgeSilver": "Серебряный сертификат",
   "certificatesBadgeBronze": "Бронзовый сертификат",
+  "linkPromptYes": "Да",
+  "linkPromptNo": "Нет",
+  "communityTelegramInviteTitle": "Присоединяйтесь к сообществу",
+  "communityTelegramInviteDescription": "На нашем канале в Telegram вы найдёте ответы на вопросы. Перейти в канал?",
   "certificatesView": "Смотреть",
   "certificatesSheetHeading": "Сертификат: {courseName}",
   "@certificatesSheetHeading": {
@@ -260,7 +386,10 @@
   "certificatesEmptyTitle": "Пока нет сертификатов",
   "certificatesEmptySubtitle": "После завершения курса сертификат появится здесь.",
   "certificatesLoadError": "Не удалось загрузить сертификаты. Попробуйте снова.",
+  "certificateClaimError": "Не удалось получить сертификат. Попробуйте позже.",
   "certificatesFileActionError": "Не удалось скачать или поделиться файлом.",
+  "certificatesInstagramStoryNotConfigured": "Для истории в Instagram нужен Facebook App ID. Укажите FACEBOOK_APP_ID при сборке приложения.",
+  "certificatesInstagramShareFailed": "Не удалось открыть Instagram. Убедитесь, что приложение установлено, и попробуйте снова.",
   "courseReviewsSummaryCount": "{count} отзывов",
   "@courseReviewsSummaryCount": {
     "placeholders": {

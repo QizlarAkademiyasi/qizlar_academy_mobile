@@ -14,6 +14,39 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart' as _svg;
 import 'package:vector_graphics/vector_graphics.dart' as _vg;
 
+class $AssetsBadgesGen {
+  const $AssetsBadgesGen();
+
+  /// File path: assets/badges/crown.tgs
+  String get crown => 'packages/qizlar_academy_kit/assets/badges/crown.tgs';
+
+  /// File path: assets/badges/girls_wallet.tgs
+  String get girlsWallet => 'packages/qizlar_academy_kit/assets/badges/girls_wallet.tgs';
+
+  /// File path: assets/badges/heart_of_love_rabbit.tgs
+  String get heartOfLoveRabbit =>
+      'packages/qizlar_academy_kit/assets/badges/heart_of_love_rabbit.tgs';
+
+  /// File path: assets/badges/high-heeled shoes.tgs
+  String get highHeeledShoes => 'packages/qizlar_academy_kit/assets/badges/high-heeled shoes.tgs';
+
+  /// File path: assets/badges/lover_rabbit.tgs
+  String get loverRabbit => 'packages/qizlar_academy_kit/assets/badges/lover_rabbit.tgs';
+
+  /// File path: assets/badges/ring.tgs
+  String get ring => 'packages/qizlar_academy_kit/assets/badges/ring.tgs';
+
+  /// List of all assets
+  List<String> get values => [
+    crown,
+    girlsWallet,
+    heartOfLoveRabbit,
+    highHeeledShoes,
+    loverRabbit,
+    ring,
+  ];
+}
+
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
@@ -26,8 +59,27 @@ class $AssetsImagesGen {
   /// File path: assets/images/aloqa_bank.png
   AssetGenImage get aloqaBank => const AssetGenImage('assets/images/aloqa_bank.png');
 
+  /// File path: assets/images/bottomNavDark.png
+  AssetGenImage get bottomNavDark => const AssetGenImage('assets/images/bottomNavDark.png');
+
+  /// File path: assets/images/bottomNavLight.png
+  AssetGenImage get bottomNavLight => const AssetGenImage('assets/images/bottomNavLight.png');
+
   /// Directory path: assets/images/bottom_sheet
   $AssetsImagesBottomSheetGen get bottomSheet => const $AssetsImagesBottomSheetGen();
+
+  /// File path: assets/images/google.png
+  AssetGenImage get google => const AssetGenImage('assets/images/google.png');
+
+  /// File path: assets/images/ijtimoiy_ximoya_logo.png
+  AssetGenImage get ijtimoiyXimoyaLogo =>
+      const AssetGenImage('assets/images/ijtimoiy_ximoya_logo.png');
+
+  /// File path: assets/images/instagram.png
+  AssetGenImage get instagramPng => const AssetGenImage('assets/images/instagram.png');
+
+  /// File path: assets/images/instagram.svg
+  SvgGenImage get instagramSvg => const SvgGenImage('assets/images/instagram.svg');
 
   /// File path: assets/images/logo.png
   AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
@@ -35,26 +87,61 @@ class $AssetsImagesGen {
   /// File path: assets/images/logo_removed.png
   AssetGenImage get logoRemoved => const AssetGenImage('assets/images/logo_removed.png');
 
+  /// File path: assets/images/qizlar_ovozi.svg
+  SvgGenImage get qizlarOvozi => const SvgGenImage('assets/images/qizlar_ovozi.svg');
+
+  /// File path: assets/images/qizlar_ovozi_Logo.png
+  AssetGenImage get qizlarOvoziLogo => const AssetGenImage('assets/images/qizlar_ovozi_Logo.png');
+
   /// File path: assets/images/splash_logo.png
   AssetGenImage get splashLogoPng => const AssetGenImage('assets/images/splash_logo.png');
 
   /// File path: assets/images/splash_logo.svg
   SvgGenImage get splashLogoSvg => const SvgGenImage('assets/images/splash_logo.svg');
 
+  /// File path: assets/images/telegram.png
+  AssetGenImage get telegramPng => const AssetGenImage('assets/images/telegram.png');
+
+  /// File path: assets/images/telegram.svg
+  SvgGenImage get telegramSvg => const SvgGenImage('assets/images/telegram.svg');
+
+  /// File path: assets/images/yoshlar_agentligi_logo.png
+  AssetGenImage get yoshlarAgentligiLogo =>
+      const AssetGenImage('assets/images/yoshlar_agentligi_logo.png');
+
   /// File path: assets/images/yoshlar_ishlar_agentligi.png
   AssetGenImage get yoshlarIshlarAgentligi =>
       const AssetGenImage('assets/images/yoshlar_ishlar_agentligi.png');
+
+  /// File path: assets/images/you_tube.png
+  AssetGenImage get youTubePng => const AssetGenImage('assets/images/you_tube.png');
+
+  /// File path: assets/images/you_tube.svg
+  SvgGenImage get youTubeSvg => const SvgGenImage('assets/images/you_tube.svg');
 
   /// List of all assets
   List<dynamic> get values => [
     splashDark,
     splashLight,
     aloqaBank,
+    bottomNavDark,
+    bottomNavLight,
+    google,
+    ijtimoiyXimoyaLogo,
+    instagramPng,
+    instagramSvg,
     logo,
     logoRemoved,
+    qizlarOvozi,
+    qizlarOvoziLogo,
     splashLogoPng,
     splashLogoSvg,
+    telegramPng,
+    telegramSvg,
+    yoshlarAgentligiLogo,
     yoshlarIshlarAgentligi,
+    youTubePng,
+    youTubeSvg,
   ];
 }
 
@@ -213,8 +300,11 @@ class $AssetsMarkdownGen {
   /// File path: assets/markdown/policy.md
   String get policy => 'packages/qizlar_academy_kit/assets/markdown/policy.md';
 
+  /// File path: assets/markdown/privacy-policy.md
+  String get privacyPolicy => 'packages/qizlar_academy_kit/assets/markdown/privacy-policy.md';
+
   /// List of all assets
-  List<String> get values => [policy];
+  List<String> get values => [policy, privacyPolicy];
 }
 
 class $AssetsSvgsGen {
@@ -1724,6 +1814,7 @@ class UiKitAssets {
 
   static const String package = 'qizlar_academy_kit';
 
+  static const $AssetsBadgesGen badges = $AssetsBadgesGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsJsonGen json = $AssetsJsonGen();
   static const $AssetsLottieGen lottie = $AssetsLottieGen();

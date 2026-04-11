@@ -1,10 +1,11 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 
-/// Too many OTP SMS requests (429) on [AnonymousApis.authOtpPhoneNumber].
+/// Too many OTP requests (429) on SMS yoki Telegram bot telefon endpointlari.
 bool isAuthOtpPhoneThrottledResponse(DioException error) {
   if (error.response?.statusCode != 429) return false;
-  return error.requestOptions.path == AnonymousApis.authOtpPhoneNumber;
+  final path = error.requestOptions.path;
+  return path == AnonymousApis.authOtpPhoneNumber || path == AnonymousApis.authOtpBotPhoneNumber;
 }
 
 /// OTP telefon so'rovida backend ruxsat etilgan operator prefikslariga mos kelmasa 400 qaytaradi.

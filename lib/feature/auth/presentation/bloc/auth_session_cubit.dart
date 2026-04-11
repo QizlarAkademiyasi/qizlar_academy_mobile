@@ -2,6 +2,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
+import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_otp_bot_response.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_session_model.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/repository/auth_repository.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_state.dart';
@@ -25,6 +26,10 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
 
   Future<String> requestOtpForPhone({required String phone}) {
     return _repository.sendOtpToPhoneNumber(phone: phone);
+  }
+
+  Future<AuthOtpBotResponse> requestTelegramBotOtpForPhone({required String phone}) {
+    return _repository.sendOtpViaTelegramBot(phone: phone);
   }
 
   Future<void> signInWithOtp({

@@ -3,7 +3,6 @@ import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
-import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/failure_content.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_empty_content.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/domain/repository/leaderboard_repository.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/bloc/leaderboard_bloc.dart';
@@ -32,7 +31,7 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
   late final PageController _timeframePageController;
   bool _syncingFromBloc = false;
   bool _syncingFromPage = false;
-  static const double _pinnedFiltersHeight = 132;
+  static const double _pinnedFiltersHeight = 140;
 
   @override
   void initState() {
@@ -71,8 +70,8 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
         },
         builder: (context, state) {
           if (state.status == LeaderboardStatus.failure && state.courseOptions.isEmpty) {
-            return FailureContent(
-              message: state.message,
+            return AppFailureState(
+              message: context.l10n.leaderboardLoadError,
               onRetry: () {
                 context.read<LeaderboardBloc>().add(const LeaderboardStarted());
               },
@@ -107,11 +106,12 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                     children: [
                       TgsEmptyContent(message: context.l10n.leaderboardNoCourses, animationSize: 92),
                       const SizedBox(height: 14),
-                      FilledButton(
+                      PrimaryButton.elevated(
+                        label: context.l10n.refresh,
                         onPressed: () {
                           context.read<LeaderboardBloc>().add(const LeaderboardStarted());
                         },
-                        child: Text(context.l10n.refresh),
+                        expand: false,
                       ),
                     ],
                   ),
@@ -124,16 +124,10 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
             bottom: false,
             child: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: AppPadding.paddingHorizontalLg,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        buildLeaderboardHeader(context),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+                SliverPadding(
+                  padding: AppPadding.paddingHorizontalLg,
+                  sliver: SliverToBoxAdapter(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [buildLeaderboardHeader(context), const SizedBox(height: 20)]),
                   ),
                 ),
                 SliverPersistentHeader(
@@ -159,15 +153,9 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                           buildLeaderboardCategoryDropdown(
                             context,
                             selectedCourseName: selectedCourseName,
-                            onTap: isBootstrapping || isLoading
-                                ? () {}
-                                : () => onCategoryTap(
-                                      context,
-                                      options: state.courseOptions,
-                                      selectedId: state.selectedCourseId,
-                                    ),
+                            onTap: isBootstrapping || isLoading ? () {} : () => onCategoryTap(context, options: state.courseOptions, selectedId: state.selectedCourseId),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 16),
                         ],
                       ),
                     ),
@@ -175,6 +163,7 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                 ),
               ],
               body: PageView.builder(
+                physics: NeverScrollableScrollPhysics(),
                 controller: _timeframePageController,
                 itemCount: 3,
                 onPageChanged: (index) {
@@ -193,31 +182,19 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                   // timeframe o'zgarganda bloc state yangilanadi va PageView animatsiya bilan
                   // yangi data ko'rsatadi.
                   if (isBootstrapping) {
-                    return ListView(
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
-                      children: const [
-                        LeaderboardTopPerformersSkeleton(),
-                        SizedBox(height: 24),
-                        LeaderboardFullListSkeleton(),
-                      ],
-                    );
+                    return ListView(padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset), children: const [LeaderboardTopPerformersSkeleton(), SizedBox(height: 24), LeaderboardFullListSkeleton()]);
                   }
 
                   if (!isLoading && state.fullList.isEmpty) {
                     return Center(
                       child: Padding(
                         padding: AppPadding.paddingHorizontalLg,
-                        child: TgsEmptyContent(
-                          message: context.l10n.leaderboardNoRatingYet,
-                          animationSize: 150,
-                        ),
+                        child: TgsEmptyContent(message: context.l10n.leaderboardNoRatingYet, animationSize: 150),
                       ),
                     );
                   }
 
                   return ListView(
-                    physics: const BouncingScrollPhysics(),
                     padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
                     children: [
                       buildLeaderboardTopPerformers(
@@ -250,10 +227,7 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
 }
 
 class _PinnedFiltersDelegate extends SliverPersistentHeaderDelegate {
-  _PinnedFiltersDelegate({
-    required this.height,
-    required this.child,
-  });
+  _PinnedFiltersDelegate({required this.height, required this.child});
 
   final double height;
   final Widget child;
@@ -266,11 +240,7 @@ class _PinnedFiltersDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      height: height,
-      color: context.theme.scaffoldBackgroundColor,
-      child: child,
-    );
+    return Container(height: height, color: context.theme.scaffoldBackgroundColor, child: child);
   }
 
   @override

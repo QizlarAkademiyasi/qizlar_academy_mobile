@@ -4,6 +4,7 @@ enum ProfileMenuItemType {
   certificates,
   myCourses,
   myActivity,
+  vacancies,
   profileInfo,
   language,
   shareApp,

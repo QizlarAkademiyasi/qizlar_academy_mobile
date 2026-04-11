@@ -170,12 +170,7 @@ class _ProfileTabAvatar extends StatelessWidget {
           fit: BoxFit.cover,
           width: size,
           height: size,
-          fallback: AppNetworkImageFallbackAvatar(
-            iconSize: size * 0.7,
-            iconColor: borderColor,
-            placeholderShowsIcon: false,
-            errorShowsBackground: false,
-          ),
+          fallback: AppNetworkImageFallbackAvatar(iconSize: size * 0.7, iconColor: borderColor, placeholderShowsIcon: false, errorShowsBackground: false),
         ),
       ),
     );

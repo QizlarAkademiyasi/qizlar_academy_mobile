@@ -1,6 +1,8 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/course_details_review_merge.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_module_model.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/lesson_quiz_question_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_details_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_review_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/repository/courses_repository.dart';
@@ -18,6 +20,7 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
     on<CoursesEnrollRequested>(_onEnrollRequested);
     on<CoursesEnrollErrorCleared>(_onEnrollErrorCleared);
     on<CoursesEnrollOpenPlayerConsumed>(_onEnrollOpenPlayerConsumed);
+    on<CoursesQuizSubmitted>(_onQuizSubmitted);
   }
 
   final CoursesRepository _repository;
@@ -30,7 +33,7 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
       emit(state.copyWith(status: CoursesStatus.success, course: course, isEnrolling: false));
     } catch (e, st) {
       AppLogger.e('CourseDetailsBloc: load course failed', error: e, stackTrace: st);
-      emit(state.copyWith(status: CoursesStatus.failure, message: 'Kurs ma’lumotlarini olishda xatolik.', isEnrolling: false));
+      emit(state.copyWith(status: CoursesStatus.failure, clearMessage: true, isEnrolling: false));
     }
   }
 
@@ -53,6 +56,7 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
 
     var userName = 'Siz';
     var initials = 'S';
+    String? userPhotoUrl;
     try {
       final overview = await _profileRepository.getProfileOverview();
       final fn = overview.user.fullName.trim();
@@ -60,6 +64,8 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
         userName = fn;
         initials = _initialsFromReviewerName(fn);
       }
+      final av = overview.user.avatarUrl.trim();
+      if (av.isNotEmpty) userPhotoUrl = av;
     } catch (_) {}
 
     final stars = event.rating.round().clamp(1, 5);
@@ -67,6 +73,7 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
       id: 'local_${DateTime.now().millisecondsSinceEpoch}',
       userName: userName,
       userInitials: initials,
+      userPhotoUrl: userPhotoUrl,
       createdAt: DateTime.now(),
       rating: stars,
       commentHtml: _plainCommentToHtmlParagraph(event.comment),
@@ -78,7 +85,8 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
   Future<void> _onRetryRequested(CoursesRetryRequested event, Emitter<CourseDetailsState> emit) async {
     final lastId = state.course?.id;
     if (lastId == null) {
-      emit(state.copyWith(status: CoursesStatus.failure, message: 'Qayta urinish uchun courseId topilmadi.'));
+      AppLogger.e('CourseDetailsBloc: retry without courseId');
+      emit(state.copyWith(status: CoursesStatus.failure, clearMessage: true));
       return;
     }
     add(CoursesCourseDetailsRequested(courseId: lastId));
@@ -110,6 +118,51 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
 
   void _onEnrollErrorCleared(CoursesEnrollErrorCleared event, Emitter<CourseDetailsState> emit) {
     emit(state.copyWith(clearEnrollError: true));
+  }
+
+  /// Quiz natijasini in-memory yangilaydi — serverdan refresh kutilmaydi.
+  /// 1. Topshirilgan darsning quiz holati yangilanadi.
+  /// 2. Agar dars endi to'liq yakunlangan bo'lsa, keyingi darsning qulfi ochiladi.
+  void _onQuizSubmitted(CoursesQuizSubmitted event, Emitter<CourseDetailsState> emit) {
+    final course = state.course;
+    if (course == null) return;
+
+    // 1. Submitted lesson quiz fields yangilash
+    final withQuizUpdate = _applyQuizResult(course.modules, event.lessonId, event.result);
+
+    // 2. Submit javobida isFail: false bo'lsa keyingi darsning qulfi ochiladi (server refreshdan oldin).
+    final flat = withQuizUpdate.expand((m) => m.lessons).toList();
+    final idx = flat.indexWhere((l) => l.id == event.lessonId);
+    final finalModules = (idx >= 0 && idx < flat.length - 1 && !event.result.isFail)
+        ? _unlockLesson(withQuizUpdate, flat[idx + 1].id)
+        : withQuizUpdate;
+
+    emit(state.copyWith(course: course.copyWith(modules: finalModules)));
+  }
+
+  List<CourseModuleModel> _applyQuizResult(List<CourseModuleModel> modules, String lessonId, LessonQuizSubmitResultModel result) {
+    return modules.map((module) {
+      final updatedLessons = module.lessons.map((lesson) {
+        if (lesson.id != lessonId) return lesson;
+        return lesson.copyWith(
+          quizPassed: !result.isFail,
+          isQuizAttempted: true,
+          quizCorrectCount: result.correctAnswerCount,
+          quizTotalCount: result.totalCount,
+        );
+      }).toList();
+      return module.copyWith(lessons: updatedLessons);
+    }).toList();
+  }
+
+  List<CourseModuleModel> _unlockLesson(List<CourseModuleModel> modules, String lessonId) {
+    return modules.map((module) {
+      final updatedLessons = module.lessons.map((lesson) {
+        if (lesson.id == lessonId && lesson.isLocked) return lesson.copyWith(isLocked: false);
+        return lesson;
+      }).toList();
+      return module.copyWith(lessons: updatedLessons);
+    }).toList();
   }
 }
 

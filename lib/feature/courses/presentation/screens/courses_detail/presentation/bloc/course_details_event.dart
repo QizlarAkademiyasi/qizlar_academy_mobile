@@ -72,3 +72,16 @@ final class CoursesEnrollErrorCleared extends CourseDetailsEvent {
 final class CoursesEnrollOpenPlayerConsumed extends CourseDetailsEvent {
   const CoursesEnrollOpenPlayerConsumed();
 }
+
+/// Quiz muvaffaqiyatli topshirilgandan keyin in-memory yangilash uchun.
+/// Server javobidagi [result] asosida darsning quiz holati va keyingi darsning
+/// qulfi darhol (refresh kutmasdan) yangilanadi.
+final class CoursesQuizSubmitted extends CourseDetailsEvent {
+  const CoursesQuizSubmitted({required this.lessonId, required this.result});
+
+  final String lessonId;
+  final LessonQuizSubmitResultModel result;
+
+  @override
+  List<Object?> get props => [lessonId, result];
+}

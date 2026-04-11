@@ -14,6 +14,7 @@ class ProfileFullNameWithBadge extends StatelessWidget {
     this.maxLines = 2,
     required this.fallbackTextAlign,
     required this.rowMainAxisAlignment,
+    this.onBadgeTap,
   });
 
   final ProfileUserModel user;
@@ -21,15 +22,17 @@ class ProfileFullNameWithBadge extends StatelessWidget {
   final double badgeSize;
   final double badgeGap;
   final int maxLines;
+
   /// Badge yo‘q yoki katalog yuklanmaguncha.
   final TextAlign fallbackTextAlign;
+
   /// Badge bilan qator tartibi.
   final MainAxisAlignment rowMainAxisAlignment;
 
-  static ProfileBadgeDefinition? _resolvedBadge(
-    ProfileUserModel user,
-    List<ProfileBadgeDefinition> catalog,
-  ) {
+  /// `null` bo‘lsa badge bosilmaydi.
+  final VoidCallback? onBadgeTap;
+
+  static ProfileBadgeDefinition? _resolvedBadge(ProfileUserModel user, List<ProfileBadgeDefinition> catalog) {
     if (catalog.isEmpty) return null;
     final id = ProfileBadgeCatalogLoader.coerceSelection(user.badgeId, catalog);
     for (final b in catalog) {
@@ -47,13 +50,7 @@ class ProfileFullNameWithBadge extends StatelessWidget {
         final badge = catalog == null ? null : _resolvedBadge(user, catalog);
 
         if (badge == null) {
-          return Text(
-            user.fullName,
-            textAlign: fallbackTextAlign,
-            maxLines: maxLines,
-            overflow: TextOverflow.ellipsis,
-            style: nameStyle,
-          );
+          return Text(user.fullName, textAlign: fallbackTextAlign, maxLines: maxLines, overflow: TextOverflow.ellipsis, style: nameStyle);
         }
 
         return Row(
@@ -61,27 +58,43 @@ class ProfileFullNameWithBadge extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
-              child: Text(
-                user.fullName,
-                textAlign: TextAlign.right,
-                maxLines: maxLines,
-                overflow: TextOverflow.ellipsis,
-                style: nameStyle,
-              ),
+              child: Text(user.fullName, textAlign: TextAlign.right, maxLines: maxLines, overflow: TextOverflow.ellipsis, style: nameStyle),
             ),
             SizedBox(width: badgeGap),
-            SizedBox(
-              width: badgeSize,
-              height: badgeSize,
-              child: Lottie.asset(
-                badge.packageAssetPath,
-                fit: BoxFit.contain,
-                repeat: true,
-              ),
-            ),
+            _BadgeLottieTap(size: badgeSize, assetPath: badge.packageAssetPath, onTap: onBadgeTap),
           ],
         );
       },
+    );
+  }
+}
+
+class _BadgeLottieTap extends StatelessWidget {
+  const _BadgeLottieTap({required this.size, required this.assetPath, this.onTap});
+
+  final double size;
+  final String assetPath;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final lottie = SizedBox(
+      width: size,
+      height: size,
+      child: Lottie.asset(assetPath, fit: BoxFit.contain, repeat: true),
+    );
+    if (onTap == null) return lottie;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        splashFactory: NoSplash.splashFactory,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: lottie,
+      ),
     );
   }
 }

@@ -4,7 +4,10 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_empty_content.dart';
 
 class NotificationEmptyContent extends StatelessWidget {
-  const NotificationEmptyContent({super.key});
+  const NotificationEmptyContent({super.key, this.message, this.subtitle});
+
+  final String? message;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +16,8 @@ class NotificationEmptyContent extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36),
         child: TgsEmptyContent(
-          message: l10n.notificationsEmpty,
-          subtitle: l10n.notificationsEmptySubtitle,
+          message: message ?? l10n.notificationsEmpty,
+          subtitle: subtitle ?? l10n.notificationsEmptySubtitle,
           tgsAsset: UiKitAssets.lottie.rabbit.sleepRabbit,
           animationSize: 112,
         ),

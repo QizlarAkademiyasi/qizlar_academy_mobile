@@ -16,7 +16,10 @@
   "authOtpTooManyRequestsMessage": "Too many attempts. Please wait a bit and try again.",
   "connectionErrorMessage": "Connection error. Please try again.",
   "googleSignInErrorMessage": "Google sign-in failed. Please try again.",
-  "telegramSignInComingSoonMessage": "Telegram sign-in will be available in a later update.",
+  "telegramSignInInvalidLinkMessage": "Could not open Telegram: invalid link from server.",
+  "telegramSignInLaunchFailedMessage": "Could not open Telegram. Please try again.",
+  "telegramSignInOpenBotTitle": "Telegram",
+  "telegramSignInEnterCodeHintMessage": "Open the bot, then enter the code you receive here.",
   "signInWithGoogle": "Continue with Google",
   "signInWithTelegram": "Continue with Telegram",
   "registerTitle": "Personal details",
@@ -49,6 +52,10 @@
   "otpDigitsOnlyMessage": "The code must contain only digits.",
   "otpInvalidOrExpiredMessage": "The code is incorrect or has expired.",
   "otpSentAgain": "Verification code was sent again.",
+  "verificationBackConfirmTitle": "Go back?",
+  "verificationBackConfirmMessage": "If you leave, you will need to request a new code to continue signing in.",
+  "verificationBackConfirmStay": "Stay",
+  "verificationBackConfirmLeave": "Go back",
   "mainTabHome": "Home",
   "mainTabCourses": "Courses",
   "mainTabLeaderboard": "Leaderboard",
@@ -62,8 +69,19 @@
   "homeGuestCoursesGate": "Sign up to view courses in full",
   "homeGuestNotificationsGate": "Sign up for notifications",
   "homeLoadErrorMessage": "Connection error. Please try again.",
+  "coursesCatalogLoadError": "Couldn’t load courses. Please try again.",
+  "leaderboardLoadError": "Couldn’t load the leaderboard. Please try again.",
+  "profileOverviewLoadError": "Couldn’t load your profile. Please try again.",
+  "profilePreferenceUpdateError": "Couldn’t update settings. Please try again.",
+  "notificationListLoadError": "Couldn’t load notifications. Please try again.",
+  "notificationActionError": "Couldn’t update notifications. Please try again.",
+  "courseDetailsLoadError": "Couldn’t load course details. Please try again.",
+  "editProfileLoadError": "Couldn’t load profile information. Please try again.",
+  "editProfileSaveError": "Couldn’t save changes. Please try again.",
   "coursesAllTitle": "All courses",
   "coursesSearchHint": "Search courses…",
+  "coursesSearchScreenTitle": "Search courses",
+  "coursesSearchIdleHint": "Type a course name to search",
   "coursesNoResults": "No matching courses",
   "coursesNotificationsComingSoonMessage": "Notifications will be available soon.",
   "coursesLastViewed": "Last viewed",
@@ -109,6 +127,9 @@
   },
   "lessonCompleted": "Completed",
   "lessonMarkComplete": "Complete lesson",
+  "lessonVideoPlaybackError": "Could not load the video.",
+  "lessonVideoPlaybackErrorYoutube": "YouTube may temporarily block in-app playback. Open the video in your browser or the YouTube app.",
+  "lessonVideoOpenExternal": "Open in browser",
   "coursePillTabLessons": "Lessons",
   "coursePillTabInfo": "About",
   "coursePillTabReviews": "Reviews",
@@ -150,12 +171,19 @@
   "lessonQuizStatWrong": "Wrong",
   "lessonQuizStatTime": "Time",
   "lessonQuizContinue": "Continue",
+  "lessonQuizRetry": "Try again",
   "lessonQuizErrorEmpty": "This lesson has no test yet.",
   "lessonQuizErrorLoad": "Could not load the test.",
   "lessonQuizErrorCheck": "Could not verify the answer.",
   "lessonQuizErrorSubmit": "Could not submit the test.",
   "lessonQuizErrorGeneric": "Something went wrong.",
   "lessonQuizAlreadyTaken": "You have already completed this test. Retakes are not allowed.",
+  "courseModuleLockedMessage": "Finish all lessons and tests in the previous module to continue.",
+  "courseLessonSequentialLockedMessage": "Complete the previous lesson and its test (if any) before continuing.",
+  "courseCompleteCongratsTitle": "Congratulations!",
+  "courseCompleteCongratsDescription": "You have completed this course. Claim your certificate in the certificates section.",
+  "courseCompleteGetCertificate": "Get certificate",
+  "courseCompleteClose": "Close",
   "leaderboardTitle": "Top learners",
   "leaderboardSubtitle": "Ranking of the best students",
   "leaderboardTabOverall": "Overall",
@@ -176,9 +204,85 @@
   "profileMenuCertificates": "My certificates",
   "profileMenuMyCourses": "My courses",
   "profileMenuMyActivity": "My activity",
+  "profileMenuVacancies": "Vacancies",
+  "vacanciesTitle": "Vacancies",
+  "vacancyDetailCta": "Details",
+  "vacancySalaryNegotiable": "Salary negotiable",
+  "vacancySalaryRange": "{from} – {to} {currency}",
+  "@vacancySalaryRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "vacancyPostedMomentsAgo": "Just now",
+  "vacancyPostedMinutesAgo": "{count} min ago",
+  "@vacancyPostedMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyPostedHoursAgo": "{count} h ago",
+  "@vacancyPostedHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyPostedYesterday": "Yesterday",
+  "vacancyPostedDaysAgo": "{count} days ago",
+  "@vacancyPostedDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyEmploymentIntern": "Internship",
+  "vacancyEmploymentPartTime": "Part-time",
+  "vacancyEmploymentFullTime": "Full-time",
+  "vacancyEmploymentRemote": "Remote",
+  "vacancyEmploymentOnsite": "On-site",
+  "vacancyEmploymentContract": "Contract",
+  "vacanciesEmptyTitle": "No vacancies yet",
+  "vacanciesEmptySubtitle": "Please check back later",
+  "vacanciesLoadError": "Could not load vacancies",
+  "vacanciesLoadMoreError": "Could not load more",
+  "vacancyDetailsTitle": "Vacancy",
+  "vacancySheetEmploymentType": "Employment type",
+  "vacancySheetSalary": "Salary",
+  "vacancySheetLocation": "Location",
+  "vacancySheetCategory": "Category",
+  "vacancySheetPosted": "Posted",
+  "vacancyDetailAbout": "About the vacancy",
+  "vacancyDetailSkills": "Skills",
+  "vacancyDetailRequirements": "Requirements",
+  "vacancyApplyCta": "Apply",
+  "vacancySalaryPerMonth": "/ month",
+  "vacancyDetailLoadError": "Could not load vacancy",
+  "vacancyApplyPlaceholder": "Coming soon — application will be available here",
   "profileMenuProfileInfo": "Profile information",
   "profileMenuLanguage": "Language",
   "profileMenuShareApp": "Share the app",
+  "profileShareAppSubtitle": "Invite friends and family",
+  "profileShareAppMessage": "Qizlar Academy brings free courses, a vibrant community, and room to grow for women and girls — all in one app.\n\nDownload and learn together:\n{link}",
+  "@profileShareAppMessage": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "profileMenuAbout": "About us",
   "profileMenuHelp": "Help center",
   "profileMenuPrivacy": "Privacy policy",
@@ -203,6 +307,7 @@
   "profileSectionGeneral": "GENERAL",
   "profileNotifications": "Notifications",
   "profileNotificationsSubtitle": "Push messages",
+  "profileNotificationsEnableFailed": "Could not turn on notifications. Check permissions and try again.",
   "profileDarkMode": "Dark mode",
   "profileDarkModeSubtitle": "Dark interface",
   "profileLogout": "Log out",
@@ -229,6 +334,11 @@
   "profileInformationStatusTitle": "Profile status",
   "profileInformationPhoneLabel": "Phone number",
   "profileInformationPhoneNationalHint": "XX XXX XX XX",
+  "editProfileUnsavedTitle": "Unsaved changes",
+  "editProfileUnsavedMessage": "You have unsaved changes to your profile. Save before leaving?",
+  "editProfileUnsavedSave": "Save",
+  "editProfileUnsavedDiscard": "Discard and leave",
+  "editProfileUnsavedContinue": "Keep editing",
   "aboutBrandTitle": "QIZLAR AKADEMIYASI",
   "aboutSectionProjectTitle": "About the Qizlar Academy project",
   "aboutProjectLead": "Qizlar Academy",
@@ -247,16 +357,28 @@
   "aboutSocialYoutubeSubtitle": "Official Qizlar Academy YouTube channel",
   "aboutUsLoadError": "Could not load content. Try again.",
   "aboutUsLinkOpenError": "Could not open the link.",
+  "appUpdateAvailableTitle": "Update available!",
+  "appUpdateAvailableBody": "We've improved the app even more! Update the app to use new features and enjoy a more comfortable experience.",
+  "appUpdateLater": "Later",
+  "appUpdateCta": "Update",
   "guestGateNotificationSettings": "Sign up to manage notification settings",
   "guestGateSaveSettings": "Sign up to save settings",
   "guestGateProfileFeatures": "Sign up to use profile features",
   "profileAppLanguageTitle": "App language",
+  "profileBadgePickerTitle": "Your badges",
+  "profileTezKundaTitle": "Coming soon",
+  "profileTezKundaMessage": "This section is not available yet. We're working on it — check back soon.",
   "languageUzbek": "Uzbek",
   "languageRussian": "Russian",
   "languageEnglish": "English",
   "notificationsTitle": "Notifications",
   "notificationsEmpty": "No notifications yet",
   "notificationsEmptySubtitle": "New messages will appear here.",
+  "notificationTabPlatform": "Platform",
+  "notificationTabCommunity": "Community",
+  "notificationDetailsMore": "Details",
+  "notificationsEmptyThisTab": "No notifications in this tab",
+  "notificationsEmptyThisTabSubtitle": "Switch tabs or check back later.",
   "guestGateMarkAllRead": "Sign up to mark all as read",
   "guestGateManageNotifications": "Sign up to manage notifications",
   "guestModeTitle": "Guest mode",
@@ -291,6 +413,10 @@
   "certificatesBadgeGold": "Gold certificate",
   "certificatesBadgeSilver": "Silver certificate",
   "certificatesBadgeBronze": "Bronze certificate",
+  "linkPromptYes": "Yes",
+  "linkPromptNo": "No",
+  "communityTelegramInviteTitle": "Join our community",
+  "communityTelegramInviteDescription": "You can find answers to your questions on our Telegram channel. Open our Telegram channel?",
   "certificatesView": "View",
   "certificatesSheetHeading": "{courseName} certificate",
   "@certificatesSheetHeading": {
@@ -305,7 +431,10 @@
   "certificatesEmptyTitle": "No certificates yet",
   "certificatesEmptySubtitle": "When you finish a course, your certificate will appear here.",
   "certificatesLoadError": "Could not load certificates. Try again.",
+  "certificateClaimError": "Could not get your certificate. Try again later.",
   "certificatesFileActionError": "Could not download or share the file.",
+  "certificatesInstagramStoryNotConfigured": "Instagram Story needs a Facebook App ID. Add FACEBOOK_APP_ID when building the app.",
+  "certificatesInstagramShareFailed": "Could not open Instagram. Check that Instagram is installed and try again.",
   "courseReviewsSummaryCount": "{count} reviews",
   "@courseReviewsSummaryCount": {
     "placeholders": {

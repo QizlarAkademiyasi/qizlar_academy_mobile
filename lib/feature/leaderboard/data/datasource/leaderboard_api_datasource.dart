@@ -55,7 +55,7 @@ class LeaderboardApiDatasource implements LeaderboardDatasource {
             id: (map['id'] ?? '').toString(),
             firstname: (map['firstname'] ?? '').toString(),
             lastname: (map['lastname'] ?? '').toString(),
-            photoUrl: (map['photo'] ?? '').toString(),
+            photoUrl: Apis.resolveUrl((map['photo'] ?? '').toString()),
             coins: (map['coins'] ?? 0).toString().parseIntSafe(),
             isCurrentUser: (map['isCurrentUser'] ?? false) == true,
           );

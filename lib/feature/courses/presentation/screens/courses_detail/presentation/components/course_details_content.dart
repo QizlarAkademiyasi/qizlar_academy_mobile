@@ -4,6 +4,7 @@ import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/course_curriculum_progress.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_details_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_bottom_action.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_details_sliver_header.dart';
@@ -31,6 +32,7 @@ class CourseDetailsContent extends StatefulWidget {
   final ValueChanged<CoursesTab> onTabChanged;
   final bool isEnrolling;
   final VoidCallback onPrimaryCtaTap;
+
   /// «Sharhlar» tabida, yozilgan foydalanuvchi uchun pastdagi asosiy tugma.
   final VoidCallback onLeaveReviewTap;
   final ValueChanged<String>? onLessonTap;
@@ -83,6 +85,13 @@ class _CourseDetailsContentState extends State<CourseDetailsContent> with Ticker
     return widget.course.isEnrolled;
   }
 
+  bool get _courseFullyComplete => CourseCurriculumProgress.isCourseFullyComplete(widget.course.modules);
+
+  bool get _showCertificatePrimaryCta {
+    final session = getIt<AuthSessionCubit>().state;
+    return session.isRegistered && widget.course.isEnrolled && _courseFullyComplete;
+  }
+
   String _primaryCtaLabel(BuildContext context) {
     final session = getIt<AuthSessionCubit>().state;
     final l10n = context.l10n;
@@ -91,6 +100,9 @@ class _CourseDetailsContentState extends State<CourseDetailsContent> with Ticker
     }
     if (!widget.course.isEnrolled) {
       return l10n.courseEnroll;
+    }
+    if (_showCertificatePrimaryCta) {
+      return l10n.courseCompleteGetCertificate;
     }
     return l10n.courseContinue;
   }
@@ -112,32 +124,39 @@ class _CourseDetailsContentState extends State<CourseDetailsContent> with Ticker
 
   bool get _bottomDockShowPlayIcon {
     if (_reviewsTabLeaveReviewCta) return false;
+    if (_showCertificatePrimaryCta) return true;
     return _showPlayLeadingIcon;
   }
 
-  Widget _tabScrollable({
-    required CoursesTab tab,
-    required EdgeInsets padding,
-    required Widget child,
-  }) {
-    return CustomScrollView(
-      key: PageStorageKey<String>('course_details_${widget.course.id}_${tab.name}'),
-      primary: true,
-      slivers: [
-        SliverPadding(
-          padding: padding,
-          sliver: SliverToBoxAdapter(child: child),
-        ),
-      ],
+  IconData? get _bottomDockLeadingIcon {
+    if (_reviewsTabLeaveReviewCta) return null;
+    if (_showCertificatePrimaryCta) return LucideIcons.fileBadge;
+    return null;
+  }
+
+  Widget _tabScrollable({required CoursesTab tab, required EdgeInsets padding, required Widget child}) {
+    return AppStaggeredScrollLimiter(
+      key: ValueKey<String>('course_detail_tab_${identityHashCode(widget.course)}_${tab.name}'),
+      child: CustomScrollView(
+        key: PageStorageKey<String>('course_details_${widget.course.id}_${tab.name}'),
+        primary: true,
+        slivers: [
+          SliverPadding(
+            padding: padding,
+            sliver: SliverToBoxAdapter(child: child),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final bottomInset = MediaQuery.paddingOf(context).bottom + 24;
     final session = getIt<AuthSessionCubit>().state;
     final lessonsLockedUntilEnroll = session.isRegistered && !widget.course.isEnrolled;
     final guestPreviewLessonId = session.isAnonymous ? widget.course.firstGuestPreviewLessonId : null;
+    final curriculumHighlightLessonId = widget.course.curriculumHighlightLessonId(isAnonymous: session.isAnonymous, guestPreviewLessonId: guestPreviewLessonId);
     void onGuestLessonAuthRequired() {
       showAuthRequiredBottomSheet(context, title: context.l10n.courseGuestMoreLessonsTitle, description: context.l10n.courseGuestMoreLessonsBody);
     }
@@ -149,70 +168,70 @@ class _CourseDetailsContentState extends State<CourseDetailsContent> with Ticker
       bottom: false,
       child: Stack(
         children: [
-          NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                CourseDetailsSliverHeader(course: widget.course),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 12),
-                        CourseMetaRow(course: widget.course),
-                      ],
-                    ),
-                  ),
-                ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _PinnedCourseTabsHeaderDelegate(
-                    minExtentHeight: 85,
-                    maxExtentHeight: 85,
-                    child: Container(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                      child: Padding(
-                        padding: AppPadding.paddingVerticalSm,
-                        child: CourseTabs(
-                          controller: _tabController,
-                          lessonsCount: widget.course.lessonsCount,
-                          reviewsCount: widget.course.reviewsCount,
-                        ),
+          AppStaggeredScrollLimiter(
+            key: ObjectKey(widget.course),
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  CourseDetailsSliverHeader(course: widget.course),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          AppStaggeredListItem(
+                            position: 1,
+                            duration: AppStaggeredListAnimation.duration,
+                            delay: AppStaggeredListAnimation.staggerDelay,
+                            verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+                            child: CourseMetaRow(course: widget.course),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ];
-            },
-            body: TabBarView(
-              controller: _tabController,
-              children: [
-                _tabScrollable(
-                  tab: CoursesTab.lessons,
-                  padding: EdgeInsets.fromLTRB(horizontalPad, 0, horizontalPad, tabBottomPad),
-                  child: buildTabPage(
-                    context,
-                    CoursesTab.lessons,
-                    onLessonTap: widget.onLessonTap,
-                    onOpenQuiz: widget.onOpenQuiz,
-                    lessonsLockedUntilEnroll: lessonsLockedUntilEnroll,
-                    guestPreviewLessonId: guestPreviewLessonId,
-                    onGuestLessonAuthRequired: guestPreviewLessonId != null ? onGuestLessonAuthRequired : null,
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _PinnedCourseTabsHeaderDelegate(
+                      minExtentHeight: 85,
+                      maxExtentHeight: 85,
+                      courseId: widget.course.id,
+                      brightness: Theme.of(context).brightness,
+                      locale: Localizations.localeOf(context),
+                      tabController: _tabController,
+                      lessonsCount: widget.course.lessonsCount,
+                      reviewsCount: widget.course.reviewsCount,
+                    ),
                   ),
-                ),
-                _tabScrollable(
-                  tab: CoursesTab.info,
-                  padding: EdgeInsets.fromLTRB(horizontalPad, 0, horizontalPad, tabBottomPad),
-                  child: buildTabPage(context, CoursesTab.info),
-                ),
-                _tabScrollable(
-                  tab: CoursesTab.reviews,
-                  padding: EdgeInsets.fromLTRB(horizontalPad, 0, horizontalPad, tabBottomPad),
-                  child: buildTabPage(context, CoursesTab.reviews),
-                ),
-              ],
+                ];
+              },
+              body: TabBarView(
+                controller: _tabController,
+                children: [
+                  _tabScrollable(
+                    tab: CoursesTab.lessons,
+                    padding: EdgeInsets.fromLTRB(horizontalPad, 0, horizontalPad, tabBottomPad),
+                    child: buildTabPage(
+                      context,
+                      CoursesTab.lessons,
+                      onLessonTap: widget.onLessonTap,
+                      onOpenQuiz: widget.onOpenQuiz,
+                      lessonsLockedUntilEnroll: lessonsLockedUntilEnroll,
+                      guestPreviewLessonId: guestPreviewLessonId,
+                      onGuestLessonAuthRequired: guestPreviewLessonId != null ? onGuestLessonAuthRequired : null,
+                      selectedCurriculumLessonId: curriculumHighlightLessonId,
+                    ),
+                  ),
+                  _tabScrollable(tab: CoursesTab.info, padding: EdgeInsets.fromLTRB(horizontalPad, 0, horizontalPad, tabBottomPad), child: buildTabPage(context, CoursesTab.info)),
+                  _tabScrollable(tab: CoursesTab.reviews, padding: EdgeInsets.fromLTRB(horizontalPad, 0, horizontalPad, tabBottomPad), child: buildTabPage(context, CoursesTab.reviews)),
+                ],
+              ),
             ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover) : UiKitAssets.images.bottomNavLight.image(fit: BoxFit.cover),
           ),
           Positioned(
             left: 20,
@@ -221,6 +240,7 @@ class _CourseDetailsContentState extends State<CourseDetailsContent> with Ticker
             child: CourseBottomAction(
               label: _bottomDockLabel(context),
               showLeadingIcon: _bottomDockShowPlayIcon,
+              leadingIcon: _bottomDockLeadingIcon,
               enabled: !widget.isEnrolling,
               onTap: _bottomDockOnTap,
             ),
@@ -232,11 +252,25 @@ class _CourseDetailsContentState extends State<CourseDetailsContent> with Ticker
 }
 
 class _PinnedCourseTabsHeaderDelegate extends SliverPersistentHeaderDelegate {
-  _PinnedCourseTabsHeaderDelegate({required this.child, required this.minExtentHeight, required this.maxExtentHeight});
+  _PinnedCourseTabsHeaderDelegate({
+    required this.minExtentHeight,
+    required this.maxExtentHeight,
+    required this.courseId,
+    required this.brightness,
+    required this.locale,
+    required this.tabController,
+    required this.lessonsCount,
+    required this.reviewsCount,
+  });
 
-  final Widget child;
   final double minExtentHeight;
   final double maxExtentHeight;
+  final String courseId;
+  final Brightness brightness;
+  final Locale locale;
+  final TabController tabController;
+  final int lessonsCount;
+  final int reviewsCount;
 
   @override
   double get minExtent => minExtentHeight;
@@ -246,11 +280,27 @@ class _PinnedCourseTabsHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return SizedBox.expand(child: child);
+    return SizedBox.expand(
+      child: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+        child: Padding(
+          padding: AppPadding.paddingVerticalSm,
+          child: CourseTabs(controller: tabController, lessonsCount: lessonsCount, reviewsCount: reviewsCount),
+        ),
+      ),
+    );
   }
 
   @override
   bool shouldRebuild(covariant _PinnedCourseTabsHeaderDelegate oldDelegate) {
-    return oldDelegate.child != child || oldDelegate.minExtentHeight != minExtentHeight || oldDelegate.maxExtentHeight != maxExtentHeight;
+    return oldDelegate.minExtentHeight != minExtentHeight ||
+        oldDelegate.maxExtentHeight != maxExtentHeight ||
+        oldDelegate.courseId != courseId ||
+        oldDelegate.brightness != brightness ||
+        oldDelegate.locale != locale ||
+        oldDelegate.tabController != tabController ||
+        oldDelegate.lessonsCount != lessonsCount ||
+        oldDelegate.reviewsCount != reviewsCount;
   }
 }

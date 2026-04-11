@@ -10,7 +10,11 @@ abstract final class AppStaggeredListAnimation {
   static const double verticalSlideOffset = 36;
 }
 
-/// Scroll ichidagi stagger faqat birinchi frame’da ishlashi uchun.
+/// Scroll ichidagi stagger faqat [AnimationLimiter] birinchi build + birinchi frame’da
+/// `shouldRunAnimation == true` bo‘lganda ishlaydi. Avval skeleton/bo‘sh, keyin async bilan
+/// ro‘yxat chiqsa — limiter o‘zgarmasa kartalar animatsiyasiz qoladi; yangi [Key] bilan
+/// limiterni qayta yaratish kerak (masalan [ObjectKey] yangi `overview` uchun).
+///
 /// `CustomScrollView` / `ListView` kabi scrollable’ning bevosita ustidagi ota.
 class AppStaggeredScrollLimiter extends StatelessWidget {
   const AppStaggeredScrollLimiter({required this.child, super.key});

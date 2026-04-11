@@ -22,27 +22,49 @@ class CourseInfoTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Kurs haqida', style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
-          const SizedBox(height: 10),
-          Html(
-            data: course.description.trim().isEmpty ? '<p></p>' : course.description,
-            shrinkWrap: true,
-            style: {
-              'body': Style(
-                margin: Margins.zero,
-                padding: HtmlPaddings.zero,
-                fontSize: FontSize(context.textTheme.bodyLargeRegular.fontSize ?? 16),
-                color: context.appColors.grey,
-                lineHeight: const LineHeight(1.45),
-              ),
-              'p': Style(margin: Margins.only(bottom: 10), color: context.appColors.grey),
-              'a': Style(color: AppColors.primary),
-            },
+          AppStaggeredListItem(
+            position: 0,
+            duration: AppStaggeredListAnimation.duration,
+            delay: AppStaggeredListAnimation.staggerDelay,
+            verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Kurs haqida', style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
+                const SizedBox(height: 10),
+                Html(
+                  data: course.description.trim().isEmpty ? '<p></p>' : course.description,
+                  shrinkWrap: true,
+                  style: {
+                    'body': Style(
+                      margin: Margins.zero,
+                      padding: HtmlPaddings.zero,
+                      fontSize: FontSize(context.textTheme.bodyLargeRegular.fontSize ?? 16),
+                      color: context.appColors.grey,
+                      lineHeight: const LineHeight(1.45),
+                    ),
+                    'p': Style(margin: Margins.only(bottom: 10), color: context.appColors.grey),
+                    'a': Style(color: AppColors.primary),
+                  },
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 22),
-          Text("O'qituvchi", style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
-          const SizedBox(height: 12),
-          _TeacherCard(course: course),
+          AppStaggeredListItem(
+            position: 1,
+            duration: AppStaggeredListAnimation.duration,
+            delay: AppStaggeredListAnimation.staggerDelay,
+            verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("O'qituvchi", style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
+                const SizedBox(height: 12),
+                _TeacherCard(course: course),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -53,6 +75,13 @@ class _TeacherCard extends StatelessWidget {
   const _TeacherCard({required this.course});
 
   final CourseDetailsModel course;
+
+  /// Kurs kategoriyasi (fan) yoki API `teacherRole` / kurs nomi fallback.
+  String get _teacherSubjectLine {
+    final category = course.categoryName.trim();
+    if (category.isNotEmpty) return category;
+    return course.teacherRole.trim();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +110,20 @@ class _TeacherCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(course.teacherName, style: context.textTheme.bodyXLargeSemibold.copyWith(color: context.appColors.text)),
-                const SizedBox(height: 4),
-                Text(course.teacherDescription, style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey)),
+                if (_teacherSubjectLine.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    _teacherSubjectLine,
+                    style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey),
+                  ),
+                ],
+                if (course.teacherDescription.trim().isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    course.teacherDescription,
+                    style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey),
+                  ),
+                ],
               ],
             ),
           ),

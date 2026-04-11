@@ -4,10 +4,13 @@ import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_last_lesson_card.dart';
 
 class HomeStatsSection extends StatelessWidget {
-  const HomeStatsSection({super.key, required this.stats, this.isLoading = false});
+  const HomeStatsSection({super.key, required this.stats, this.isLoading = false, this.onCoinsAndGradeTap, this.onRatingTap, this.onLastLessonTap});
 
   final HomeStatsModel stats;
   final bool isLoading;
+  final VoidCallback? onCoinsAndGradeTap;
+  final VoidCallback? onRatingTap;
+  final VoidCallback? onLastLessonTap;
 
   @override
   Widget build(BuildContext context) {
@@ -19,20 +22,15 @@ class HomeStatsSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _CoinsCard(coins: stats.coins, grade: stats.grade, isLoading: isLoading),
+                _CoinsCard(coins: stats.coins, grade: stats.grade, isLoading: isLoading, onTap: onCoinsAndGradeTap),
                 const SizedBox(height: 12),
-                _RatingCard(rating: stats.rating, onTap: () {}, isLoading: isLoading),
+                _RatingCard(rating: stats.rating, onTap: onRatingTap, isLoading: isLoading),
               ],
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: HomeLastLessonCard(
-              category: stats.lastLessonCategory,
-              progress: stats.lastLessonProgress,
-              onTap: () {},
-              isLoading: isLoading,
-            ),
+            child: HomeLastLessonCard(category: stats.lastLessonCategory, progress: stats.lastLessonProgress, onTap: onLastLessonTap, isLoading: isLoading),
           ),
         ],
       ),
@@ -41,16 +39,20 @@ class HomeStatsSection extends StatelessWidget {
 }
 
 class _CoinsCard extends StatelessWidget {
-  const _CoinsCard({required this.coins, required this.grade, this.isLoading = false});
+  const _CoinsCard({required this.coins, required this.grade, this.isLoading = false, this.onTap});
 
   final int coins;
   final int grade;
   final bool isLoading;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Bounce(
-      onTap: () {},
+      onTap: () {
+        Gaimon.light();
+        onTap?.call();
+      },
       child: Container(
         height: 100,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -58,13 +60,7 @@ class _CoinsCard extends StatelessWidget {
           color: context.appColors.onContainer,
           borderRadius: AppRadius.radiusXl,
           border: Border.all(color: context.appColors.stroke, width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow.withValues(alpha: 0.05),
-              blurRadius: 2,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: AppColors.shadow.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 2))],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -75,27 +71,13 @@ class _CoinsCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    LucideIcons.circleStar,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
+                  Icon(LucideIcons.circleStar, color: AppColors.primary, size: 24),
                   const SizedBox(height: 8),
                   Skeletonizer(
                     enabled: isLoading,
-                    child: Text(
-                      '$coins',
-                      style: context.textTheme.bodyMediumMedium.copyWith(
-                        color: context.appColors.text,
-                      ),
-                    ),
+                    child: Text('$coins', style: context.textTheme.bodyMediumMedium.copyWith(color: context.appColors.text)),
                   ),
-                  Text(
-                    'Tangalar',
-                    style: context.textTheme.bodySmallMedium.copyWith(
-                      color: AppColors.secondaryGrey,
-                    ),
-                  ),
+                  Text('Tangalar', style: context.textTheme.bodySmallMedium.copyWith(color: AppColors.secondaryGrey)),
                 ],
               ),
             ),
@@ -106,27 +88,13 @@ class _CoinsCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(
-                    LucideIcons.flame,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
+                  const Icon(LucideIcons.flame, color: AppColors.primary, size: 24),
                   const SizedBox(height: 8),
                   Skeletonizer(
                     enabled: isLoading,
-                    child: Text(
-                      '$grade',
-                      style: context.textTheme.bodyMediumMedium.copyWith(
-                        color: context.appColors.text,
-                      ),
-                    ),
+                    child: Text('$grade', style: context.textTheme.bodyMediumMedium.copyWith(color: context.appColors.text)),
                   ),
-                  Text(
-                    'Baho',
-                    style: context.textTheme.bodySmallMedium.copyWith(
-                      color: AppColors.secondaryGrey,
-                    ),
-                  ),
+                  Text('Baho', style: context.textTheme.bodySmallMedium.copyWith(color: AppColors.secondaryGrey)),
                 ],
               ),
             ),
@@ -147,7 +115,10 @@ class _RatingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Bounce(
-      onTap: () {},
+      onTap: () {
+        Gaimon.light();
+        onTap?.call();
+      },
       child: Container(
         height: 100,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -155,13 +126,7 @@ class _RatingCard extends StatelessWidget {
           color: context.appColors.onContainer,
           borderRadius: AppRadius.radiusXl,
           border: Border.all(color: context.appColors.stroke, width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow.withValues(alpha: 0.05),
-              blurRadius: 2,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: AppColors.shadow.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 2))],
         ),
         child: FittedBox(
           fit: BoxFit.scaleDown,
@@ -174,19 +139,9 @@ class _RatingCard extends StatelessWidget {
               const SizedBox(height: 8),
               Skeletonizer(
                 enabled: isLoading,
-                child: Text(
-                  '$rating',
-                  style: context.textTheme.bodyMediumMedium.copyWith(
-                    color: context.appColors.text,
-                  ),
-                ),
+                child: Text('$rating', style: context.textTheme.bodyMediumMedium.copyWith(color: context.appColors.text)),
               ),
-              Text(
-                'Reytingdagi o’riningiz',
-                style: context.textTheme.bodySmallMedium.copyWith(
-                  color: AppColors.secondaryGrey,
-                ),
-              ),
+              Text('Reytingdagi o’riningiz', style: context.textTheme.bodySmallMedium.copyWith(color: AppColors.secondaryGrey)),
             ],
           ),
         ),

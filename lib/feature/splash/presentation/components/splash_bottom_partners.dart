@@ -14,12 +14,8 @@ class SplashBottomPartners extends StatelessWidget {
         children: [
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                UiKitAssets.images.yoshlarIshlarAgentligi.image(height: 28),
-                const SizedBox(width: 8),
-                UiKitAssets.images.aloqaBank.image(height: 22),
-              ],
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [UiKitAssets.images.yoshlarIshlarAgentligi.image(height: 28), SizedBox(width: 24), UiKitAssets.images.qizlarOvoziLogo.image(height: 28)],
             ),
           ),
         ],

@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
+import 'package:qizlar_academy_mobile/core/app_update/app_update_prompt_coordinator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_screen.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen.dart';
@@ -21,59 +21,83 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen> {
+class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen>, WidgetsBindingObserver {
   @override
   bool get isGuestMode => widget.isGuestMode;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(AppUpdatePromptCoordinator.checkAndShowIfNeeded(context));
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        unawaited(AppUpdatePromptCoordinator.checkAndShowIfNeeded(context));
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final pages = widget.isGuestMode
-        ? const <Widget>[_KeepAlivePage(child: HomeScreen()), _KeepAlivePage(child: CoursesScreen()), _KeepAlivePage(child: LeaderboardScreen()), _KeepAlivePage(child: _GuestProfileRedirectView())]
-        : const <Widget>[_KeepAlivePage(child: HomeScreen()), _KeepAlivePage(child: CoursesScreen()), _KeepAlivePage(child: LeaderboardScreen()), _KeepAlivePage(child: ProfileScreen())];
+        ? <Widget>[
+            _KeepAlivePage(child: HomeScreen(onSwitchMainTab: onTabTap)),
+            const _KeepAlivePage(child: CoursesScreen()),
+            const _KeepAlivePage(child: LeaderboardScreen()),
+            const _KeepAlivePage(child: _GuestProfileRedirectView()),
+          ]
+        : <Widget>[
+            _KeepAlivePage(child: HomeScreen(onSwitchMainTab: onTabTap)),
+            const _KeepAlivePage(child: CoursesScreen()),
+            const _KeepAlivePage(child: LeaderboardScreen()),
+            const _KeepAlivePage(child: ProfileScreen()),
+          ];
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: context.theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned.fill(
-            child: _MainTabPageViewWithFade(
-              pageController: pageController,
-              selectedIndex: selectedIndex,
-              tabBarFadeNonce: tabBarFadeNonce,
-              onPageChanged: onPageChanged,
-              pages: pages,
-            ),
+            child: _MainTabPageViewWithFade(pageController: pageController, selectedIndex: selectedIndex, tabBarFadeNonce: tabBarFadeNonce, onPageChanged: onPageChanged, pages: pages),
           ),
-          if (Platform.isIOS)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
-                child: buildGlassBottomBarVersionTwo(context),
-              ),
-            ),
+          // if (Platform.isIOS)
+          //   Positioned(
+          //     bottom: 0,
+          //     left: 0,
+          //     right: 0,
+          //     child: Container(
+          //       decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
+          //       child: buildGlassBottomBarVersionTwo(context),
+          //     ),
+          //   ),
         ],
       ),
-      bottomNavigationBar: (Platform.isAndroid) ? buildBottomNavigationBar(context) : null,
+      bottomNavigationBar: buildNavigationBar(context),
     );
   }
 }
 
 /// [PageView] scroll/swipe — fade yo‘q; pastki bar — fade + `jumpToPage`.
 class _MainTabPageViewWithFade extends StatefulWidget {
-  const _MainTabPageViewWithFade({
-    required this.pageController,
-    required this.selectedIndex,
-    required this.tabBarFadeNonce,
-    required this.onPageChanged,
-    required this.pages,
-  });
+  const _MainTabPageViewWithFade({required this.pageController, required this.selectedIndex, required this.tabBarFadeNonce, required this.onPageChanged, required this.pages});
 
   final PageController pageController;
   final int selectedIndex;
+
   /// [MainScreenMixin] `_handleTabTap` da har safar oshiriladi.
   final int tabBarFadeNonce;
   final ValueChanged<int> onPageChanged;
@@ -129,7 +153,7 @@ class _MainTabPageViewWithFadeState extends State<_MainTabPageViewWithFade> with
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _opacity,
-      child: PageView(controller: widget.pageController, onPageChanged: widget.onPageChanged, children: widget.pages),
+      child: PageView(physics: ClampingScrollPhysics(), controller: widget.pageController, onPageChanged: widget.onPageChanged, children: widget.pages),
     );
   }
 }

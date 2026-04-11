@@ -37,7 +37,7 @@ class MyCertificateCard extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -72,17 +72,15 @@ class MyCertificateCard extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton.icon(
+                      child: PrimaryButton.elevated(
+                        label: viewLabel,
                         onPressed: onView,
-                        icon: Icon(LucideIcons.eye, size: 18, color: AppColors.white),
-                        label: Text(viewLabel, style: context.textTheme.bodyMediumSemibold.copyWith(color: AppColors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: const StadiumBorder(),
-                        ),
+                        leading: Icon(LucideIcons.eye, size: 18, color: AppColors.white),
+                        expand: true,
+                        applyTabletMaxWidth: false,
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        textStyle: context.textTheme.bodyMediumSemibold.copyWith(color: AppColors.white),
                       ),
                     ),
                     const SizedBox(width: 10),

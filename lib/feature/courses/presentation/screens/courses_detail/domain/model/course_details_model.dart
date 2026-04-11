@@ -66,6 +66,33 @@ class CourseDetailsModel extends Equatable {
   final List<CourseReviewModel> reviews;
   final List<CourseModuleModel> modules;
 
+  CourseDetailsModel copyWith({List<CourseModuleModel>? modules}) {
+    return CourseDetailsModel(
+      id: id,
+      title: title,
+      categoryName: categoryName,
+      isEnrolled: isEnrolled,
+      teacherName: teacherName,
+      teacherRole: teacherRole,
+      coverImageUrl: coverImageUrl,
+      teacherAvatarUrl: teacherAvatarUrl,
+      rating: rating,
+      reviewsCount: reviewsCount,
+      studentsCount: studentsCount,
+      totalDurationText: totalDurationText,
+      lessonsCount: lessonsCount,
+      progressRatio: progressRatio,
+      progressLessonsText: progressLessonsText,
+      progressSeenText: progressSeenText,
+      progressDurationText: progressDurationText,
+      description: description,
+      teacherDescription: teacherDescription,
+      ratingBreakdown: ratingBreakdown,
+      reviews: reviews,
+      modules: modules ?? this.modules,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,
@@ -102,5 +129,24 @@ extension CourseDetailsModelGuestPreviewX on CourseDetailsModel {
       }
     }
     return null;
+  }
+}
+
+extension CourseDetailsModelCurriculumHighlightX on CourseDetailsModel {
+  /// Ro‘yxatda ajratish: keyingi ko‘riladigan dars ([CourseDetailsScreenMixin] dagi «Davom etish» bilan mos).
+  String? curriculumHighlightLessonId({required bool isAnonymous, String? guestPreviewLessonId}) {
+    if (isAnonymous) {
+      final id = guestPreviewLessonId ?? firstGuestPreviewLessonId;
+      if (id == null || id.isEmpty) return null;
+      return id;
+    }
+    final allLessons = modules.expand((m) => m.lessons).toList();
+    if (allLessons.isEmpty) return null;
+    final lesson = allLessons.firstWhere(
+      (l) => !l.isLocked && !l.isCompleted,
+      orElse: () => allLessons.firstWhere((l) => !l.isLocked, orElse: () => allLessons.first),
+    );
+    if (lesson.id.isEmpty) return null;
+    return lesson.id;
   }
 }

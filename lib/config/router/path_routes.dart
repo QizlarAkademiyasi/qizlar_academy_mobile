@@ -42,8 +42,19 @@ sealed class Routes {
   static const String myCourses = '/my-courses';
   static const String myCoursesName = 'myCourses';
 
+  /// Kurslar katalogi qidiruvi (to‘liq ekran)
+  static const String coursesSearch = '/courses-search';
+  static const String coursesSearchName = 'coursesSearch';
+
   static const String myCertificates = '/my-certificates';
   static const String myCertificatesName = 'myCertificates';
+
+  static const String vacancies = '/vacancies';
+  static const String vacanciesName = 'vacancies';
+
+  static const String vacancyDetailName = 'vacancyDetail';
+
+  static String vacancyDetailPath(String vacancyId) => '/vacancies/$vacancyId';
 
   /// Profil ma'lumotlarini tahrirlash
   static const String profileInformation = '/profile/information';
@@ -52,4 +63,8 @@ sealed class Routes {
   /// Biz haqimizda
   static const String aboutUs = '/about-us';
   static const String aboutUsName = 'aboutUs';
+
+  /// Maxfiylik siyosati
+  static const String privacyPolicy = '/privacy-policy';
+  static const String privacyPolicyName = 'privacyPolicy';
 }

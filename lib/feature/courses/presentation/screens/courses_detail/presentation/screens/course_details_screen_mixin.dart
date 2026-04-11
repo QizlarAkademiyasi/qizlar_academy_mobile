@@ -5,13 +5,18 @@ import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/course_curriculum_progress.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_details_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_lesson_model.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/lesson_quiz_question_model.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_complete_congrats_dialog.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_details_content.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_args.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_launch_context.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_submit_review/course_submit_review_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/bloc/course_details_bloc.dart';
 import 'package:qizlar_academy_mobile/config/enum/courses_tab.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/presentation/helpers/course_certificate_after_quiz_helper.dart';
 
 /// Kurs detallari ekrani uchun mixin: tab holati, Bloc listener, retry, va kontentni mixin orqali qaytarish.
 /// Reference §5.1: ekran faqat layout va lifecycle; katta UI blok komponentda (CourseDetailsContent).
@@ -69,11 +74,7 @@ mixin CourseDetailsScreenMixin<T extends StatefulWidget> on State<T> {
     await context.push(Routes.courseSubmitReview(course.id), extra: args);
   }
 
-  Future<void> openLessonQuiz(
-    BuildContext context, {
-    required CourseDetailsModel course,
-    required String lessonId,
-  }) async {
+  Future<void> openLessonQuiz(BuildContext context, {required CourseDetailsModel course, required String lessonId}) async {
     CourseLessonModel? lesson;
     for (final module in course.modules) {
       for (final l in module.lessons) {
@@ -90,13 +91,38 @@ mixin CourseDetailsScreenMixin<T extends StatefulWidget> on State<T> {
       }
       return;
     }
+    final session = getIt<AuthSessionCubit>().state;
+    if (course.isEnrolled && session.isRegistered) {
+      if (!CourseCurriculumProgress.canAccessLesson(course.modules, lessonId)) {
+        if (context.mounted) {
+          AppToast.info(context, message: context.l10n.courseLessonSequentialLockedMessage);
+        }
+        return;
+      }
+    }
     final canOpen = await getIt<GuestTapGateService>().allowAction(context, key: 'lesson_quiz_$lessonId');
     if (!canOpen || !context.mounted) return;
-    await context.push(Routes.lessonQuiz(lessonId));
+    final wasCourseComplete = CourseCurriculumProgress.isCourseFullyComplete(course.modules);
+    final requestCert =
+        course.isEnrolled && session.isRegistered && CourseCurriculumProgress.isTerminalLessonWithQuiz(course.modules, lessonId);
+    final launch = LessonQuizLaunchContext(courseId: course.id, courseName: course.title, requestCertificateOnPass: requestCert);
+    final Object? quizResult = await context.push(Routes.lessonQuiz(lessonId), extra: launch);
     if (!context.mounted) return;
-    context.read<CourseDetailsBloc>().add(
-          CoursesCourseDetailsBackgroundRefreshRequested(courseId: course.id),
-        );
+    if (quizResult is LessonQuizSubmitResultModel) {
+      context.read<CourseDetailsBloc>().add(CoursesQuizSubmitted(lessonId: lessonId, result: quizResult));
+    }
+    context.read<CourseDetailsBloc>().add(CoursesCourseDetailsBackgroundRefreshRequested(courseId: course.id));
+    if (quizResult is LessonQuizSubmitResultModel && course.isEnrolled && session.isRegistered && !wasCourseComplete) {
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (!context.mounted) return;
+      final updated = context.read<CourseDetailsBloc>().state.course;
+      if (updated != null && CourseCurriculumProgress.isCourseFullyComplete(updated.modules)) {
+        final skipCongrats = !quizResult.isFail && CourseCurriculumProgress.isTerminalLessonWithQuiz(course.modules, lessonId);
+        if (!skipCongrats) {
+          showCourseCompleteCongratsDialog(context);
+        }
+      }
+    }
   }
 
   Future<void> onCoursePrimaryCtaTap(BuildContext context, {required CourseDetailsModel course}) async {
@@ -114,6 +140,10 @@ mixin CourseDetailsScreenMixin<T extends StatefulWidget> on State<T> {
       final enroll = await _confirmCourseEnroll(context);
       if (!enroll || !context.mounted) return;
       context.read<CourseDetailsBloc>().add(CoursesEnrollRequested(courseId: course.id, openLessonPlayerAfterSuccess: true));
+      return;
+    }
+    if (session.isRegistered && CourseCurriculumProgress.isCourseFullyComplete(course.modules)) {
+      await showCourseCertificateAfterTerminalQuiz(context, courseId: course.id, courseName: course.title);
       return;
     }
     if (_selectedTab == CoursesTab.info) {

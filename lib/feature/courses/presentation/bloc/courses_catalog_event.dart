@@ -28,3 +28,7 @@ final class CoursesCatalogSearchChanged extends CoursesCatalogEvent {
   @override
   List<Object?> get props => [query];
 }
+
+final class CoursesCatalogRefreshRequested extends CoursesCatalogEvent {
+  const CoursesCatalogRefreshRequested();
+}

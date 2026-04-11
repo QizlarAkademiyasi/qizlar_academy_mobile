@@ -26,6 +26,17 @@ class _CoursesView extends StatefulWidget {
 }
 
 class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_CoursesView> {
+  /// [AnimationLimiter] birinchi frame dan keyin animatsiyani o‘chiradi; skeletondan keyin
+  /// ro‘yxat chiqishi uchun limiter yangi [ObjectKey] bilan yaratilishi kerak.
+  /// API har safar yangi [overview] instansiyasi qaytargach, qidiruv tugaganda ham stagger ishlaydi.
+  Object _coursesStaggerScrollKey(CoursesCatalogState state) {
+    final o = state.overview;
+    if (o == null) {
+      return ValueKey<String>('courses_${state.status.name}');
+    }
+    return ObjectKey(o);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,24 +48,29 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
           builder: (context, state) {
             final isInitialLoading = (state.status == CoursesCatalogStatus.loading || state.status == CoursesCatalogStatus.initial) && !state.hasData;
 
+            // [AnimationLimiter] birinchi frame dan keyin animatsiyani o‘chiradi. Avval skeleton,
+            // keyin ro‘yxat chiqsa kartalar animatsiyasiz qoladi — limiter shu kalit bilan
+            // muvaffaqiyatli yuklanganda qayta yaratiladi.
             return AppStaggeredScrollLimiter(
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverPadding(
-                    padding: AppPadding.paddingHorizontalLg,
-                    sliver: SliverToBoxAdapter(child: buildTopBar(context)),
-                  ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _CoursesPinnedSearchDelegate(
-                      backgroundColor: context.theme.scaffoldBackgroundColor,
-                      child: buildSearchField(context),
+              key: ValueKey(_coursesStaggerScrollKey(state)),
+              child: RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: () => onPullRefresh(context),
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                  slivers: [
+                    SliverPadding(
+                      padding: AppPadding.paddingHorizontalLg,
+                      sliver: SliverToBoxAdapter(child: buildTopBar(context)),
                     ),
-                  ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 14)),
-                  ..._coursesBodySlivers(context, state, isInitialLoading),
-                ],
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _CoursesPinnedSearchDelegate(backgroundColor: context.theme.scaffoldBackgroundColor, child: buildSearchField(context)),
+                    ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 14)),
+                    ..._coursesBodySlivers(context, state, isInitialLoading),
+                  ],
+                ),
               ),
             );
           },
@@ -68,18 +84,13 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
       return [
         SliverFillRemaining(
           hasScrollBody: false,
-          child: TgsFailureContent(message: state.message, onRetry: () => retry(context)),
+          child: TgsFailureContent(message: context.l10n.coursesCatalogLoadError, onRetry: () => retry(context)),
         ),
       ];
     }
 
     if (isInitialLoading) {
-      return [
-        const SliverFillRemaining(
-          hasScrollBody: false,
-          child: CoursesListSkeleton(),
-        ),
-      ];
+      return [const SliverFillRemaining(hasScrollBody: false, child: CoursesListSkeleton())];
     }
 
     final overview = state.overview;
@@ -105,41 +116,28 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
 
     return [
       SliverPadding(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, 92 + bottomInset),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset),
         sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              if (hasInProgress && index == 0) {
-                return AppStaggeredListItem(
-                  position: 0,
-                  duration: AppStaggeredListAnimation.duration,
-                  delay: AppStaggeredListAnimation.staggerDelay,
-                  verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      buildInProgressCard(context, lastViewed),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                );
-              }
-              final courseIndex = hasInProgress ? index - 1 : index;
-              final staggerPosition = index;
+          delegate: SliverChildBuilderDelegate((context, index) {
+            if (hasInProgress && index == 0) {
               return AppStaggeredListItem(
-                position: staggerPosition,
+                position: 0,
                 duration: AppStaggeredListAnimation.duration,
                 delay: AppStaggeredListAnimation.staggerDelay,
                 verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: buildCourseCard(context, courses[courseIndex]),
-                ),
+                child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [buildInProgressCard(context, lastViewed), const SizedBox(height: 16)]),
               );
-            },
-            childCount: itemCount,
-          ),
+            }
+            final courseIndex = hasInProgress ? index - 1 : index;
+            final staggerPosition = index;
+            return AppStaggeredListItem(
+              position: staggerPosition,
+              duration: AppStaggeredListAnimation.duration,
+              delay: AppStaggeredListAnimation.staggerDelay,
+              verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+              child: Padding(padding: const EdgeInsets.only(bottom: 16), child: buildCourseCard(context, courses[courseIndex])),
+            );
+          }, childCount: itemCount),
         ),
       ),
     ];
@@ -166,7 +164,10 @@ class _CoursesPinnedSearchDelegate extends SliverPersistentHeaderDelegate {
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return ColoredBox(
       color: backgroundColor,
-      child: SizedBox(height: _height, child: Center(child: child)),
+      child: SizedBox(
+        height: _height,
+        child: Center(child: child),
+      ),
     );
   }
 

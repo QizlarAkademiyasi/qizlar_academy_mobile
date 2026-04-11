@@ -1,3 +1,4 @@
+import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_otp_bot_response.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_session_model.dart';
 
 abstract interface class AuthRepository {
@@ -6,6 +7,8 @@ abstract interface class AuthRepository {
   Future<AuthSessionModel> setAnonymousSession();
 
   Future<String> sendOtpToPhoneNumber({required String phone});
+
+  Future<AuthOtpBotResponse> sendOtpViaTelegramBot({required String phone});
 
   Future<AuthSessionModel> signInWithOtp({
     required String phone,

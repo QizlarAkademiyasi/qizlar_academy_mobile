@@ -45,8 +45,11 @@ Future<void> showAuthRequiredBottomSheet(
             child: PrimaryButton.elevated(
               label: 'Kirish',
               onPressed: () {
+                final router = GoRouter.of(context);
                 context.pop();
-                context.push(Routes.signIn);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  router.push(Routes.signIn);
+                });
               },
             ),
           ),

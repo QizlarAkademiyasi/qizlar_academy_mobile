@@ -1,3 +1,4 @@
+import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/domain/model/leaderboard_course_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/domain/model/leaderboard_user_model.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/domain/repository/leaderboard_repository.dart';
@@ -63,10 +64,11 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
           list,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.e('LeaderboardBloc: bootstrap failed', error: e, stackTrace: st);
       emit(state.copyWith(
         status: LeaderboardStatus.failure,
-        message: 'Reytingni yuklashda xatolik.',
+        message: null,
       ));
     }
   }
@@ -102,10 +104,11 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
           list,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.e('LeaderboardBloc: timeframe load failed', error: e, stackTrace: st);
       emit(state.copyWith(
         status: LeaderboardStatus.failure,
-        message: 'Reytingni yangilashda xatolik.',
+        message: null,
       ));
     }
   }
@@ -142,10 +145,11 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
           list,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.e('LeaderboardBloc: course load failed', error: e, stackTrace: st);
       emit(state.copyWith(
         status: LeaderboardStatus.failure,
-        message: 'Reytingni yuklashda xatolik.',
+        message: null,
       ));
     }
   }

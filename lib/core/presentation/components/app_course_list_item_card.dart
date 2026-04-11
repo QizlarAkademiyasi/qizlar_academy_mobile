@@ -1,10 +1,10 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_cached_network_image.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_radius.dart';
 import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_tablet_max_width.dart';
 
 /// Kurslar katalogi va «Mening kurslarim» uchun umumiy ro‘yxat kartochkasi.
 class AppCourseListItemCard extends StatelessWidget {
@@ -19,6 +19,7 @@ class AppCourseListItemCard extends StatelessWidget {
     required this.onTap,
     this.tagLabel,
     this.titleMaxLines = 2,
+    this.coverHeroCourseId,
   });
 
   final String imageUrl;
@@ -31,6 +32,9 @@ class AppCourseListItemCard extends StatelessWidget {
   final String? tagLabel;
   final int titleMaxLines;
 
+  /// `[Heroine]` uchun kurs id; berilsa muqova detallar ekraniga animatsiya bilan o‘tadi.
+  final String? coverHeroCourseId;
+
   static String _formatReviewsCount(int count) {
     if (count >= 1000) {
       return '${(count / 1000).toStringAsFixed(1)}k';
@@ -41,80 +45,81 @@ class AppCourseListItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Bounce(
-      tilt: false,
-      onTap: () {
-        Gaimon.selection();
-        onTap();
-      },
-      child: Container(
-        padding: AppPadding.paddingSm,
-        decoration: BoxDecoration(
-          borderRadius: AppRadius.radius3xl,
-          border: Border.all(color: context.appColors.stroke),
-          color: context.appColors.onContainer,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                  child: _CourseCardImage(url: imageUrl),
-                ),
-                if (tagLabel != null && tagLabel!.trim().isNotEmpty)
-                  Positioned(
-                    left: 10,
-                    bottom: 10,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(14)),
-                      child: Text(tagLabel!, style: context.textTheme.bodyXSmallMedium.copyWith(color: AppColors.white)),
-                    ),
-                  ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return AppTabletMaxWidth(
+      child: Bounce(
+        tilt: false,
+        onTap: () {
+          Gaimon.selection();
+          onTap();
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: AppRadius.radius3xl,
+            border: Border.all(color: context.appColors.stroke),
+            color: context.appColors.onContainer,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
                 children: [
-                  Text(
-                    title,
-                    maxLines: titleMaxLines,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.bodyXLargeSemibold.copyWith(color: context.appColors.text),
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                    child: _CourseCardImage(url: imageUrl, heroCourseId: coverHeroCourseId),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    mentorName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.bodySmallRegular.copyWith(color: context.appColors.secondaryGrey),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(LucideIcons.star, size: 14, color: Color(0xFFF6C344)),
-                      const SizedBox(width: 4),
-                      Text(
-                        l10n.myCoursesRatingReviewsLine(rating.toStringAsFixed(1), _formatReviewsCount(reviewsCount)),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey),
+                  if (tagLabel != null && tagLabel!.trim().isNotEmpty)
+                    Positioned(
+                      left: 10,
+                      bottom: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(14)),
+                        child: Text(tagLabel!, style: context.textTheme.bodyXSmallMedium.copyWith(color: AppColors.white)),
                       ),
-                      const SizedBox(width: 8),
-                      Icon(LucideIcons.clock3, size: 14, color: context.appColors.secondaryGrey),
-                      const SizedBox(width: 4),
-                      Text(l10n.myCoursesDurationHours(durationHours), style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey)),
-                    ],
-                  ),
+                    ),
                 ],
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: titleMaxLines,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodyXLargeSemibold.copyWith(color: context.appColors.text),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      mentorName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodySmallRegular.copyWith(color: context.appColors.secondaryGrey),
+                    ),
+                    const SizedBox(height: 26),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(LucideIcons.star, size: 14, color: Color(0xFFF6C344)),
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.myCoursesRatingReviewsLine(rating.toStringAsFixed(1), _formatReviewsCount(reviewsCount)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(LucideIcons.clock3, size: 14, color: context.appColors.secondaryGrey),
+                        const SizedBox(width: 4),
+                        Text(l10n.myCoursesDurationHours(durationHours), style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -122,24 +127,21 @@ class AppCourseListItemCard extends StatelessWidget {
 }
 
 class _CourseCardImage extends StatelessWidget {
-  const _CourseCardImage({required this.url});
+  const _CourseCardImage({required this.url, this.heroCourseId});
 
   final String url;
+  final String? heroCourseId;
 
-  static const double _height = 156;
+  static const double _height = 192;
 
   @override
   Widget build(BuildContext context) {
-    if (!_hasValidImageUrl(url)) {
-      return _fallback(context);
-    }
-    return AppCachedNetworkImage(
-      imageUrl: url,
-      width: double.infinity,
-      height: _height,
-      fit: BoxFit.cover,
-      fallback: const AppNetworkImageFallbackCourse(iconSize: 34, tintAlpha: 0.08),
-    );
+    final Widget content = !_hasValidImageUrl(url)
+        ? _fallback(context)
+        : AppCachedNetworkImage(imageUrl: url, width: double.infinity, height: _height, fit: BoxFit.cover, fallback: const AppNetworkImageFallbackCourse(iconSize: 34, tintAlpha: 0.08));
+    final trimmedId = heroCourseId?.trim();
+    if (trimmedId == null || trimmedId.isEmpty) return content;
+    return content;
   }
 
   Widget _fallback(BuildContext context) {

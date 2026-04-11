@@ -5,6 +5,7 @@ class CourseReviewModel extends Equatable {
     required this.id,
     required this.userName,
     required this.userInitials,
+    this.userPhotoUrl,
     this.createdAt,
     required this.rating,
     required this.commentHtml,
@@ -13,6 +14,8 @@ class CourseReviewModel extends Equatable {
   final String id;
   final String userName;
   final String userInitials;
+  /// Foydalanuvchi rasmi (API `photo` / `avatarUrl` va hokazo).
+  final String? userPhotoUrl;
   final DateTime? createdAt;
   final int rating;
   /// Backenddan keladigan HTML (masalan `<p>...</p>`).
@@ -23,6 +26,7 @@ class CourseReviewModel extends Equatable {
     id,
     userName,
     userInitials,
+    userPhotoUrl,
     createdAt,
     rating,
     commentHtml,

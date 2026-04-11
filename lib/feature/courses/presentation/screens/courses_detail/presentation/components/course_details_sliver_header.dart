@@ -22,20 +22,29 @@ class CourseDetailsSliverHeader extends StatelessWidget {
       expandedHeight: 230,
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
-          fit: StackFit.expand,
+          fit: StackFit.loose,
           children: [
-            AppCachedNetworkImage(
-              imageUrl: course.coverImageUrl,
-              fit: BoxFit.cover,
-              fallback: const AppNetworkImageFallbackCoverTint(),
+            Positioned.fill(
+              child: AppCachedNetworkImage(imageUrl: course.coverImageUrl, fit: BoxFit.cover, fallback: const AppNetworkImageFallbackCoverTint()),
             ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [AppColors.black.withValues(alpha: 0.15), AppColors.black.withValues(alpha: 0.25), AppColors.black.withValues(alpha: 0.82)],
-                  stops: const [0.0, 0.45, 1.0],
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 110,
+              child: IgnorePointer(
+                child: (context.isDarkTheme ? UiKitAssets.images.bottomNavDark : UiKitAssets.images.bottomNavLight).image(fit: BoxFit.cover, alignment: Alignment.topCenter),
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [AppColors.black.withValues(alpha: 0.15), AppColors.black.withValues(alpha: 0.25), AppColors.black.withValues(alpha: 0.82)],
+                    stops: const [0.0, 0.45, 1.0],
+                  ),
                 ),
               ),
             ),
@@ -44,85 +53,93 @@ class CourseDetailsSliverHeader extends StatelessWidget {
               left: 16,
               child: AppBackButton.glass(onTap: () => context.pop()),
             ),
+
             Positioned(
-              left: 20,
+              left: 0,
               right: 20,
               bottom: 22,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (course.categoryName.trim().isNotEmpty) ...[
+              child: AppStaggeredListItem(
+                position: 0,
+                duration: AppStaggeredListAnimation.duration,
+                delay: AppStaggeredListAnimation.staggerDelay,
+                verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Expanded(
+                    //   flex: 5,
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     mainAxisSize: MainAxisSize.min,
+                    //     children: [
+                    //       if (course.categoryName.trim().isNotEmpty) ...[
+                    //         Container(
+                    //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    //           decoration: BoxDecoration(
+                    //             color: AppColors.white.withValues(alpha: 0.22),
+                    //             borderRadius: BorderRadius.circular(20),
+                    //             border: Border.all(color: AppColors.white.withValues(alpha: 0.35)),
+                    //           ),
+                    //           child: Text(
+                    //             course.categoryName.trim(),
+                    //             maxLines: 1,
+                    //             overflow: TextOverflow.ellipsis,
+                    //             style: context.textTheme.bodyXSmallSemibold.copyWith(color: AppColors.white),
+                    //           ),
+                    //         ),
+                    //         const SizedBox(height: 10),
+                    //       ],
+                    //       Text(
+                    //         course.title,
+                    //         maxLines: 2,
+                    //         overflow: TextOverflow.ellipsis,
+                    //         style: context.textTheme.heading3.copyWith(color: AppColors.white, height: 1.15),
+                    //       ),
+                    //       const SizedBox(height: 10),
+                    //       Text(
+                    //         course.teacherName,
+                    //         maxLines: 1,
+                    //         overflow: TextOverflow.ellipsis,
+                    //         style: context.textTheme.bodyLargeMedium.copyWith(color: AppColors.white.withValues(alpha: 0.95)),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             decoration: BoxDecoration(
-                              color: AppColors.white.withValues(alpha: 0.22),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.white.withValues(alpha: 0.35)),
+                              borderRadius: BorderRadius.circular(12),
+                              color: AppColors.white.withValues(alpha: 0.3),
+                              // border: Border.all(color: AppColors.white.withValues(alpha: 0.85), width: 1.2),
                             ),
                             child: Text(
-                              course.categoryName.trim(),
+                              course.teacherRole.trim(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: context.textTheme.bodyXSmallSemibold.copyWith(color: AppColors.white),
+                              textAlign: TextAlign.center,
+                              style: context.textTheme.bodySmallSemibold.copyWith(color: AppColors.white),
                             ),
                           ),
-                          const SizedBox(height: 10),
-                        ],
-                        Text(
-                          course.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.heading3.copyWith(color: AppColors.white, height: 1.15),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          course.teacherName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodyLargeMedium.copyWith(color: AppColors.white.withValues(alpha: 0.95)),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 4,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          course.teacherName,
-                          maxLines: 2,
-                          textAlign: TextAlign.end,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodySmallMedium.copyWith(color: AppColors.white.withValues(alpha: 0.92)),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.white.withValues(alpha: 0.85), width: 1.2),
-                          ),
-                          child: Text(
-                            course.teacherRole,
-                            maxLines: 1,
+                          const SizedBox(height: 8),
+                          Text(
+                            course.teacherName,
+                            maxLines: 2,
+                            textAlign: TextAlign.end,
                             overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: context.textTheme.bodyXSmallSemibold.copyWith(color: AppColors.white),
+                            style: context.textTheme.bodyMediumMedium.copyWith(color: AppColors.secondaryGrey),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

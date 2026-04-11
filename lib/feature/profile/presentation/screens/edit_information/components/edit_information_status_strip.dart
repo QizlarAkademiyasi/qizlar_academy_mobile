@@ -11,7 +11,7 @@ class EditInformationStatusStrip extends StatelessWidget {
   final int selectedBadgeId;
   final ValueChanged<int> onSelected;
 
-  static const double _tileSize = 56;
+  static const double _tileSize = 48;
 
   @override
   Widget build(BuildContext context) {

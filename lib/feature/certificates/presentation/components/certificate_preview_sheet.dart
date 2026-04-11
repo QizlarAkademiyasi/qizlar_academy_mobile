@@ -4,14 +4,28 @@ import 'package:qizlar_academy_mobile/feature/certificates/domain/model/certific
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/components/certificate_pdf_preview.dart';
 
 class CertificatePreviewSheet extends StatelessWidget {
-  const CertificatePreviewSheet({super.key, required this.item, required this.heading, required this.description, required this.downloadLabel, required this.onDownload, required this.onShare});
+  const CertificatePreviewSheet({
+    super.key,
+    required this.item,
+    required this.heading,
+    required this.description,
+    required this.downloadLabel,
+    required this.onDownload,
+    this.onInstagramStory,
+    required this.onShare,
+    this.openCertificatesLabel,
+    this.onOpenCertificates,
+  });
 
   final CertificateItemModel item;
   final String heading;
   final String description;
   final String downloadLabel;
   final VoidCallback onDownload;
+  final VoidCallback? onInstagramStory;
   final VoidCallback onShare;
+  final String? openCertificatesLabel;
+  final VoidCallback? onOpenCertificates;
 
   static Future<void> open(
     BuildContext context, {
@@ -20,11 +34,24 @@ class CertificatePreviewSheet extends StatelessWidget {
     required String description,
     required String downloadLabel,
     required VoidCallback onDownload,
+    VoidCallback? onInstagramStory,
     required VoidCallback onShare,
+    String? openCertificatesLabel,
+    VoidCallback? onOpenCertificates,
   }) {
     return showAppBottomSheet<void>(
       context,
-      child: CertificatePreviewSheet(item: item, heading: heading, description: description, downloadLabel: downloadLabel, onDownload: onDownload, onShare: onShare),
+      child: CertificatePreviewSheet(
+        item: item,
+        heading: heading,
+        description: description,
+        downloadLabel: downloadLabel,
+        onDownload: onDownload,
+        onInstagramStory: onInstagramStory,
+        onShare: onShare,
+        openCertificatesLabel: openCertificatesLabel,
+        onOpenCertificates: onOpenCertificates,
+      ),
     );
   }
 
@@ -55,13 +82,16 @@ class CertificatePreviewSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxH = MediaQuery.sizeOf(context).height * 0.72;
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: maxH),
-      child: AppBottomSheetContainer(
-        title: null,
-        showHandle: true,
+    final mq = MediaQuery.of(context);
+    final maxScrollViewport = (mq.size.height * 0.72).clamp(280.0, 720.0);
+    return AppBottomSheetContainer(
+      title: null,
+      showHandle: true,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxScrollViewport),
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -85,38 +115,66 @@ class CertificatePreviewSheet extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
+                    child: PrimaryButton.elevated(
+                      label: downloadLabel,
                       onPressed: () {
                         Navigator.of(context).pop();
                         WidgetsBinding.instance.addPostFrameCallback((_) => onDownload());
                       },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 52),
-                        maximumSize: const Size(double.infinity, 52),
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: const StadiumBorder(),
-                      ),
-                      child: Text(downloadLabel, style: context.textTheme.bodyMediumSemibold.copyWith(color: AppColors.white)),
+                      expand: true,
+                      applyTabletMaxWidth: false,
+                      height: 52,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      textStyle: context.textTheme.bodyMediumSemibold.copyWith(color: AppColors.white),
                     ),
                   ),
+                  // if (onInstagramStory != null) ...[
+                  //   const SizedBox(width: 10),
+                  //   Material(
+                  //     color: context.appColors.stroke.withValues(alpha: 0.35),
+                  //     borderRadius: AppRadius.radiusSm,
+                  //     child: InkWell(
+                  //       borderRadius: AppRadius.radiusSm,
+                  //       onTap: () {
+                  //         Navigator.of(context).pop();
+                  //         WidgetsBinding.instance.addPostFrameCallback((_) => onInstagramStory!());
+                  //       },
+                  //       child: SizedBox(width: 52, height: 52, child: Icon(LucideIcons.instagram, size: 22, color: const Color(0xFFE4405F))),
+                  //     ),
+                  //   ),
+                  // ],
                   const SizedBox(width: 10),
                   Material(
                     color: context.appColors.stroke.withValues(alpha: 0.35),
                     borderRadius: AppRadius.radiusSm,
                     child: InkWell(
                       borderRadius: AppRadius.radiusSm,
+
                       onTap: () {
                         Navigator.of(context).pop();
                         WidgetsBinding.instance.addPostFrameCallback((_) => onShare());
                       },
-                      child: SizedBox(width: 52, height: 52, child: Icon(LucideIcons.download, size: 22, color: context.appColors.text)),
+                      child: SizedBox(width: 52, height: 52, child: Icon(LucideIcons.share, size: 22, color: context.appColors.text)),
                     ),
                   ),
                 ],
               ),
+              if (onOpenCertificates != null && (openCertificatesLabel ?? '').trim().isNotEmpty) ...[
+                const SizedBox(height: 12),
+                PrimaryButton.outlined(
+                  label: openCertificatesLabel!.trim(),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    WidgetsBinding.instance.addPostFrameCallback((_) => onOpenCertificates!());
+                  },
+                  expand: true,
+                  applyTabletMaxWidth: false,
+                  height: 52,
+                  foregroundColor: AppColors.primary,
+                  borderColor: AppColors.primary,
+                  textStyle: context.textTheme.bodyMediumSemibold.copyWith(color: AppColors.primary),
+                ),
+              ],
             ],
           ),
         ),

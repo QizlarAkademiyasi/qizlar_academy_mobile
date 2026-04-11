@@ -1,15 +1,20 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/constants/app_share_links.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/core/push/push_messaging_service.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_language_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_menu_item_model.dart';
+import 'package:qizlar_academy_mobile/feature/profile/data/profile_badge_catalog_loader.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/bloc/profile_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_badge_picker_sheet_content.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_filter_chips.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_header.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_language_option_tile.dart';
@@ -18,6 +23,7 @@ import 'package:qizlar_academy_mobile/feature/profile/presentation/components/pr
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_preference_tile.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_section_card.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_stats_card.dart';
+import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_tez_kunda_sheet_content.dart';
 
 mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
   void profileBlocListener(BuildContext context, ProfileState state) {
@@ -25,25 +31,57 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
       context.go(Routes.register);
       return;
     }
-    if (state.status != ProfileStatus.failure || state.message == null) return;
+    if (state.status != ProfileStatus.failure || state.overview == null) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(state.message!), behavior: SnackBarBehavior.floating));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.profilePreferenceUpdateError),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
   }
 
   void retry(BuildContext context) {
     context.read<ProfileBloc>().add(const ProfileRetryRequested());
   }
 
-  Future<void> onNotificationsChanged(BuildContext context, bool enabled) async {
-    final canExecute = await getIt<GuestTapGateService>().allowAction(context, key: 'profile_notifications_toggle', title: context.l10n.guestGateNotificationSettings);
+  Future<void> onNotificationsChanged(
+    BuildContext context,
+    bool enabled,
+  ) async {
+    final canExecute = await getIt<GuestTapGateService>().allowAction(
+      context,
+      key: 'profile_notifications_toggle',
+      title: context.l10n.guestGateNotificationSettings,
+    );
     if (!canExecute) return;
     if (!context.mounted) return;
-    context.read<ProfileBloc>().add(ProfileNotificationsToggled(enabled: enabled));
+    if (enabled) {
+      final token = await getIt<PushMessagingService>()
+          .ensureTokenForSubscribe();
+      if (token == null || token.isEmpty) {
+        if (context.mounted) {
+          AppToast.warning(
+            context,
+            message: context.l10n.profileNotificationsEnableFailed,
+          );
+        }
+        return;
+      }
+    }
+    if (!context.mounted) return;
+    context.read<ProfileBloc>().add(
+      ProfileNotificationsToggled(enabled: enabled),
+    );
   }
 
   Future<void> onDarkModeChanged(BuildContext context, bool enabled) async {
-    final canExecute = await getIt<GuestTapGateService>().allowAction(context, key: 'profile_darkmode_toggle', title: context.l10n.guestGateSaveSettings);
+    final canExecute = await getIt<GuestTapGateService>().allowAction(
+      context,
+      key: 'profile_darkmode_toggle',
+      title: context.l10n.guestGateSaveSettings,
+    );
     if (!canExecute) return;
     if (!context.mounted) return;
     final appOptions = AppOptions.of(context);
@@ -75,13 +113,48 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  Future<void> onMenuTap(BuildContext context, {required ProfileMenuItemModel item, required ProfileOverviewModel overview}) async {
+  Future<void> onMenuTap(
+    BuildContext context, {
+    required ProfileMenuItemModel item,
+    required ProfileOverviewModel overview,
+  }) async {
     if (item.type == ProfileMenuItemType.aboutApp) {
       context.push(Routes.aboutUs);
       return;
     }
+    if (item.type == ProfileMenuItemType.privacyPolicy) {
+      context.push(Routes.privacyPolicy);
+      return;
+    }
+    if (item.type == ProfileMenuItemType.helpCenter) {
+      final uri = Uri.tryParse(AppShareLinks.telegramGroup);
+      if (uri == null) return;
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(context.l10n.aboutUsLinkOpenError),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+      }
+      return;
+    }
+    if (item.type == ProfileMenuItemType.shareApp) {
+      await onShareApp(context);
+      return;
+    }
 
-    final canExecute = await getIt<GuestTapGateService>().allowAction(context, key: 'profile_menu_${item.id}', title: context.l10n.guestGateProfileFeatures);
+    final canExecute = await getIt<GuestTapGateService>().allowAction(
+      context,
+      key: 'profile_menu_${item.id}',
+      title: context.l10n.guestGateProfileFeatures,
+    );
     if (!canExecute) return;
     if (!context.mounted) return;
 
@@ -93,11 +166,23 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
       context.push(Routes.myCertificates);
       return;
     }
+    if (item.type == ProfileMenuItemType.vacancies) {
+      context.push(Routes.vacancies);
+      return;
+    }
+    if (item.type == ProfileMenuItemType.myActivity) {
+      await showProfileTezKundaBottomSheet(context);
+      return;
+    }
     if (item.type == ProfileMenuItemType.profileInfo) {
-      final saved = await context.push<bool?>(Routes.profileInformation, extra: overview.user);
+      final saved = await context.push<bool?>(
+        Routes.profileInformation,
+        extra: overview.user,
+      );
       if (!context.mounted) return;
       if (saved == true) {
         context.read<ProfileBloc>().add(const ProfileStarted());
+        context.read<HomeBloc>().add(const HomeUserGreetingRefreshRequested());
       }
       return;
     }
@@ -107,12 +192,87 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  Future<void> showLanguageBottomSheet(BuildContext context, {required ProfileOverviewModel overview}) {
+  Future<void> onShareApp(BuildContext context) async {
+    final message = context.l10n.profileShareAppMessage(
+      AppShareLinks.storeOneLink,
+    );
+    await SharePlus.instance.share(ShareParams(text: message));
+  }
+
+  Future<void> showProfileTezKundaBottomSheet(BuildContext context) async {
+    Gaimon.light();
+    await showAppBottomSheet<void>(
+      context,
+      child: AppBottomSheetContainer(
+        child: ProfileTezKundaSheetContent(
+          title: context.l10n.profileTezKundaTitle,
+          message: context.l10n.profileTezKundaMessage,
+        ),
+      ),
+    );
+  }
+
+  Future<void> onProfileBadgePressed(
+    BuildContext context, {
+    required ProfileOverviewModel overview,
+  }) async {
+    final canExecute = await getIt<GuestTapGateService>().allowAction(
+      context,
+      key: 'profile_badge_picker',
+      title: context.l10n.guestGateProfileFeatures,
+    );
+    if (!canExecute) return;
+    if (!context.mounted) return;
+    // Sheet route daraxtda [BlocProvider] dan tashqarida bo‘lishi mumkin; eventni shu ekranning bloc instansiyasiga yuboramiz.
+    final profileBloc = context.read<ProfileBloc>();
+    Gaimon.light();
+    final catalog = await ProfileBadgeCatalogLoader.load();
+    if (!context.mounted) return;
+    if (catalog.isEmpty) return;
+    final selectedId = ProfileBadgeCatalogLoader.coerceSelection(
+      overview.user.badgeId,
+      catalog,
+    );
+    await showAppBottomSheet<void>(
+      context,
+      child: AppBottomSheetContainer(
+        title: context.l10n.profileBadgePickerTitle,
+        headerGradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            context.appColors.primary.withValues(alpha: 0.35),
+            Colors.transparent,
+          ],
+        ),
+        child: ProfileBadgePickerSheetContent(
+          badges: catalog,
+          selectedBadgeId: selectedId,
+          onSelected: (id) {
+            Navigator.of(context).pop();
+            profileBloc.add(ProfileBadgeSelected(badgeId: id));
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> showLanguageBottomSheet(
+    BuildContext context, {
+    required ProfileOverviewModel overview,
+  }) {
     return showAppBottomSheet<void>(
       context,
       child: AppBottomSheetContainer(
         title: context.l10n.profileAppLanguageTitle,
-        headerGradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [context.appColors.primary.withValues(alpha: 0.35), Colors.transparent]),
+        headerGradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            context.appColors.primary.withValues(alpha: 0.35),
+            Colors.transparent,
+          ],
+        ),
         child: Container(
           decoration: BoxDecoration(
             color: context.appColors.onContainer,
@@ -123,7 +283,11 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
             mainAxisSize: MainAxisSize.min,
             children: List.generate(overview.languageOptions.length, (index) {
               final option = overview.languageOptions[index];
-              final displayOption = ProfileLanguageOptionModel(code: option.code, title: _languageOptionTitle(context, option.code), flagEmoji: option.flagEmoji);
+              final displayOption = ProfileLanguageOptionModel(
+                code: option.code,
+                title: _languageOptionTitle(context, option.code),
+                flagEmoji: option.flagEmoji,
+              );
               return ProfileLanguageOptionTile(
                 option: displayOption,
                 isSelected: option.code == _appLanguageCode(context),
@@ -141,7 +305,10 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   /// Ilova tili faqat [AppOptions] / [SettingsDataSource] orqali (localization), API yo‘q.
-  void onAppLanguageSelected(BuildContext context, {required ProfileLanguageOptionModel option}) {
+  void onAppLanguageSelected(
+    BuildContext context, {
+    required ProfileLanguageOptionModel option,
+  }) {
     final opts = AppOptions.of(context);
     final target = L10n.localeFromProfileLanguageCode(option.code);
     if (opts.locale.languageCode == target.languageCode) return;
@@ -172,25 +339,56 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     context.go(Routes.main);
   }
 
-  Widget buildProfileHeader(BuildContext context, {required ProfileOverviewModel overview, int avatarImageGeneration = 0}) {
-    return ProfileHeader(user: overview.user, avatarImageGeneration: avatarImageGeneration);
+  Widget buildProfileHeader(
+    BuildContext context, {
+    required ProfileOverviewModel overview,
+    int avatarImageGeneration = 0,
+    bool loading = false,
+  }) {
+    return ProfileHeader(
+      user: overview.user,
+      avatarImageGeneration: avatarImageGeneration,
+      loading: loading,
+      onBadgeTap: loading
+          ? null
+          : () => onProfileBadgePressed(context, overview: overview),
+    );
   }
 
-  Widget buildProfileStats(BuildContext context, {required ProfileOverviewModel overview}) {
+  Widget buildProfileStats(
+    BuildContext context, {
+    required ProfileOverviewModel overview,
+    bool loading = false,
+  }) {
     final l10n = context.l10n;
     final stats = <ProfileStatModel>[
-      ProfileStatModel(value: '${overview.activeCoursesCount ?? 0}', label: l10n.profileStatCourses),
-      ProfileStatModel(value: '${overview.certificatesCount ?? 0}', label: l10n.profileStatCertificates),
-      ProfileStatModel(value: '${overview.rating ?? 0}', label: l10n.profileStatRating),
+      ProfileStatModel(
+        value: '${overview.activeCoursesCount ?? 0}',
+        label: l10n.profileStatCourses,
+      ),
+      ProfileStatModel(
+        value: '${overview.certificatesCount ?? 0}',
+        label: l10n.profileStatCertificates,
+      ),
+      ProfileStatModel(
+        value: '${overview.rating ?? 0}',
+        label: l10n.profileStatRating,
+      ),
     ];
-    return ProfileStatsCard(stats: stats);
+    return ProfileStatsCard(stats: stats, loading: loading);
   }
 
-  Widget buildProfileFilters(BuildContext context, {required ProfileOverviewModel overview}) {
+  Widget buildProfileFilters(
+    BuildContext context, {
+    required ProfileOverviewModel overview,
+  }) {
     return ProfileFilterChips(items: overview.bankFilters);
   }
 
-  Widget buildAchievementsSection(BuildContext context, {required ProfileOverviewModel overview}) {
+  Widget buildAchievementsSection(
+    BuildContext context, {
+    required ProfileOverviewModel overview,
+  }) {
     return ProfileSectionCard(
       title: context.l10n.profileSectionAccount,
       children: List.generate(overview.achievements.length, (index) {
@@ -209,7 +407,11 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     );
   }
 
-  String? _achievementSubtitle(BuildContext context, ProfileOverviewModel overview, ProfileMenuItemModel item) {
+  String? _achievementSubtitle(
+    BuildContext context,
+    ProfileOverviewModel overview,
+    ProfileMenuItemModel item,
+  ) {
     switch (item.type) {
       case ProfileMenuItemType.certificates:
         final n = overview.certificatesCount;
@@ -225,12 +427,17 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
         return item.subtitle;
       case ProfileMenuItemType.myActivity:
         return item.subtitle;
+      case ProfileMenuItemType.vacancies:
+        return item.subtitle;
       default:
         return item.subtitle;
     }
   }
 
-  int? _achievementBadgeCount(ProfileOverviewModel overview, ProfileMenuItemModel item) {
+  int? _achievementBadgeCount(
+    ProfileOverviewModel overview,
+    ProfileMenuItemModel item,
+  ) {
     if (item.type == ProfileMenuItemType.certificates) {
       final n = overview.certificatesCount;
       if (n != null && n > 0) return n;
@@ -238,7 +445,10 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     return item.badgeCount;
   }
 
-  Widget buildSettingsSection(BuildContext context, {required ProfileOverviewModel overview}) {
+  Widget buildSettingsSection(
+    BuildContext context, {
+    required ProfileOverviewModel overview,
+  }) {
     return ProfileSectionCard(
       title: context.l10n.profileSectionSettings,
       children: [
@@ -247,7 +457,9 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
           return ProfileMenuTile(
             icon: _iconForMenuType(item.type),
             title: _profileMenuTitle(context, item),
-            subtitle: item.type == ProfileMenuItemType.language ? _languageOptionTitle(context, _appLanguageCode(context)) : item.subtitle,
+            subtitle: item.type == ProfileMenuItemType.language
+                ? _languageOptionTitle(context, _appLanguageCode(context))
+                : item.subtitle,
             onTap: () {
               onMenuTap(context, item: item, overview: overview);
             },
@@ -259,7 +471,8 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
           title: context.l10n.profileNotifications,
           subtitle: context.l10n.profileNotificationsSubtitle,
           value: overview.notificationsEnabled,
-          onChanged: (switchContext, enabled) => onNotificationsChanged(context, enabled),
+          onChanged: (switchContext, enabled) =>
+              onNotificationsChanged(context, enabled),
           showDivider: true,
         ),
         ProfilePreferenceTile(
@@ -276,7 +489,10 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     );
   }
 
-  Widget buildGeneralSection(BuildContext context, {required ProfileOverviewModel overview}) {
+  Widget buildGeneralSection(
+    BuildContext context, {
+    required ProfileOverviewModel overview,
+  }) {
     return ProfileSectionCard(
       title: context.l10n.profileSectionGeneral,
       children: List.generate(overview.general.length, (index) {
@@ -284,7 +500,9 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
         return ProfileMenuTile(
           icon: _iconForMenuType(item.type),
           title: _profileMenuTitle(context, item),
-          subtitle: item.subtitle,
+          subtitle: item.type == ProfileMenuItemType.shareApp
+              ? context.l10n.profileShareAppSubtitle
+              : item.subtitle,
           onTap: () {
             onMenuTap(context, item: item, overview: overview);
           },
@@ -307,6 +525,8 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
         return l.profileMenuMyCourses;
       case ProfileMenuItemType.myActivity:
         return l.profileMenuMyActivity;
+      case ProfileMenuItemType.vacancies:
+        return l.profileMenuVacancies;
       case ProfileMenuItemType.profileInfo:
         return l.profileMenuProfileInfo;
       case ProfileMenuItemType.language:
@@ -343,6 +563,8 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
         return LucideIcons.bookmark;
       case ProfileMenuItemType.myActivity:
         return LucideIcons.trendingUp;
+      case ProfileMenuItemType.vacancies:
+        return LucideIcons.briefcase;
       case ProfileMenuItemType.profileInfo:
         return LucideIcons.userRound;
       case ProfileMenuItemType.language:

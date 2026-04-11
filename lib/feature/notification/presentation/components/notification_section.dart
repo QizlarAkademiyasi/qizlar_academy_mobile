@@ -8,10 +8,12 @@ class NotificationSection extends StatelessWidget {
   const NotificationSection({
     super.key,
     required this.section,
+    required this.staggerStartIndex,
     required this.onItemTap,
   });
 
   final NotificationSectionModel section;
+  final int staggerStartIndex;
   final ValueChanged<NotificationItemModel> onItemTap;
 
   @override
@@ -31,10 +33,16 @@ class NotificationSection extends StatelessWidget {
         const SizedBox(height: 10),
         ...List.generate(section.items.length, (index) {
           final item = section.items[index];
-          return NotificationTile(
-            item: item,
-            onTap: () => onItemTap(item),
-            showDivider: index != section.items.length - 1,
+          return AppStaggeredListItem(
+            position: staggerStartIndex + index,
+            duration: AppStaggeredListAnimation.duration,
+            delay: AppStaggeredListAnimation.staggerDelay,
+            verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
+            child: NotificationTile(
+              item: item,
+              onTap: () => onItemTap(item),
+              showDivider: index != section.items.length - 1,
+            ),
           );
         }),
       ],

@@ -27,3 +27,12 @@ final class NotificationItemOpened extends NotificationEvent {
   @override
   List<Object?> get props => [notificationId];
 }
+
+final class NotificationTabSelected extends NotificationEvent {
+  const NotificationTabSelected(this.tab);
+
+  final NotificationListTab tab;
+
+  @override
+  List<Object?> get props => [tab];
+}

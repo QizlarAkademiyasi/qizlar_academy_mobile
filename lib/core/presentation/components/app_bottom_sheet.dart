@@ -1,54 +1,36 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
+/// Pastdan modal sheet: [ModalSheetRoute] + [Sheet] ([SheetSize.fit]). [isScrollControlled] — API mosligi.
 Future<T?> showAppBottomSheet<T>(BuildContext context, {required Widget child, bool isScrollControlled = true, bool useSafeArea = true}) {
-  return showModalBottomSheet<T>(
-    context: context,
-    isScrollControlled: isScrollControlled,
-    useSafeArea: useSafeArea,
-    sheetAnimationStyle: const AnimationStyle(curve: Curves.easeOutBack, reverseCurve: Curves.easeOutBack, duration: Duration(milliseconds: 300), reverseDuration: Duration(milliseconds: 280)),
-    backgroundColor: Colors.transparent,
-    barrierColor: Colors.black.withValues(alpha: 0.45),
-    builder: (ctx) => _AppBottomSheetEntrance(child: child),
+  return Navigator.of(context).push<T>(
+    ModalSheetRoute<T>(
+      barrierColor: Colors.black.withValues(alpha: 0.45),
+      barrierDismissible: true,
+      swipeDismissible: true,
+      transitionDuration: const Duration(milliseconds: 360),
+      transitionCurve: Curves.easeOutCubic,
+      viewportBuilder: (ctx, sheetChild) {
+        final mq = MediaQuery.of(ctx);
+        return SheetViewport(
+          padding: EdgeInsets.only(top: useSafeArea ? mq.padding.top : 0, left: useSafeArea ? mq.padding.left : 0, right: useSafeArea ? mq.padding.right : 0, bottom: mq.viewInsets.bottom),
+          child: sheetChild,
+        );
+      },
+      builder: (_) => Sheet(
+        initialOffset: const SheetOffset(1),
+        snapGrid: const SheetSnapGrid.single(snap: SheetOffset(1)),
+        physics: const BouncingSheetPhysics(),
+        decoration: MaterialSheetDecoration(size: SheetSize.fit, color: Colors.transparent, elevation: 0, shadowColor: Colors.transparent),
+        scrollConfiguration: const SheetScrollConfiguration(scrollSyncMode: SheetScrollHandlingBehavior.onlyFromTop),
+        child: AppTabletMaxWidth(child: child),
+      ),
+    ),
   );
 }
 
-class _AppBottomSheetEntrance extends StatefulWidget {
-  const _AppBottomSheetEntrance({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_AppBottomSheetEntrance> createState() => _AppBottomSheetEntranceState();
-}
-
-class _AppBottomSheetEntranceState extends State<_AppBottomSheetEntrance> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 420));
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.22), end: Offset.zero).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SlideTransition(position: _slideAnimation, child: widget.child);
-  }
-}
-
 class AppBottomSheetContainer extends StatelessWidget {
-  const AppBottomSheetContainer({super.key, this.title, required this.child, this.padding = const EdgeInsets.fromLTRB(16, 12, 16, 16), this.showHandle = true, this.headerGradient});
+  const AppBottomSheetContainer({super.key, this.title, required this.child, this.padding = const EdgeInsets.fromLTRB(16, 12, 16, 0), this.showHandle = true, this.headerGradient});
 
   final String? title;
   final Widget child;
@@ -59,10 +41,11 @@ class AppBottomSheetContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: AppPadding.paddingHorizontalXs,
+      padding: const EdgeInsetsGeometry.fromLTRB(8, 0, 8, 24),
       child: DecoratedBox(
         decoration: BoxDecoration(
           image: DecorationImage(
+            alignment: Alignment.topCenter,
             fit: BoxFit.cover,
             scale: 1.5,
             image: context.isDarkTheme ? UiKitAssets.images.bottomSheet.bottomSheetDark.provider() : UiKitAssets.images.bottomSheet.bottomSheetLight.provider(),

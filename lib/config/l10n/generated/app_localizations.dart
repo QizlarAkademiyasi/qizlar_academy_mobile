@@ -196,11 +196,29 @@ abstract class AppLocalizations {
   /// **'Google sign-in failed. Please try again.'**
   String get googleSignInErrorMessage;
 
-  /// No description provided for @telegramSignInComingSoonMessage.
+  /// No description provided for @telegramSignInInvalidLinkMessage.
   ///
   /// In en, this message translates to:
-  /// **'Telegram sign-in will be available in a later update.'**
-  String get telegramSignInComingSoonMessage;
+  /// **'Could not open Telegram: invalid link from server.'**
+  String get telegramSignInInvalidLinkMessage;
+
+  /// No description provided for @telegramSignInLaunchFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open Telegram. Please try again.'**
+  String get telegramSignInLaunchFailedMessage;
+
+  /// No description provided for @telegramSignInOpenBotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Telegram'**
+  String get telegramSignInOpenBotTitle;
+
+  /// No description provided for @telegramSignInEnterCodeHintMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the bot, then enter the code you receive here.'**
+  String get telegramSignInEnterCodeHintMessage;
 
   /// No description provided for @signInWithGoogle.
   ///
@@ -310,6 +328,30 @@ abstract class AppLocalizations {
   /// **'Verification code was sent again.'**
   String get otpSentAgain;
 
+  /// No description provided for @verificationBackConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back?'**
+  String get verificationBackConfirmTitle;
+
+  /// No description provided for @verificationBackConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'If you leave, you will need to request a new code to continue signing in.'**
+  String get verificationBackConfirmMessage;
+
+  /// No description provided for @verificationBackConfirmStay.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get verificationBackConfirmStay;
+
+  /// No description provided for @verificationBackConfirmLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get verificationBackConfirmLeave;
+
   /// No description provided for @mainTabHome.
   ///
   /// In en, this message translates to:
@@ -388,6 +430,60 @@ abstract class AppLocalizations {
   /// **'Connection error. Please try again.'**
   String get homeLoadErrorMessage;
 
+  /// No description provided for @coursesCatalogLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load courses. Please try again.'**
+  String get coursesCatalogLoadError;
+
+  /// No description provided for @leaderboardLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load the leaderboard. Please try again.'**
+  String get leaderboardLoadError;
+
+  /// No description provided for @profileOverviewLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load your profile. Please try again.'**
+  String get profileOverviewLoadError;
+
+  /// No description provided for @profilePreferenceUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t update settings. Please try again.'**
+  String get profilePreferenceUpdateError;
+
+  /// No description provided for @notificationListLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load notifications. Please try again.'**
+  String get notificationListLoadError;
+
+  /// No description provided for @notificationActionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t update notifications. Please try again.'**
+  String get notificationActionError;
+
+  /// No description provided for @courseDetailsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load course details. Please try again.'**
+  String get courseDetailsLoadError;
+
+  /// No description provided for @editProfileLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load profile information. Please try again.'**
+  String get editProfileLoadError;
+
+  /// No description provided for @editProfileSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t save changes. Please try again.'**
+  String get editProfileSaveError;
+
   /// No description provided for @coursesAllTitle.
   ///
   /// In en, this message translates to:
@@ -399,6 +495,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search courses…'**
   String get coursesSearchHint;
+
+  /// No description provided for @coursesSearchScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search courses'**
+  String get coursesSearchScreenTitle;
+
+  /// No description provided for @coursesSearchIdleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a course name to search'**
+  String get coursesSearchIdleHint;
 
   /// No description provided for @coursesNoResults.
   ///
@@ -525,6 +633,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Complete lesson'**
   String get lessonMarkComplete;
+
+  /// No description provided for @lessonVideoPlaybackError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the video.'**
+  String get lessonVideoPlaybackError;
+
+  /// No description provided for @lessonVideoPlaybackErrorYoutube.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube may temporarily block in-app playback. Open the video in your browser or the YouTube app.'**
+  String get lessonVideoPlaybackErrorYoutube;
+
+  /// No description provided for @lessonVideoOpenExternal.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in browser'**
+  String get lessonVideoOpenExternal;
 
   /// No description provided for @coursePillTabLessons.
   ///
@@ -670,6 +796,12 @@ abstract class AppLocalizations {
   /// **'Continue'**
   String get lessonQuizContinue;
 
+  /// No description provided for @lessonQuizRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get lessonQuizRetry;
+
   /// No description provided for @lessonQuizErrorEmpty.
   ///
   /// In en, this message translates to:
@@ -705,6 +837,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You have already completed this test. Retakes are not allowed.'**
   String get lessonQuizAlreadyTaken;
+
+  /// No description provided for @courseModuleLockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish all lessons and tests in the previous module to continue.'**
+  String get courseModuleLockedMessage;
+
+  /// No description provided for @courseLessonSequentialLockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the previous lesson and its test (if any) before continuing.'**
+  String get courseLessonSequentialLockedMessage;
+
+  /// No description provided for @courseCompleteCongratsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations!'**
+  String get courseCompleteCongratsTitle;
+
+  /// No description provided for @courseCompleteCongratsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You have completed this course. Claim your certificate in the certificates section.'**
+  String get courseCompleteCongratsDescription;
+
+  /// No description provided for @courseCompleteGetCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Get certificate'**
+  String get courseCompleteGetCertificate;
+
+  /// No description provided for @courseCompleteClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get courseCompleteClose;
 
   /// No description provided for @leaderboardTitle.
   ///
@@ -826,6 +994,204 @@ abstract class AppLocalizations {
   /// **'My activity'**
   String get profileMenuMyActivity;
 
+  /// No description provided for @profileMenuVacancies.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacancies'**
+  String get profileMenuVacancies;
+
+  /// No description provided for @vacanciesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacancies'**
+  String get vacanciesTitle;
+
+  /// No description provided for @vacancyDetailCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get vacancyDetailCta;
+
+  /// No description provided for @vacancySalaryNegotiable.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary negotiable'**
+  String get vacancySalaryNegotiable;
+
+  /// No description provided for @vacancySalaryRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to} {currency}'**
+  String vacancySalaryRange(String from, String to, String currency);
+
+  /// No description provided for @vacancyPostedMomentsAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get vacancyPostedMomentsAgo;
+
+  /// No description provided for @vacancyPostedMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String vacancyPostedMinutesAgo(int count);
+
+  /// No description provided for @vacancyPostedHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h ago'**
+  String vacancyPostedHoursAgo(int count);
+
+  /// No description provided for @vacancyPostedYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get vacancyPostedYesterday;
+
+  /// No description provided for @vacancyPostedDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days ago'**
+  String vacancyPostedDaysAgo(int count);
+
+  /// No description provided for @vacancyEmploymentIntern.
+  ///
+  /// In en, this message translates to:
+  /// **'Internship'**
+  String get vacancyEmploymentIntern;
+
+  /// No description provided for @vacancyEmploymentPartTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Part-time'**
+  String get vacancyEmploymentPartTime;
+
+  /// No description provided for @vacancyEmploymentFullTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Full-time'**
+  String get vacancyEmploymentFullTime;
+
+  /// No description provided for @vacancyEmploymentRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote'**
+  String get vacancyEmploymentRemote;
+
+  /// No description provided for @vacancyEmploymentOnsite.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site'**
+  String get vacancyEmploymentOnsite;
+
+  /// No description provided for @vacancyEmploymentContract.
+  ///
+  /// In en, this message translates to:
+  /// **'Contract'**
+  String get vacancyEmploymentContract;
+
+  /// No description provided for @vacanciesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No vacancies yet'**
+  String get vacanciesEmptyTitle;
+
+  /// No description provided for @vacanciesEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check back later'**
+  String get vacanciesEmptySubtitle;
+
+  /// No description provided for @vacanciesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load vacancies'**
+  String get vacanciesLoadError;
+
+  /// No description provided for @vacanciesLoadMoreError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load more'**
+  String get vacanciesLoadMoreError;
+
+  /// No description provided for @vacancyDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacancy'**
+  String get vacancyDetailsTitle;
+
+  /// No description provided for @vacancySheetEmploymentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Employment type'**
+  String get vacancySheetEmploymentType;
+
+  /// No description provided for @vacancySheetSalary.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary'**
+  String get vacancySheetSalary;
+
+  /// No description provided for @vacancySheetLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get vacancySheetLocation;
+
+  /// No description provided for @vacancySheetCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get vacancySheetCategory;
+
+  /// No description provided for @vacancySheetPosted.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted'**
+  String get vacancySheetPosted;
+
+  /// No description provided for @vacancyDetailAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About the vacancy'**
+  String get vacancyDetailAbout;
+
+  /// No description provided for @vacancyDetailSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get vacancyDetailSkills;
+
+  /// No description provided for @vacancyDetailRequirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Requirements'**
+  String get vacancyDetailRequirements;
+
+  /// No description provided for @vacancyApplyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get vacancyApplyCta;
+
+  /// No description provided for @vacancySalaryPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/ month'**
+  String get vacancySalaryPerMonth;
+
+  /// No description provided for @vacancyDetailLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load vacancy'**
+  String get vacancyDetailLoadError;
+
+  /// No description provided for @vacancyApplyPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon — application will be available here'**
+  String get vacancyApplyPlaceholder;
+
   /// No description provided for @profileMenuProfileInfo.
   ///
   /// In en, this message translates to:
@@ -843,6 +1209,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share the app'**
   String get profileMenuShareApp;
+
+  /// No description provided for @profileShareAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends and family'**
+  String get profileShareAppSubtitle;
+
+  /// No description provided for @profileShareAppMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Qizlar Academy brings free courses, a vibrant community, and room to grow for women and girls — all in one app.\n\nDownload and learn together:\n{link}'**
+  String profileShareAppMessage(String link);
 
   /// No description provided for @profileMenuAbout.
   ///
@@ -903,6 +1281,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Push messages'**
   String get profileNotificationsSubtitle;
+
+  /// No description provided for @profileNotificationsEnableFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not turn on notifications. Check permissions and try again.'**
+  String get profileNotificationsEnableFailed;
 
   /// No description provided for @profileDarkMode.
   ///
@@ -1018,6 +1402,36 @@ abstract class AppLocalizations {
   /// **'XX XXX XX XX'**
   String get profileInformationPhoneNationalHint;
 
+  /// No description provided for @editProfileUnsavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved changes'**
+  String get editProfileUnsavedTitle;
+
+  /// No description provided for @editProfileUnsavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes to your profile. Save before leaving?'**
+  String get editProfileUnsavedMessage;
+
+  /// No description provided for @editProfileUnsavedSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get editProfileUnsavedSave;
+
+  /// No description provided for @editProfileUnsavedDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard and leave'**
+  String get editProfileUnsavedDiscard;
+
+  /// No description provided for @editProfileUnsavedContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get editProfileUnsavedContinue;
+
   /// No description provided for @aboutBrandTitle.
   ///
   /// In en, this message translates to:
@@ -1126,6 +1540,30 @@ abstract class AppLocalizations {
   /// **'Could not open the link.'**
   String get aboutUsLinkOpenError;
 
+  /// No description provided for @appUpdateAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available!'**
+  String get appUpdateAvailableTitle;
+
+  /// No description provided for @appUpdateAvailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ve improved the app even more! Update the app to use new features and enjoy a more comfortable experience.'**
+  String get appUpdateAvailableBody;
+
+  /// No description provided for @appUpdateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get appUpdateLater;
+
+  /// No description provided for @appUpdateCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get appUpdateCta;
+
   /// No description provided for @guestGateNotificationSettings.
   ///
   /// In en, this message translates to:
@@ -1149,6 +1587,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'App language'**
   String get profileAppLanguageTitle;
+
+  /// No description provided for @profileBadgePickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your badges'**
+  String get profileBadgePickerTitle;
+
+  /// No description provided for @profileTezKundaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get profileTezKundaTitle;
+
+  /// No description provided for @profileTezKundaMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This section is not available yet. We\'re working on it — check back soon.'**
+  String get profileTezKundaMessage;
 
   /// No description provided for @languageUzbek.
   ///
@@ -1185,6 +1641,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New messages will appear here.'**
   String get notificationsEmptySubtitle;
+
+  /// No description provided for @notificationTabPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform'**
+  String get notificationTabPlatform;
+
+  /// No description provided for @notificationTabCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Community'**
+  String get notificationTabCommunity;
+
+  /// No description provided for @notificationDetailsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get notificationDetailsMore;
+
+  /// No description provided for @notificationsEmptyThisTab.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications in this tab'**
+  String get notificationsEmptyThisTab;
+
+  /// No description provided for @notificationsEmptyThisTabSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch tabs or check back later.'**
+  String get notificationsEmptyThisTabSubtitle;
 
   /// No description provided for @guestGateMarkAllRead.
   ///
@@ -1288,6 +1774,30 @@ abstract class AppLocalizations {
   /// **'Bronze certificate'**
   String get certificatesBadgeBronze;
 
+  /// No description provided for @linkPromptYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get linkPromptYes;
+
+  /// No description provided for @linkPromptNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get linkPromptNo;
+
+  /// No description provided for @communityTelegramInviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join our community'**
+  String get communityTelegramInviteTitle;
+
+  /// No description provided for @communityTelegramInviteDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You can find answers to your questions on our Telegram channel. Open our Telegram channel?'**
+  String get communityTelegramInviteDescription;
+
   /// No description provided for @certificatesView.
   ///
   /// In en, this message translates to:
@@ -1330,11 +1840,29 @@ abstract class AppLocalizations {
   /// **'Could not load certificates. Try again.'**
   String get certificatesLoadError;
 
+  /// No description provided for @certificateClaimError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get your certificate. Try again later.'**
+  String get certificateClaimError;
+
   /// No description provided for @certificatesFileActionError.
   ///
   /// In en, this message translates to:
   /// **'Could not download or share the file.'**
   String get certificatesFileActionError;
+
+  /// No description provided for @certificatesInstagramStoryNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram Story needs a Facebook App ID. Add FACEBOOK_APP_ID when building the app.'**
+  String get certificatesInstagramStoryNotConfigured;
+
+  /// No description provided for @certificatesInstagramShareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open Instagram. Check that Instagram is installed and try again.'**
+  String get certificatesInstagramShareFailed;
 
   /// No description provided for @courseReviewsSummaryCount.
   ///

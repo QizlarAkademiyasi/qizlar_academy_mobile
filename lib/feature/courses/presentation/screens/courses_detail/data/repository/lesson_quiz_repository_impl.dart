@@ -20,11 +20,6 @@ class LessonQuizRepositoryImpl implements LessonQuizRepository {
   }
 
   @override
-  Future<bool> checkAnswer({required String quizId, required List<String> selectedOptionIds}) {
-    return _api.checkAnswer(quizId: quizId, selectedOptionIds: selectedOptionIds);
-  }
-
-  @override
   Future<LessonQuizSubmitResultModel> submitLessonQuiz({
     required String lessonId,
     required List<LessonQuizAnswerPayload> answers,

@@ -3,6 +3,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_gap.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_radius.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_tablet_max_width.dart';
 
 /// Ilova bo‘ylab bir xil fon, radius, chegarasi va ichki padding bilan matn maydoni.
 /// [labelText] berilsa, u maydon ustida alohida [Text] sifatida chiqadi (ichida emas).
@@ -131,17 +132,19 @@ class AppTextField extends StatelessWidget {
     );
 
     if (labelText == null || labelText!.isEmpty) {
-      return input;
+      return AppTabletMaxWidth(child: input);
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(labelText!, style: secondaryStyle),
-        SizedBox(height: AppGap.gapXs),
-        input,
-      ],
+    return AppTabletMaxWidth(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(labelText!, style: secondaryStyle),
+          SizedBox(height: AppGap.gapXs),
+          input,
+        ],
+      ),
     );
   }
 }

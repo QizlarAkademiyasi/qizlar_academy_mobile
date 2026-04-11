@@ -8,11 +8,7 @@ import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_user_
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
 
 class LeaderboardUserDetailsBottomSheet extends StatefulWidget {
-  const LeaderboardUserDetailsBottomSheet({
-    super.key,
-    required this.user,
-    required this.courseName,
-  });
+  const LeaderboardUserDetailsBottomSheet({super.key, required this.user, required this.courseName});
 
   final LeaderboardUserModel user;
   final String courseName;
@@ -51,21 +47,14 @@ class _LeaderboardUserDetailsBottomSheetState extends State<LeaderboardUserDetai
             children: [
               Row(
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: context.appColors.onContainer,
-                      border: Border.all(color: context.appColors.primary, width: 2),
-                    ),
-                    width: 64,
-                    height: 64,
-                    child: AppCachedNetworkImage(
-                      imageUrl: widget.user.avatarUrl,
-                      fit: BoxFit.cover,
-                      fallback: const AppNetworkImageFallbackAvatar(
-                        iconSize: 30,
-                        errorShowsBackground: false,
-                      ),
+                  AppTappableProfileAvatar(
+                    size: 64,
+                    borderWidth: 2,
+                    heroId: 'leader_sheet_${widget.user.id}',
+                    resolvedNetworkUrl: widget.user.avatarUrl,
+                    placeholder: ColoredBox(
+                      color: context.appColors.stroke,
+                      child: Icon(LucideIcons.user, size: 30, color: context.appColors.grey),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -82,17 +71,10 @@ class _LeaderboardUserDetailsBottomSheetState extends State<LeaderboardUserDetai
                                 fullName: fullName,
                                 badgeId: badgeId,
                                 isLoading: isLoading,
-                                textStyle: context.textTheme.bodyXLargeBold.copyWith(
-                                  color: context.appColors.text,
-                                ),
+                                textStyle: context.textTheme.bodyXLargeBold.copyWith(color: context.appColors.text),
                               ),
                               const SizedBox(height: 2),
-                              Text(
-                                widget.courseName,
-                                style: context.textTheme.bodyMediumRegular.copyWith(
-                                  color: context.appColors.grey,
-                                ),
-                              ),
+                              Text(widget.courseName, style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey)),
                             ],
                           ),
                         ),
@@ -105,12 +87,7 @@ class _LeaderboardUserDetailsBottomSheetState extends State<LeaderboardUserDetai
               if (hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: Text(
-                    'Ma’lumotlarni yuklashda xatolik.',
-                    style: context.textTheme.bodyMediumRegular.copyWith(
-                      color: context.appColors.grey,
-                    ),
-                  ),
+                  child: Text('Ma’lumotlarni yuklashda xatolik.', style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey)),
                 ),
               Skeletonizer.zone(
                 enabled: isLoading,
@@ -119,29 +96,16 @@ class _LeaderboardUserDetailsBottomSheetState extends State<LeaderboardUserDetai
                     Row(
                       children: [
                         Expanded(
-                          child: _StatCard(
-                            value: data?.enrolledCourseCount,
-                            label: 'Kurslar',
-                            isLoading: isLoading,
-                          ),
+                          child: _StatCard(value: data?.enrolledCourseCount, label: 'Kurslar', isLoading: isLoading),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: _StatCard(
-                            value: data?.rating,
-                            label: 'Bahosi',
-                            isLoading: isLoading,
-                          ),
+                          child: _StatCard(value: data?.rating, label: 'Bahosi', isLoading: isLoading),
                         ),
                       ],
                     ),
                     const SizedBox(height: 10),
-                    _StatCard(
-                      value: data?.certificateCount,
-                      label: 'Sertifikatlar',
-                      fullWidth: true,
-                      isLoading: isLoading,
-                    ),
+                    _StatCard(value: data?.certificateCount, label: 'Sertifikatlar', fullWidth: true, isLoading: isLoading),
                   ],
                 ),
               ),
@@ -154,12 +118,7 @@ class _LeaderboardUserDetailsBottomSheetState extends State<LeaderboardUserDetai
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.value,
-    required this.label,
-    required this.isLoading,
-    this.fullWidth = false,
-  });
+  const _StatCard({required this.value, required this.label, required this.isLoading, this.fullWidth = false});
 
   final int? value;
   final String label;
@@ -178,18 +137,9 @@ class _StatCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          if (isLoading)
-            Bone.text(words: 1, fontSize: 20)
-          else
-            Text(
-              '${value ?? ''}',
-              style: context.textTheme.heading5.copyWith(color: context.appColors.text),
-            ),
+          if (isLoading) Bone.text(words: 1, fontSize: 20) else Text('${value ?? ''}', style: context.textTheme.heading5.copyWith(color: context.appColors.text)),
           const SizedBox(height: 2),
-          Text(
-            label,
-            style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey),
-          ),
+          Text(label, style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey)),
         ],
       ),
     );
@@ -197,21 +147,14 @@ class _StatCard extends StatelessWidget {
 }
 
 class _FullNameWithTrailingBadge extends StatelessWidget {
-  const _FullNameWithTrailingBadge({
-    required this.fullName,
-    required this.badgeId,
-    required this.isLoading,
-    required this.textStyle,
-  });
+  const _FullNameWithTrailingBadge({required this.fullName, required this.badgeId, required this.isLoading, required this.textStyle});
 
   final String fullName;
   final int? badgeId;
   final bool isLoading;
   final TextStyle textStyle;
 
-  ProfileBadgeDefinition? _resolveBadge(
-    List<ProfileBadgeDefinition> catalog,
-  ) {
+  ProfileBadgeDefinition? _resolveBadge(List<ProfileBadgeDefinition> catalog) {
     if (catalog.isEmpty) return null;
     final id = ProfileBadgeCatalogLoader.coerceSelection(badgeId ?? 0, catalog);
     for (final b in catalog) {
@@ -233,15 +176,6 @@ class _FullNameWithTrailingBadge extends StatelessWidget {
       );
     }
 
-    if ((badgeId ?? 0) <= 0) {
-      return Text(
-        fullName,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: textStyle,
-      );
-    }
-
     return FutureBuilder<List<ProfileBadgeDefinition>>(
       future: ProfileBadgeCatalogLoader.load(),
       builder: (context, snapshot) {
@@ -249,35 +183,17 @@ class _FullNameWithTrailingBadge extends StatelessWidget {
         final badge = _resolveBadge(catalog);
 
         if (badge == null) {
-          return Text(
-            fullName,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: textStyle,
-          );
+          return Text(fullName, maxLines: 2, overflow: TextOverflow.ellipsis, style: textStyle);
         }
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
-              child: Text(
-                fullName,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: textStyle,
-              ),
+              child: Text(fullName, maxLines: 2, overflow: TextOverflow.ellipsis, style: textStyle),
             ),
             const SizedBox(width: 8),
-            SizedBox(
-              width: 34,
-              height: 34,
-              child: Lottie.asset(
-                badge.packageAssetPath,
-                fit: BoxFit.contain,
-                repeat: true,
-              ),
-            ),
+            SizedBox(width: 24, height: 24, child: Lottie.asset(badge.packageAssetPath, fit: BoxFit.contain, repeat: true)),
           ],
         );
       },

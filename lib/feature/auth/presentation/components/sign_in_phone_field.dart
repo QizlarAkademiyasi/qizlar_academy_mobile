@@ -16,6 +16,10 @@ class SignInPhoneField extends StatelessWidget {
       controller: controller,
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.done,
+      autofillHints: const [
+        AutofillHints.telephoneNumberNational,
+        AutofillHints.telephoneNumber,
+      ],
       hintText: 'XX XXX XX XX',
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,

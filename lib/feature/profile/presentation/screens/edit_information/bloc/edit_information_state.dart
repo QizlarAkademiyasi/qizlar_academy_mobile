@@ -5,6 +5,7 @@ enum EditInformationStatus { initial, loading, ready, failure }
 enum EditInformationNotice {
   none,
   saveSuccess,
+  saveFailed,
   nothingToSave,
   photoUploadFailed,
 }

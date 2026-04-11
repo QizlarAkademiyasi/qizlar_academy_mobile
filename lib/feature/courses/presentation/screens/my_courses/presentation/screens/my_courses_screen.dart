@@ -50,50 +50,58 @@ class _MyCoursesViewState extends State<_MyCoursesView> with MyCoursesScreenMixi
           builder: (context, state) {
             final isInitialLoading = (state.status == MyCoursesStatus.loading || state.status == MyCoursesStatus.initial) && state.courses.isEmpty;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            return Stack(
               children: [
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: buildMyCoursesTopBar(context)),
-                Expanded(
-                  child: switch (state.status) {
-                    MyCoursesStatus.failure when state.courses.isEmpty => TgsFailureContent(message: context.l10n.myCoursesLoadError, onRetry: () => retryFirstPage(context)),
-                    _ when isInitialLoading => const Padding(padding: EdgeInsets.only(top: 4), child: MyCoursesListSkeleton()),
-                    MyCoursesStatus.success when state.courses.isEmpty => Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: TgsEmptyContent(message: context.l10n.myCoursesEmptyTitle, subtitle: context.l10n.myCoursesEmptySubtitle),
-                      ),
-                    ),
-                    _ => NotificationListener<ScrollNotification>(
-                      onNotification: (n) => _onScrollNotification(n, context),
-                      child: AppStaggeredScrollLimiter(
-                        child: CustomScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          slivers: [
-                            SliverPadding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
-                              sliver: SliverList(
-                                delegate: SliverChildBuilderDelegate((context, index) {
-                                  if (index >= state.courses.length) {
-                                    return Skeletonizer.zone(
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 20),
-                                        child: Center(child: Bone.text(words: 4)),
-                                      ),
-                                    );
-                                  }
-                                  return AppStaggeredListItem(
-                                    position: index,
-                                    child: buildMyCourseListTile(context, state: state, index: index),
-                                  );
-                                }, childCount: state.courses.length + (state.isLoadingMore ? 1 : 0)),
-                              ),
-                            ),
-                          ],
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: buildMyCoursesTopBar(context)),
+                    Expanded(
+                      child: switch (state.status) {
+                        MyCoursesStatus.failure when state.courses.isEmpty => TgsFailureContent(message: context.l10n.myCoursesLoadError, onRetry: () => retryFirstPage(context)),
+                        _ when isInitialLoading => const Padding(padding: EdgeInsets.only(top: 4), child: MyCoursesListSkeleton()),
+                        MyCoursesStatus.success when state.courses.isEmpty => Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: TgsEmptyContent(message: context.l10n.myCoursesEmptyTitle, subtitle: context.l10n.myCoursesEmptySubtitle),
+                          ),
                         ),
-                      ),
+                        _ => NotificationListener<ScrollNotification>(
+                          onNotification: (n) => _onScrollNotification(n, context),
+                          child: AppStaggeredScrollLimiter(
+                            child: CustomScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              slivers: [
+                                SliverPadding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
+                                  sliver: SliverList(
+                                    delegate: SliverChildBuilderDelegate((context, index) {
+                                      if (index >= state.courses.length) {
+                                        return Skeletonizer.zone(
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(vertical: 20),
+                                            child: Center(child: Bone.text(words: 4)),
+                                          ),
+                                        );
+                                      }
+                                      return AppStaggeredListItem(
+                                        position: index,
+                                        child: buildMyCourseListTile(context, state: state, index: index),
+                                      );
+                                    }, childCount: state.courses.length + (state.isLoadingMore ? 1 : 0)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      },
                     ),
-                  },
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover) : UiKitAssets.images.bottomNavLight.image(fit: BoxFit.cover),
                 ),
               ],
             );

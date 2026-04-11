@@ -1,6 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/components/verification_sms_autofill_retriever.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_args.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_screen_mixin.dart';
 
@@ -16,11 +17,13 @@ class VerificationScreen extends StatefulWidget {
 class _VerificationScreenState extends State<VerificationScreen>
     with VerificationScreenMixin<VerificationScreen> {
   final TextEditingController _pinController = TextEditingController();
+  late final VerificationSmsAutofillRetriever _smsRetriever;
   late String _keyHash;
 
   @override
   void initState() {
     super.initState();
+    _smsRetriever = VerificationSmsAutofillRetriever();
     _keyHash = widget.args.keyHash;
     startResendCountdown();
   }
@@ -55,54 +58,62 @@ class _VerificationScreenState extends State<VerificationScreen>
     final textColor = context.appColors.text;
     final secondary = context.appColors.secondaryGrey;
 
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildBackButton(context),
-              const SizedBox(height: 24),
-              Text(
-                context.l10n.verificationTitle,
-                style: context.textTheme.heading3.copyWith(color: textColor),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                context.l10n.verificationCodeSentTo(
-                  formatPhoneForUi(widget.args.phone),
-                ),
-                style: context.textTheme.bodyXLargeRegular.copyWith(
-                  color: secondary,
-                  height: 1.35,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Pinput(
-                controller: _pinController,
-                length: 6,
-                autofocus: true,
-                enabled: !isVerifying,
-                keyboardType: TextInputType.number,
-                onChanged: onOtpPinEdited,
-                onCompleted: _onCodeCompleted,
-                forceErrorState: otpPinError,
-                showErrorWhenFocused: true,
-                defaultPinTheme: _pinTheme(context),
-                focusedPinTheme: _pinTheme(
-                  context,
-                  borderColor: context.appColors.primary,
-                ),
-                submittedPinTheme: _pinTheme(context),
-                errorPinTheme: _pinTheme(
-                  context,
-                  borderColor: context.appColors.error,
-                  textColor: context.appColors.error,
-                ),
-              ),
-              const Spacer(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await requestVerificationExit(context);
+      },
+      child: Scaffold(
+        backgroundColor: context.appColors.background,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+            child: AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildBackButton(context),
+                  const SizedBox(height: 24),
+                  Text(
+                    context.l10n.verificationTitle,
+                    style: context.textTheme.heading3.copyWith(color: textColor),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    context.l10n.verificationCodeSentTo(
+                      formatPhoneForUi(widget.args.phone),
+                    ),
+                    style: context.textTheme.bodyXLargeRegular.copyWith(
+                      color: secondary,
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Pinput(
+                    controller: _pinController,
+                    length: 6,
+                    autofocus: true,
+                    enabled: !isVerifying,
+                    keyboardType: TextInputType.number,
+                    smsRetriever: _smsRetriever,
+                    onChanged: onOtpPinEdited,
+                    onCompleted: _onCodeCompleted,
+                    forceErrorState: otpPinError,
+                    showErrorWhenFocused: true,
+                    defaultPinTheme: _pinTheme(context),
+                    focusedPinTheme: _pinTheme(
+                      context,
+                      borderColor: context.appColors.primary,
+                    ),
+                    submittedPinTheme: _pinTheme(context),
+                    errorPinTheme: _pinTheme(
+                      context,
+                      borderColor: context.appColors.error,
+                      textColor: context.appColors.error,
+                    ),
+                  ),
+                  const Spacer(),
               Center(
                 child: canResendCode
                     ? PrimaryButton.text(
@@ -124,7 +135,9 @@ class _VerificationScreenState extends State<VerificationScreen>
                         textAlign: TextAlign.center,
                       ),
               ),
-            ],
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -154,7 +167,7 @@ class _VerificationScreenState extends State<VerificationScreen>
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => context.pop(),
+        onTap: () => requestVerificationExit(context),
         borderRadius: BorderRadius.circular(24),
         child: Ink(
           width: 48,

@@ -12,6 +12,34 @@ abstract class AppColors {
   static const Color secondaryGrey = Color(0xFF94A3B8);
   static const Color textDark = Color(0xFF0F172A);
   static const Color redAction = Color(0xFFEF4444);
+
+  /// Modul ro‘yxati: muvaffaqiyatli topshirilgan test (badge + check).
+  static const Color quizSuccess = Color(0xFF22C55E);
+
+  /// Kurs darslari ro‘yxati: hozirgi (tanlangan) dars qatori — dark.
+  static const Color curriculumLessonActiveRowDark = Color(0xFF2A1B24);
+
+  /// Tanlangan dars tartib badge foni — dark (to‘q pushti).
+  static const Color curriculumLessonActiveBadgeBgDark = Color(0xFF4D2038);
+
+  /// Kurs darslari ro‘yxati: tanlangan dars qatori — light.
+  static const Color curriculumLessonActiveRowLight = Color(0xFFFFF5F8);
+
+  /// Tanlangan dars tartib badge foni — light.
+  static const Color curriculumLessonActiveBadgeBgLight = Color(0xFFFFE4EE);
+
+  /// Qulflangan dars: tartib badge va qulf doira foni — light (neutral kulrang).
+  static const Color curriculumLessonLockedSurfaceLight = Color(0xFFF2F2F2);
+
+  /// Qulflangan dars: raqam / qulf ikonkasi — light (slate).
+  static const Color curriculumLessonLockedFgLight = Color(0xFF4A5568);
+
+  /// Qulflangan dars: tartib badge va qulf doira foni — dark (muted surface).
+  static const Color curriculumLessonLockedSurfaceDark = Color(0xFF2C2C2E);
+
+  /// Qulflangan dars: raqam / qulf ikonkasi — dark.
+  static const Color curriculumLessonLockedFgDark = Color(0xFF94A3B8);
+
   static const Color darkBackground = Color(0xFF121212);
   static const Color bigOpacityDark = Color(0xFFB0B0B0);
   static const Color black = Color(0xFF000000);
@@ -44,7 +72,7 @@ abstract class AppColors {
 
   /// Light: shisha bar fon tint (glassColor).
   static final Color lightBottomBarGlass = lightOnContainer.withValues(
-    alpha: 0.55,
+    alpha: 0.65,
   );
 
   /// Dark: shisha bar fon tint (glassColor).
@@ -56,20 +84,10 @@ abstract class AppColors {
   ).withValues(alpha: 0.65);
 
   /// Light: indikator pill (oddiy fallback, yopilishda).
-  static final Color lightBottomBarIndicator = const Color.fromARGB(
-    255,
-    174,
-    174,
-    174,
-  ).withValues(alpha: 0.12);
+  static final Color lightBottomBarIndicator = primary.withValues(alpha: 0.15);
 
   /// Dark: indikator pill (oddiy fallback).
-  static final Color darkBottomBarIndicator = const Color.fromARGB(
-    255,
-    158,
-    158,
-    158,
-  ).withValues(alpha: 0.48);
+  static final Color darkBottomBarIndicator = primary.withValues(alpha: 0.25);
 
   /// Light: tanlanmagan tab icon/label.
   static const Color lightBottomBarTabUnselected = grey;

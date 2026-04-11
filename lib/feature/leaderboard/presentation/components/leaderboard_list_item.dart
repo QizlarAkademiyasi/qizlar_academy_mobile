@@ -15,26 +15,32 @@ class LeaderboardListItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
-          color: context.appColors.onContainer,
+          color: user.isCurrentUser ? context.appColors.primary.withValues(alpha: 0.12) : context.appColors.onContainer,
           borderRadius: AppRadius.radiusXl,
-          border: Border.all(color: context.appColors.stroke),
+          border: Border.all(color: user.isCurrentUser ? context.appColors.primary : context.appColors.stroke),
         ),
         child: Row(
           children: [
             SizedBox(
-              width: 28,
-              child: Text('#${user.rank}', style: context.textTheme.heading5.copyWith(color: context.appColors.grey)),
+              width: 32,
+              child: Text(
+                '#${user.rank}',
+                textAlign: TextAlign.start,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.heading5.copyWith(color: context.appColors.grey),
+              ),
             ),
             const SizedBox(width: 12),
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: context.appColors.onContainer,
-                border: Border.all(color: context.appColors.primary, width: 2),
+            AppTappableProfileAvatar(
+              size: 52,
+              borderWidth: 2,
+              heroId: 'leader_row_${user.id}',
+              resolvedNetworkUrl: user.avatarUrl,
+              placeholder: ColoredBox(
+                color: context.appColors.stroke,
+                child: Icon(LucideIcons.user, size: 22, color: context.appColors.grey),
               ),
-              child: AppCachedNetworkImage(imageUrl: user.avatarUrl, fit: BoxFit.cover, fallback: const AppNetworkImageFallbackAvatar(iconSize: 22, errorShowsBackground: false)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -60,14 +66,6 @@ class LeaderboardListItem extends StatelessWidget {
                           style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.grey),
                         ),
                       ),
-                      if (user.isCurrentUser) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(color: context.appColors.stroke, borderRadius: BorderRadius.circular(999)),
-                          child: Text('Siz', style: context.textTheme.bodyXSmallSemibold.copyWith(color: context.appColors.grey)),
-                        ),
-                      ],
                     ],
                   ),
                 ],

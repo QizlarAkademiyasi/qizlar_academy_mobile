@@ -19,50 +19,63 @@ class _AboutUsScreenState extends State<AboutUsScreen> with AboutUsScreenMixin<A
     return BlocProvider(
       create: (_) => getIt<AboutUsBloc>()..add(const AboutUsStarted()),
       child: Scaffold(
-        appBar: AppBar(backgroundColor: context.appColors.background, title: Text(context.l10n.profileMenuAbout)),
+        appBar: AppBar(
+          backgroundColor: context.appColors.background,
+          title: Text(context.l10n.profileMenuAbout, style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
+        ),
         body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          bottom: false,
+          child: Stack(
             children: [
-              // Padding(
-              //   padding: const EdgeInsets.fromLTRB(8, 8, 20, 0),
-              //   child: Row(
-              //     children: [
-              //       AppBackButton(onTap: () => onAboutUsBackTap(context)),
-              //       Expanded(
-              //         child: Text(
-              //           context.l10n.profileMenuAbout,
-              //           textAlign: TextAlign.center,
-              //           style: context.textTheme.heading6.copyWith(color: context.appColors.text),
-              //         ),
-              //       ),
-              //       const SizedBox(width: 48),
-              //     ],
-              //   ),
-              // ),
-              // const SizedBox(height: 8),
-              Expanded(
-                child: BlocBuilder<AboutUsBloc, AboutUsState>(
-                  buildWhen: (p, c) => p.status != c.status || p.content != c.content || p.messageKey != c.messageKey,
-                  builder: (context, state) {
-                    switch (state.status) {
-                      case AboutUsStatus.initial:
-                      case AboutUsStatus.loading:
-                        if (state.content == null) {
-                          return const Center(child: CircularProgressIndicator());
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Padding(
+                  //   padding: const EdgeInsets.fromLTRB(8, 8, 20, 0),
+                  //   child: Row(
+                  //     children: [
+                  //       AppBackButton(onTap: () => onAboutUsBackTap(context)),
+                  //       Expanded(
+                  //         child: Text(
+                  //           context.l10n.profileMenuAbout,
+                  //           textAlign: TextAlign.center,
+                  //           style: context.textTheme.heading6.copyWith(color: context.appColors.text),
+                  //         ),
+                  //       ),
+                  //       const SizedBox(width: 48),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 8),
+                  Expanded(
+                    child: BlocBuilder<AboutUsBloc, AboutUsState>(
+                      buildWhen: (p, c) => p.status != c.status || p.content != c.content || p.messageKey != c.messageKey,
+                      builder: (context, state) {
+                        switch (state.status) {
+                          case AboutUsStatus.initial:
+                          case AboutUsStatus.loading:
+                            if (state.content == null) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            return buildAboutUsBody(context, model: state.content!);
+                          case AboutUsStatus.success:
+                            final model = state.content;
+                            if (model == null) {
+                              return const SizedBox.shrink();
+                            }
+                            return buildAboutUsBody(context, model: model);
+                          case AboutUsStatus.failure:
+                            return TgsFailureContent(message: context.l10n.aboutUsLoadError, onRetry: () => context.read<AboutUsBloc>().add(const AboutUsRetryRequested()));
                         }
-                        return buildAboutUsBody(context, model: state.content!);
-                      case AboutUsStatus.success:
-                        final model = state.content;
-                        if (model == null) {
-                          return const SizedBox.shrink();
-                        }
-                        return buildAboutUsBody(context, model: model);
-                      case AboutUsStatus.failure:
-                        return TgsFailureContent(message: context.l10n.aboutUsLoadError, onRetry: () => context.read<AboutUsBloc>().add(const AboutUsRetryRequested()));
-                    }
-                  },
-                ),
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover) : UiKitAssets.images.bottomNavLight.image(fit: BoxFit.cover),
               ),
             ],
           ),

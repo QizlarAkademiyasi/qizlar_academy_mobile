@@ -10,6 +10,7 @@ class AppCachedNetworkImage extends StatelessWidget {
     super.key,
     required this.imageUrl,
     this.cacheKey,
+    this.httpHeaders,
     this.width,
     this.height,
     this.fit = BoxFit.cover,
@@ -21,6 +22,7 @@ class AppCachedNetworkImage extends StatelessWidget {
 
   final String imageUrl;
   final String? cacheKey;
+  final Map<String, String>? httpHeaders;
   final double? width;
   final double? height;
   final BoxFit fit;
@@ -42,12 +44,19 @@ class AppCachedNetworkImage extends StatelessWidget {
       fadeOutDuration: const Duration(milliseconds: 100),
       imageUrl: imageUrl,
       cacheKey: cacheKey,
+      httpHeaders: httpHeaders,
       width: width,
       height: height,
       fit: fit,
       alignment: alignment,
-      placeholder: placeholder ?? (ctx, url) => fallback.buildPlaceholder(ctx, width: width, height: height),
-      errorWidget: errorWidget ?? (ctx, url, err) => fallback.buildError(ctx, err, width: width, height: height),
+      placeholder:
+          placeholder ??
+          (ctx, url) =>
+              fallback.buildPlaceholder(ctx, width: width, height: height),
+      errorWidget:
+          errorWidget ??
+          (ctx, url, err) =>
+              fallback.buildError(ctx, err, width: width, height: height),
     );
   }
 }
@@ -56,14 +65,29 @@ class AppCachedNetworkImage extends StatelessWidget {
 sealed class AppNetworkImageFallback {
   const AppNetworkImageFallback();
 
-  Widget buildPlaceholder(BuildContext context, {double? width, double? height});
+  Widget buildPlaceholder(
+    BuildContext context, {
+    double? width,
+    double? height,
+  });
 
-  Widget buildError(BuildContext context, Object error, {double? width, double? height});
+  Widget buildError(
+    BuildContext context,
+    Object error, {
+    double? width,
+    double? height,
+  });
 }
 
 /// Avatar: odatda `stroke` fon, markazda foydalanuvchi ikonkasi.
 final class AppNetworkImageFallbackAvatar extends AppNetworkImageFallback {
-  const AppNetworkImageFallbackAvatar({this.iconSize = 22, this.icon = LucideIcons.user, this.placeholderShowsIcon = true, this.errorShowsBackground = true, this.iconColor});
+  const AppNetworkImageFallbackAvatar({
+    this.iconSize = 22,
+    this.icon = LucideIcons.user,
+    this.placeholderShowsIcon = true,
+    this.errorShowsBackground = true,
+    this.iconColor,
+  });
 
   final double iconSize;
   final IconData icon;
@@ -72,7 +96,11 @@ final class AppNetworkImageFallbackAvatar extends AppNetworkImageFallback {
   final Color? iconColor;
 
   @override
-  Widget buildPlaceholder(BuildContext context, {double? width, double? height}) {
+  Widget buildPlaceholder(
+    BuildContext context, {
+    double? width,
+    double? height,
+  }) {
     final stroke = context.appColors.stroke;
     final grey = iconColor ?? context.appColors.grey;
     final iconWidget = Icon(icon, size: iconSize, color: grey);
@@ -86,7 +114,12 @@ final class AppNetworkImageFallbackAvatar extends AppNetworkImageFallback {
   }
 
   @override
-  Widget buildError(BuildContext context, Object error, {double? width, double? height}) {
+  Widget buildError(
+    BuildContext context,
+    Object error, {
+    double? width,
+    double? height,
+  }) {
     final grey = iconColor ?? context.appColors.grey;
     final iconWidget = Icon(icon, size: iconSize, color: grey);
     final Widget child = errorShowsBackground
@@ -101,18 +134,30 @@ final class AppNetworkImageFallbackAvatar extends AppNetworkImageFallback {
 
 /// Kurs / kontent kartochkalari: primary tint + kitob ikonkasi.
 final class AppNetworkImageFallbackCourse extends AppNetworkImageFallback {
-  const AppNetworkImageFallbackCourse({this.iconSize = 32, this.tintAlpha = 0.08});
+  const AppNetworkImageFallbackCourse({
+    this.iconSize = 32,
+    this.tintAlpha = 0.08,
+  });
 
   final double iconSize;
   final double tintAlpha;
 
   @override
-  Widget buildPlaceholder(BuildContext context, {double? width, double? height}) {
+  Widget buildPlaceholder(
+    BuildContext context, {
+    double? width,
+    double? height,
+  }) {
     return _courseBox(width, height);
   }
 
   @override
-  Widget buildError(BuildContext context, Object error, {double? width, double? height}) {
+  Widget buildError(
+    BuildContext context,
+    Object error, {
+    double? width,
+    double? height,
+  }) {
     return _courseBox(width, height);
   }
 
@@ -120,7 +165,11 @@ final class AppNetworkImageFallbackCourse extends AppNetworkImageFallback {
     final child = ColoredBox(
       color: AppColors.primary.withValues(alpha: tintAlpha),
       child: Center(
-        child: Icon(LucideIcons.bookOpen, color: AppColors.primary, size: iconSize),
+        child: Icon(
+          LucideIcons.bookOpen,
+          color: AppColors.primary,
+          size: iconSize,
+        ),
       ),
     );
     return _maybeConstrain(child, width, height);
@@ -134,12 +183,21 @@ final class AppNetworkImageFallbackCoverTint extends AppNetworkImageFallback {
   final double tintAlpha;
 
   @override
-  Widget buildPlaceholder(BuildContext context, {double? width, double? height}) {
+  Widget buildPlaceholder(
+    BuildContext context, {
+    double? width,
+    double? height,
+  }) {
     return _box(context);
   }
 
   @override
-  Widget buildError(BuildContext context, Object error, {double? width, double? height}) {
+  Widget buildError(
+    BuildContext context,
+    Object error, {
+    double? width,
+    double? height,
+  }) {
     return _box(context);
   }
 
@@ -153,12 +211,21 @@ final class AppNetworkImageFallbackSurface extends AppNetworkImageFallback {
   const AppNetworkImageFallbackSurface();
 
   @override
-  Widget buildPlaceholder(BuildContext context, {double? width, double? height}) {
+  Widget buildPlaceholder(
+    BuildContext context, {
+    double? width,
+    double? height,
+  }) {
     return ColoredBox(color: context.appColors.onContainer);
   }
 
   @override
-  Widget buildError(BuildContext context, Object error, {double? width, double? height}) {
+  Widget buildError(
+    BuildContext context,
+    Object error, {
+    double? width,
+    double? height,
+  }) {
     return ColoredBox(color: context.appColors.onContainer);
   }
 }

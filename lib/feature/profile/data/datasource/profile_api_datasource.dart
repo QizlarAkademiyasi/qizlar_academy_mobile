@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/constants/app_keys.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/exception/profile_registration_required_exception.dart';
@@ -8,9 +9,10 @@ import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overv
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_user_public_model.dart';
 
 class ProfileApiDatasource implements ProfileDatasource {
-  const ProfileApiDatasource(this._dio);
+  const ProfileApiDatasource(this._dio, this._prefs);
 
   final Dio _dio;
+  final SharedPreferences _prefs;
 
   @override
   Future<ProfileOverviewModel> getProfileOverview() async {
@@ -44,13 +46,19 @@ class ProfileApiDatasource implements ProfileDatasource {
 
   @override
   Future<ProfileOverviewModel> updateDarkMode({required bool enabled}) async {
-    await _dio.patch<dynamic>(UserApis.userMe, data: <String, dynamic>{'dark_mode': enabled});
+    await _dio.patch<dynamic>(
+      UserApis.userMe,
+      data: <String, dynamic>{'dark_mode': enabled},
+    );
     return getProfileOverview();
   }
 
   @override
   Future<ProfileOverviewModel> updateLanguage({required String code}) async {
-    await _dio.patch<dynamic>(UserApis.profileLanguage, data: <String, dynamic>{'code': code});
+    await _dio.patch<dynamic>(
+      UserApis.profileLanguage,
+      data: <String, dynamic>{'code': code},
+    );
     return getProfileOverview();
   }
 
@@ -79,7 +87,10 @@ class ProfileApiDatasource implements ProfileDatasource {
     final formData = FormData.fromMap(<String, dynamic>{
       'file': await MultipartFile.fromFile(localFilePath, filename: filename),
     });
-    final response = await _dio.post<dynamic>(UserApis.fileUpload, data: formData);
+    final response = await _dio.post<dynamic>(
+      UserApis.fileUpload,
+      data: formData,
+    );
     return _parseUploadedFilename(response.data);
   }
 
@@ -100,9 +111,29 @@ class ProfileApiDatasource implements ProfileDatasource {
   }
 
   @override
-  Future<ProfileOverviewModel> updateNotifications({required bool enabled}) async {
-    await _dio.patch<dynamic>(UserApis.profileNotifications, data: <String, dynamic>{'enabled': enabled});
-    return getProfileOverview();
+  Future<ProfileOverviewModel> updateNotifications({
+    required bool enabled,
+  }) async {
+    final fromPrefs = _prefs.getString(StorageKey.fcmToken.name);
+    final token = (fromPrefs != null && fromPrefs.isNotEmpty)
+        ? fromPrefs
+        : await FirebaseMessaging.instance.getToken();
+    if (token == null || token.isEmpty) {
+      throw StateError('FCM token unavailable');
+    }
+    if (enabled) {
+      await _dio.post<dynamic>(
+        UserApis.notificationSubscribe,
+        data: <String, dynamic>{'token': token},
+      );
+    } else {
+      await _dio.delete<dynamic>(
+        UserApis.notificationUnsubscribe,
+        data: <String, dynamic>{'token': token},
+      );
+    }
+    final overview = await getProfileOverview();
+    return overview.copyWith(notificationsEnabled: enabled);
   }
 
   ProfileOverviewModel _mapOverview(Map<String, dynamic> data) {
@@ -115,19 +146,28 @@ class ProfileApiDatasource implements ProfileDatasource {
     final educationDistrict = _asMapOrNull(education?['district']);
     final educationType = (education?['type'] ?? '').toString();
     final educationOrganization = (education?['organization'] ?? '').toString();
-    final educationLocation = [(educationRegion?['name'] ?? '').toString(), (educationDistrict?['name'] ?? '').toString()].where((item) => item.trim().isNotEmpty).join(', ');
+    final educationLocation = [
+      (educationRegion?['name'] ?? '').toString(),
+      (educationDistrict?['name'] ?? '').toString(),
+    ].where((item) => item.trim().isNotEmpty).join(', ');
     final profileInfoSubtitle = [
       if (educationType.isNotEmpty) educationType,
       if (educationOrganization.isNotEmpty) educationOrganization,
       if (educationLocation.isNotEmpty) educationLocation,
     ].join(' • ');
 
-    final phoneRaw = (data['phone'] ?? data['phone_number'] ?? data['mobile'] ?? '').toString().trim();
+    final phoneRaw =
+        (data['phone'] ?? data['phone_number'] ?? data['mobile'] ?? '')
+            .toString()
+            .trim();
 
-    final nestedStats = _asMapOrNull(data['stats']) ??
+    final nestedStats =
+        _asMapOrNull(data['stats']) ??
         _asMapOrNull(data['statistics']) ??
         _asMapOrNull(data['summary']);
-    final certificatesCount = _readNonNegativeInt(data, const [
+    final certificatesCount =
+        _readNonNegativeInt(data, const [
+          'certificateCount',
           'certificates_count',
           'certificate_count',
           'total_certificates',
@@ -141,7 +181,9 @@ class ProfileApiDatasource implements ProfileDatasource {
                 'total_certificates',
               ])
             : null);
-    final activeCoursesCount = _readNonNegativeInt(data, const [
+    final activeCoursesCount =
+        _readNonNegativeInt(data, const [
+          'enrolledCourseCount',
           'active_courses_count',
           'active_courses',
           'courses_active_count',
@@ -156,7 +198,8 @@ class ProfileApiDatasource implements ProfileDatasource {
                 'total_courses',
               ])
             : null);
-    final ratingRaw = _readNonNegativeInt(data, const [
+    final ratingRaw =
+        _readNonNegativeInt(data, const [
           'rating',
           'rating_value',
           'rank',
@@ -164,10 +207,7 @@ class ProfileApiDatasource implements ProfileDatasource {
           'user_rating',
         ]) ??
         (nestedStats != null
-            ? _readNonNegativeInt(nestedStats, const [
-                'rating',
-                'rank',
-              ])
+            ? _readNonNegativeInt(nestedStats, const ['rating', 'rank'])
             : null);
     final rating = ratingRaw ?? (points != 0 ? points : null);
 
@@ -188,23 +228,61 @@ class ProfileApiDatasource implements ProfileDatasource {
       activeCoursesCount: activeCoursesCount,
       rating: rating,
       settings: [
-        ProfileMenuItemModel(id: 'profile-info', type: ProfileMenuItemType.profileInfo, title: 'Profil ma\'lumotlari', subtitle: profileInfoSubtitle.isEmpty ? null : profileInfoSubtitle),
-        const ProfileMenuItemModel(id: 'language', type: ProfileMenuItemType.language, title: 'Til', subtitle: 'O\'zbekcha'),
+        ProfileMenuItemModel(
+          id: 'profile-info',
+          type: ProfileMenuItemType.profileInfo,
+          title: 'Profil ma\'lumotlari',
+          subtitle: profileInfoSubtitle.isEmpty ? null : profileInfoSubtitle,
+        ),
+        const ProfileMenuItemModel(
+          id: 'language',
+          type: ProfileMenuItemType.language,
+          title: 'Til',
+          subtitle: 'O\'zbekcha',
+        ),
       ],
       general: const <ProfileMenuItemModel>[
-        ProfileMenuItemModel(id: 'share', type: ProfileMenuItemType.shareApp, title: 'Ilovani ulashish'),
-        ProfileMenuItemModel(id: 'about', type: ProfileMenuItemType.aboutApp, title: 'Biz haqimizda'),
-        ProfileMenuItemModel(id: 'help', type: ProfileMenuItemType.helpCenter, title: 'Yordam markazi'),
-        ProfileMenuItemModel(id: 'privacy', type: ProfileMenuItemType.privacyPolicy, title: 'Maxfiylik siyosati'),
+        ProfileMenuItemModel(
+          id: 'share',
+          type: ProfileMenuItemType.shareApp,
+          title: 'Ilovani ulashish',
+        ),
+        ProfileMenuItemModel(
+          id: 'about',
+          type: ProfileMenuItemType.aboutApp,
+          title: 'Biz haqimizda',
+        ),
+        ProfileMenuItemModel(
+          id: 'help',
+          type: ProfileMenuItemType.helpCenter,
+          title: 'Yordam markazi',
+        ),
+        ProfileMenuItemModel(
+          id: 'privacy',
+          type: ProfileMenuItemType.privacyPolicy,
+          title: 'Maxfiylik siyosati',
+        ),
       ],
       languageOptions: const [
-        ProfileLanguageOptionModel(code: 'uz', title: 'O\'zbekcha', flagEmoji: '🇺🇿'),
-        ProfileLanguageOptionModel(code: 'ru', title: 'Русский', flagEmoji: '🇷🇺'),
-        ProfileLanguageOptionModel(code: 'en', title: 'English', flagEmoji: '🇬🇧'),
+        ProfileLanguageOptionModel(
+          code: 'uz',
+          title: 'O\'zbekcha',
+          flagEmoji: '🇺🇿',
+        ),
+        ProfileLanguageOptionModel(
+          code: 'ru',
+          title: 'Русский',
+          flagEmoji: '🇷🇺',
+        ),
+        ProfileLanguageOptionModel(
+          code: 'en',
+          title: 'English',
+          flagEmoji: '🇬🇧',
+        ),
       ],
       selectedLanguageCode: 'uz',
-      notificationsEnabled: false,
-      darkModeEnabled: false,
+      notificationsEnabled: _parseNotificationsEnabled(data),
+      darkModeEnabled: _parseDarkModeEnabled(data),
       versionName: '',
     );
   }
@@ -229,6 +307,48 @@ class ProfileApiDatasource implements ProfileDatasource {
     final n = int.tryParse(value.toString());
     if (n == null || n < 0) return 0;
     return n;
+  }
+
+  bool _parseNotificationsEnabled(Map<String, dynamic> data) {
+    const keys = <String>[
+      'notifications_enabled',
+      'notification_enabled',
+      'push_notifications_enabled',
+      'notificationsEnabled',
+      'push_enabled',
+    ];
+    for (final key in keys) {
+      if (!data.containsKey(key)) continue;
+      final v = data[key];
+      if (v is bool) return v;
+      if (v is num) return v != 0;
+      if (v is String) {
+        final lower = v.toLowerCase();
+        if (lower == 'true' || lower == '1') return true;
+        if (lower == 'false' || lower == '0') return false;
+      }
+    }
+    final settings = _asMapOrNull(data['settings']);
+    if (settings != null) {
+      return _parseNotificationsEnabled(settings);
+    }
+    return false;
+  }
+
+  bool _parseDarkModeEnabled(Map<String, dynamic> data) {
+    const keys = <String>['dark_mode', 'darkMode', 'dark_mode_enabled'];
+    for (final key in keys) {
+      if (!data.containsKey(key)) continue;
+      final v = data[key];
+      if (v is bool) return v;
+      if (v is num) return v != 0;
+      if (v is String) {
+        final lower = v.toLowerCase();
+        if (lower == 'true' || lower == '1') return true;
+        if (lower == 'false' || lower == '0') return false;
+      }
+    }
+    return false;
   }
 
   int? _readNonNegativeInt(Map<String, dynamic> map, List<String> keys) {

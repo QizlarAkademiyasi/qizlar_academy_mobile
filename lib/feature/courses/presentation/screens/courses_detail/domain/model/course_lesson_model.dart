@@ -27,7 +27,7 @@ class CourseLessonModel extends Equatable {
   final bool isCompleted;
   final String? videoUrl;
 
-  /// Dars testi topshirilgan (API `quizPassed` / `isQuizPassed`).
+  /// Dars testi muvaffaqiyatli yakunlangan (API `quizPassed` / `isQuizPassed` yoki `isAttempted: true`).
   final bool quizPassed;
 
   /// Test natijasi: to‘g‘ri javoblar soni (masalan 4).
@@ -39,13 +39,11 @@ class CourseLessonModel extends Equatable {
   /// `/module` ro‘yxatida `hasQuiz` (yo‘q bo‘lsa, default `true` — eski backend).
   final bool hasQuiz;
 
-  /// Testga qatnashilgan (`isAttempted`).
+  /// Testga qatnashilgan (`isAttempted`). API javobida o‘tganlik bilan birga kelishi mumkin.
   final bool isQuizAttempted;
 
-  /// Dars testi topshirilgan / qatnashilgan (faqat aniq API bayroqlari).
-  /// `totalQuestions` + `correctAnswers: 0` hali yechilmagan test uchun ham kelishi mumkin — shu sababli
-  /// faqat `quizPassed` / `isQuizAttempted` ishlatiladi.
-  bool get hasCompletedLessonQuiz => quizPassed || isQuizAttempted;
+  /// Test muvaffaqiyatli yakunlangan (mahalliy submitda faqat `quizPassed`).
+  bool get hasCompletedLessonQuiz => quizPassed;
 
   CourseLessonModel copyWith({
     String? id,
@@ -78,19 +76,5 @@ class CourseLessonModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    id,
-    order,
-    title,
-    duration,
-    isLocked,
-    isCompleted,
-    videoUrl,
-    quizPassed,
-    quizCorrectCount,
-    quizTotalCount,
-    hasQuiz,
-    isQuizAttempted,
-  ];
+  List<Object?> get props => [id, order, title, duration, isLocked, isCompleted, videoUrl, quizPassed, quizCorrectCount, quizTotalCount, hasQuiz, isQuizAttempted];
 }
-

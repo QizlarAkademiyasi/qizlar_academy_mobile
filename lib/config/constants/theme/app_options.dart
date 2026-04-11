@@ -73,7 +73,7 @@ class AppOptions extends Equatable {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.darkBackground,
-        indicatorColor: AppColors.primary,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
         indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -108,7 +108,7 @@ class AppOptions extends Equatable {
       appBarTheme: const AppBarTheme(backgroundColor: AppColors.lightBackground, surfaceTintColor: Colors.transparent),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.lightBackground,
-        indicatorColor: AppColors.primary,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
         indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(

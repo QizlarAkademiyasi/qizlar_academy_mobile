@@ -72,32 +72,137 @@ class _HomeBannersCarouselState extends State<HomeBannersCarousel> {
   }
 }
 
-Widget _bannerImageOrPlaceholder(BuildContext context, String imageUrl) {
-  final url = imageUrl.trim();
-  if (url.isEmpty) {
-    return Container(
-      width: 200,
-      decoration: BoxDecoration(
-        color: context.appColors.onContainer,
+class _BannerCardMedia extends StatefulWidget {
+  const _BannerCardMedia({super.key, required this.imageUrl});
+
+  final String imageUrl;
+
+  @override
+  State<_BannerCardMedia> createState() => _BannerCardMediaState();
+}
+
+class _BannerCardMediaState extends State<_BannerCardMedia> {
+  bool _showGradientOverlay = false;
+  bool _overlayRevealPending = false;
+
+  void _scheduleGradientReveal() {
+    if (_showGradientOverlay || _overlayRevealPending) return;
+    _overlayRevealPending = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _overlayRevealPending = false;
+      if (!mounted) return;
+      setState(() => _showGradientOverlay = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        CachedNetworkImage(
+          imageUrl: widget.imageUrl,
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+          fadeInDuration: const Duration(milliseconds: 100),
+          fadeOutDuration: const Duration(milliseconds: 100),
+          placeholder: (context, url) => const _BannerCardSkeleton(),
+          errorWidget: (context, url, error) {
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.appColors.onContainer,
+                borderRadius: AppRadius.radius2xl,
+                border: Border.all(color: context.appColors.stroke),
+              ),
+            );
+          },
+          imageBuilder: (context, imageProvider) {
+            return Image(
+              image: imageProvider,
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+              filterQuality: FilterQuality.medium,
+              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                if (wasSynchronouslyLoaded || frame != null) {
+                  _scheduleGradientReveal();
+                  return child;
+                }
+                return const _BannerCardSkeleton();
+              },
+            );
+          },
+        ),
+        if (_showGradientOverlay)
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  AppColors.black.withValues(alpha: 0.55),
+                  AppColors.black.withValues(alpha: 0.05),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _BannerCardSkeleton extends StatelessWidget {
+  const _BannerCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Skeletonizer.zone(
+      child: ClipRRect(
         borderRadius: AppRadius.radius2xl,
-        border: Border.all(color: context.appColors.stroke),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: context.appColors.onContainer,
+            border: Border.all(color: context.appColors.stroke),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Bone.text(words: 3, fontSize: 18),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Bone.button(height: 28, words: 2),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Bone.button(height: 28, words: 2),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Bone(
+                  width: 92,
+                  height: 124,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
-  return Image.network(
-    alignment: Alignment.topCenter,
-    url,
-    fit: BoxFit.fitWidth,
-    errorBuilder: (context, error, stackTrace) {
-      return DecoratedBox(
-        decoration: BoxDecoration(
-          color: context.appColors.onContainer,
-          borderRadius: AppRadius.radius2xl,
-          border: Border.all(color: context.appColors.stroke),
-        ),
-      );
-    },
-  );
 }
 
 class _BannerCard extends StatelessWidget {
@@ -113,6 +218,12 @@ class _BannerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const _BannerCardSkeleton();
+    }
+
+    final imageUrl = banner.imageUrl.trim();
+
     return Bounce(
       tilt: false,
       onTap: () => onTap?.call(banner),
@@ -121,21 +232,18 @@ class _BannerCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Skeletonizer(
-              enabled: isLoading,
-              child: _bannerImageOrPlaceholder(context, banner.imageUrl),
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomLeft,
-                  end: Alignment.topRight,
-                  colors: [
-                    AppColors.black.withValues(alpha: 0.55),
-                    AppColors.black.withValues(alpha: 0.05),
-                  ],
-                ),
-              ),
+            SizedBox.expand(
+              child: imageUrl.isEmpty
+                  ? DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: context.appColors.onContainer,
+                        border: Border.all(color: context.appColors.stroke),
+                      ),
+                    )
+                  : _BannerCardMedia(
+                      key: ValueKey(banner.id),
+                      imageUrl: imageUrl,
+                    ),
             ),
             // Padding(
             //   padding: const EdgeInsets.all(16),

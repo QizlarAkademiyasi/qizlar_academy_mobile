@@ -2,6 +2,7 @@ import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/flavor/app_remote_config.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/config/settings/settings_data_source.dart';
+import 'package:qizlar_academy_mobile/core/network/activity_ping_service.dart';
 import 'package:qizlar_academy_mobile/core/network/api_client.dart';
 import 'package:qizlar_academy_mobile/core/network/app_network_logger_interceptor.dart';
 import 'package:qizlar_academy_mobile/core/network/insecure_ssl_override.dart';
@@ -13,6 +14,9 @@ import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_sessio
 import 'package:qizlar_academy_mobile/feature/about_us/data/repository/about_us_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/about_us/domain/repository/about_us_repository.dart';
 import 'package:qizlar_academy_mobile/feature/about_us/presentation/bloc/about_us_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/privacy_policy/data/repository/privacy_policy_repository_impl.dart';
+import 'package:qizlar_academy_mobile/feature/privacy_policy/domain/repository/privacy_policy_repository.dart';
+import 'package:qizlar_academy_mobile/feature/privacy_policy/presentation/bloc/privacy_policy_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_datasource.dart';
@@ -51,17 +55,29 @@ import 'package:qizlar_academy_mobile/feature/profile/domain/service/profile_pho
 import 'package:qizlar_academy_mobile/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/services/profile_avatar_refresh_notifier.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/edit_information/bloc/edit_information_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/vacancy/data/datasource/vacancy_api_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/vacancy/data/datasource/vacancy_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/vacancy/data/repository/vacancy_repository_impl.dart';
+import 'package:qizlar_academy_mobile/feature/vacancy/domain/repository/vacancy_repository.dart';
+import 'package:qizlar_academy_mobile/feature/vacancy/presentation/bloc/vacancy_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacancy_detail/bloc/vacancy_detail_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/data/datasource/my_courses_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/data/datasource/my_courses_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/data/repository/my_courses_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/domain/repository/my_courses_repository.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/data/datasource/course_certificate_claim_api_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/data/datasource/course_certificate_claim_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/data/datasource/my_certificates_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/data/datasource/my_certificates_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/data/repository/course_certificate_claim_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/data/repository/my_certificates_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/data/service/certificate_file_actions.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/data/service/certificate_instagram_story_share.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/domain/repository/course_certificate_claim_repository.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/domain/repository/my_certificates_repository.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/bloc/my_certificates_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/presentation/bloc/my_courses_bloc.dart';
+import 'package:qizlar_academy_mobile/core/push/push_messaging_service.dart';
 import 'package:qizlar_academy_mobile/firebase_options.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 
@@ -72,67 +88,238 @@ Future<void> setupLocator() async {
   await AppRemoteConfig.initialize();
 
   final prefs = await SharedPreferences.getInstance();
+  getIt.registerSingleton<SharedPreferences>(prefs);
   getIt.registerSingleton<SettingsDataSource>(SettingsDataSourceImpl(prefs));
   getIt.registerSingleton<AuthLocalDatasource>(AuthLocalDatasourceImpl(prefs));
-  final authRemoteDio = Dio(BaseOptions(baseUrl: AppRemoteConfig.instance.domain, connectTimeout: const Duration(seconds: 20), receiveTimeout: const Duration(seconds: 20)));
+  final authRemoteDio = Dio(
+    BaseOptions(
+      baseUrl: AppRemoteConfig.instance.domain,
+      connectTimeout: const Duration(seconds: 20),
+      receiveTimeout: const Duration(seconds: 20),
+    ),
+  );
   applyInsecureSslOverride(authRemoteDio);
   authRemoteDio.interceptors.add(AppNetworkLoggerInterceptor());
-  getIt.registerSingleton<AuthRemoteDatasource>(AuthRemoteDatasourceImpl(authRemoteDio));
-  getIt.registerSingleton<AuthRepository>(AuthRepositoryImpl(getIt<AuthLocalDatasource>(), getIt<AuthRemoteDatasource>()));
-  getIt.registerSingleton<AuthSessionCubit>(AuthSessionCubit(getIt<AuthRepository>()));
+  getIt.registerSingleton<AuthRemoteDatasource>(
+    AuthRemoteDatasourceImpl(authRemoteDio),
+  );
+  getIt.registerSingleton<AuthRepository>(
+    AuthRepositoryImpl(
+      getIt<AuthLocalDatasource>(),
+      getIt<AuthRemoteDatasource>(),
+    ),
+  );
+  getIt.registerSingleton<AuthSessionCubit>(
+    AuthSessionCubit(getIt<AuthRepository>()),
+  );
   await getIt<AuthSessionCubit>().loadSession();
   getIt.registerSingleton<GuestTapGateService>(GuestTapGateService());
-  getIt.registerSingleton<ProfileAvatarRefreshNotifier>(ProfileAvatarRefreshNotifier());
-  getIt.registerSingleton<Dio>(ApiClientFactory.create(getIt<AuthSessionCubit>()));
+  getIt.registerSingleton<ProfileAvatarRefreshNotifier>(
+    ProfileAvatarRefreshNotifier(),
+  );
+  getIt.registerSingleton<Dio>(
+    ApiClientFactory.create(getIt<AuthSessionCubit>()),
+  );
+  getIt.registerSingleton<ActivityPingService>(
+    ActivityPingService(getIt<Dio>(), getIt<AuthSessionCubit>()),
+  );
 
-  getIt.registerSingleton<AppOptionsService>(AppOptionsService(getIt<SettingsDataSource>()));
-  getIt.registerSingleton<GoRouter>(AppRoute.createRouter(getIt<AuthSessionCubit>()));
+  getIt.registerSingleton<AppOptionsService>(
+    AppOptionsService(getIt<SettingsDataSource>()),
+  );
+  getIt.registerSingleton<GoRouter>(
+    AppRoute.createRouter(getIt<AuthSessionCubit>()),
+  );
 
-  getIt.registerLazySingleton<HomeApiDatasource>(() => HomeApiDatasource(getIt<Dio>()));
+  getIt.registerLazySingleton<HomeApiDatasource>(
+    () => HomeApiDatasource(getIt<Dio>()),
+  );
   getIt.registerLazySingleton<HomeDatasource>(() => getIt<HomeApiDatasource>());
-  getIt.registerLazySingleton<HomeRepository>(() => HomeRepositoryImpl(apiDatasource: getIt<HomeApiDatasource>(), authSessionCubit: getIt<AuthSessionCubit>()));
-  getIt.registerFactory<HomeBloc>(() => HomeBloc(getIt<HomeRepository>(), getIt<ProfileRepository>(), getIt<AuthSessionCubit>()));
+  getIt.registerLazySingleton<HomeRepository>(
+    () => HomeRepositoryImpl(
+      apiDatasource: getIt<HomeApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<HomeBloc>(
+    () => HomeBloc(
+      getIt<HomeRepository>(),
+      getIt<ProfileRepository>(),
+      getIt<AuthSessionCubit>(),
+    ),
+  );
 
-  getIt.registerLazySingleton<CoursesCatalogApiDatasource>(() => CoursesCatalogApiDatasource(getIt<Dio>()));
-  getIt.registerLazySingleton<CoursesCatalogDatasource>(() => getIt<CoursesCatalogApiDatasource>());
-  getIt.registerLazySingleton<CoursesCatalogRepository>(() => CoursesCatalogRepositoryImpl(apiDatasource: getIt<CoursesCatalogApiDatasource>(), authSessionCubit: getIt<AuthSessionCubit>()));
-  getIt.registerFactory<CoursesCatalogBloc>(() => CoursesCatalogBloc(getIt<CoursesCatalogRepository>()));
+  getIt.registerLazySingleton<CoursesCatalogApiDatasource>(
+    () => CoursesCatalogApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<CoursesCatalogDatasource>(
+    () => getIt<CoursesCatalogApiDatasource>(),
+  );
+  getIt.registerLazySingleton<CoursesCatalogRepository>(
+    () => CoursesCatalogRepositoryImpl(
+      apiDatasource: getIt<CoursesCatalogApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<CoursesCatalogBloc>(
+    () => CoursesCatalogBloc(getIt<CoursesCatalogRepository>()),
+  );
 
-  getIt.registerLazySingleton<CoursesApiDatasource>(() => CoursesApiDatasource(getIt<Dio>()));
-  getIt.registerLazySingleton<CoursesDatasource>(() => getIt<CoursesApiDatasource>());
-  getIt.registerLazySingleton<CoursesRepository>(() => CoursesRepositoryImpl(apiDatasource: getIt<CoursesApiDatasource>(), authSessionCubit: getIt<AuthSessionCubit>()));
-  getIt.registerFactory<CourseDetailsBloc>(() => CourseDetailsBloc(getIt<CoursesRepository>(), getIt<ProfileRepository>()));
+  getIt.registerLazySingleton<CoursesApiDatasource>(
+    () => CoursesApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<CoursesDatasource>(
+    () => getIt<CoursesApiDatasource>(),
+  );
+  getIt.registerLazySingleton<CoursesRepository>(
+    () => CoursesRepositoryImpl(
+      apiDatasource: getIt<CoursesApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<CourseDetailsBloc>(
+    () => CourseDetailsBloc(
+      getIt<CoursesRepository>(),
+      getIt<ProfileRepository>(),
+    ),
+  );
 
-  getIt.registerLazySingleton<LessonQuizApiDatasource>(() => LessonQuizApiDatasource(getIt<Dio>()));
-  getIt.registerLazySingleton<LessonQuizRepository>(() => LessonQuizRepositoryImpl(getIt<LessonQuizApiDatasource>()));
+  getIt.registerLazySingleton<LessonQuizApiDatasource>(
+    () => LessonQuizApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<LessonQuizRepository>(
+    () => LessonQuizRepositoryImpl(getIt<LessonQuizApiDatasource>()),
+  );
 
-  getIt.registerLazySingleton<LeaderboardApiDatasource>(() => LeaderboardApiDatasource(getIt<Dio>()));
-  getIt.registerLazySingleton<LeaderboardDatasource>(() => getIt<LeaderboardApiDatasource>());
-  getIt.registerLazySingleton<LeaderboardRepository>(() => LeaderboardRepositoryImpl(apiDatasource: getIt<LeaderboardApiDatasource>(), authSessionCubit: getIt<AuthSessionCubit>()));
-  getIt.registerFactory<LeaderboardBloc>(() => LeaderboardBloc(getIt<LeaderboardRepository>()));
+  getIt.registerLazySingleton<LeaderboardApiDatasource>(
+    () => LeaderboardApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<LeaderboardDatasource>(
+    () => getIt<LeaderboardApiDatasource>(),
+  );
+  getIt.registerLazySingleton<LeaderboardRepository>(
+    () => LeaderboardRepositoryImpl(
+      apiDatasource: getIt<LeaderboardApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<LeaderboardBloc>(
+    () => LeaderboardBloc(getIt<LeaderboardRepository>()),
+  );
 
-  getIt.registerLazySingleton<ProfileApiDatasource>(() => ProfileApiDatasource(getIt<Dio>()));
-  getIt.registerLazySingleton<ProfileDatasource>(() => getIt<ProfileApiDatasource>());
-  getIt.registerLazySingleton<ProfilePhotoPicker>(() => ProfileAdaptivePhotoPicker());
-  getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(apiDatasource: getIt<ProfileApiDatasource>(), authSessionCubit: getIt<AuthSessionCubit>()));
-  getIt.registerFactory<ProfileBloc>(() => ProfileBloc(getIt<ProfileRepository>()));
-  getIt.registerFactory<EditInformationBloc>(() => EditInformationBloc(getIt<ProfileRepository>()));
+  getIt.registerLazySingleton<ProfileApiDatasource>(
+    () => ProfileApiDatasource(getIt<Dio>(), getIt<SharedPreferences>()),
+  );
+  getIt.registerLazySingleton<ProfileDatasource>(
+    () => getIt<ProfileApiDatasource>(),
+  );
+  getIt.registerLazySingleton<ProfilePhotoPicker>(
+    () => ProfileAdaptivePhotoPicker(),
+  );
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(
+      apiDatasource: getIt<ProfileApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<ProfileBloc>(
+    () => ProfileBloc(getIt<ProfileRepository>()),
+  );
+  getIt.registerFactory<EditInformationBloc>(
+    () => EditInformationBloc(getIt<ProfileRepository>()),
+  );
 
-  getIt.registerLazySingleton<MyCoursesApiDatasource>(() => MyCoursesApiDatasource(getIt<Dio>()));
-  getIt.registerLazySingleton<MyCoursesDatasource>(() => getIt<MyCoursesApiDatasource>());
-  getIt.registerLazySingleton<MyCoursesRepository>(() => MyCoursesRepositoryImpl(apiDatasource: getIt<MyCoursesApiDatasource>(), authSessionCubit: getIt<AuthSessionCubit>()));
-  getIt.registerFactory<MyCoursesBloc>(() => MyCoursesBloc(getIt<MyCoursesRepository>()));
+  getIt.registerLazySingleton<MyCoursesApiDatasource>(
+    () => MyCoursesApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<MyCoursesDatasource>(
+    () => getIt<MyCoursesApiDatasource>(),
+  );
+  getIt.registerLazySingleton<MyCoursesRepository>(
+    () => MyCoursesRepositoryImpl(
+      apiDatasource: getIt<MyCoursesApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<MyCoursesBloc>(
+    () => MyCoursesBloc(getIt<MyCoursesRepository>()),
+  );
 
-  getIt.registerLazySingleton<MyCertificatesDatasource>(() => MyCertificatesApiDatasource(getIt<Dio>()));
-  getIt.registerLazySingleton<MyCertificatesRepository>(() => MyCertificatesRepositoryImpl(datasource: getIt<MyCertificatesDatasource>()));
-  getIt.registerLazySingleton<CertificateFileActions>(() => CertificateFileActions(getIt<Dio>()));
-  getIt.registerFactory<MyCertificatesBloc>(() => MyCertificatesBloc(getIt<MyCertificatesRepository>()));
+  getIt.registerLazySingleton<VacancyApiDatasource>(
+    () => VacancyApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<VacancyDatasource>(
+    () => getIt<VacancyApiDatasource>(),
+  );
+  getIt.registerLazySingleton<VacancyRepository>(
+    () => VacancyRepositoryImpl(
+      apiDatasource: getIt<VacancyApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<VacancyBloc>(
+    () => VacancyBloc(getIt<VacancyRepository>()),
+  );
+  getIt.registerFactory<VacancyDetailBloc>(
+    () => VacancyDetailBloc(getIt<VacancyRepository>()),
+  );
 
-  getIt.registerLazySingleton<NotificationApiDatasource>(() => NotificationApiDatasource(getIt<Dio>()));
-  getIt.registerLazySingleton<NotificationDatasource>(() => getIt<NotificationApiDatasource>());
-  getIt.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(apiDatasource: getIt<NotificationApiDatasource>(), authSessionCubit: getIt<AuthSessionCubit>()));
-  getIt.registerFactory<NotificationBloc>(() => NotificationBloc(getIt<NotificationRepository>()));
+  getIt.registerLazySingleton<MyCertificatesDatasource>(
+    () => MyCertificatesApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<MyCertificatesRepository>(
+    () => MyCertificatesRepositoryImpl(
+      datasource: getIt<MyCertificatesDatasource>(),
+    ),
+  );
+  getIt.registerLazySingleton<CourseCertificateClaimDatasource>(
+    () => CourseCertificateClaimApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<CourseCertificateClaimRepository>(
+    () => CourseCertificateClaimRepositoryImpl(
+      getIt<CourseCertificateClaimDatasource>(),
+    ),
+  );
+  getIt.registerLazySingleton<CertificateFileActions>(
+    () => CertificateFileActions(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<CertificateInstagramStoryShare>(
+    () => CertificateInstagramStoryShare(getIt<CertificateFileActions>()),
+  );
+  getIt.registerFactory<MyCertificatesBloc>(
+    () => MyCertificatesBloc(getIt<MyCertificatesRepository>()),
+  );
+
+  getIt.registerLazySingleton<NotificationApiDatasource>(
+    () => NotificationApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<NotificationDatasource>(
+    () => getIt<NotificationApiDatasource>(),
+  );
+  getIt.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(
+      apiDatasource: getIt<NotificationApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<NotificationBloc>(
+    () => NotificationBloc(getIt<NotificationRepository>()),
+  );
 
   getIt.registerLazySingleton<AboutUsRepository>(() => AboutUsRepositoryImpl());
-  getIt.registerFactory<AboutUsBloc>(() => AboutUsBloc(getIt<AboutUsRepository>()));
+  getIt.registerFactory<AboutUsBloc>(
+    () => AboutUsBloc(getIt<AboutUsRepository>()),
+  );
+
+  getIt.registerLazySingleton<PrivacyPolicyRepository>(
+    () => PrivacyPolicyRepositoryImpl(),
+  );
+  getIt.registerFactory<PrivacyPolicyBloc>(
+    () => PrivacyPolicyBloc(getIt<PrivacyPolicyRepository>()),
+  );
+
+  getIt.registerSingleton<PushMessagingService>(
+    PushMessagingService(getIt<SharedPreferences>()),
+  );
+  await getIt<PushMessagingService>().initialize();
 }

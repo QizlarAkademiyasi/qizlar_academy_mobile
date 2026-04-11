@@ -9,8 +9,12 @@ export 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dar
 export 'package:qizlar_academy_mobile/config/constants/theme/app_color_scheme.dart';
 export 'package:qizlar_academy_mobile/config/constants/app_radius.dart';
 export 'package:qizlar_academy_mobile/core/assets/assets.gen.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_link_prompt_dialog.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_mascot_floating_action_button.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_bottom_sheet.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_failure_state.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_cached_network_image.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_tappable_profile_avatar.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_course_list_item_card.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_segmented_tab_bar.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_toast.dart';
@@ -18,6 +22,8 @@ export 'package:qizlar_academy_mobile/core/presentation/components/app_back_butt
 export 'package:qizlar_academy_mobile/core/presentation/components/primary_button.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_text_field.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/auth_required_bottom_sheet.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_modal_dialog.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_primary_confirm_dialog.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_rating_stars_row.dart';
 export 'package:qizlar_academy_mobile/core/presentation/animations/app_staggered_list_animation.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_tablet_max_width.dart';

@@ -7,13 +7,7 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 /// (`UiKitAssets.lottie.rabbit.*`). [subtitle] berilganda [message] sarlavha
 /// uslubida, [subtitle] ikkilamchi matn sifatida ko'rinadi.
 class TgsEmptyContent extends StatelessWidget {
-  const TgsEmptyContent({
-    super.key,
-    required this.message,
-    this.subtitle,
-    this.tgsAsset,
-    this.animationSize = 72,
-  });
+  const TgsEmptyContent({super.key, required this.message, this.subtitle, this.tgsAsset, this.animationSize = 72});
 
   final String message;
   final String? subtitle;
@@ -22,7 +16,7 @@ class TgsEmptyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tgsAssetPath = tgsAsset ?? UiKitAssets.lottie.rabbit.boredRabbit;
+    final tgsAssetPath = tgsAsset ?? UiKitAssets.lottie.rabbit.sleepRabbit;
     final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
 
     return Column(
@@ -38,22 +32,14 @@ class TgsEmptyContent extends StatelessWidget {
         Text(
           message,
           textAlign: TextAlign.center,
-          style: hasSubtitle
-              ? context.textTheme.bodyLargeSemibold.copyWith(
-                  color: context.appColors.text,
-                )
-              : context.textTheme.bodyMediumBold.copyWith(
-                  color: context.appColors.grey,
-                ),
+          style: hasSubtitle ? context.textTheme.bodyLargeSemibold.copyWith(color: context.appColors.text) : context.textTheme.bodyMediumBold.copyWith(color: context.appColors.grey),
         ),
         if (hasSubtitle) ...[
           const SizedBox(height: 6),
           Text(
             subtitle!,
             textAlign: TextAlign.center,
-            style: context.textTheme.bodyMediumRegular.copyWith(
-              color: context.appColors.secondaryGrey,
-            ),
+            style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.secondaryGrey),
           ),
         ],
       ],

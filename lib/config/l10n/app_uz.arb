@@ -16,7 +16,10 @@
   "authOtpTooManyRequestsMessage": "Juda ko‘p urinish qildingiz. Birozdan keyin qayta urinib ko‘ring.",
   "connectionErrorMessage": "Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.",
   "googleSignInErrorMessage": "Google orqali kirishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.",
-  "telegramSignInComingSoonMessage": "Telegram orqali kirish keyingi bosqichda ulanadi.",
+  "telegramSignInInvalidLinkMessage": "Telegramni ochib bo‘lmadi: serverdan noto‘g‘ri havola.",
+  "telegramSignInLaunchFailedMessage": "Telegram ochilmadi. Qayta urinib ko‘ring.",
+  "telegramSignInOpenBotTitle": "Telegram",
+  "telegramSignInEnterCodeHintMessage": "Botni oching, keyin kelgan kodni shu yerga kiriting.",
   "signInWithGoogle": "Google bilan kirish",
   "signInWithTelegram": "Telegram bilan kirish",
   "registerTitle": "Shaxsiy ma'lumotlar",
@@ -35,6 +38,10 @@
   "otpDigitsOnlyMessage": "Kod faqat raqamlardan iborat bo‘lishi kerak.",
   "otpInvalidOrExpiredMessage": "OTP kodi noto‘g‘ri yoki muddati o‘tgan.",
   "otpSentAgain": "Tasdiqlash kodi qayta yuborildi.",
+  "verificationBackConfirmTitle": "Orqaga qaytishni xohlaysizmi?",
+  "verificationBackConfirmMessage": "Chiqsangiz, kirishni davom ettirish uchun kodni qayta olishingiz kerak bo‘ladi.",
+  "verificationBackConfirmStay": "Qolish",
+  "verificationBackConfirmLeave": "Orqaga",
   "mainTabHome": "Asosiy",
   "mainTabCourses": "Kurslar",
   "mainTabLeaderboard": "Liderlar",
@@ -48,8 +55,19 @@
   "homeGuestCoursesGate": "Kurslarni to‘liq ko‘rish uchun ro‘yxatdan o‘ting",
   "homeGuestNotificationsGate": "Bildirishnomalar uchun ro‘yxatdan o‘ting",
   "homeLoadErrorMessage": "Ulanishda xatolik yuz berdi. Qayta urinib ko‘ring.",
+  "coursesCatalogLoadError": "Kurslarni yuklashda xatolik yuz berdi.",
+  "leaderboardLoadError": "Reytingni yuklashda xatolik.",
+  "profileOverviewLoadError": "Profil ma'lumotlarini yuklashda xatolik.",
+  "profilePreferenceUpdateError": "Sozlamalarni yangilab bo'lmadi. Qayta urinib ko'ring.",
+  "notificationListLoadError": "Bildirishnomalarni yuklashda xatolik yuz berdi.",
+  "notificationActionError": "Bildirishnomalarni yangilashda xatolik yuz berdi.",
+  "courseDetailsLoadError": "Kurs ma'lumotlarini yuklashda xatolik.",
+  "editProfileLoadError": "Profil ma'lumotlarini yuklashda xatolik.",
+  "editProfileSaveError": "Ma'lumotlarni saqlab bo'lmadi. Qayta urinib ko'ring.",
   "coursesAllTitle": "Barcha kurslar",
   "coursesSearchHint": "Kurslarni izlash...",
+  "coursesSearchScreenTitle": "Kurslarni qidirish",
+  "coursesSearchIdleHint": "Qidiruv uchun kurs nomini kiriting",
   "coursesNoResults": "Mos kurs topilmadi",
   "coursesNotificationsComingSoonMessage": "Bildirishnomalar bo‘limi tez orada qo‘shiladi.",
   "coursesLastViewed": "Oxirgi ko‘rilgan",
@@ -71,6 +89,9 @@
   "lessonProgress": "Dars {current}/{total}",
   "lessonCompleted": "Bajarildi",
   "lessonMarkComplete": "Darsni yakunlash",
+  "lessonVideoPlaybackError": "Videoni yuklab bo'lmadi.",
+  "lessonVideoPlaybackErrorYoutube": "YouTube vaqtincha ilova ichida ijro etishni cheklashi mumkin. Videoni brauzer yoki YouTube ilovasida oching.",
+  "lessonVideoOpenExternal": "Brauzerda ochish",
   "coursePillTabLessons": "Darslar",
   "coursePillTabInfo": "Ma'lumot",
   "coursePillTabReviews": "Sharhlar",
@@ -112,12 +133,19 @@
   "lessonQuizStatWrong": "Xato",
   "lessonQuizStatTime": "Vaqt",
   "lessonQuizContinue": "Davom qilish",
+  "lessonQuizRetry": "Qayta ishlash",
   "lessonQuizErrorEmpty": "Bu dars uchun test hali yo'q.",
   "lessonQuizErrorLoad": "Testni yuklab bo'lmadi.",
   "lessonQuizErrorCheck": "Javobni tekshirib bo'lmadi.",
   "lessonQuizErrorSubmit": "Testni yuborib bo'lmadi.",
   "lessonQuizErrorGeneric": "Xatolik yuz berdi.",
   "lessonQuizAlreadyTaken": "Siz bu testni allaqachon topshirgansiz. Qayta topshirish mumkin emas.",
+  "courseModuleLockedMessage": "Keyingi modulga o‘tish uchun avvalgi moduldagi barcha dars va testlarni yakunlang.",
+  "courseLessonSequentialLockedMessage": "Keyingi darsga o‘tish uchun avvalgi darsni yakunlang va testini topshiring (test bo‘lsa).",
+  "courseCompleteCongratsTitle": "Tabriklaymiz!",
+  "courseCompleteCongratsDescription": "Siz bu kursni muvaffaqiyatli tugatdingiz. Sertifikatingizni «Sertifikatlarim» bo‘limidan oling.",
+  "courseCompleteGetCertificate": "Sertifikatni olish",
+  "courseCompleteClose": "Yopish",
   "leaderboardTitle": "Peshqadamlar",
   "leaderboardSubtitle": "Eng yaxshi o'quvchilar reytingi",
   "leaderboardTabOverall": "Umumiy",
@@ -138,9 +166,85 @@
   "profileMenuCertificates": "Sertifikatlarim",
   "profileMenuMyCourses": "Mening kurslarim",
   "profileMenuMyActivity": "Mening faolligim",
+  "profileMenuVacancies": "Vakansiyalar",
+  "vacanciesTitle": "Vakansiyalar",
+  "vacancyDetailCta": "Batafsil",
+  "vacancySalaryNegotiable": "Maosh kelishiladi",
+  "vacancySalaryRange": "{from} – {to} {currency}",
+  "@vacancySalaryRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "vacancyPostedMomentsAgo": "Hozirgina",
+  "vacancyPostedMinutesAgo": "{count} daqiqa avval",
+  "@vacancyPostedMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyPostedHoursAgo": "{count} soat avval",
+  "@vacancyPostedHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyPostedYesterday": "Kecha",
+  "vacancyPostedDaysAgo": "{count} kun avval",
+  "@vacancyPostedDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vacancyEmploymentIntern": "Amaliyot",
+  "vacancyEmploymentPartTime": "Yarim stavka",
+  "vacancyEmploymentFullTime": "To‘liq stavka",
+  "vacancyEmploymentRemote": "Masofadan",
+  "vacancyEmploymentOnsite": "Ofisda",
+  "vacancyEmploymentContract": "Shartnoma",
+  "vacanciesEmptyTitle": "Hozircha vakansiya yo‘q",
+  "vacanciesEmptySubtitle": "Keyinroq qayta tekshiring",
+  "vacanciesLoadError": "Vakansiyalarni yuklab bo‘lmadi",
+  "vacanciesLoadMoreError": "Yana yuklashda xatolik",
+  "vacancyDetailsTitle": "Vakansiya",
+  "vacancySheetEmploymentType": "Ish turi",
+  "vacancySheetSalary": "Maosh",
+  "vacancySheetLocation": "Manzil",
+  "vacancySheetCategory": "Yo‘nalish",
+  "vacancySheetPosted": "E‘lon qilingan",
+  "vacancyDetailAbout": "Vakansiya haqida",
+  "vacancyDetailSkills": "Ko'nikmalar",
+  "vacancyDetailRequirements": "Majburiyatlar",
+  "vacancyApplyCta": "Ariza berish",
+  "vacancySalaryPerMonth": "/ oyiga",
+  "vacancyDetailLoadError": "Vakansiyani yuklab bo'lmadi",
+  "vacancyApplyPlaceholder": "Tez orada — ariza qabul qilish ulanadi",
   "profileMenuProfileInfo": "Profil ma'lumotlari",
   "profileMenuLanguage": "Til",
   "profileMenuShareApp": "Ilovani ulashish",
+  "profileShareAppSubtitle": "Do‘stlaringiz bilan ulashing",
+  "profileShareAppMessage": "Qizlar Akademiyasi — ayol-qizlar uchun bepul o‘quv kurslari, faol hamjamiyat va rivojlanish imkoniyatlari barchasi bitta ilovada.\n\nYuklab oling va birga o‘rganing:\n{link}",
+  "@profileShareAppMessage": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "profileMenuAbout": "Biz haqimizda",
   "profileMenuHelp": "Yordam markazi",
   "profileMenuPrivacy": "Maxfiylik siyosati",
@@ -165,6 +269,7 @@
   "profileSectionGeneral": "UMUMIY",
   "profileNotifications": "Bildirishnomalar",
   "profileNotificationsSubtitle": "Push-xabarlar",
+  "profileNotificationsEnableFailed": "Bildirishnomalarni yoqib bo‘lmadi. Ruxsatlarni tekshiring va qayta urinib ko‘ring.",
   "profileDarkMode": "Tungi rejim",
   "profileDarkModeSubtitle": "Qorong'i interfeys",
   "profileLogout": "Chiqish",
@@ -184,6 +289,11 @@
   "profileInformationStatusTitle": "Profil status",
   "profileInformationPhoneLabel": "Telefon raqami",
   "profileInformationPhoneNationalHint": "XX XXX XX XX",
+  "editProfileUnsavedTitle": "Saqlanmagan o‘zgarishlar",
+  "editProfileUnsavedMessage": "Profilda saqlanmagan o‘zgarishlar bor. Chiqishdan oldin ularni saqlaysizmi?",
+  "editProfileUnsavedSave": "Saqlash",
+  "editProfileUnsavedDiscard": "Saqlamasdan chiqish",
+  "editProfileUnsavedContinue": "Tahrirlashni davom ettirish",
   "aboutBrandTitle": "QIZLAR AKADEMIYASI",
   "aboutSectionProjectTitle": "Qizlar Akademiyasi loyihasi haqida",
   "aboutProjectLead": "Qizlar akademiyasi",
@@ -202,16 +312,28 @@
   "aboutSocialYoutubeSubtitle": "Qizlar Akademiyasi rasmiy Youtube kanali",
   "aboutUsLoadError": "Ma'lumot yuklanmadi. Qayta urinib ko'ring.",
   "aboutUsLinkOpenError": "Havolani ochib bo'lmadi.",
+  "appUpdateAvailableTitle": "Yangilanish mavjud!",
+  "appUpdateAvailableBody": "Biz ilovani yanada yaxshiladik! Yangi imkoniyatlardan foydalanish va qulayroq o‘qish uchun ilovani yangilang.",
+  "appUpdateLater": "Keyinroq",
+  "appUpdateCta": "Yangilash",
   "guestGateNotificationSettings": "Bildirishnoma sozlamalari uchun ro‘yxatdan o‘ting",
   "guestGateSaveSettings": "Sozlamalarni saqlash uchun ro‘yxatdan o‘ting",
   "guestGateProfileFeatures": "Profil funksiyalari uchun ro‘yxatdan o‘ting",
   "profileAppLanguageTitle": "Ilova tili",
+  "profileBadgePickerTitle": "Mening nishonlarim",
+  "profileTezKundaTitle": "Tez kunda",
+  "profileTezKundaMessage": "Bu bo‘lim hozircha mavjud emas. U ustida ishlayapmiz — tez orada qaytib keling.",
   "languageUzbek": "O'zbekcha",
   "languageRussian": "Русский",
   "languageEnglish": "English",
   "notificationsTitle": "Bildirishnoma",
   "notificationsEmpty": "Hozircha bildirishnomalar yo'q",
   "notificationsEmptySubtitle": "Yangi xabarlar paydo bo'lishi bilan shu yerda ko'rinadi.",
+  "notificationTabPlatform": "Platforma",
+  "notificationTabCommunity": "Jamiyat",
+  "notificationDetailsMore": "Batafsil",
+  "notificationsEmptyThisTab": "Ushbu bo‘limda bildirishnomalar yo‘q",
+  "notificationsEmptyThisTabSubtitle": "Boshqa yorliqqa o‘ting yoki keyinroq qaytib keling.",
   "guestGateMarkAllRead": "Barchasini o‘qilgan qilish uchun ro‘yxatdan o‘ting",
   "guestGateManageNotifications": "Bildirishnomalarni boshqarish uchun ro‘yxatdan o‘ting",
   "guestModeTitle": "Mehmon rejimi",
@@ -259,8 +381,15 @@
   "certificatesSheetDownload": "Yuklab olish",
   "certificatesEmptyTitle": "Hozircha sertifikatlar yo'q",
   "certificatesEmptySubtitle": "Kursni tugatganingizdan keyin sertifikatingiz shu yerda paydo bo'ladi.",
+  "linkPromptYes": "Ha",
+  "linkPromptNo": "Yo'q",
+  "communityTelegramInviteTitle": "Bizning hamjamiyatga qo‘shiling",
+  "communityTelegramInviteDescription": "Telegram kanalimizda barcha savollaringizga javob topishingiz mumkin. Telegram kanalimizga o‘tmoqchimisiz?",
   "certificatesLoadError": "Sertifikatlarni yuklab bo'lmadi. Qayta urinib ko'ring.",
+  "certificateClaimError": "Sertifikatni olishda xatolik. Keyinroq urinib ko'ring.",
   "certificatesFileActionError": "Faylni yuklab yoki ulashib bo'lmadi.",
+  "certificatesInstagramStoryNotConfigured": "Instagram Story uchun Facebook App ID kerak. Ilovani yig‘ishda FACEBOOK_APP_ID qo‘shing.",
+  "certificatesInstagramShareFailed": "Instagram ochilmadi. Instagram o‘rnatilganligini tekshirib, qayta urinib ko‘ring.",
   "courseReviewsSummaryCount": "{count} ta sharh",
   "@courseReviewsSummaryCount": {
     "placeholders": {

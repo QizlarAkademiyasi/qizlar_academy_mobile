@@ -13,6 +13,7 @@ import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/edit_
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/edit_information/components/edit_information_form.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/services/profile_avatar_refresh_notifier.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/edit_information/components/edit_information_status_strip.dart';
+import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/edit_information/components/edit_information_unsaved_dialog.dart';
 
 /// Profil ma'lumotlari tahriri: navigatsiya, rasm tanlash, saqlash, controller sinxroni.
 mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
@@ -57,9 +58,54 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  void onEditInformationBackTap(BuildContext context) {
+  bool editInformationHasUnsavedChanges(EditInformationState state) {
+    final user = state.user;
+    if (user == null) return false;
+    final baseline = state.baselineUser ?? user;
+    final local = state.localAvatarFilePath?.trim() ?? '';
+    if (local.isNotEmpty) return true;
+    return profileEditHasPendingPatch(
+      baseline: baseline,
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      uploadedPhotoFilename: state.uploadedPhotoFilename,
+      selectedBadgeId: state.selectedBadgeId,
+    );
+  }
+
+  Future<void> onEditInformationBackTap(BuildContext context) async {
     Gaimon.light();
-    context.pop(false);
+    final bloc = context.read<EditInformationBloc>();
+    final state = bloc.state;
+
+    if (state.status == EditInformationStatus.loading || state.status == EditInformationStatus.failure || state.user == null) {
+      if (context.mounted) context.pop(false);
+      return;
+    }
+
+    if (state.isSaving) {
+      return;
+    }
+
+    if (!editInformationHasUnsavedChanges(state)) {
+      if (context.mounted) context.pop(false);
+      return;
+    }
+
+    final choice = await showEditInformationUnsavedDialog(context);
+    if (!context.mounted) return;
+
+    switch (choice) {
+      case EditInformationUnsavedResult.save:
+        onEditInformationSaveTap(context);
+        return;
+      case EditInformationUnsavedResult.discard:
+        context.pop(false);
+        return;
+      case EditInformationUnsavedResult.cancelled:
+      case null:
+        return;
+    }
   }
 
   Future<void> onEditInformationCameraTap(BuildContext context) async {
@@ -88,15 +134,13 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
     context.read<EditInformationBloc>().add(EditInformationSaveRequested(firstName: first, lastName: last));
   }
 
-  void editInformationBlocListener(BuildContext context, EditInformationState state) {
-    if (state.saveError != null) {
-      AppToast.error(context, message: state.saveError!);
-    }
-  }
-
   void editInformationNoticeListener(BuildContext context, EditInformationState state) {
     final bloc = context.read<EditInformationBloc>();
     switch (state.notice) {
+      case EditInformationNotice.saveFailed:
+        AppToast.error(context, message: context.l10n.editProfileSaveError);
+        bloc.add(const EditInformationNoticeAcknowledged());
+        return;
       case EditInformationNotice.saveSuccess:
         onEditInformationSaveSuccess(context);
         return;
@@ -141,41 +185,51 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
     );
     final canSave = hasPendingPatch && first.isNotEmpty && last.isNotEmpty && !saveBlocked;
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 24 + bottomInset),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: 8),
-          Padding(
-            padding: AppPadding.paddingHorizontalMd,
-            child: EditInformationAvatar(user: user, localFilePath: state.localAvatarFilePath, isBusy: state.isPhotoUploading, onCameraTap: () => onEditInformationCameraTap(context)),
-          ),
-          const SizedBox(height: 24),
-          if (state.badgeCatalog.isNotEmpty) ...[
-            Padding(
-              padding: AppPadding.paddingHorizontalMd,
-              child: Text(l10n.profileInformationStatusTitle, style: context.textTheme.bodyMediumSemibold.copyWith(color: context.appColors.secondaryGrey)),
+    return Stack(
+      children: [
+        SizedBox(
+          height: double.infinity,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 30 + bottomInset),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 8),
+                Padding(
+                  padding: AppPadding.paddingHorizontalMd,
+                  child: EditInformationAvatar(user: user, localFilePath: state.localAvatarFilePath, isBusy: state.isPhotoUploading, onCameraTap: () => onEditInformationCameraTap(context)),
+                ),
+                const SizedBox(height: 24),
+                if (state.badgeCatalog.isNotEmpty) ...[
+                  Padding(
+                    padding: AppPadding.paddingHorizontalMd,
+                    child: Text(l10n.profileInformationStatusTitle, style: context.textTheme.bodyMediumSemibold.copyWith(color: context.appColors.secondaryGrey)),
+                  ),
+                  const SizedBox(height: 10),
+                  EditInformationStatusStrip(
+                    badges: state.badgeCatalog,
+                    selectedBadgeId: state.selectedBadgeId,
+                    onSelected: (id) => context.read<EditInformationBloc>().add(EditInformationBadgeSelected(id)),
+                  ),
+                  const SizedBox(height: 28),
+                ],
+                Padding(
+                  padding: AppPadding.paddingHorizontalMd,
+                  child: EditInformationForm(firstNameController: firstNameController, lastNameController: lastNameController, phoneNationalController: phoneNationalController),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            EditInformationStatusStrip(
-              badges: state.badgeCatalog,
-              selectedBadgeId: state.selectedBadgeId,
-              onSelected: (id) => context.read<EditInformationBloc>().add(EditInformationBadgeSelected(id)),
-            ),
-            const SizedBox(height: 28),
-          ],
-          Padding(
-            padding: AppPadding.paddingHorizontalMd,
-            child: EditInformationForm(firstNameController: firstNameController, lastNameController: lastNameController, phoneNationalController: phoneNationalController),
           ),
-          const SizedBox(height: 28),
-          Padding(
-            padding: AppPadding.paddingHorizontalMd,
+        ),
+        const SizedBox(height: 28),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: AppPadding.paddingMd,
             child: PrimaryButton.elevated(label: l10n.profileInformationSave, isLoading: state.isSaving, onPressed: canSave ? () => onEditInformationSaveTap(context) : null),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

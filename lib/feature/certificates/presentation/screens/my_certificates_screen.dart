@@ -12,10 +12,7 @@ class MyCertificatesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<MyCertificatesBloc>()..add(const MyCertificatesStarted()),
-      child: const _MyCertificatesView(),
-    );
+    return BlocProvider(create: (_) => getIt<MyCertificatesBloc>()..add(const MyCertificatesStarted()), child: const _MyCertificatesView());
   }
 }
 
@@ -32,57 +29,65 @@ class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertifi
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 8),
+        child: AppMascotFloatingActionButton(size: 64, lottieAssetPath: UiKitAssets.lottie.rabbit.giftCakeRabbit, onPressed: () => onCertificatesCommunityFabTap(context)),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      appBar: AppBar(
+        backgroundColor: context.appColors.background,
+        title: Text(context.l10n.profileMenuCertificates, style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
+      ),
       body: SafeArea(
         bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Stack(
           children: [
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: buildMyCertificatesTopBar(context)),
-            Expanded(
-              child: BlocBuilder<MyCertificatesBloc, MyCertificatesState>(
-                buildWhen: (p, c) => p.status != c.status || p.items != c.items,
-                builder: (context, state) {
-                  final loadingEmpty = (state.status == MyCertificatesStatus.loading || state.status == MyCertificatesStatus.initial) && state.items.isEmpty;
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: buildMyCertificatesTopBar(context)),
+                Expanded(
+                  child: BlocBuilder<MyCertificatesBloc, MyCertificatesState>(
+                    buildWhen: (p, c) => p.status != c.status || p.items != c.items,
+                    builder: (context, state) {
+                      final loadingEmpty = (state.status == MyCertificatesStatus.loading || state.status == MyCertificatesStatus.initial) && state.items.isEmpty;
 
-                  if (state.status == MyCertificatesStatus.failure && state.items.isEmpty) {
-                    return TgsFailureContent(
-                      message: context.l10n.certificatesLoadError,
-                      onRetry: () => context.read<MyCertificatesBloc>().add(const MyCertificatesRetryRequested()),
-                    );
-                  }
+                      if (state.status == MyCertificatesStatus.failure && state.items.isEmpty) {
+                        return TgsFailureContent(message: context.l10n.certificatesLoadError, onRetry: () => context.read<MyCertificatesBloc>().add(const MyCertificatesRetryRequested()));
+                      }
 
-                  if (loadingEmpty) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                      if (loadingEmpty) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                  if (state.status == MyCertificatesStatus.success && state.items.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: TgsEmptyContent(
-                          message: context.l10n.certificatesEmptyTitle,
-                          subtitle: context.l10n.certificatesEmptySubtitle,
-                        ),
-                      ),
-                    );
-                  }
-
-                  return AppStaggeredScrollLimiter(
-                    child: ListView.separated(
-                      padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: state.items.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 14),
-                      itemBuilder: (context, index) {
-                        return AppStaggeredListItem(
-                          position: index,
-                          child: buildCertificateCard(context, state.items[index], index),
+                      if (state.status == MyCertificatesStatus.success && state.items.isEmpty) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: TgsEmptyContent(message: context.l10n.certificatesEmptyTitle, subtitle: context.l10n.certificatesEmptySubtitle),
+                          ),
                         );
-                      },
-                    ),
-                  );
-                },
-              ),
+                      }
+
+                      return AppStaggeredScrollLimiter(
+                        child: ListView.separated(
+                          padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: state.items.length,
+                          separatorBuilder: (_, _) => const SizedBox(height: 14),
+                          itemBuilder: (context, index) {
+                            return AppStaggeredListItem(position: index, child: buildCertificateCard(context, state.items[index], index));
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover) : UiKitAssets.images.bottomNavLight.image(fit: BoxFit.cover),
             ),
           ],
         ),

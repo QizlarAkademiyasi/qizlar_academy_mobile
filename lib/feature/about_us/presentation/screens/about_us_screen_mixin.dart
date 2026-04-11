@@ -52,6 +52,7 @@ mixin AboutUsScreenMixin<T extends StatefulWidget> on State<T> {
     final l10n = context.l10n;
     return ListView(
       physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 24),
       children: [
         Padding(
           padding: AppPadding.paddingHorizontalLg,

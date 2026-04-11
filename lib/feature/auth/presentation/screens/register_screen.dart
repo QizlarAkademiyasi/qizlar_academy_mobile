@@ -10,8 +10,7 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen>
-    with RegisterScreenMixin<RegisterScreen> {
+class _RegisterScreenState extends State<RegisterScreen> with RegisterScreenMixin<RegisterScreen> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
 
@@ -29,56 +28,46 @@ class _RegisterScreenState extends State<RegisterScreen>
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppBackButton.glass(onTap: onBackTap),
-              const SizedBox(height: 24),
-              Text(
-                context.l10n.registerTitle,
-                style: context.textTheme.heading3.copyWith(
-                  color: context.appColors.text,
+          child: AutofillGroup(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppBackButton.glass(onTap: onBackTap),
+                const SizedBox(height: 24),
+                Text(context.l10n.registerTitle, style: context.textTheme.heading3.copyWith(color: context.appColors.text)),
+                const SizedBox(height: 8),
+                Text(context.l10n.registerSubtitle, style: context.textTheme.bodyMediumMedium.copyWith(color: context.appColors.secondaryGrey)),
+                const SizedBox(height: 28),
+                AppTextField(
+                  controller: _firstNameController,
+                  hintText: context.l10n.firstNameHint,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  autofillHints: const [AutofillHints.givenName],
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                context.l10n.registerSubtitle,
-                style: context.textTheme.bodyLargeRegular.copyWith(
-                  color: context.appColors.secondaryGrey,
+                const SizedBox(height: 16),
+                AppTextField(
+                  controller: _lastNameController,
+                  hintText: context.l10n.lastNameHint,
+                  textInputAction: TextInputAction.done,
+                  keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  autofillHints: const [AutofillHints.familyName],
                 ),
-              ),
-              const SizedBox(height: 28),
-              AppTextField(
-                controller: _firstNameController,
-                hintText: context.l10n.firstNameHint,
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.name,
-                textCapitalization: TextCapitalization.words,
-              ),
-              const SizedBox(height: 16),
-              AppTextField(
-                controller: _lastNameController,
-                hintText: context.l10n.lastNameHint,
-                textInputAction: TextInputAction.done,
-                keyboardType: TextInputType.name,
-                textCapitalization: TextCapitalization.words,
-              ),
-              const Spacer(),
-              PrimaryButton.elevated(
-                label: context.l10n.registerContinue,
-                isLoading: isSubmitting,
-                onPressed: () {
-                  onContinueTap(
-                    firstName: _firstNameController.text,
-                    lastName: _lastNameController.text,
-                  );
-                },
-              ),
-            ],
+                const Spacer(),
+                PrimaryButton.elevated(
+                  label: context.l10n.registerContinue,
+                  isLoading: isSubmitting,
+                  onPressed: () {
+                    onContinueTap(firstName: _firstNameController.text, lastName: _lastNameController.text);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-

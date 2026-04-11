@@ -32,3 +32,12 @@ final class ProfileDarkModeToggled extends ProfileEvent {
   @override
   List<Object?> get props => [enabled];
 }
+
+final class ProfileBadgeSelected extends ProfileEvent {
+  const ProfileBadgeSelected({required this.badgeId});
+
+  final int badgeId;
+
+  @override
+  List<Object?> get props => [badgeId];
+}

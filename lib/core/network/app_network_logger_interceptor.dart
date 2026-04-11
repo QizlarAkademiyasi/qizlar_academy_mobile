@@ -1,18 +1,32 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kDebugMode, kReleaseMode;
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 
 class AppNetworkLoggerInterceptor extends Interceptor {
-  AppNetworkLoggerInterceptor({this.maxBodyLength = 4000});
+  /// Default: debug’da ham tana matni kesiladi (8032 belgi) — to‘liq JSON log sekinlik va
+  /// konsol to‘kinishiga olib keladi. [maxBodyLength] `null` faqat chuqur debug uchun.
+  AppNetworkLoggerInterceptor({int? maxBodyLength}) : maxBodyLength = maxBodyLength ?? (kReleaseMode ? _releaseDefaultMaxBodyLength : _debugDefaultMaxBodyLength);
+
+  /// To‘liq tana (ogohlantirish: katta javoblarda sekin).
+  AppNetworkLoggerInterceptor.unlimited() : maxBodyLength = null;
 
   static const String _startedAtKey = '_requestStartedAt';
-  final int maxBodyLength;
+  static const int _releaseDefaultMaxBodyLength = 4000;
+  static const int _debugDefaultMaxBodyLength = 8032;
+
+  /// `null` = truncatsiz.
+  final int? maxBodyLength;
   final JsonEncoder _prettyEncoder = const JsonEncoder.withIndent('  ');
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.extra[_startedAtKey] = DateTime.now().millisecondsSinceEpoch;
+    if (!kDebugMode) {
+      handler.next(options);
+      return;
+    }
     final payload = <String, dynamic>{
       'url': options.uri.toString(),
       'contentType': options.contentType,
@@ -25,23 +39,20 @@ class AppNetworkLoggerInterceptor extends Interceptor {
   }
 
   @override
-  void onResponse(
-    Response<dynamic> response,
-    ResponseInterceptorHandler handler,
-  ) {
+  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
+    if (!kDebugMode) {
+      handler.next(response);
+      return;
+    }
     final elapsedMs = _elapsedMs(response.requestOptions);
     final payload = <String, dynamic>{
       'url': response.requestOptions.uri.toString(),
       'statusCode': response.statusCode,
       'statusMessage': response.statusMessage,
-      if (elapsedMs != null) 'durationMs': elapsedMs,
-      'response': _safeBody(response.data),
+      'durationMs': ?elapsedMs,
+      'response': _logResponsePayload(response),
     };
-    final log = _buildLogBlock(
-      'HTTP RESPONSE',
-      response.requestOptions.method,
-      payload,
-    );
+    final log = _buildLogBlock('HTTP RESPONSE', response.requestOptions.method, payload);
     if ((response.statusCode ?? 0) >= 400) {
       AppLogger.w(log);
     } else {
@@ -59,18 +70,14 @@ class AppNetworkLoggerInterceptor extends Interceptor {
       'type': err.type.name,
       'message': _resolveDioMessage(err),
       if (err.error != null) 'error': err.error.toString(),
-      if (elapsedMs != null) 'durationMs': elapsedMs,
+      'durationMs': ?elapsedMs,
       'contentType': err.requestOptions.contentType,
       'headers': _sanitizeHeaders(err.requestOptions.headers),
-      if (err.requestOptions.queryParameters.isNotEmpty)
-        'query': err.requestOptions.queryParameters,
+      if (err.requestOptions.queryParameters.isNotEmpty) 'query': err.requestOptions.queryParameters,
       if (err.requestOptions.data != null) 'body': _safeBody(err.requestOptions.data),
-      'response': _safeBody(err.response?.data),
+      if (err.response != null) 'response': _logResponsePayload(err.response!),
     };
-    AppLogger.e(
-      _buildLogBlock('HTTP ERROR', err.requestOptions.method, payload),
-      stackTrace: err.stackTrace,
-    );
+    AppLogger.e(_buildLogBlock('HTTP ERROR', err.requestOptions.method, payload), stackTrace: err.stackTrace);
     handler.next(err);
   }
 
@@ -79,13 +86,25 @@ class AppNetworkLoggerInterceptor extends Interceptor {
       final normalizedKey = key.toLowerCase();
       if (normalizedKey == 'authorization' || normalizedKey == 'cookie') {
         final token = value?.toString() ?? '';
-        final masked = token.length <= 16
-            ? '***'
-            : '${token.substring(0, 12)}...${token.substring(token.length - 4)}';
+        final masked = token.length <= 16 ? '***' : '${token.substring(0, 12)}...${token.substring(token.length - 4)}';
         return MapEntry(key, masked);
       }
       return MapEntry(key, value);
     });
+  }
+
+  /// [ResponseType.bytes] / [ResponseType.stream] tanani butunlay JSON qilib loglamaslik — PDF katta bo‘lsa debug juda sekinlashadi.
+  dynamic _logResponsePayload(Response<dynamic> response) {
+    final rt = response.requestOptions.responseType;
+    if (rt == ResponseType.bytes || rt == ResponseType.stream) {
+      final d = response.data;
+      if (d == null) return null;
+      if (d is List<int>) {
+        return '<binary body, ${d.length} bytes>';
+      }
+      return '<binary body, type=${d.runtimeType}>';
+    }
+    return _safeBody(response.data);
   }
 
   dynamic _safeBody(dynamic data) {
@@ -93,19 +112,14 @@ class AppNetworkLoggerInterceptor extends Interceptor {
 
     if (data is FormData) {
       return <String, dynamic>{
-        'fields': Map<String, String>.fromEntries(
-          data.fields.map((field) => MapEntry(field.key, field.value)),
-        ),
-        'files': data.files
-            .map(
-              (file) => <String, dynamic>{
-                'key': file.key,
-                'filename': file.value.filename,
-                'contentType': file.value.contentType?.toString(),
-              },
-            )
-            .toList(growable: false),
+        'fields': Map<String, String>.fromEntries(data.fields.map((field) => MapEntry(field.key, field.value))),
+        'files': data.files.map((file) => <String, dynamic>{'key': file.key, 'filename': file.value.filename, 'contentType': file.value.contentType?.toString()}).toList(growable: false),
       };
+    }
+
+    // Dio [ResponseType.bytes] ba'zan [List<int>] / [Uint8List] — [List] dan oldin tutib qo'yamiz.
+    if (data is List<int>) {
+      return '<binary body, ${data.length} bytes>';
     }
 
     if (data is Map || data is List) {
@@ -150,14 +164,16 @@ class AppNetworkLoggerInterceptor extends Interceptor {
   }
 
   String _truncate(String value) {
-    if (value.length <= maxBodyLength) return value;
-    return '${value.substring(0, maxBodyLength)} ...<truncated>';
+    final limit = maxBodyLength;
+    if (limit == null || value.length <= limit) return value;
+    return '${value.substring(0, limit)} ...<truncated>';
   }
 
   dynamic _truncateStructured(dynamic data) {
     try {
       final encoded = _prettyEncode(data);
-      if (encoded.length <= maxBodyLength) return data;
+      final limit = maxBodyLength;
+      if (limit == null || encoded.length <= limit) return data;
       return _truncate(encoded);
     } catch (_) {
       return _truncate(data.toString());

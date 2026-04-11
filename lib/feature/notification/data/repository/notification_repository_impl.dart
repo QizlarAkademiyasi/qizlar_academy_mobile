@@ -15,7 +15,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   void _ensureRegistered() {
     if (_authSessionCubit.state.isAnonymous) {
-      throw StateError('Notifications are available only for registered users.');
+      throw StateError(
+        'Notifications are available only for registered users.',
+      );
     }
   }
 
@@ -32,9 +34,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<List<NotificationSectionModel>> markAsRead({
-    required String notificationId,
-  }) {
+  Future<void> markAsRead({required String notificationId}) {
     _ensureRegistered();
     return _apiDatasource.markAsRead(notificationId: notificationId);
   }

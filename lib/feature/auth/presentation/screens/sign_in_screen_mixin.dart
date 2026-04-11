@@ -148,12 +148,71 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
     context.go(Routes.main);
   }
 
-  void onTelegramTap() {
-    AppToast.info(
-      context,
-      title: context.l10n.comingSoonTitle,
-      message: context.l10n.telegramSignInComingSoonMessage,
-    );
+  Future<void> onTelegramTap({required String localPhone}) async {
+    final normalizedPhone = _digitsOnly(localPhone);
+    if (normalizedPhone.length != SignInPhoneField.nationalDigitsLength) {
+      AppToast.warning(
+        context,
+        title: context.l10n.signInPhoneTitle,
+        message: context.l10n.signInPhoneIncompleteMessage,
+      );
+      return;
+    }
+
+    final fullPhone = '998$normalizedPhone';
+    try {
+      final bot = await getIt<AuthSessionCubit>().requestTelegramBotOtpForPhone(phone: fullPhone);
+      if (!mounted) return;
+
+      final uri = Uri.tryParse(bot.link.trim());
+      final schemeOk = uri != null &&
+          uri.hasScheme &&
+          (uri.scheme == 'https' || uri.scheme == 'http' || uri.scheme == 'tg');
+      if (!schemeOk) {
+        AppToast.error(context, message: context.l10n.telegramSignInInvalidLinkMessage);
+        return;
+      }
+
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!mounted) return;
+      if (!launched) {
+        AppToast.error(context, message: context.l10n.telegramSignInLaunchFailedMessage);
+        return;
+      }
+
+      AppToast.info(
+        context,
+        title: context.l10n.telegramSignInOpenBotTitle,
+        message: context.l10n.telegramSignInEnterCodeHintMessage,
+      );
+
+      if (!mounted) return;
+      context.push(
+        Routes.verification,
+        extra: VerificationArgs(phone: fullPhone, keyHash: bot.keyHash),
+      );
+    } on DioException catch (error, stackTrace) {
+      AppLogger.e(
+        'Telegram bot OTP request failed',
+        error: _buildDioLogPayload(error),
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return;
+      final message = isAuthOtpPhoneThrottledResponse(error)
+          ? context.l10n.authOtpTooManyRequestsMessage
+          : isAuthOtpPhoneOperatorRestrictedResponse(error)
+          ? context.l10n.authPhoneOperatorRestrictedMessage
+          : context.l10n.connectionErrorMessage;
+      AppToast.error(context, message: message);
+    } catch (error, stackTrace) {
+      AppLogger.e(
+        'Unexpected Telegram bot OTP request failure',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return;
+      AppToast.error(context, message: context.l10n.connectionErrorMessage);
+    }
   }
 
   Widget buildPhoneField(
@@ -177,11 +236,16 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
     );
   }
 
-  Widget buildTelegramButton(BuildContext context) {
+  Widget buildTelegramButton(
+    BuildContext context, {
+    bool isLoading = false,
+    VoidCallback? onPressed,
+  }) {
     return SignInSocialButton(
       provider: SignInSocialProvider.telegram,
       label: context.l10n.signInWithTelegram,
-      onPressed: onTelegramTap,
+      onPressed: onPressed,
+      isLoading: isLoading,
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
+import 'package:qizlar_academy_mobile/core/format/course_duration_format.dart';
 import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/data/datasource/courses_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_details_model.dart';
@@ -26,7 +27,7 @@ class CoursesApiDatasource implements CoursesDatasource {
     final data = _asMap(envelope['data']);
 
     final teacher = _asMap(data['teacher']);
-    final totalDurationSeconds = _parseInt(data['totalDuration']);
+    final totalDurationMinutes = _parseInt(data['totalDuration']);
     final modulesRaw = _asList(data['modules']);
     var lessonsCount = _parseInt(data['lessonCount']);
     if (lessonsCount <= 0) {
@@ -50,7 +51,6 @@ class CoursesApiDatasource implements CoursesDatasource {
             progressText: progressText,
             totalDurationText: _formatDurationCompact(moduleDurationSeconds),
             lessons: lessons,
-            isExpandedByDefault: true,
           );
         })
         .toList(growable: false);
@@ -100,12 +100,12 @@ class CoursesApiDatasource implements CoursesDatasource {
       rating: _parseDouble(data['avgRating']),
       reviewsCount: _parseInt(data['totalRatings']),
       studentsCount: _parseInt(data['enrollmentCount']),
-      totalDurationText: _formatDurationCompact(totalDurationSeconds),
+      totalDurationText: CourseDurationFormat.compactFromApiMinutes(totalDurationMinutes),
       lessonsCount: lessonsCount,
       progressRatio: progressRatio,
       progressLessonsText: userType == UserType.user ? '$completedLessonCount/$lessonsCount dars' : '',
       progressSeenText: userType == UserType.user ? '$completedLessonCount ta dars ko‘rilgan' : '',
-      progressDurationText: _formatDurationCompact(totalDurationSeconds),
+      progressDurationText: CourseDurationFormat.compactFromApiMinutes(totalDurationMinutes),
       description: (data['description'] ?? data['shortDescription'] ?? '').toString(),
       teacherDescription: '',
       ratingBreakdown: ratingBreakdown,
@@ -252,9 +252,16 @@ class CoursesApiDatasource implements CoursesDatasource {
           lessonRaw['quiz_correct_count'],
     );
 
-    final isAttempted = userType == UserType.user && lessonRaw['isAttempted'] == true;
-    final quizPassedFlag =
-        userType == UserType.user && _parseBool(lessonRaw['quizPassed'] ?? lessonRaw['quiz_passed'] ?? lessonRaw['isQuizPassed']);
+    final isAttempted = userType == UserType.user && _parseBool(lessonRaw['isAttempted'] ?? lessonRaw['is_attempted']);
+    final explicitQuizPassed = userType == UserType.user && _parseBool(lessonRaw['quizPassed'] ?? lessonRaw['quiz_passed'] ?? lessonRaw['isQuizPassed']);
+    final inferredPassFromScore = userType == UserType.user &&
+        isAttempted &&
+        totalQ != null &&
+        totalQ > 0 &&
+        correctA != null &&
+        correctA >= totalQ;
+    // Backend: `isAttempted: true` testdan muvaffaqiyatli o‘tganligi (yakunlangan) ni bildiradi.
+    final quizPassedFlag = explicitQuizPassed || inferredPassFromScore || isAttempted;
 
     return CourseLessonModel(
       id: lessonId,
@@ -281,14 +288,7 @@ class CoursesApiDatasource implements CoursesDatasource {
     return '$totalMinutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
-  String _formatDurationCompact(int seconds) {
-    if (seconds <= 0) return '0m';
-    final hours = seconds ~/ 3600;
-    final minutes = (seconds % 3600) ~/ 60;
-    if (hours <= 0) return '${minutes}m';
-    if (minutes == 0) return '${hours}s';
-    return '${hours}s ${minutes}m';
-  }
+  String _formatDurationCompact(int seconds) => CourseDurationFormat.compactFromTotalSeconds(seconds);
 
   int _parseDurationFromLabel(String label) {
     // label is `m:ss` from _formatDurationSeconds
@@ -321,6 +321,7 @@ class CoursesApiDatasource implements CoursesDatasource {
       final rating = _parseReviewStarRating(m['rating'] ?? m['stars'] ?? m['score']);
       final commentRaw = (m['comment'] ?? m['text'] ?? m['body'] ?? m['content'] ?? m['message'] ?? '').toString();
       final commentHtml = _commentToDisplayHtml(commentRaw);
+      final photoRaw = _reviewUserPhotoUrl(m, user);
       var id = (m['id'] ?? '').toString();
       if (id.isEmpty) {
         id = 'review_${i}_${userName.hashCode}';
@@ -331,6 +332,7 @@ class CoursesApiDatasource implements CoursesDatasource {
           id: id,
           userName: userName.isEmpty ? '—' : userName,
           userInitials: _initialsFromFullName(userName),
+          userPhotoUrl: photoRaw.isEmpty ? null : photoRaw,
           createdAt: _parseDateTime(m['createdAt'] ?? m['created_at'] ?? m['date'] ?? m['updatedAt'] ?? m['updated_at']),
           rating: rating,
           commentHtml: commentHtml,
@@ -338,6 +340,29 @@ class CoursesApiDatasource implements CoursesDatasource {
       );
     }
     return out;
+  }
+
+  String _reviewUserPhotoUrl(Map<String, dynamic> m, Map<String, dynamic> user) {
+    for (final v in [
+      m['photo'],
+      m['userPhoto'],
+      m['user_photo'],
+      m['avatar'],
+      m['avatarUrl'],
+      m['avatar_url'],
+      m['image'],
+      user['photo'],
+      user['userPhoto'],
+      user['user_photo'],
+      user['avatar'],
+      user['avatarUrl'],
+      user['avatar_url'],
+      user['image'],
+    ]) {
+      final s = v?.toString().trim() ?? '';
+      if (s.isNotEmpty) return s;
+    }
+    return '';
   }
 
   int _parseReviewStarRating(dynamic value) {

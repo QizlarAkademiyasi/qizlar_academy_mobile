@@ -5,7 +5,5 @@ abstract interface class NotificationRepository {
 
   Future<List<NotificationSectionModel>> markAllAsRead();
 
-  Future<List<NotificationSectionModel>> markAsRead({
-    required String notificationId,
-  });
+  Future<void> markAsRead({required String notificationId});
 }

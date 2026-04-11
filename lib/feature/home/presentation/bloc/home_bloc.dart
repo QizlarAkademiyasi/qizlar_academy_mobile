@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
@@ -18,6 +19,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     this._authSessionCubit,
   ) : super(const HomeState()) {
     on<HomeStarted>(_onHomeStarted);
+    on<HomeUserGreetingRefreshRequested>(_onUserGreetingRefreshRequested);
   }
 
   final HomeRepository _repository;
@@ -42,9 +44,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await Future.wait<void>([
         _loadCategories(emit).catchError((error, stackTrace) {
           failure ??= error;
+          AppLogger.e('HomeBloc: load categories failed', error: error, stackTrace: stackTrace);
         }),
         _loadMainContent(emit).catchError((error, stackTrace) {
           failure ??= error;
+          AppLogger.e('HomeBloc: load main content failed', error: error, stackTrace: stackTrace);
         }),
       ]);
 
@@ -52,15 +56,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(
           state.copyWith(
             status: HomeStatus.failure,
-            message: failure.toString(),
+            message: null,
           ),
         );
         return;
       }
 
       emit(state.copyWith(status: HomeStatus.success, message: null));
-    } catch (error) {
-      emit(state.copyWith(status: HomeStatus.failure, message: error.toString()));
+    } catch (error, stackTrace) {
+      AppLogger.e('HomeBloc: home started failed', error: error, stackTrace: stackTrace);
+      emit(state.copyWith(status: HomeStatus.failure, message: null));
     }
   }
 
@@ -79,25 +84,33 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _loadMainContent(Emitter<HomeState> emit) async {
-    Future<String> loadUserGreetingName() async {
-      if (!_authSessionCubit.state.isRegistered) return '';
-      try {
-        final overview = await _profileRepository.getProfileOverview();
-        final first = overview.user.firstName.trim();
-        if (first.isNotEmpty) return first;
-        final full = overview.user.fullName.trim();
-        if (full.isNotEmpty) return full;
-      } catch (_) {}
-      return '';
-    }
+  Future<String> _loadUserGreetingName() async {
+    if (!_authSessionCubit.state.isRegistered) return '';
+    try {
+      final overview = await _profileRepository.getProfileOverview();
+      final first = overview.user.firstName.trim();
+      if (first.isNotEmpty) return first;
+      final full = overview.user.fullName.trim();
+      if (full.isNotEmpty) return full;
+    } catch (_) {}
+    return '';
+  }
 
+  Future<void> _onUserGreetingRefreshRequested(
+    HomeUserGreetingRefreshRequested event,
+    Emitter<HomeState> emit,
+  ) async {
+    final name = await _loadUserGreetingName();
+    emit(state.copyWith(userGreetingName: name));
+  }
+
+  Future<void> _loadMainContent(Emitter<HomeState> emit) async {
     final results = await Future.wait<Object?>([
       _repository.getStats(),
       _repository.getTeachers(),
       _repository.getCourses(),
       _repository.getBanners(),
-      loadUserGreetingName(),
+      _loadUserGreetingName(),
     ]);
     emit(
       state.copyWith(

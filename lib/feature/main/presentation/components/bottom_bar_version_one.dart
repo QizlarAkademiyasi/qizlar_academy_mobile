@@ -5,28 +5,9 @@ import 'dart:math' as math;
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
-import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
-
-Widget _buildProfileTabIcon(BuildContext context, {required bool selected}) {
-  return Container(
-    width: 24,
-    height: 24,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      image: DecorationImage(image: AssetImage(UiKitAssets.images.logo.path)),
-    ),
-
-    child: ClipOval(
-      child: UiKitAssets.images.logo.image(
-        fit: BoxFit.cover,
-        color: selected
-            ? context.appColors.bigOpacity.withValues(alpha: 0.1)
-            : context.appColors.bigOpacity.withValues(alpha: 0.6),
-      ),
-    ),
-  );
-}
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_profile_tab_icon.dart';
 
 /// Creates a jelly transform matrix based on velocity for organic squash and stretch effect
 Matrix4 buildJellyTransform({
@@ -714,7 +695,12 @@ class GlassBottomNavigationVersionOne extends StatelessWidget {
       ),
       LiquidGlassBottomBarTab(
         label: l10n.mainTabProfile,
-        iconBuilder: (_, color, size, selected) => _buildProfileTabIcon(context, selected: selected),
+        iconBuilder: (ctx, color, size, selected) => MainBottomNavProfileTabIcon(
+          isGuestMode: false,
+          selected: selected,
+          selectedColor: ctx.appColors.primary,
+          unselectedColor: ctx.appColors.bottomBarTabUnselected,
+        ),
       ),
     ];
   }
