@@ -77,6 +77,8 @@ import 'package:qizlar_academy_mobile/feature/certificates/domain/repository/cou
 import 'package:qizlar_academy_mobile/feature/certificates/domain/repository/my_certificates_repository.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/bloc/my_certificates_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/presentation/bloc/my_courses_bloc.dart';
+import 'package:qizlar_academy_mobile/core/deeplink/app_deep_link_coordinator.dart';
+import 'package:qizlar_academy_mobile/core/deeplink/app_deep_link_parser.dart';
 import 'package:qizlar_academy_mobile/core/push/push_messaging_service.dart';
 import 'package:qizlar_academy_mobile/firebase_options.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
@@ -130,6 +132,15 @@ Future<void> setupLocator() async {
   getIt.registerSingleton<GoRouter>(
     AppRoute.createRouter(getIt<AuthSessionCubit>()),
   );
+
+  getIt.registerSingleton<AppDeepLinkParser>(AppDeepLinkParser());
+  getIt.registerSingleton<AppDeepLinkCoordinator>(
+    AppDeepLinkCoordinator(
+      router: getIt<GoRouter>(),
+      parser: getIt<AppDeepLinkParser>(),
+    ),
+  );
+  await getIt<AppDeepLinkCoordinator>().start();
 
   getIt.registerLazySingleton<HomeApiDatasource>(
     () => HomeApiDatasource(getIt<Dio>()),
@@ -319,7 +330,10 @@ Future<void> setupLocator() async {
   );
 
   getIt.registerSingleton<PushMessagingService>(
-    PushMessagingService(getIt<SharedPreferences>()),
+    PushMessagingService(
+      getIt<SharedPreferences>(),
+      getIt<AppDeepLinkCoordinator>(),
+    ),
   );
   await getIt<PushMessagingService>().initialize();
 }

@@ -220,6 +220,14 @@ class AppLocalizationsUz extends AppLocalizations {
       'Kurs ma\'lumotlarini yuklashda xatolik.';
 
   @override
+  String get courseDetailsShareTooltip => 'Kursni ulashish';
+
+  @override
+  String courseDetailsShareMessage(String title, String link) {
+    return '$title\n$link';
+  }
+
+  @override
   String get editProfileLoadError =>
       'Profil ma\'lumotlarini yuklashda xatolik.';
 

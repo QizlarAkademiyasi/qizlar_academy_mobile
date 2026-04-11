@@ -4,12 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_keys.dart';
 import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
+import 'package:qizlar_academy_mobile/core/deeplink/app_deep_link_coordinator.dart';
 
 /// Firebase Cloud Messaging: ruxsatlar, token saqlash, foreground’da lokal bildirishnoma.
 class PushMessagingService {
-  PushMessagingService(this._prefs);
+  PushMessagingService(this._prefs, this._deepLinks);
 
   final SharedPreferences _prefs;
+  final AppDeepLinkCoordinator _deepLinks;
   final FlutterLocalNotificationsPlugin _local =
       FlutterLocalNotificationsPlugin();
 
@@ -39,6 +41,24 @@ class PushMessagingService {
       onDidReceiveNotificationResponse: _onNotificationResponse,
     );
 
+    // Foregroundda ko‘rsatilgan lokal bildirishnoma orqali ilova o‘chiq holda ochilganda
+    // [FirebaseMessaging.getInitialMessage] bo‘sh bo‘ladi — marshrut shu yerda keladi.
+    try {
+      final launchDetails = await _local.getNotificationAppLaunchDetails();
+      if (launchDetails?.didNotificationLaunchApp ?? false) {
+        _handleNotificationPayload(
+          launchDetails!.notificationResponse?.payload,
+          source: 'local_notification_cold_start',
+        );
+      }
+    } catch (e, st) {
+      AppLogger.e(
+        'getNotificationAppLaunchDetails failed',
+        error: e,
+        stackTrace: st,
+      );
+    }
+
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       await _local
           .resolvePlatformSpecificImplementation<
@@ -62,6 +82,21 @@ class PushMessagingService {
     FirebaseMessaging.instance.onTokenRefresh.listen(_persistToken);
 
     FirebaseMessaging.onMessage.listen(_onForegroundMessage);
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _deepLinks.handlePushData(
+        Map<String, dynamic>.from(message.data),
+        source: 'fcm_on_message_opened_app',
+      );
+    });
+
+    final initialOpened = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialOpened != null) {
+      _deepLinks.handlePushData(
+        Map<String, dynamic>.from(initialOpened.data),
+        source: 'fcm_get_initial_message',
+      );
+    }
 
     if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
@@ -213,12 +248,25 @@ class PushMessagingService {
   }
 
   void _onNotificationResponse(NotificationResponse response) {
-    final payload = response.payload;
+    _handleNotificationPayload(
+      response.payload,
+      source: 'local_notification_tap',
+    );
+  }
+
+  void _handleNotificationPayload(String? payload, {required String source}) {
     if (payload == null || payload.isEmpty) {
       return;
     }
     try {
-      jsonDecode(payload);
+      final decoded = jsonDecode(payload);
+      if (decoded is Map) {
+        final map = <String, dynamic>{};
+        decoded.forEach((Object? k, Object? v) {
+          map[k.toString()] = v;
+        });
+        _deepLinks.handlePushData(map, source: source);
+      }
     } catch (e, st) {
       AppLogger.e(
         'Push notification payload decode failed',
@@ -229,6 +277,15 @@ class PushMessagingService {
   }
 
   Future<void> _onForegroundMessage(RemoteMessage message) async {
+    // Ilova ochiq: marshrutni faqat lokal notifikatsiya bosilishiga bog‘lash ba’zi
+    // qurilmalarda ishlamay qoladi — `data` bo‘lsa darhol yo‘naltiramiz.
+    if (message.data.isNotEmpty) {
+      _deepLinks.handlePushData(
+        Map<String, dynamic>.from(message.data),
+        source: 'fcm_foreground_on_message',
+      );
+    }
+
     final notification = message.notification;
     if (notification == null) {
       return;

@@ -217,6 +217,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn’t load course details. Please try again.';
 
   @override
+  String get courseDetailsShareTooltip => 'Share course';
+
+  @override
+  String courseDetailsShareMessage(String title, String link) {
+    return '$title\n$link';
+  }
+
+  @override
   String get editProfileLoadError =>
       'Couldn’t load profile information. Please try again.';
 

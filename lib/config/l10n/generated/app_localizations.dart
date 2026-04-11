@@ -472,6 +472,18 @@ abstract class AppLocalizations {
   /// **'Couldn’t load course details. Please try again.'**
   String get courseDetailsLoadError;
 
+  /// No description provided for @courseDetailsShareTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share course'**
+  String get courseDetailsShareTooltip;
+
+  /// No description provided for @courseDetailsShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}\n{link}'**
+  String courseDetailsShareMessage(String title, String link);
+
   /// No description provided for @editProfileLoadError.
   ///
   /// In en, this message translates to:

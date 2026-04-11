@@ -218,6 +218,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось загрузить данные курса. Попробуйте ещё раз.';
 
   @override
+  String get courseDetailsShareTooltip => 'Поделиться курсом';
+
+  @override
+  String courseDetailsShareMessage(String title, String link) {
+    return '$title\n$link';
+  }
+
+  @override
   String get editProfileLoadError =>
       'Не удалось загрузить данные профиля. Попробуйте ещё раз.';
 

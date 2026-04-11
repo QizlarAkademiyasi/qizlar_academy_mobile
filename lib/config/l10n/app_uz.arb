@@ -62,6 +62,14 @@
   "notificationListLoadError": "Bildirishnomalarni yuklashda xatolik yuz berdi.",
   "notificationActionError": "Bildirishnomalarni yangilashda xatolik yuz berdi.",
   "courseDetailsLoadError": "Kurs ma'lumotlarini yuklashda xatolik.",
+  "courseDetailsShareTooltip": "Kursni ulashish",
+  "courseDetailsShareMessage": "{title}\n{link}",
+  "@courseDetailsShareMessage": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "link": {"type": "String"}
+    }
+  },
   "editProfileLoadError": "Profil ma'lumotlarini yuklashda xatolik.",
   "editProfileSaveError": "Ma'lumotlarni saqlab bo'lmadi. Qayta urinib ko'ring.",
   "coursesAllTitle": "Barcha kurslar",

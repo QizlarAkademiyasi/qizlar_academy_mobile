@@ -76,6 +76,14 @@
   "notificationListLoadError": "Couldn’t load notifications. Please try again.",
   "notificationActionError": "Couldn’t update notifications. Please try again.",
   "courseDetailsLoadError": "Couldn’t load course details. Please try again.",
+  "courseDetailsShareTooltip": "Share course",
+  "courseDetailsShareMessage": "{title}\n{link}",
+  "@courseDetailsShareMessage": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "link": {"type": "String"}
+    }
+  },
   "editProfileLoadError": "Couldn’t load profile information. Please try again.",
   "editProfileSaveError": "Couldn’t save changes. Please try again.",
   "coursesAllTitle": "All courses",

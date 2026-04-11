@@ -62,6 +62,14 @@
   "notificationListLoadError": "Не удалось загрузить уведомления. Попробуйте ещё раз.",
   "notificationActionError": "Не удалось обновить уведомления. Попробуйте ещё раз.",
   "courseDetailsLoadError": "Не удалось загрузить данные курса. Попробуйте ещё раз.",
+  "courseDetailsShareTooltip": "Поделиться курсом",
+  "courseDetailsShareMessage": "{title}\n{link}",
+  "@courseDetailsShareMessage": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "link": {"type": "String"}
+    }
+  },
   "editProfileLoadError": "Не удалось загрузить данные профиля. Попробуйте ещё раз.",
   "editProfileSaveError": "Не удалось сохранить изменения. Попробуйте ещё раз.",
   "coursesAllTitle": "Все курсы",

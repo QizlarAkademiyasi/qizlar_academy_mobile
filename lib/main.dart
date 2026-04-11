@@ -13,7 +13,7 @@ void main() {
   // main_dev.dart yoki main_prod.dart orqali ishga tushirilmagan bo'lsa,
   // prod konfiguratsiya bilan ishga tushiriladi.
   if (!EnvConfig.isInitialized) {
-    EnvConfig.initialize(appName: 'Qizlar Akademiyasi', flavor: AppFlavors.dev);
+    EnvConfig.initialize(appName: 'Qizlar Akademiyasi', flavor: AppFlavors.prod);
   }
 
   runZonedGuarded<Future<void>>(

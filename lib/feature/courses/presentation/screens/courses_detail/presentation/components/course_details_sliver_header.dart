@@ -1,12 +1,20 @@
+import 'dart:ui';
+
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_details_model.dart';
 
 /// Kurs detali hero: fon rasmi, pastga qorayuvchi gradient, shisha orqaga, pastda kategoriya + sarlavha + o‘qituvchi.
 class CourseDetailsSliverHeader extends StatelessWidget {
-  const CourseDetailsSliverHeader({super.key, required this.course});
+  const CourseDetailsSliverHeader({
+    super.key,
+    required this.course,
+    required this.onShareTap,
+  });
 
   final CourseDetailsModel course;
+  final VoidCallback onShareTap;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +60,14 @@ class CourseDetailsSliverHeader extends StatelessWidget {
               top: topInset + 10,
               left: 16,
               child: AppBackButton.glass(onTap: () => context.pop()),
+            ),
+            Positioned(
+              top: topInset + 10,
+              right: 16,
+              child: Tooltip(
+                message: context.l10n.courseDetailsShareTooltip,
+                child: _CourseDetailsShareGlassButton(onTap: onShareTap),
+              ),
             ),
 
             Positioned(
@@ -143,6 +159,44 @@ class CourseDetailsSliverHeader extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CourseDetailsShareGlassButton extends StatelessWidget {
+  const _CourseDetailsShareGlassButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Bounce(
+      onTap: () {
+        Gaimon.light();
+        onTap();
+      },
+      child: ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.black.withValues(alpha: 0.22),
+              border: Border.all(
+                color: AppColors.white.withValues(alpha: 0.14),
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              LucideIcons.share2,
+              color: AppColors.white,
+              size: 20,
+            ),
+          ),
         ),
       ),
     );

@@ -10,6 +10,7 @@ export 'package:firebase_messaging/firebase_messaging.dart';
 export 'package:flutter_local_notifications/flutter_local_notifications.dart';
 export 'package:permission_handler/permission_handler.dart';
 export 'package:go_router/go_router.dart';
+export 'package:app_links/app_links.dart';
 export 'package:flutter_bloc/flutter_bloc.dart';
 export 'package:get_it/get_it.dart';
 export 'package:intl/intl.dart' hide TextDirection;

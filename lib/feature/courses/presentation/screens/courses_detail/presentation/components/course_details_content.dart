@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
+import 'package:qizlar_academy_mobile/config/constants/app_share_links.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
@@ -134,6 +135,13 @@ class _CourseDetailsContentState extends State<CourseDetailsContent> with Ticker
     return null;
   }
 
+  Future<void> _onShareCourse() async {
+    if (!mounted) return;
+    final url = AppShareLinks.courseDetailsHttpsUrl(widget.course.id);
+    final text = context.l10n.courseDetailsShareMessage(widget.course.title, url);
+    await SharePlus.instance.share(ShareParams(text: text));
+  }
+
   Widget _tabScrollable({required CoursesTab tab, required EdgeInsets padding, required Widget child}) {
     return AppStaggeredScrollLimiter(
       key: ValueKey<String>('course_detail_tab_${identityHashCode(widget.course)}_${tab.name}'),
@@ -173,7 +181,10 @@ class _CourseDetailsContentState extends State<CourseDetailsContent> with Ticker
             child: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
-                  CourseDetailsSliverHeader(course: widget.course),
+                  CourseDetailsSliverHeader(
+                    course: widget.course,
+                    onShareTap: _onShareCourse,
+                  ),
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),

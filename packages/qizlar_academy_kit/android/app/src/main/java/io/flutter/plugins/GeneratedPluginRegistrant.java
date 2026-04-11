@@ -16,6 +16,11 @@ public final class GeneratedPluginRegistrant {
   private static final String TAG = "GeneratedPluginRegistrant";
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
     try {
+      flutterEngine.getPlugins().add(new com.llfbandit.app_links.AppLinksPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin app_links, com.llfbandit.app_links.AppLinksPlugin", e);
+    }
+    try {
       flutterEngine.getPlugins().add(new com.appinio.socialshare.appinio_social_share.AppinioSocialSharePlugin());
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin appinio_social_share, com.appinio.socialshare.appinio_social_share.AppinioSocialSharePlugin", e);

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
+import 'package:qizlar_academy_mobile/core/deeplink/app_deep_link_coordinator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/splash/presentation/screens/splash_screen_mixin.dart';
@@ -85,6 +86,12 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       await delay;
     }
     if (!mounted) return;
+    final deferred = getIt<AppDeepLinkCoordinator>().consumeDeferredPushNavigation();
+    if (deferred != null && deferred.isNotEmpty) {
+      if (!mounted) return;
+      context.go(deferred);
+      return;
+    }
     final session = cubit.state;
     if (!session.isRegistered) {
       context.go(Routes.main);

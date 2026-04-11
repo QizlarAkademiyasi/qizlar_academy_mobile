@@ -42,6 +42,10 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
+        // App Links host — `android/local.properties` da `deeplink.host=sizning.domen` (ixtiyoriy).
+        // Default host: lib/config/constants/app_deep_link_config.dart → defaultUniversalLinkHost bilan bir xil.
+        manifestPlaceholders["deepLinkHost"] =
+            localProperties.getProperty("deeplink.host") ?: "link.qizlarakademiyasi.uz"
     }
 
     flavorDimensions += "flavors"
