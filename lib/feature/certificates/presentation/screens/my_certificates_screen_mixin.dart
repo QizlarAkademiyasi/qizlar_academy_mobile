@@ -131,6 +131,7 @@ mixin MyCertificatesScreenMixin<T extends StatefulWidget> on State<T> {
       description: l10n.certificatesSheetDescription,
       downloadLabel: l10n.certificatesSheetDownload,
       onDownload: () => onCertificateShareOrDownload(parentContext, item),
+      instagramStoryLabel: l10n.certificatesSheetInstagramStory,
       onInstagramStory: item.courseId.trim().isEmpty ? null : () => onCertificateInstagramStoryShare(parentContext, item),
       onShare: () => onCertificateImageShare(parentContext, item),
     );

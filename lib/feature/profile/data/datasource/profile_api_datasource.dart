@@ -5,6 +5,7 @@ import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_da
 import 'package:qizlar_academy_mobile/feature/profile/domain/exception/profile_registration_required_exception.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_language_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_menu_item_model.dart';
+import 'package:qizlar_academy_mobile/config/enum/education_type.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_user_public_model.dart';
 
@@ -81,6 +82,11 @@ class ProfileApiDatasource implements ProfileDatasource {
   }
 
   @override
+  Future<void> deleteMyAccount() async {
+    await _dio.delete<dynamic>(UserApis.userMe);
+  }
+
+  @override
   Future<String> uploadProfilePhoto(String localFilePath) async {
     final segments = localFilePath.replaceAll(r'\', '/').split('/');
     final filename = segments.isNotEmpty ? segments.last : 'photo.jpg';
@@ -136,22 +142,31 @@ class ProfileApiDatasource implements ProfileDatasource {
     return overview.copyWith(notificationsEnabled: enabled);
   }
 
+  Map<String, dynamic>? _educationPayload(Map<String, dynamic> data) {
+    final direct = _asMapOrNull(data['education']);
+    if (direct != null) return direct;
+    return _asMapOrNull(data['educaton']);
+  }
+
   ProfileOverviewModel _mapOverview(Map<String, dynamic> data) {
     final firstName = (data['firstname'] ?? '').toString().trim();
     final lastName = (data['lastname'] ?? '').toString().trim();
     final fullName = '$firstName $lastName'.trim();
     final points = _parseInt(data['points']);
-    final education = _asMapOrNull(data['educaton']);
+    final occupation = (data['occupation'] ?? '').toString().trim();
+    final education = _educationPayload(data);
     final educationRegion = _asMapOrNull(education?['region']);
     final educationDistrict = _asMapOrNull(education?['district']);
-    final educationType = (education?['type'] ?? '').toString();
+    final educationTypeRaw = (education?['type'] ?? '').toString().trim();
+    final educationTypeLabel = EducationType.tryParseFromApi(educationTypeRaw)?.label ?? educationTypeRaw;
     final educationOrganization = (education?['organization'] ?? '').toString();
     final educationLocation = [
       (educationRegion?['name'] ?? '').toString(),
       (educationDistrict?['name'] ?? '').toString(),
     ].where((item) => item.trim().isNotEmpty).join(', ');
     final profileInfoSubtitle = [
-      if (educationType.isNotEmpty) educationType,
+      if (occupation.isNotEmpty) occupation,
+      if (educationTypeLabel.isNotEmpty) educationTypeLabel,
       if (educationOrganization.isNotEmpty) educationOrganization,
       if (educationLocation.isNotEmpty) educationLocation,
     ].join(' • ');
@@ -211,6 +226,49 @@ class ProfileApiDatasource implements ProfileDatasource {
             : null);
     final rating = ratingRaw ?? (points != 0 ? points : null);
 
+    final address = _asMapOrNull(data['address']);
+
+    // regionId: address.region.id yoki address.regionId yoki data.regionId
+    final addressRegion = _asMapOrNull(address?['region']);
+    final parsedRegionId = _firstPositiveInt([
+      addressRegion?['id'],
+      addressRegion?['kod'],
+      address?['regionId'],
+      address?['region_id'],
+      data['regionId'],
+      data['region_id'],
+    ]);
+    final parsedRegionName = _addressFieldLabel(address?['region']);
+
+    final addressDistrict = _asMapOrNull(address?['district']);
+    final parsedDistrictId = _firstPositiveInt([
+      addressDistrict?['id'],
+      addressDistrict?['kod'],
+      address?['districtId'],
+      address?['district_id'],
+      data['districtId'],
+      data['district_id'],
+    ]);
+    final parsedDistrictName = _addressFieldLabel(address?['district']);
+
+    final addressNeighborhood = _asMapOrNull(address?['neighborhood']);
+    final parsedNeighborhoodId = _firstPositiveInt([
+      addressNeighborhood?['id'],
+      addressNeighborhood?['kod'],
+      address?['neighborhoodId'],
+      address?['neighborhood_id'],
+      data['neighborhoodId'],
+      data['neighborhood_id'],
+    ]);
+    final parsedNeighborhoodName = _addressFieldLabel(address?['neighborhood']);
+
+    // Tug'ilgan sana
+    final birthdayRaw = (data['birthday'] ?? '').toString().trim();
+    final birthday = birthdayRaw.isNotEmpty ? DateTime.tryParse(birthdayRaw) : null;
+
+    // Ta'lim turi
+    final educationTypeParsed = EducationType.tryParseFromApi(educationTypeRaw);
+
     return ProfileOverviewModel(
       user: ProfileUserModel(
         firstName: firstName,
@@ -219,7 +277,16 @@ class ProfileApiDatasource implements ProfileDatasource {
         userId: (data['id'] ?? '').toString(),
         phoneNumber: phoneRaw,
         avatarUrl: (data['photo'] ?? '').toString(),
+        occupation: occupation,
         badgeId: _parseBadgeId(data['badge']),
+        birthday: birthday,
+        regionId: parsedRegionId,
+        regionName: parsedRegionName,
+        districtId: parsedDistrictId,
+        districtName: parsedDistrictName,
+        neighborhoodId: parsedNeighborhoodId,
+        neighborhoodName: parsedNeighborhoodName,
+        educationType: educationTypeParsed,
       ),
       stats: const [],
       bankFilters: const [],
@@ -301,6 +368,32 @@ class ProfileApiDatasource implements ProfileDatasource {
   }
 
   int _parseInt(dynamic value) => int.tryParse('${value ?? 0}') ?? 0;
+
+  /// `address.region` / `district` / `neighborhood` — `{ "name": "..." }` yoki to'g'ridan-to'g'ri qator.
+  String _addressFieldLabel(dynamic value) {
+    final map = _asMapOrNull(value);
+    if (map != null) {
+      for (final key in ['name', 'title', 'label']) {
+        final s = (map[key] ?? '').toString().trim();
+        if (s.isNotEmpty) return s;
+      }
+    }
+    if (value != null && value is! Map) {
+      final s = value.toString().trim();
+      if (s.isNotEmpty && s != 'null') return s;
+    }
+    return '';
+  }
+
+  /// Birinchi > 0 qiymatni qaytaradi, topilmasa 0.
+  int _firstPositiveInt(List<dynamic> candidates) {
+    for (final c in candidates) {
+      if (c == null) continue;
+      final n = int.tryParse(c.toString());
+      if (n != null && n > 0) return n;
+    }
+    return 0;
+  }
 
   int _parseBadgeId(dynamic value) {
     if (value == null) return 0;

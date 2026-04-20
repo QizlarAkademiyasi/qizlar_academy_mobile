@@ -20,6 +20,7 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
   late final TextEditingController firstNameController;
   late final TextEditingController lastNameController;
   late final TextEditingController phoneNationalController;
+  late final TextEditingController occupationController;
   String? _fieldsSyncedSignature;
   late final VoidCallback _nameFieldsListener;
   bool _applyingSyncedFields = false;
@@ -28,24 +29,28 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
     firstNameController = TextEditingController();
     lastNameController = TextEditingController();
     phoneNationalController = TextEditingController();
+    occupationController = TextEditingController();
     _nameFieldsListener = () {
       if (_applyingSyncedFields || !mounted) return;
       setState(() {});
     };
     firstNameController.addListener(_nameFieldsListener);
     lastNameController.addListener(_nameFieldsListener);
+    occupationController.addListener(_nameFieldsListener);
   }
 
   void disposeEditInformationControllers() {
     firstNameController.removeListener(_nameFieldsListener);
     lastNameController.removeListener(_nameFieldsListener);
+    occupationController.removeListener(_nameFieldsListener);
     firstNameController.dispose();
     lastNameController.dispose();
     phoneNationalController.dispose();
+    occupationController.dispose();
   }
 
   void syncEditInformationFieldsIfNeeded(ProfileUserModel user) {
-    final signature = '${user.userId}|${user.firstName}|${user.lastName}|${user.phoneNumber}|${user.avatarUrl}|${user.badgeId}';
+    final signature = '${user.userId}|${user.firstName}|${user.lastName}|${user.phoneNumber}|${user.avatarUrl}|${user.badgeId}|${user.occupation}';
     if (_fieldsSyncedSignature == signature) return;
     _fieldsSyncedSignature = signature;
     _applyingSyncedFields = true;
@@ -53,6 +58,7 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
       firstNameController.text = user.firstName;
       lastNameController.text = user.lastName;
       phoneNationalController.text = formatUzbekNationalDigitsForDisplay(extractUzbekNationalDigits(user.phoneNumber));
+      occupationController.text = user.occupation;
     } finally {
       _applyingSyncedFields = false;
     }
@@ -68,8 +74,17 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
       baseline: baseline,
       firstName: firstNameController.text,
       lastName: lastNameController.text,
+      occupation: occupationController.text,
       uploadedPhotoFilename: state.uploadedPhotoFilename,
       selectedBadgeId: state.selectedBadgeId,
+      selectedRegion: state.selectedRegion,
+      selectedDistrict: state.selectedDistrict,
+      selectedNeighborhood: state.selectedNeighborhood,
+      baselineRegion: state.baselineRegion,
+      baselineDistrict: state.baselineDistrict,
+      baselineNeighborhood: state.baselineNeighborhood,
+      selectedBirthday: state.selectedBirthday,
+      selectedEducationType: state.selectedEducationType,
     );
   }
 
@@ -131,7 +146,7 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
       AppToast.error(context, message: l10n.profileInformationNameRequired);
       return;
     }
-    context.read<EditInformationBloc>().add(EditInformationSaveRequested(firstName: first, lastName: last));
+    context.read<EditInformationBloc>().add(EditInformationSaveRequested(firstName: first, lastName: last, occupation: occupationController.text.trim()));
   }
 
   void editInformationNoticeListener(BuildContext context, EditInformationState state) {
@@ -180,8 +195,17 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
       baseline: baseline,
       firstName: firstNameController.text,
       lastName: lastNameController.text,
+      occupation: occupationController.text,
       uploadedPhotoFilename: state.uploadedPhotoFilename,
       selectedBadgeId: state.selectedBadgeId,
+      selectedRegion: state.selectedRegion,
+      selectedDistrict: state.selectedDistrict,
+      selectedNeighborhood: state.selectedNeighborhood,
+      baselineRegion: state.baselineRegion,
+      baselineDistrict: state.baselineDistrict,
+      baselineNeighborhood: state.baselineNeighborhood,
+      selectedBirthday: state.selectedBirthday,
+      selectedEducationType: state.selectedEducationType,
     );
     final canSave = hasPendingPatch && first.isNotEmpty && last.isNotEmpty && !saveBlocked;
 
@@ -190,7 +214,7 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
         SizedBox(
           height: double.infinity,
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 30 + bottomInset),
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 80 + bottomInset),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -203,7 +227,7 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
                 if (state.badgeCatalog.isNotEmpty) ...[
                   Padding(
                     padding: AppPadding.paddingHorizontalMd,
-                    child: Text(l10n.profileInformationStatusTitle, style: context.textTheme.bodyMediumSemibold.copyWith(color: context.appColors.secondaryGrey)),
+                    child: Text(l10n.profileInformationStatusTitle, style: context.textTheme.bodySmallSemibold.copyWith(color: context.appColors.secondaryGrey)),
                   ),
                   const SizedBox(height: 10),
                   EditInformationStatusStrip(
@@ -215,18 +239,27 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
                 ],
                 Padding(
                   padding: AppPadding.paddingHorizontalMd,
-                  child: EditInformationForm(firstNameController: firstNameController, lastNameController: lastNameController, phoneNationalController: phoneNationalController),
+                  child: EditInformationForm(
+                    firstNameController: firstNameController,
+                    lastNameController: lastNameController,
+                    phoneNationalController: phoneNationalController,
+                    occupationController: occupationController,
+                    state: state,
+                  ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 28),
+        Align(alignment: Alignment.bottomCenter, child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image() : UiKitAssets.images.bottomNavLight.image()),
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: AppPadding.paddingMd,
-            child: PrimaryButton.elevated(label: l10n.profileInformationSave, isLoading: state.isSaving, onPressed: canSave ? () => onEditInformationSaveTap(context) : null),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: bottomInset - 12),
+              child: PrimaryButton.elevated(label: l10n.profileInformationSave, isLoading: state.isSaving, onPressed: canSave ? () => onEditInformationSaveTap(context) : null),
+            ),
           ),
         ),
       ],

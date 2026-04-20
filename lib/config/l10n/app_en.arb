@@ -60,6 +60,8 @@
   "mainTabCourses": "Courses",
   "mainTabLeaderboard": "Leaderboard",
   "mainTabProfile": "Profile",
+  "mainTabMore": "More",
+  "mainMoreEmptyHint": "Open “More” in the tab bar and choose a section.",
   "guestSignInCta": "Sign in",
   "homeWelcomeGuestTitle": "Welcome!",
   "homeWelcomeGuestSubtitle": "to Qizlar Academy",
@@ -76,14 +78,6 @@
   "notificationListLoadError": "Couldn’t load notifications. Please try again.",
   "notificationActionError": "Couldn’t update notifications. Please try again.",
   "courseDetailsLoadError": "Couldn’t load course details. Please try again.",
-  "courseDetailsShareTooltip": "Share course",
-  "courseDetailsShareMessage": "{title}\n{link}",
-  "@courseDetailsShareMessage": {
-    "placeholders": {
-      "title": {"type": "String"},
-      "link": {"type": "String"}
-    }
-  },
   "editProfileLoadError": "Couldn’t load profile information. Please try again.",
   "editProfileSaveError": "Couldn’t save changes. Please try again.",
   "coursesAllTitle": "All courses",
@@ -315,7 +309,6 @@
   "profileSectionGeneral": "GENERAL",
   "profileNotifications": "Notifications",
   "profileNotificationsSubtitle": "Push messages",
-  "profileNotificationsEnableFailed": "Could not turn on notifications. Check permissions and try again.",
   "profileDarkMode": "Dark mode",
   "profileDarkModeSubtitle": "Dark interface",
   "profileLogout": "Log out",
@@ -365,10 +358,6 @@
   "aboutSocialYoutubeSubtitle": "Official Qizlar Academy YouTube channel",
   "aboutUsLoadError": "Could not load content. Try again.",
   "aboutUsLinkOpenError": "Could not open the link.",
-  "appUpdateAvailableTitle": "Update available!",
-  "appUpdateAvailableBody": "We've improved the app even more! Update the app to use new features and enjoy a more comfortable experience.",
-  "appUpdateLater": "Later",
-  "appUpdateCta": "Update",
   "guestGateNotificationSettings": "Sign up to manage notification settings",
   "guestGateSaveSettings": "Sign up to save settings",
   "guestGateProfileFeatures": "Sign up to use profile features",
@@ -522,5 +511,60 @@
         "type": "int"
       }
     }
-  }
+  },
+  "personalInfoGateSubmitError": "Could not save. Please try again.",
+  "personalInfoGateContinue": "Continue",
+  "personalInfoGateAddressTitle": "Address",
+  "personalInfoGateAddressSubtitle": "Select your region, district, and neighborhood.",
+  "personalInfoGateCountry": "Country",
+  "personalInfoGateRegion": "Region",
+  "personalInfoGateDistrict": "District",
+  "personalInfoGateNeighborhood": "Neighborhood",
+  "personalInfoGatePersonalInfoTitle": "Personal information",
+  "personalInfoGatePersonalInfoSubtitle": "Enter your date of birth.",
+  "personalInfoGateBirthday": "Date of birth",
+  "personalInfoGateEducationTitle": "Education",
+  "personalInfoGateEducationSubtitle": "Select your education type.",
+  "courseDetailsShareTooltip": "Share course",
+  "courseDetailsShareMessage": "Check out \"{title}\": {url}",
+  "@courseDetailsShareMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "certificatesSheetInstagramStory": "Instagram Story",
+  "profileDeleteAccountTile": "Delete account",
+  "profileDeleteAccountTitle": "Delete account?",
+  "profileDeleteAccountConfirmBody": "This will permanently delete your account. You can also request deletion on the web: {webUrl}",
+  "@profileDeleteAccountConfirmBody": {
+    "placeholders": {
+      "webUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleteAccountCancel": "Cancel",
+  "profileDeleteAccountContinue": "Continue",
+  "profileDeleteAccountFinalTitle": "Are you sure?",
+  "profileDeleteAccountFinalBody": "This cannot be undone. Your data will be removed.",
+  "profileDeleteAccountConfirmAction": "Delete",
+  "profileDeleteAccountProgress": "Deleting account…",
+  "profileDeleteAccountError": "Could not delete account. Try again.",
+  "appUpdateAvailableTitle": "Update available",
+  "appUpdateAvailableBody": "A new version of the app is available. Update for the best experience.",
+  "appUpdateLater": "Later",
+  "appUpdateCta": "Update",
+  "profileNotificationsEnableFailed": "Could not update notification settings. Try again.",
+  "profileInformationPersonalTitle": "Phone number",
+  "profileInformationOccupation": "Occupation",
+  "profileInformationBirthday": "Date of birth",
+  "profileInformationAddressTitle": "Address",
+  "profileInformationRegion": "Region",
+  "profileInformationDistrict": "District",
+  "profileInformationNeighborhood": "Neighborhood"
 }

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
+import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_details_model.dart';
 
@@ -59,7 +60,16 @@ class CourseDetailsSliverHeader extends StatelessWidget {
             Positioned(
               top: topInset + 10,
               left: 16,
-              child: AppBackButton.glass(onTap: () => context.pop()),
+              child: AppBackButton.glass(
+                onTap: () {
+                  final router = GoRouter.of(context);
+                  if (router.canPop()) {
+                    router.pop();
+                    return;
+                  }
+                  router.go(Routes.main);
+                },
+              ),
             ),
             Positioned(
               top: topInset + 10,

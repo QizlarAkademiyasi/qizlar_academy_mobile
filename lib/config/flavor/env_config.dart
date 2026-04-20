@@ -37,7 +37,7 @@ final class EnvConfig {
     assert(
       _instance != null,
       'EnvConfig.initialize() chaqirilmagan. '
-      'main_dev.dart yoki main_prod.dart orqali ilovani ishga tushiring.',
+      'main.dart da EnvConfig.initialize() chaqirilishini tekshiring.',
     );
     return _instance!;
   }

@@ -3,6 +3,7 @@ import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/network/activity_ping_service.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/router_boot_placeholder.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       builder: (context) => ActivityPingScope(
         child: MaterialApp.router(
           routerConfig: goRouter,
-          builder: (context, child) => _GlobalKeyboardDismiss(child: ThemeCircleAnimation(child: child ?? const SizedBox.shrink())),
+          builder: (context, child) => _GlobalKeyboardDismiss(child: ThemeCircleAnimation(child: child ?? const RouterBootPlaceholder())),
           onGenerateTitle: (ctx) => ctx.l10n.appTitle,
           scrollBehavior: ScrollBehavior().copyWith(physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics())),
           theme: AppOptions.of(context).themeLightData(context),

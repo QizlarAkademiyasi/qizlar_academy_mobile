@@ -1,17 +1,17 @@
 import 'dart:math' as math;
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_kit/qizlar_academy_kit.dart' as kit;
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_cached_network_image.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/bottom_bar_version_one.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/services/profile_avatar_refresh_notifier.dart';
 
-/// MainBottomBar — `liquid_glass_widgets` asosidagi wrapper.
+/// MainBottomBar — `LiquidGlassBottomBar` (liquid_glass_renderer) asosidagi wrapper.
 ///
 /// `main_screen_mixin.dart` dagi `GlassBottomNavigationVersionTwo` chaqirig'i
 /// aynan shu widget bilan ishlaydi.
@@ -21,13 +21,13 @@ class GlassBottomNavigationVersionTwo extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  static List<kit.GlassBottomBarTab> _tabs(BuildContext context) {
+  static List<LiquidGlassBottomBarTab> _tabs(BuildContext context) {
     final l10n = context.l10n;
     return [
-      kit.GlassBottomBarTab(label: l10n.mainTabHome, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.home(color, size, selected)),
-      kit.GlassBottomBarTab(label: l10n.mainTabCourses, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.courses(color, size, selected)),
-      kit.GlassBottomBarTab(label: l10n.mainTabLeaderboard, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.leaderboard(color, size, selected)),
-      kit.GlassBottomBarTab(label: l10n.mainTabProfile, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.user(color, size, selected)),
+      LiquidGlassBottomBarTab(label: l10n.mainTabHome, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.home(color, size, selected)),
+      LiquidGlassBottomBarTab(label: l10n.mainTabCourses, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.courses(color, size, selected)),
+      LiquidGlassBottomBarTab(label: l10n.mainTabLeaderboard, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.leaderboard(color, size, selected)),
+      LiquidGlassBottomBarTab(label: l10n.mainTabProfile, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.user(color, size, selected)),
     ];
   }
 
@@ -79,26 +79,14 @@ class _GlassBottomNavigationVersionTwoState extends State<GlassBottomNavigationV
                 final tabs = GlassBottomNavigationVersionTwo._tabs(context);
                 return Stack(
                   children: [
-                    kit.GlassBottomBar(
+                    LiquidGlassBottomBar(
                       tabs: tabs,
                       selectedIndex: widget.currentIndex,
                       onTabSelected: widget.onTap,
-                      quality: kit.GlassQuality.premium,
                       barHeight: _barHeight,
                       horizontalPadding: _horizontalPadding,
-                      verticalPadding: _verticalPadding,
-                      selectedIconColor: appColors.primary,
-                      unselectedIconColor: appColors.bottomBarTabUnselected,
+                      bottomPadding: _verticalPadding,
                       indicatorColor: indicatorColor,
-                      indicatorSettings: LiquidGlassSettings(
-                        glassColor: appColors.bottomBarIndicator,
-                        refractiveIndex: 1.25,
-                        thickness: 18,
-                        saturation: 1.15,
-                        chromaticAberration: 0.25,
-                        blur: 0,
-                        lightIntensity: isDark ? 0.3 : 1.25,
-                      ),
                       glassSettings: LiquidGlassSettings(
                         refractiveIndex: 1.18,
                         thickness: 20,

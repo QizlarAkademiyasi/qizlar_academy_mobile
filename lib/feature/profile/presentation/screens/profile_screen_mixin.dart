@@ -3,6 +3,7 @@ import 'package:qizlar_academy_mobile/config/constants/app_share_links.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/core/push/push_messaging_service.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
@@ -18,12 +19,14 @@ import 'package:qizlar_academy_mobile/feature/profile/presentation/components/pr
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_filter_chips.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_header.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_language_option_tile.dart';
+import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_delete_account_tile.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_logout_tile.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_menu_tile.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_preference_tile.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_section_card.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_stats_card.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_tez_kunda_sheet_content.dart';
+import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
 
 mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
   void profileBlocListener(BuildContext context, ProfileState state) {
@@ -337,6 +340,77 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     getIt<GuestTapGateService>().reset();
     if (!context.mounted) return;
     context.go(Routes.main);
+  }
+
+  /// App Store 5.1.1(v): doimiy hisobni o‘chirish (server `DELETE /api/v1/user/me`).
+  Future<void> onDeleteAccountTap(BuildContext context) async {
+    final l10n = context.l10n;
+    final webUrl = AppShareLinks.accountDeletionWebUrl;
+    final step1 = await showAppPrimaryConfirmDialog(
+      context,
+      title: l10n.profileDeleteAccountTitle,
+      description: l10n.profileDeleteAccountConfirmBody(webUrl),
+      cancelLabel: l10n.profileDeleteAccountCancel,
+      confirmLabel: l10n.profileDeleteAccountContinue,
+      tgsAsset: UiKitAssets.lottie.rabbit.hmmmRabbit,
+    );
+    if (step1 != true) return;
+    if (!context.mounted) return;
+    final step2 = await showAppPrimaryConfirmDialog(
+      context,
+      title: l10n.profileDeleteAccountFinalTitle,
+      description: l10n.profileDeleteAccountFinalBody,
+      cancelLabel: l10n.profileDeleteAccountCancel,
+      confirmLabel: l10n.profileDeleteAccountConfirmAction,
+      tgsAsset: UiKitAssets.lottie.rabbit.cryedRabbit,
+      tgsSize: 120,
+    );
+    if (step2 != true) return;
+    if (!context.mounted) return;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      builder: (dialogContext) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(strokeWidth: 2.4),
+                ),
+                const SizedBox(width: 20),
+                Expanded(child: Text(l10n.profileDeleteAccountProgress)),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    try {
+      await getIt<ProfileRepository>().deleteMyAccount();
+    } catch (e, st) {
+      AppLogger.w('deleteMyAccount failed', error: e, stackTrace: st);
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop<void>();
+        AppToast.error(context, message: l10n.profileDeleteAccountError);
+      }
+      return;
+    }
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop<void>();
+    }
+    getIt<GuestTapGateService>().reset();
+    if (!context.mounted) return;
+    Gaimon.light();
+    context.go(Routes.signIn);
+  }
+
+  Widget buildDeleteAccountSection(BuildContext context) {
+    return ProfileDeleteAccountTile(onTap: () => onDeleteAccountTap(context));
   }
 
   Widget buildProfileHeader(

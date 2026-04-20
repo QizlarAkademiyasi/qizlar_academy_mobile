@@ -1,15 +1,11 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_gap.dart';
+import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 
 class HomeBannersCarousel extends StatefulWidget {
-  const HomeBannersCarousel({
-    super.key,
-    required this.banners,
-    this.onBannerTap,
-    this.isLoading = false,
-  });
+  const HomeBannersCarousel({super.key, required this.banners, this.onBannerTap, this.isLoading = false});
 
   final List<BannerModel> banners;
   final ValueChanged<BannerModel>? onBannerTap;
@@ -20,20 +16,7 @@ class HomeBannersCarousel extends StatefulWidget {
 }
 
 class _HomeBannersCarouselState extends State<HomeBannersCarousel> {
-  late final PageController _controller;
   int _index = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = PageController(viewportFraction: 0.92);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,23 +27,22 @@ class _HomeBannersCarouselState extends State<HomeBannersCarousel> {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: 160,
-          child: PageView.builder(
-            // padEnds: false,
-            controller: _controller,
+          height: 210,
+          child: CarouselSlider.builder(
             itemCount: banners.length,
-            onPageChanged: (value) => setState(() => _index = value),
-            itemBuilder: (context, i) {
+            options: CarouselOptions(
+              height: 210,
+              viewportFraction: 1,
+              autoPlay: true,
+              enableInfiniteScroll: false,
+              enlargeCenterPage: false,
+              onPageChanged: (value, _) => setState(() => _index = value),
+            ),
+            itemBuilder: (context, i, _) {
               final banner = banners[i];
               return Padding(
-                padding: EdgeInsets.only(
-                  right: i == banners.length - 1 ? 0 : AppGap.gapSm,
-                ),
-                child: _BannerCard(
-                  banner: banner,
-                  onTap: widget.onBannerTap,
-                  isLoading: widget.isLoading,
-                ),
+                padding: EdgeInsets.only(right: i == banners.length - 1 ? 0 : AppGap.gapSm),
+                child: _BannerCard(banner: banner, onTap: widget.onBannerTap, isLoading: widget.isLoading),
               );
             },
           ),
@@ -135,14 +117,7 @@ class _BannerCardMediaState extends State<_BannerCardMedia> {
         if (_showGradientOverlay)
           DecoratedBox(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [
-                  AppColors.black.withValues(alpha: 0.55),
-                  AppColors.black.withValues(alpha: 0.05),
-                ],
-              ),
+              gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [AppColors.black.withValues(alpha: 0.55), AppColors.black.withValues(alpha: 0.05)]),
             ),
           ),
       ],
@@ -178,24 +153,16 @@ class _BannerCardSkeleton extends StatelessWidget {
                       const SizedBox(height: 10),
                       Row(
                         children: [
-                          Expanded(
-                            child: Bone.button(height: 28, words: 2),
-                          ),
+                          Expanded(child: Bone.button(height: 28, words: 2)),
                           const SizedBox(width: 8),
-                          Expanded(
-                            child: Bone.button(height: 28, words: 2),
-                          ),
+                          Expanded(child: Bone.button(height: 28, words: 2)),
                         ],
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 12),
-                Bone(
-                  width: 92,
-                  height: 124,
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                Bone(width: 92, height: 124, borderRadius: BorderRadius.circular(20)),
               ],
             ),
           ),
@@ -206,11 +173,7 @@ class _BannerCardSkeleton extends StatelessWidget {
 }
 
 class _BannerCard extends StatelessWidget {
-  const _BannerCard({
-    required this.banner,
-    required this.onTap,
-    this.isLoading = false,
-  });
+  const _BannerCard({required this.banner, required this.onTap, this.isLoading = false});
 
   final BannerModel banner;
   final ValueChanged<BannerModel>? onTap;
@@ -227,59 +190,59 @@ class _BannerCard extends StatelessWidget {
     return Bounce(
       tilt: false,
       onTap: () => onTap?.call(banner),
-      child: ClipRRect(
-        borderRadius: AppRadius.radius2xl,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            SizedBox.expand(
-              child: imageUrl.isEmpty
-                  ? DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: context.appColors.onContainer,
-                        border: Border.all(color: context.appColors.stroke),
-                      ),
-                    )
-                  : _BannerCardMedia(
-                      key: ValueKey(banner.id),
-                      imageUrl: imageUrl,
-                    ),
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.all(16),
-            //   child: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     mainAxisAlignment: MainAxisAlignment.end,
-            //     mainAxisSize: MainAxisSize.min,
-            //     children: [
-            //       Skeletonizer(
-            //         enabled: isLoading,
-            //         child: Text(
-            //           banner.title,
-            //           maxLines: 1,
-            //           overflow: TextOverflow.ellipsis,
-            //           style: context.textTheme.bodyLargeBold.copyWith(
-            //             color: AppColors.white,
-            //           ),
-            //         ),
-            //       ),
-            //       const SizedBox(height: 4),
-            //       Skeletonizer(
-            //         enabled: isLoading,
-            //         child: Text(
-            //           banner.subtitle,
-            //           maxLines: 2,
-            //           overflow: TextOverflow.ellipsis,
-            //           style: context.textTheme.bodySmallRegular.copyWith(
-            //             color: AppColors.white.withValues(alpha: 0.9),
-            //             height: 1.25,
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-          ],
+      child: Padding(
+        padding: AppPadding.paddingHorizontalMd,
+        child: ClipRRect(
+          borderRadius: AppRadius.radius2xl,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              SizedBox.expand(
+                child: imageUrl.isEmpty
+                    ? DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: context.appColors.onContainer,
+                          border: Border.all(color: context.appColors.stroke),
+                        ),
+                      )
+                    : _BannerCardMedia(key: ValueKey(banner.id), imageUrl: imageUrl),
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(16),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     mainAxisAlignment: MainAxisAlignment.end,
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: [
+              //       Skeletonizer(
+              //         enabled: isLoading,
+              //         child: Text(
+              //           banner.title,
+              //           maxLines: 1,
+              //           overflow: TextOverflow.ellipsis,
+              //           style: context.textTheme.bodyLargeBold.copyWith(
+              //             color: AppColors.white,
+              //           ),
+              //         ),
+              //       ),
+              //       const SizedBox(height: 4),
+              //       Skeletonizer(
+              //         enabled: isLoading,
+              //         child: Text(
+              //           banner.subtitle,
+              //           maxLines: 2,
+              //           overflow: TextOverflow.ellipsis,
+              //           style: context.textTheme.bodySmallRegular.copyWith(
+              //             color: AppColors.white.withValues(alpha: 0.9),
+              //             height: 1.25,
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+            ],
+          ),
         ),
       ),
     );
@@ -305,10 +268,7 @@ class _DotsIndicator extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: active ? 18 : 6,
           height: 6,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(99),
-            color: active ? AppColors.primary : context.appColors.secondaryGrey,
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), color: active ? AppColors.primary : context.appColors.secondaryGrey),
         );
       }),
     );

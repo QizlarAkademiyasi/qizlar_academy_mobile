@@ -46,6 +46,8 @@
   "mainTabCourses": "Курсы",
   "mainTabLeaderboard": "Лидеры",
   "mainTabProfile": "Профиль",
+  "mainTabMore": "Ещё",
+  "mainMoreEmptyHint": "Нажмите «Ещё» на панели вкладок и выберите раздел.",
   "guestSignInCta": "Войти",
   "homeWelcomeGuestTitle": "Добро пожаловать!",
   "homeWelcomeGuestSubtitle": "в Академию Qizlar",
@@ -62,14 +64,6 @@
   "notificationListLoadError": "Не удалось загрузить уведомления. Попробуйте ещё раз.",
   "notificationActionError": "Не удалось обновить уведомления. Попробуйте ещё раз.",
   "courseDetailsLoadError": "Не удалось загрузить данные курса. Попробуйте ещё раз.",
-  "courseDetailsShareTooltip": "Поделиться курсом",
-  "courseDetailsShareMessage": "{title}\n{link}",
-  "@courseDetailsShareMessage": {
-    "placeholders": {
-      "title": {"type": "String"},
-      "link": {"type": "String"}
-    }
-  },
   "editProfileLoadError": "Не удалось загрузить данные профиля. Попробуйте ещё раз.",
   "editProfileSaveError": "Не удалось сохранить изменения. Попробуйте ещё раз.",
   "coursesAllTitle": "Все курсы",
@@ -277,7 +271,6 @@
   "profileSectionGeneral": "ОБЩЕЕ",
   "profileNotifications": "Уведомления",
   "profileNotificationsSubtitle": "Push-уведомления",
-  "profileNotificationsEnableFailed": "Не удалось включить уведомления. Проверьте разрешения и попробуйте снова.",
   "profileDarkMode": "Тёмная тема",
   "profileDarkModeSubtitle": "Тёмный интерфейс",
   "profileLogout": "Выйти",
@@ -320,10 +313,6 @@
   "aboutSocialYoutubeSubtitle": "Официальный канал Qizlar Academy на YouTube",
   "aboutUsLoadError": "Не удалось загрузить данные. Попробуйте снова.",
   "aboutUsLinkOpenError": "Не удалось открыть ссылку.",
-  "appUpdateAvailableTitle": "Доступно обновление!",
-  "appUpdateAvailableBody": "Мы ещё больше улучшили приложение! Обновите его, чтобы пользоваться новыми возможностями и удобнее учиться.",
-  "appUpdateLater": "Позже",
-  "appUpdateCta": "Обновить",
   "guestGateNotificationSettings": "Зарегистрируйтесь, чтобы настроить уведомления",
   "guestGateSaveSettings": "Зарегистрируйтесь, чтобы сохранить настройки",
   "guestGateProfileFeatures": "Зарегистрируйтесь для функций профиля",
@@ -477,5 +466,60 @@
         "type": "int"
       }
     }
-  }
+  },
+  "personalInfoGateSubmitError": "Не удалось сохранить. Попробуйте снова.",
+  "personalInfoGateContinue": "Продолжить",
+  "personalInfoGateAddressTitle": "Адрес",
+  "personalInfoGateAddressSubtitle": "Выберите область, район и махаллю.",
+  "personalInfoGateCountry": "Страна",
+  "personalInfoGateRegion": "Область",
+  "personalInfoGateDistrict": "Район",
+  "personalInfoGateNeighborhood": "Махалля",
+  "personalInfoGatePersonalInfoTitle": "Личные данные",
+  "personalInfoGatePersonalInfoSubtitle": "Укажите дату рождения.",
+  "personalInfoGateBirthday": "Дата рождения",
+  "personalInfoGateEducationTitle": "Образование",
+  "personalInfoGateEducationSubtitle": "Выберите тип образования.",
+  "courseDetailsShareTooltip": "Поделиться курсом",
+  "courseDetailsShareMessage": "Курс «{title}»: {url}",
+  "@courseDetailsShareMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "certificatesSheetInstagramStory": "История Instagram",
+  "profileDeleteAccountTile": "Удалить аккаунт",
+  "profileDeleteAccountTitle": "Удалить аккаунт?",
+  "profileDeleteAccountConfirmBody": "Аккаунт будет удалён безвозвратно. Запрос можно также отправить на сайте: {webUrl}",
+  "@profileDeleteAccountConfirmBody": {
+    "placeholders": {
+      "webUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleteAccountCancel": "Отмена",
+  "profileDeleteAccountContinue": "Продолжить",
+  "profileDeleteAccountFinalTitle": "Вы уверены?",
+  "profileDeleteAccountFinalBody": "Это действие нельзя отменить. Данные будут удалены.",
+  "profileDeleteAccountConfirmAction": "Удалить",
+  "profileDeleteAccountProgress": "Удаление аккаунта…",
+  "profileDeleteAccountError": "Не удалось удалить аккаунт. Попробуйте снова.",
+  "appUpdateAvailableTitle": "Доступно обновление",
+  "appUpdateAvailableBody": "Вышла новая версия приложения. Обновитесь для лучшей работы.",
+  "appUpdateLater": "Позже",
+  "appUpdateCta": "Обновить",
+  "profileNotificationsEnableFailed": "Не удалось изменить настройки уведомлений. Попробуйте снова.",
+  "profileInformationPersonalTitle": "Номер телефона",
+  "profileInformationOccupation": "Профессия",
+  "profileInformationBirthday": "Дата рождения",
+  "profileInformationAddressTitle": "Адрес",
+  "profileInformationRegion": "Область",
+  "profileInformationDistrict": "Район",
+  "profileInformationNeighborhood": "Махалля"
 }

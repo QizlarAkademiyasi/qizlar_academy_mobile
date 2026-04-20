@@ -376,6 +376,18 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get mainTabProfile;
 
+  /// No description provided for @mainTabMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get mainTabMore;
+
+  /// No description provided for @mainMoreEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open “More” in the tab bar and choose a section.'**
+  String get mainMoreEmptyHint;
+
   /// No description provided for @guestSignInCta.
   ///
   /// In en, this message translates to:
@@ -471,18 +483,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn’t load course details. Please try again.'**
   String get courseDetailsLoadError;
-
-  /// No description provided for @courseDetailsShareTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Share course'**
-  String get courseDetailsShareTooltip;
-
-  /// No description provided for @courseDetailsShareMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'{title}\n{link}'**
-  String courseDetailsShareMessage(String title, String link);
 
   /// No description provided for @editProfileLoadError.
   ///
@@ -1294,12 +1294,6 @@ abstract class AppLocalizations {
   /// **'Push messages'**
   String get profileNotificationsSubtitle;
 
-  /// No description provided for @profileNotificationsEnableFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not turn on notifications. Check permissions and try again.'**
-  String get profileNotificationsEnableFailed;
-
   /// No description provided for @profileDarkMode.
   ///
   /// In en, this message translates to:
@@ -1551,30 +1545,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open the link.'**
   String get aboutUsLinkOpenError;
-
-  /// No description provided for @appUpdateAvailableTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Update available!'**
-  String get appUpdateAvailableTitle;
-
-  /// No description provided for @appUpdateAvailableBody.
-  ///
-  /// In en, this message translates to:
-  /// **'We\'ve improved the app even more! Update the app to use new features and enjoy a more comfortable experience.'**
-  String get appUpdateAvailableBody;
-
-  /// No description provided for @appUpdateLater.
-  ///
-  /// In en, this message translates to:
-  /// **'Later'**
-  String get appUpdateLater;
-
-  /// No description provided for @appUpdateCta.
-  ///
-  /// In en, this message translates to:
-  /// **'Update'**
-  String get appUpdateCta;
 
   /// No description provided for @guestGateNotificationSettings.
   ///
@@ -2001,6 +1971,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} y ago'**
   String reviewTimeYearsAgo(int count);
+
+  /// No description provided for @personalInfoGateSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Please try again.'**
+  String get personalInfoGateSubmitError;
+
+  /// No description provided for @personalInfoGateContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get personalInfoGateContinue;
+
+  /// No description provided for @personalInfoGateAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get personalInfoGateAddressTitle;
+
+  /// No description provided for @personalInfoGateAddressSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your region, district, and neighborhood.'**
+  String get personalInfoGateAddressSubtitle;
+
+  /// No description provided for @personalInfoGateCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get personalInfoGateCountry;
+
+  /// No description provided for @personalInfoGateRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get personalInfoGateRegion;
+
+  /// No description provided for @personalInfoGateDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'District'**
+  String get personalInfoGateDistrict;
+
+  /// No description provided for @personalInfoGateNeighborhood.
+  ///
+  /// In en, this message translates to:
+  /// **'Neighborhood'**
+  String get personalInfoGateNeighborhood;
+
+  /// No description provided for @personalInfoGatePersonalInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal information'**
+  String get personalInfoGatePersonalInfoTitle;
+
+  /// No description provided for @personalInfoGatePersonalInfoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your date of birth.'**
+  String get personalInfoGatePersonalInfoSubtitle;
+
+  /// No description provided for @personalInfoGateBirthday.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get personalInfoGateBirthday;
+
+  /// No description provided for @personalInfoGateEducationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get personalInfoGateEducationTitle;
+
+  /// No description provided for @personalInfoGateEducationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your education type.'**
+  String get personalInfoGateEducationSubtitle;
+
+  /// No description provided for @courseDetailsShareTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share course'**
+  String get courseDetailsShareTooltip;
+
+  /// No description provided for @courseDetailsShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out \"{title}\": {url}'**
+  String courseDetailsShareMessage(String title, String url);
+
+  /// No description provided for @certificatesSheetInstagramStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram Story'**
+  String get certificatesSheetInstagramStory;
+
+  /// No description provided for @profileDeleteAccountTile.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get profileDeleteAccountTile;
+
+  /// No description provided for @profileDeleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get profileDeleteAccountTitle;
+
+  /// No description provided for @profileDeleteAccountConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete your account. You can also request deletion on the web: {webUrl}'**
+  String profileDeleteAccountConfirmBody(String webUrl);
+
+  /// No description provided for @profileDeleteAccountCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get profileDeleteAccountCancel;
+
+  /// No description provided for @profileDeleteAccountContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get profileDeleteAccountContinue;
+
+  /// No description provided for @profileDeleteAccountFinalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure?'**
+  String get profileDeleteAccountFinalTitle;
+
+  /// No description provided for @profileDeleteAccountFinalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone. Your data will be removed.'**
+  String get profileDeleteAccountFinalBody;
+
+  /// No description provided for @profileDeleteAccountConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get profileDeleteAccountConfirmAction;
+
+  /// No description provided for @profileDeleteAccountProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting account…'**
+  String get profileDeleteAccountProgress;
+
+  /// No description provided for @profileDeleteAccountError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete account. Try again.'**
+  String get profileDeleteAccountError;
+
+  /// No description provided for @appUpdateAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available'**
+  String get appUpdateAvailableTitle;
+
+  /// No description provided for @appUpdateAvailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of the app is available. Update for the best experience.'**
+  String get appUpdateAvailableBody;
+
+  /// No description provided for @appUpdateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get appUpdateLater;
+
+  /// No description provided for @appUpdateCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get appUpdateCta;
+
+  /// No description provided for @profileNotificationsEnableFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update notification settings. Try again.'**
+  String get profileNotificationsEnableFailed;
+
+  /// No description provided for @profileInformationPersonalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get profileInformationPersonalTitle;
+
+  /// No description provided for @profileInformationOccupation.
+  ///
+  /// In en, this message translates to:
+  /// **'Occupation'**
+  String get profileInformationOccupation;
+
+  /// No description provided for @profileInformationBirthday.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get profileInformationBirthday;
+
+  /// No description provided for @profileInformationAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get profileInformationAddressTitle;
+
+  /// No description provided for @profileInformationRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get profileInformationRegion;
+
+  /// No description provided for @profileInformationDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'District'**
+  String get profileInformationDistrict;
+
+  /// No description provided for @profileInformationNeighborhood.
+  ///
+  /// In en, this message translates to:
+  /// **'Neighborhood'**
+  String get profileInformationNeighborhood;
 }
 
 class _AppLocalizationsDelegate

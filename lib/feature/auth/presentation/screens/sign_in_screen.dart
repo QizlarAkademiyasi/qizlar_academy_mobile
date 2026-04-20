@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/flavor/app_remote_config.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/components/sign_in_phone_field.dart';
@@ -71,6 +72,7 @@ class _SignInScreenState extends State<SignInScreen> with SignInScreenMixin<Sign
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final showGoogleSignIn = AppRemoteConfig.instance.googleSignInEnabled;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -79,46 +81,63 @@ class _SignInScreenState extends State<SignInScreen> with SignInScreenMixin<Sign
         bottom: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            return SingleChildScrollView(
-              primary: false,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-              padding: EdgeInsets.fromLTRB(20, 8, 20, 16 + bottomInset),
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Stack(
+                  alignment: Alignment.bottomCenter,
                   children: [
-                    AutofillGroup(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildBackButton(context),
-                          const SizedBox(height: 24),
-                          Text(context.l10n.signInTitle, style: context.textTheme.heading3.copyWith(color: context.appColors.text)),
-                          const SizedBox(height: 8),
-                          Text(context.l10n.signInSubtitle, style: context.textTheme.bodyMediumMedium.copyWith(color: context.appColors.secondaryGrey)),
-                          const SizedBox(height: 22),
-                          buildPhoneField(context, controller: _phoneController, onChanged: _onPhoneChanged),
-                        ],
+                    Align(alignment: Alignment.bottomCenter, child: _buildTerms(context)),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        height: constraints.maxHeight,
+                        child: SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              AutofillGroup(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _buildBackButton(context),
+                                    const SizedBox(height: 24),
+                                    Text(context.l10n.signInTitle, style: context.textTheme.heading3.copyWith(color: context.appColors.text)),
+                                    const SizedBox(height: 8),
+                                    Text(context.l10n.signInSubtitle, style: context.textTheme.bodyMediumMedium.copyWith(color: context.appColors.secondaryGrey)),
+                                    const SizedBox(height: 22),
+                                    buildPhoneField(context, controller: _phoneController, onChanged: _onPhoneChanged),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 24),
-                        PrimaryButton.elevated(label: context.l10n.signInStart, onPressed: (_isPhoneValid && !_isSendingOtp) ? _onStartTap : null, isLoading: _isSendingOtp),
-                        const SizedBox(height: 18),
-                        _buildOrDivider(context),
-                        const SizedBox(height: 18),
-                        buildGoogleButton(context, isLoading: _isGoogleSigningIn, onPressed: _handleGoogleSignIn),
-                        const SizedBox(height: 12),
-                        buildTelegramButton(context, isLoading: _isTelegramSigningIn, onPressed: !_isTelegramSigningIn ? _handleTelegramSignIn : null),
-                        const SizedBox(height: 16),
-                        _buildTerms(context),
-                      ],
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: (bottomInset > 41) ? bottomInset : 56),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 24),
+                            PrimaryButton.elevated(label: context.l10n.signInStart, onPressed: (_isPhoneValid && !_isSendingOtp) ? _onStartTap : null, isLoading: _isSendingOtp),
+                            const SizedBox(height: 18),
+                            if (showGoogleSignIn) ...[_buildOrDivider(context)],
+                            if (showGoogleSignIn) ...[const SizedBox(height: 18)],
+                            if (showGoogleSignIn) ...[buildGoogleButton(context, isLoading: _isGoogleSigningIn, onPressed: _handleGoogleSignIn), const SizedBox(height: 12)],
+                            if (showGoogleSignIn) ...[buildTelegramButton(context, isLoading: _isTelegramSigningIn, onPressed: !_isTelegramSigningIn ? _handleTelegramSignIn : null)],
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -163,7 +182,8 @@ class _SignInScreenState extends State<SignInScreen> with SignInScreenMixin<Sign
   }
 
   Widget _buildTerms(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.bottomCenter,
       child: Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         alignment: WrapAlignment.center,

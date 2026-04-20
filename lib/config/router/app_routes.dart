@@ -6,7 +6,7 @@ import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_sessio
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/sign_in_screen.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_args.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_screen.dart';
-import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/register_screen.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/register/pages/register_screen.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_details_screen.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_screen.dart';
@@ -42,7 +42,7 @@ class AppRoute {
 
   static GoRouter createRouter(AuthSessionCubit authSessionCubit) {
     return GoRouter(
-      // debugLogDiagnostics: true,
+      debugLogDiagnostics: true,
       navigatorKey: rootNavigatorKey,
       initialLocation: initialLocation,
       refreshListenable: _RouterRefreshNotifier(authSessionCubit.stream),

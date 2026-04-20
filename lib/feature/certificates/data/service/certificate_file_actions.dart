@@ -39,11 +39,11 @@ class CertificateFileActions {
     await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
   }
 
-  /// `/api/v1/certificate/image/{courseId}` dan PNG — temp fayl yo‘li (Instagram Story sticker uchun).
+  /// `/api/v1/certificate/image/{courseId}` dan PNG — vaqtinchalik fayl yo‘li.
   Future<String> saveCertificatePngToTempPath(String courseId, {required String fileBaseName}) async {
     final bytes = await _fetchCertificatePngBytes(courseId);
     final safeName = _sanitizeFileName(fileBaseName);
-    final path = '${Directory.systemTemp.path}/ig_cert_${safeName}_${DateTime.now().millisecondsSinceEpoch}.png';
+    final path = '${Directory.systemTemp.path}/cert_${safeName}_${DateTime.now().millisecondsSinceEpoch}.png';
     final file = File(path);
     await file.writeAsBytes(bytes, flush: true);
     return file.path;

@@ -22,4 +22,7 @@ abstract interface class ProfileDatasource {
 
   /// PATCH `/user/me` — faqat [body] ichidagi kalitlar yuboriladi.
   Future<void> patchUserMe(Map<String, dynamic> body);
+
+  /// Hisobni serverda butunlay o‘chirish (`DELETE /api/v1/user/me`).
+  Future<void> deleteMyAccount();
 }

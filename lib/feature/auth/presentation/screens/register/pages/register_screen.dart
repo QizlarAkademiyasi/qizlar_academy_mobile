@@ -1,7 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
-import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/register_screen_mixin.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/register/pages/register_screen_mixin.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

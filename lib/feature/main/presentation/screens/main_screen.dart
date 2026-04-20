@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
@@ -7,6 +8,7 @@ import 'package:qizlar_academy_mobile/core/app_update/app_update_prompt_coordina
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_screen.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_more_tab_page.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/profile_screen.dart';
 
@@ -58,12 +60,18 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
             const _KeepAlivePage(child: CoursesScreen()),
             const _KeepAlivePage(child: LeaderboardScreen()),
             const _KeepAlivePage(child: _GuestProfileRedirectView()),
+            // _KeepAlivePage(
+            //   child: MainMoreTabPage(selectedItemIndex: morePanelSelectedItemIndex, onItemSelected: onMorePanelItemSelected),
+            // ),
           ]
         : <Widget>[
             _KeepAlivePage(child: HomeScreen(onSwitchMainTab: onTabTap)),
             const _KeepAlivePage(child: CoursesScreen()),
             const _KeepAlivePage(child: LeaderboardScreen()),
             const _KeepAlivePage(child: ProfileScreen()),
+            // _KeepAlivePage(
+            //   child: MainMoreTabPage(selectedItemIndex: morePanelSelectedItemIndex, onItemSelected: onMorePanelItemSelected),
+            // ),
           ];
 
     return Scaffold(
@@ -74,19 +82,19 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
           Positioned.fill(
             child: _MainTabPageViewWithFade(pageController: pageController, selectedIndex: selectedIndex, tabBarFadeNonce: tabBarFadeNonce, onPageChanged: onPageChanged, pages: pages),
           ),
-          // if (Platform.isIOS)
-          //   Positioned(
-          //     bottom: 0,
-          //     left: 0,
-          //     right: 0,
-          //     child: Container(
-          //       decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
-          //       child: buildGlassBottomBarVersionTwo(context),
-          //     ),
-          //   ),
+          if (Platform.isIOS)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
+                child: buildGlassBottomBarVersionTwo(context),
+              ),
+            ),
         ],
       ),
-      bottomNavigationBar: buildNavigationBar(context),
+      bottomNavigationBar: Platform.isIOS ? null : buildNavigationBar(context),
     );
   }
 }

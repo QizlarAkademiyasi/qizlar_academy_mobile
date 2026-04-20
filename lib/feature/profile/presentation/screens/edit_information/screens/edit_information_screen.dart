@@ -45,6 +45,7 @@ class _EditInformationScreenState extends State<EditInformationScreen> with Edit
             },
             child: Scaffold(
               body: SafeArea(
+                bottom: false,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -84,7 +85,15 @@ class _EditInformationScreenState extends State<EditInformationScreen> with Edit
                             previous.localAvatarFilePath != current.localAvatarFilePath ||
                             previous.uploadedPhotoFilename != current.uploadedPhotoFilename ||
                             previous.selectedBadgeId != current.selectedBadgeId ||
-                            previous.badgeCatalog != current.badgeCatalog,
+                            previous.badgeCatalog != current.badgeCatalog ||
+                            previous.regions != current.regions ||
+                            previous.districts != current.districts ||
+                            previous.neighborhoods != current.neighborhoods ||
+                            previous.selectedRegion != current.selectedRegion ||
+                            previous.selectedDistrict != current.selectedDistrict ||
+                            previous.selectedNeighborhood != current.selectedNeighborhood ||
+                            previous.selectedBirthday != current.selectedBirthday ||
+                            previous.selectedEducationType != current.selectedEducationType,
                         builder: (context, state) {
                           switch (state.status) {
                             case EditInformationStatus.loading:

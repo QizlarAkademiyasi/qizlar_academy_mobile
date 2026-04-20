@@ -5,7 +5,6 @@ import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/data/service/certificate_file_actions.dart';
-import 'package:qizlar_academy_mobile/feature/certificates/data/service/certificate_instagram_story_share.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/domain/repository/course_certificate_claim_repository.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/components/certificate_preview_sheet.dart';
 
@@ -45,25 +44,6 @@ Future<void> showCourseCertificateAfterTerminalQuiz(
           }
         }
       },
-      onInstagramStory: item.courseId.trim().isEmpty
-          ? null
-          : () async {
-              try {
-                final name = item.courseName.trim().isNotEmpty ? 'certificate_${item.courseName}' : 'certificate_${item.id}';
-                await getIt<CertificateInstagramStoryShare>().shareCertificateSticker(item.courseId, fileBaseName: name);
-              } on StateError catch (e) {
-                if (nav.mounted) {
-                  final text = e.message == 'facebook_app_id_missing'
-                      ? nav.l10n.certificatesInstagramStoryNotConfigured
-                      : nav.l10n.certificatesInstagramShareFailed;
-                  ScaffoldMessenger.of(nav).showSnackBar(SnackBar(content: Text(text), behavior: SnackBarBehavior.floating));
-                }
-              } catch (_) {
-                if (nav.mounted) {
-                  ScaffoldMessenger.of(nav).showSnackBar(SnackBar(content: Text(nav.l10n.certificatesInstagramShareFailed), behavior: SnackBarBehavior.floating));
-                }
-              }
-            },
       onShare: () async {
         try {
           final name = item.courseName.trim().isNotEmpty ? 'certificate_${item.courseName}' : 'certificate_${item.id}';

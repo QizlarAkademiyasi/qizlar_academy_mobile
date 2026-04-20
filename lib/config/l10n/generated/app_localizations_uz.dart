@@ -163,6 +163,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get mainTabProfile => 'Profil';
 
   @override
+  String get mainTabMore => 'Yana';
+
+  @override
+  String get mainMoreEmptyHint =>
+      'Pastki «Yana» tugmasini bosing va kerakli bo‘limni tanlang.';
+
+  @override
   String get guestSignInCta => 'Kirish';
 
   @override
@@ -218,14 +225,6 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get courseDetailsLoadError =>
       'Kurs ma\'lumotlarini yuklashda xatolik.';
-
-  @override
-  String get courseDetailsShareTooltip => 'Kursni ulashish';
-
-  @override
-  String courseDetailsShareMessage(String title, String link) {
-    return '$title\n$link';
-  }
 
   @override
   String get editProfileLoadError =>
@@ -669,10 +668,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileNotificationsSubtitle => 'Push-xabarlar';
 
   @override
-  String get profileNotificationsEnableFailed =>
-      'Bildirishnomalarni yoqib bo‘lmadi. Ruxsatlarni tekshiring va qayta urinib ko‘ring.';
-
-  @override
   String get profileDarkMode => 'Tungi rejim';
 
   @override
@@ -810,19 +805,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get aboutUsLinkOpenError => 'Havolani ochib bo\'lmadi.';
-
-  @override
-  String get appUpdateAvailableTitle => 'Yangilanish mavjud!';
-
-  @override
-  String get appUpdateAvailableBody =>
-      'Biz ilovani yanada yaxshiladik! Yangi imkoniyatlardan foydalanish va qulayroq o‘qish uchun ilovani yangilang.';
-
-  @override
-  String get appUpdateLater => 'Keyinroq';
-
-  @override
-  String get appUpdateCta => 'Yangilash';
 
   @override
   String get guestGateNotificationSettings =>
@@ -1083,4 +1065,129 @@ class AppLocalizationsUz extends AppLocalizations {
   String reviewTimeYearsAgo(int count) {
     return '$count yil oldin';
   }
+
+  @override
+  String get personalInfoGateSubmitError =>
+      'Saqlab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get personalInfoGateContinue => 'Davom etish';
+
+  @override
+  String get personalInfoGateAddressTitle => 'Manzil';
+
+  @override
+  String get personalInfoGateAddressSubtitle =>
+      'Viloyat, tuman va mahallangizni tanlang.';
+
+  @override
+  String get personalInfoGateCountry => 'Mamlakat';
+
+  @override
+  String get personalInfoGateRegion => 'Viloyat';
+
+  @override
+  String get personalInfoGateDistrict => 'Tuman';
+
+  @override
+  String get personalInfoGateNeighborhood => 'Mahalla';
+
+  @override
+  String get personalInfoGatePersonalInfoTitle => 'Shaxsiy ma’lumotlar';
+
+  @override
+  String get personalInfoGatePersonalInfoSubtitle =>
+      'Tug‘ilgan sanangizni kiriting.';
+
+  @override
+  String get personalInfoGateBirthday => 'Tug‘ilgan sana';
+
+  @override
+  String get personalInfoGateEducationTitle => 'Ta’lim';
+
+  @override
+  String get personalInfoGateEducationSubtitle => 'Ta’lim turini tanlang.';
+
+  @override
+  String get courseDetailsShareTooltip => 'Kursni ulashish';
+
+  @override
+  String courseDetailsShareMessage(String title, String url) {
+    return '«$title» kursi: $url';
+  }
+
+  @override
+  String get certificatesSheetInstagramStory => 'Instagram Story';
+
+  @override
+  String get profileDeleteAccountTile => 'Hisobni o‘chirish';
+
+  @override
+  String get profileDeleteAccountTitle => 'Hisobni o‘chirasizmi?';
+
+  @override
+  String profileDeleteAccountConfirmBody(String webUrl) {
+    return 'Bu hisobingizni butunlay o‘chiradi. Veb-sahifada ham so‘rov yuborishingiz mumkin: $webUrl';
+  }
+
+  @override
+  String get profileDeleteAccountCancel => 'Bekor qilish';
+
+  @override
+  String get profileDeleteAccountContinue => 'Davom etish';
+
+  @override
+  String get profileDeleteAccountFinalTitle => 'Ishonchingiz komilmi?';
+
+  @override
+  String get profileDeleteAccountFinalBody =>
+      'Bu qaytarib bo‘lmaydi. Ma’lumotlaringiz o‘chiriladi.';
+
+  @override
+  String get profileDeleteAccountConfirmAction => 'O‘chirish';
+
+  @override
+  String get profileDeleteAccountProgress => 'Hisob o‘chirilmoqda…';
+
+  @override
+  String get profileDeleteAccountError =>
+      'Hisobni o‘chirib bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get appUpdateAvailableTitle => 'Yangilanish mavjud';
+
+  @override
+  String get appUpdateAvailableBody =>
+      'Ilovaning yangi versiyasi chiqdi. Qulayroq ishlashi uchun yangilang.';
+
+  @override
+  String get appUpdateLater => 'Keyinroq';
+
+  @override
+  String get appUpdateCta => 'Yangilash';
+
+  @override
+  String get profileNotificationsEnableFailed =>
+      'Bildirishnoma sozlamalarini yangilab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get profileInformationPersonalTitle => 'Telefon raqam';
+
+  @override
+  String get profileInformationOccupation => 'Kasb';
+
+  @override
+  String get profileInformationBirthday => 'Tug‘ilgan sana';
+
+  @override
+  String get profileInformationAddressTitle => 'Manzil';
+
+  @override
+  String get profileInformationRegion => 'Viloyat';
+
+  @override
+  String get profileInformationDistrict => 'Tuman';
+
+  @override
+  String get profileInformationNeighborhood => 'Mahalla';
 }

@@ -42,14 +42,6 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb1262098222769251</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
 			<key>CFBundleURLName</key>
 			<string>uz.qizlar.akademiyasi.deeplink</string>
 			<key>CFBundleURLSchemes</key>
@@ -58,6 +50,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<key>FLTEnableImpeller</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -67,28 +61,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>FacebookAppID</key>
-	<string>1262098222769251</string>
-	<key>FacebookDisplayName</key>
-	<string>Qizlar Akademiyasi</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>instagram</string>
-		<string>instagram-stories</string>
-		<string>ig</string>
-		<string>fb</string>
-		<string>fbapi</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-		<string>facebook-reels</string>
-		<string>facebook-stories</string>
-		<string>fb-messenger-share-api</string>
-		<string>fb-messenger</string>
-	</array>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>We need your permission to save images to your photo library</string>
+	<string>Qizlar Academy saves to your Photo Library only when you choose to save an image—for example, if you save a certificate image or another export to Photos from the share sheet.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to your Photo Library so you can upload and set your profile picture in Qizlar Akademiyasi. For example, you can select a photo from your library to use as your personal avatar or update your profile image.</string>
+	<string>Qizlar Academy reads your Photo Library only when you pick a profile photo—for example, in Edit profile, when you choose Photo from gallery, we let you select one picture to upload as your avatar.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera access required</string>
 	<key>NSContactsUsageDescription</key>

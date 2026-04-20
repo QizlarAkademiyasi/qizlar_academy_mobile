@@ -25,6 +25,17 @@ class EditInformationState extends Equatable {
     this.selectedBadgeId = 0,
     this.notice = EditInformationNotice.none,
     this.noticeSeq = 0,
+    this.regions = const [],
+    this.districts = const [],
+    this.neighborhoods = const [],
+    this.selectedRegion,
+    this.selectedDistrict,
+    this.selectedNeighborhood,
+    this.baselineRegion,
+    this.baselineDistrict,
+    this.baselineNeighborhood,
+    this.selectedBirthday,
+    this.selectedEducationType,
   });
 
   final EditInformationStatus status;
@@ -40,6 +51,22 @@ class EditInformationState extends Equatable {
   final int selectedBadgeId;
   final EditInformationNotice notice;
   final int noticeSeq;
+
+  /// Manzil: viloyatlar ro'yxati.
+  final List<RegionModel> regions;
+  /// Manzil: tanlangan viloyatga tegishli tumanlar.
+  final List<DistrictModel> districts;
+  /// Manzil: tanlangan tumanga tegishli mahallalar.
+  final List<NeighborhoodModel> neighborhoods;
+  final RegionModel? selectedRegion;
+  final DistrictModel? selectedDistrict;
+  final NeighborhoodModel? selectedNeighborhood;
+  /// Boshlang'ich resolve qilingan manzil modellari (unsaved changes tekshiruvi uchun).
+  final RegionModel? baselineRegion;
+  final DistrictModel? baselineDistrict;
+  final NeighborhoodModel? baselineNeighborhood;
+  final DateTime? selectedBirthday;
+  final EducationType? selectedEducationType;
 
   EditInformationState copyWith({
     EditInformationStatus? status,
@@ -60,6 +87,21 @@ class EditInformationState extends Equatable {
     EditInformationNotice? notice,
     int? noticeSeq,
     bool clearNotice = false,
+    List<RegionModel>? regions,
+    List<DistrictModel>? districts,
+    List<NeighborhoodModel>? neighborhoods,
+    RegionModel? selectedRegion,
+    bool clearRegion = false,
+    DistrictModel? selectedDistrict,
+    bool clearDistrict = false,
+    NeighborhoodModel? selectedNeighborhood,
+    bool clearNeighborhood = false,
+    RegionModel? baselineRegion,
+    DistrictModel? baselineDistrict,
+    NeighborhoodModel? baselineNeighborhood,
+    DateTime? selectedBirthday,
+    EducationType? selectedEducationType,
+    bool clearEducationType = false,
   }) {
     return EditInformationState(
       status: status ?? this.status,
@@ -79,6 +121,17 @@ class EditInformationState extends Equatable {
       selectedBadgeId: selectedBadgeId ?? this.selectedBadgeId,
       notice: clearNotice ? EditInformationNotice.none : (notice ?? this.notice),
       noticeSeq: noticeSeq ?? this.noticeSeq,
+      regions: regions ?? this.regions,
+      districts: districts ?? this.districts,
+      neighborhoods: neighborhoods ?? this.neighborhoods,
+      selectedRegion: clearRegion ? null : (selectedRegion ?? this.selectedRegion),
+      selectedDistrict: clearDistrict ? null : (selectedDistrict ?? this.selectedDistrict),
+      selectedNeighborhood: clearNeighborhood ? null : (selectedNeighborhood ?? this.selectedNeighborhood),
+      baselineRegion: baselineRegion ?? this.baselineRegion,
+      baselineDistrict: baselineDistrict ?? this.baselineDistrict,
+      baselineNeighborhood: baselineNeighborhood ?? this.baselineNeighborhood,
+      selectedBirthday: selectedBirthday ?? this.selectedBirthday,
+      selectedEducationType: clearEducationType ? null : (selectedEducationType ?? this.selectedEducationType),
     );
   }
 
@@ -97,5 +150,16 @@ class EditInformationState extends Equatable {
     selectedBadgeId,
     notice,
     noticeSeq,
+    regions,
+    districts,
+    neighborhoods,
+    selectedRegion,
+    selectedDistrict,
+    selectedNeighborhood,
+    baselineRegion,
+    baselineDistrict,
+    baselineNeighborhood,
+    selectedBirthday,
+    selectedEducationType,
   ];
 }

@@ -58,8 +58,12 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final textStyle = context.textTheme.bodyLargeMedium.copyWith(color: colors.text);
-    final secondaryStyle = context.textTheme.bodyLargeMedium.copyWith(color: colors.secondaryGrey);
+    final textStyle = context.textTheme.bodyLargeMedium.copyWith(
+      color: colors.text,
+    );
+    final secondaryStyle = context.textTheme.bodySmallSemibold.copyWith(
+      color: colors.secondaryGrey,
+    );
 
     final field = TextField(
       controller: controller,
@@ -88,14 +92,22 @@ class AppTextField extends StatelessWidget {
         disabledBorder: InputBorder.none,
         errorBorder: InputBorder.none,
         focusedErrorBorder: InputBorder.none,
-        contentPadding: EdgeInsets.only(left: prefix == null ? _horizontalInset : 0, right: suffix == null ? _horizontalInset : 8, top: _verticalPadding, bottom: _verticalPadding),
+        contentPadding: EdgeInsets.only(
+          left: prefix == null ? _horizontalInset : 0,
+          right: suffix == null ? _horizontalInset : 8,
+          top: _verticalPadding,
+          bottom: _verticalPadding,
+        ),
         hintText: hintText,
         hintStyle: secondaryStyle,
       ),
     );
 
     final input = ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: _maxHeight, maxHeight: _maxHeight),
+      constraints: const BoxConstraints(
+        minHeight: _maxHeight,
+        maxHeight: _maxHeight,
+      ),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.onContainer,
@@ -112,18 +124,27 @@ class AppTextField extends StatelessWidget {
                 if (prefix != null) ...[
                   Padding(
                     padding: const EdgeInsets.only(left: _horizontalInset),
-                    child: DefaultTextStyle.merge(style: secondaryStyle, child: prefix!),
+                    child: DefaultTextStyle.merge(
+                      style: secondaryStyle,
+                      child: prefix!,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   SizedBox(
                     width: 1,
                     height: 24,
-                    child: DecoratedBox(decoration: BoxDecoration(color: colors.stroke)),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: colors.stroke),
+                    ),
                   ),
                   const SizedBox(width: 12),
                 ],
                 Expanded(child: field),
-                if (suffix != null) Padding(padding: const EdgeInsets.only(right: 8), child: suffix!),
+                if (suffix != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: suffix!,
+                  ),
               ],
             ),
           ),

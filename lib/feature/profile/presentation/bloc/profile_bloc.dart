@@ -90,6 +90,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       userId: baselineUser.userId,
       phoneNumber: baselineUser.phoneNumber,
       avatarUrl: baselineUser.avatarUrl,
+      occupation: baselineUser.occupation,
       badgeId: event.badgeId,
     );
     emit(
@@ -104,6 +105,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         baseline: baselineUser,
         firstName: baselineUser.firstName,
         lastName: baselineUser.lastName,
+        occupation: baselineUser.occupation,
         uploadedPhotoFilename: null,
         selectedBadgeId: event.badgeId,
       );

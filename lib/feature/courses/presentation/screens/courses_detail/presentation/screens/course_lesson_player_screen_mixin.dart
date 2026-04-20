@@ -16,6 +16,8 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_lesson_video_player.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_launch_context.dart';
+import 'package:qizlar_academy_mobile/feature/personal_info_gate/data/personal_info_gate_checker.dart';
+import 'package:qizlar_academy_mobile/feature/personal_info_gate/presentation/screens/personal_info_gate_sheet.dart';
 
 mixin CourseLessonPlayerScreenMixin<T extends StatefulWidget> on State<T> {
   CourseLessonPlayerArgs get args;
@@ -240,7 +242,7 @@ mixin CourseLessonPlayerScreenMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  /// Video oxirigacha ko‘rilganda: PATCH complete + `course/.../module/{lesson}` orqali kartani yangilash.
+  /// Video oxirigacha ko’rilganda: PATCH complete + `course/.../module/{lesson}` orqali kartani yangilash.
   Future<void> onCurrentLessonPlaybackFinished() async {
     if (!mounted) return;
     if (!isRegistered) return;
@@ -248,6 +250,19 @@ mixin CourseLessonPlayerScreenMixin<T extends StatefulWidget> on State<T> {
     if (lesson == null || lesson.isCompleted) return;
     if (_isCompleting) return;
     await completeSelectedLesson();
+    if (mounted) await _showPendingPersonalInfoStep();
+  }
+
+  /// Lesson tugagandan keyin shaxsiy ma’lumotlarning keyingi to’ldirilmagan
+  /// bosqichini (birthday yoki education type) ko’rsatadi.
+  Future<void> _showPendingPersonalInfoStep() async {
+    if (!isRegistered) return;
+    final checker = getIt<PersonalInfoGateChecker>();
+    final step = await checker.nextPendingStep();
+    // Faqat 1 va 2 bosqichlar lesson tugagandan keyin so’raladi (0 = kurs ochilganda)
+    if (step == null || step == 0) return;
+    if (!mounted) return;
+    await showPersonalInfoGateSheet(context, step: step);
   }
 
   Widget buildVideoPlayer(BuildContext context, {required CourseLessonModel lesson}) {

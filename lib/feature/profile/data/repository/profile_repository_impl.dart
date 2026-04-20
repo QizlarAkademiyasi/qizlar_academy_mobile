@@ -1,3 +1,8 @@
+import 'package:qizlar_academy_mobile/config/enum/education_type.dart';
+import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/district_model.dart';
+import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/neighborhood_model.dart';
+import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/region_model.dart';
+import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
@@ -69,28 +74,76 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
+  Future<void> deleteMyAccount() async {
+    _ensureRegistered();
+    await _apiDatasource.deleteMyAccount();
+    await _authSessionCubit.clearSession();
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (_) {}
+  }
+
+  @override
   Future<ProfileOverviewModel?> patchMyProfileIfChanged({
     required ProfileUserModel baseline,
     required String firstName,
     required String lastName,
+    required String occupation,
     String? uploadedPhotoFilename,
     required int selectedBadgeId,
+    RegionModel? selectedRegion,
+    DistrictModel? selectedDistrict,
+    NeighborhoodModel? selectedNeighborhood,
+    RegionModel? baselineRegion,
+    DistrictModel? baselineDistrict,
+    NeighborhoodModel? baselineNeighborhood,
+    DateTime? selectedBirthday,
+    EducationType? selectedEducationType,
   }) async {
     _ensureRegistered();
     final body = <String, dynamic>{};
     final f = firstName.trim();
     final l = lastName.trim();
+    final o = occupation.trim();
     if (f != baseline.firstName.trim()) {
       body['firstname'] = f;
     }
     if (l != baseline.lastName.trim()) {
       body['lastname'] = l;
     }
+    if (o != baseline.occupation.trim()) {
+      body['occupation'] = o;
+    }
     if (selectedBadgeId != baseline.badgeId) {
       body['badge'] = selectedBadgeId;
     }
     if (profilePhotoWouldPatch(baseline.avatarUrl, uploadedPhotoFilename)) {
       body['photo'] = uploadedPhotoFilename!.trim();
+    }
+    // Manzil
+    if (selectedRegion?.id != baselineRegion?.id) {
+      if (selectedRegion != null) {
+        body['regionId'] = selectedRegion.id;
+        body['countryId'] = selectedRegion.countryId;
+      }
+    }
+    if (selectedDistrict?.id != baselineDistrict?.id) {
+      if (selectedDistrict != null) {
+        body['districtId'] = selectedDistrict.id;
+      }
+    }
+    if (selectedNeighborhood?.id != baselineNeighborhood?.id) {
+      if (selectedNeighborhood != null) {
+        body['neighborhoodId'] = selectedNeighborhood.id;
+      }
+    }
+    // Tug'ilgan sana
+    if (selectedBirthday != null && selectedBirthday != baseline.birthday) {
+      body['birthday'] = '${selectedBirthday.year}-${selectedBirthday.month.toString().padLeft(2, '0')}-${selectedBirthday.day.toString().padLeft(2, '0')}';
+    }
+    // Ta'lim turi
+    if (selectedEducationType != null && selectedEducationType != baseline.educationType) {
+      body['educationId'] = selectedEducationType.patchEducationId;
     }
     if (body.isEmpty) {
       return null;

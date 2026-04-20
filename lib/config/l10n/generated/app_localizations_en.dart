@@ -162,6 +162,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainTabProfile => 'Profile';
 
   @override
+  String get mainTabMore => 'More';
+
+  @override
+  String get mainMoreEmptyHint =>
+      'Open “More” in the tab bar and choose a section.';
+
+  @override
   String get guestSignInCta => 'Sign in';
 
   @override
@@ -215,14 +222,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get courseDetailsLoadError =>
       'Couldn’t load course details. Please try again.';
-
-  @override
-  String get courseDetailsShareTooltip => 'Share course';
-
-  @override
-  String courseDetailsShareMessage(String title, String link) {
-    return '$title\n$link';
-  }
 
   @override
   String get editProfileLoadError =>
@@ -665,10 +664,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileNotificationsSubtitle => 'Push messages';
 
   @override
-  String get profileNotificationsEnableFailed =>
-      'Could not turn on notifications. Check permissions and try again.';
-
-  @override
   String get profileDarkMode => 'Dark mode';
 
   @override
@@ -806,19 +801,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutUsLinkOpenError => 'Could not open the link.';
-
-  @override
-  String get appUpdateAvailableTitle => 'Update available!';
-
-  @override
-  String get appUpdateAvailableBody =>
-      'We\'ve improved the app even more! Update the app to use new features and enjoy a more comfortable experience.';
-
-  @override
-  String get appUpdateLater => 'Later';
-
-  @override
-  String get appUpdateCta => 'Update';
 
   @override
   String get guestGateNotificationSettings =>
@@ -1071,4 +1053,128 @@ class AppLocalizationsEn extends AppLocalizations {
   String reviewTimeYearsAgo(int count) {
     return '$count y ago';
   }
+
+  @override
+  String get personalInfoGateSubmitError => 'Could not save. Please try again.';
+
+  @override
+  String get personalInfoGateContinue => 'Continue';
+
+  @override
+  String get personalInfoGateAddressTitle => 'Address';
+
+  @override
+  String get personalInfoGateAddressSubtitle =>
+      'Select your region, district, and neighborhood.';
+
+  @override
+  String get personalInfoGateCountry => 'Country';
+
+  @override
+  String get personalInfoGateRegion => 'Region';
+
+  @override
+  String get personalInfoGateDistrict => 'District';
+
+  @override
+  String get personalInfoGateNeighborhood => 'Neighborhood';
+
+  @override
+  String get personalInfoGatePersonalInfoTitle => 'Personal information';
+
+  @override
+  String get personalInfoGatePersonalInfoSubtitle =>
+      'Enter your date of birth.';
+
+  @override
+  String get personalInfoGateBirthday => 'Date of birth';
+
+  @override
+  String get personalInfoGateEducationTitle => 'Education';
+
+  @override
+  String get personalInfoGateEducationSubtitle => 'Select your education type.';
+
+  @override
+  String get courseDetailsShareTooltip => 'Share course';
+
+  @override
+  String courseDetailsShareMessage(String title, String url) {
+    return 'Check out \"$title\": $url';
+  }
+
+  @override
+  String get certificatesSheetInstagramStory => 'Instagram Story';
+
+  @override
+  String get profileDeleteAccountTile => 'Delete account';
+
+  @override
+  String get profileDeleteAccountTitle => 'Delete account?';
+
+  @override
+  String profileDeleteAccountConfirmBody(String webUrl) {
+    return 'This will permanently delete your account. You can also request deletion on the web: $webUrl';
+  }
+
+  @override
+  String get profileDeleteAccountCancel => 'Cancel';
+
+  @override
+  String get profileDeleteAccountContinue => 'Continue';
+
+  @override
+  String get profileDeleteAccountFinalTitle => 'Are you sure?';
+
+  @override
+  String get profileDeleteAccountFinalBody =>
+      'This cannot be undone. Your data will be removed.';
+
+  @override
+  String get profileDeleteAccountConfirmAction => 'Delete';
+
+  @override
+  String get profileDeleteAccountProgress => 'Deleting account…';
+
+  @override
+  String get profileDeleteAccountError =>
+      'Could not delete account. Try again.';
+
+  @override
+  String get appUpdateAvailableTitle => 'Update available';
+
+  @override
+  String get appUpdateAvailableBody =>
+      'A new version of the app is available. Update for the best experience.';
+
+  @override
+  String get appUpdateLater => 'Later';
+
+  @override
+  String get appUpdateCta => 'Update';
+
+  @override
+  String get profileNotificationsEnableFailed =>
+      'Could not update notification settings. Try again.';
+
+  @override
+  String get profileInformationPersonalTitle => 'Phone number';
+
+  @override
+  String get profileInformationOccupation => 'Occupation';
+
+  @override
+  String get profileInformationBirthday => 'Date of birth';
+
+  @override
+  String get profileInformationAddressTitle => 'Address';
+
+  @override
+  String get profileInformationRegion => 'Region';
+
+  @override
+  String get profileInformationDistrict => 'District';
+
+  @override
+  String get profileInformationNeighborhood => 'Neighborhood';
 }

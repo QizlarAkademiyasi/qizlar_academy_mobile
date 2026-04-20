@@ -46,6 +46,8 @@
   "mainTabCourses": "Kurslar",
   "mainTabLeaderboard": "Liderlar",
   "mainTabProfile": "Profil",
+  "mainTabMore": "Yana",
+  "mainMoreEmptyHint": "Pastki «Yana» tugmasini bosing va kerakli bo‘limni tanlang.",
   "guestSignInCta": "Kirish",
   "homeWelcomeGuestTitle": "Xush kelibsiz!",
   "homeWelcomeGuestSubtitle": "Qizlar akademiyasiga",
@@ -62,14 +64,6 @@
   "notificationListLoadError": "Bildirishnomalarni yuklashda xatolik yuz berdi.",
   "notificationActionError": "Bildirishnomalarni yangilashda xatolik yuz berdi.",
   "courseDetailsLoadError": "Kurs ma'lumotlarini yuklashda xatolik.",
-  "courseDetailsShareTooltip": "Kursni ulashish",
-  "courseDetailsShareMessage": "{title}\n{link}",
-  "@courseDetailsShareMessage": {
-    "placeholders": {
-      "title": {"type": "String"},
-      "link": {"type": "String"}
-    }
-  },
   "editProfileLoadError": "Profil ma'lumotlarini yuklashda xatolik.",
   "editProfileSaveError": "Ma'lumotlarni saqlab bo'lmadi. Qayta urinib ko'ring.",
   "coursesAllTitle": "Barcha kurslar",
@@ -277,7 +271,6 @@
   "profileSectionGeneral": "UMUMIY",
   "profileNotifications": "Bildirishnomalar",
   "profileNotificationsSubtitle": "Push-xabarlar",
-  "profileNotificationsEnableFailed": "Bildirishnomalarni yoqib bo‘lmadi. Ruxsatlarni tekshiring va qayta urinib ko‘ring.",
   "profileDarkMode": "Tungi rejim",
   "profileDarkModeSubtitle": "Qorong'i interfeys",
   "profileLogout": "Chiqish",
@@ -320,10 +313,6 @@
   "aboutSocialYoutubeSubtitle": "Qizlar Akademiyasi rasmiy Youtube kanali",
   "aboutUsLoadError": "Ma'lumot yuklanmadi. Qayta urinib ko'ring.",
   "aboutUsLinkOpenError": "Havolani ochib bo'lmadi.",
-  "appUpdateAvailableTitle": "Yangilanish mavjud!",
-  "appUpdateAvailableBody": "Biz ilovani yanada yaxshiladik! Yangi imkoniyatlardan foydalanish va qulayroq o‘qish uchun ilovani yangilang.",
-  "appUpdateLater": "Keyinroq",
-  "appUpdateCta": "Yangilash",
   "guestGateNotificationSettings": "Bildirishnoma sozlamalari uchun ro‘yxatdan o‘ting",
   "guestGateSaveSettings": "Sozlamalarni saqlash uchun ro‘yxatdan o‘ting",
   "guestGateProfileFeatures": "Profil funksiyalari uchun ro‘yxatdan o‘ting",
@@ -477,5 +466,60 @@
         "type": "int"
       }
     }
-  }
+  },
+  "personalInfoGateSubmitError": "Saqlab bo‘lmadi. Qayta urinib ko‘ring.",
+  "personalInfoGateContinue": "Davom etish",
+  "personalInfoGateAddressTitle": "Manzil",
+  "personalInfoGateAddressSubtitle": "Viloyat, tuman va mahallangizni tanlang.",
+  "personalInfoGateCountry": "Mamlakat",
+  "personalInfoGateRegion": "Viloyat",
+  "personalInfoGateDistrict": "Tuman",
+  "personalInfoGateNeighborhood": "Mahalla",
+  "personalInfoGatePersonalInfoTitle": "Shaxsiy ma’lumotlar",
+  "personalInfoGatePersonalInfoSubtitle": "Tug‘ilgan sanangizni kiriting.",
+  "personalInfoGateBirthday": "Tug‘ilgan sana",
+  "personalInfoGateEducationTitle": "Ta’lim",
+  "personalInfoGateEducationSubtitle": "Ta’lim turini tanlang.",
+  "courseDetailsShareTooltip": "Kursni ulashish",
+  "courseDetailsShareMessage": "«{title}» kursi: {url}",
+  "@courseDetailsShareMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "certificatesSheetInstagramStory": "Instagram Story",
+  "profileDeleteAccountTile": "Hisobni o‘chirish",
+  "profileDeleteAccountTitle": "Hisobni o‘chirasizmi?",
+  "profileDeleteAccountConfirmBody": "Bu hisobingizni butunlay o‘chiradi. Veb-sahifada ham so‘rov yuborishingiz mumkin: {webUrl}",
+  "@profileDeleteAccountConfirmBody": {
+    "placeholders": {
+      "webUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleteAccountCancel": "Bekor qilish",
+  "profileDeleteAccountContinue": "Davom etish",
+  "profileDeleteAccountFinalTitle": "Ishonchingiz komilmi?",
+  "profileDeleteAccountFinalBody": "Bu qaytarib bo‘lmaydi. Ma’lumotlaringiz o‘chiriladi.",
+  "profileDeleteAccountConfirmAction": "O‘chirish",
+  "profileDeleteAccountProgress": "Hisob o‘chirilmoqda…",
+  "profileDeleteAccountError": "Hisobni o‘chirib bo‘lmadi. Qayta urinib ko‘ring.",
+  "appUpdateAvailableTitle": "Yangilanish mavjud",
+  "appUpdateAvailableBody": "Ilovaning yangi versiyasi chiqdi. Qulayroq ishlashi uchun yangilang.",
+  "appUpdateLater": "Keyinroq",
+  "appUpdateCta": "Yangilash",
+  "profileNotificationsEnableFailed": "Bildirishnoma sozlamalarini yangilab bo‘lmadi. Qayta urinib ko‘ring.",
+  "profileInformationPersonalTitle": "Telefon raqam",
+  "profileInformationOccupation": "Kasb",
+  "profileInformationBirthday": "Tug‘ilgan sana",
+  "profileInformationAddressTitle": "Manzil",
+  "profileInformationRegion": "Viloyat",
+  "profileInformationDistrict": "Tuman",
+  "profileInformationNeighborhood": "Mahalla"
 }

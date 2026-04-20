@@ -11,8 +11,9 @@ class CertificatePreviewSheet extends StatelessWidget {
     required this.description,
     required this.downloadLabel,
     required this.onDownload,
-    this.onInstagramStory,
     required this.onShare,
+    this.instagramStoryLabel,
+    this.onInstagramStory,
     this.openCertificatesLabel,
     this.onOpenCertificates,
   });
@@ -22,8 +23,9 @@ class CertificatePreviewSheet extends StatelessWidget {
   final String description;
   final String downloadLabel;
   final VoidCallback onDownload;
-  final VoidCallback? onInstagramStory;
   final VoidCallback onShare;
+  final String? instagramStoryLabel;
+  final VoidCallback? onInstagramStory;
   final String? openCertificatesLabel;
   final VoidCallback? onOpenCertificates;
 
@@ -34,8 +36,9 @@ class CertificatePreviewSheet extends StatelessWidget {
     required String description,
     required String downloadLabel,
     required VoidCallback onDownload,
-    VoidCallback? onInstagramStory,
     required VoidCallback onShare,
+    String? instagramStoryLabel,
+    VoidCallback? onInstagramStory,
     String? openCertificatesLabel,
     VoidCallback? onOpenCertificates,
   }) {
@@ -47,8 +50,9 @@ class CertificatePreviewSheet extends StatelessWidget {
         description: description,
         downloadLabel: downloadLabel,
         onDownload: onDownload,
-        onInstagramStory: onInstagramStory,
         onShare: onShare,
+        instagramStoryLabel: instagramStoryLabel,
+        onInstagramStory: onInstagramStory,
         openCertificatesLabel: openCertificatesLabel,
         onOpenCertificates: onOpenCertificates,
       ),
@@ -128,21 +132,24 @@ class CertificatePreviewSheet extends StatelessWidget {
                       textStyle: context.textTheme.bodyMediumSemibold.copyWith(color: AppColors.white),
                     ),
                   ),
-                  // if (onInstagramStory != null) ...[
-                  //   const SizedBox(width: 10),
-                  //   Material(
-                  //     color: context.appColors.stroke.withValues(alpha: 0.35),
-                  //     borderRadius: AppRadius.radiusSm,
-                  //     child: InkWell(
-                  //       borderRadius: AppRadius.radiusSm,
-                  //       onTap: () {
-                  //         Navigator.of(context).pop();
-                  //         WidgetsBinding.instance.addPostFrameCallback((_) => onInstagramStory!());
-                  //       },
-                  //       child: SizedBox(width: 52, height: 52, child: Icon(LucideIcons.instagram, size: 22, color: const Color(0xFFE4405F))),
-                  //     ),
-                  //   ),
-                  // ],
+                  if (onInstagramStory != null) ...[
+                    const SizedBox(width: 10),
+                    Material(
+                      color: context.appColors.stroke.withValues(alpha: 0.35),
+                      borderRadius: AppRadius.radiusSm,
+                      child: InkWell(
+                        borderRadius: AppRadius.radiusSm,
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          WidgetsBinding.instance.addPostFrameCallback((_) => onInstagramStory!());
+                        },
+                        child: Tooltip(
+                          message: (instagramStoryLabel ?? '').trim(),
+                          child: SizedBox(width: 52, height: 52, child: Icon(LucideIcons.instagram, size: 22, color: context.appColors.text)),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(width: 10),
                   Material(
                     color: context.appColors.stroke.withValues(alpha: 0.35),

@@ -5,6 +5,8 @@ import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
+import 'package:qizlar_academy_mobile/feature/personal_info_gate/data/personal_info_gate_checker.dart';
+import 'package:qizlar_academy_mobile/feature/personal_info_gate/presentation/screens/personal_info_gate_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/course_curriculum_progress.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_details_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_lesson_model.dart';
@@ -24,10 +26,33 @@ mixin CourseDetailsScreenMixin<T extends StatefulWidget> on State<T> {
   CoursesTab get selectedTab => _selectedTab;
   CoursesTab _selectedTab = CoursesTab.lessons;
 
+  bool _personalInfoGateShown = false;
+
   void onTabChanged(CoursesTab tab) {
     if (_selectedTab == tab) return;
     Gaimon.light();
     setState(() => _selectedTab = tab);
+  }
+
+  /// Shaxsiy ma'lumotlar to'ldirilmaganini tekshiradi va kerak bo'lsa gate sheet ko'rsatadi.
+  /// Kurs ochilganda faqat 0-bosqich (manzil) so'raladi.
+  /// `true` qaytarsa — davom etish mumkin; `false` — gate yopildi yoki ko'rsatilmadi.
+  Future<bool> ensurePersonalInfoGate(BuildContext context) async {
+    final session = getIt<AuthSessionCubit>().state;
+    if (session.isAnonymous) return true;
+    if (_personalInfoGateShown) return true;
+
+    final checker = getIt<PersonalInfoGateChecker>();
+    final step = await checker.nextPendingStep();
+    // Kurs ochilganda faqat 0-bosqich (manzil) so'raladi
+    if (step == null || step != 0) return true;
+    if (!context.mounted) return false;
+
+    _personalInfoGateShown = true;
+    final result = await showPersonalInfoGateSheet(context, step: 0);
+    if (result == true) return true;
+    _personalInfoGateShown = false;
+    return false;
   }
 
   void coursesBlocListener(BuildContext context, CourseDetailsState state) {
@@ -127,6 +152,10 @@ mixin CourseDetailsScreenMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> onCoursePrimaryCtaTap(BuildContext context, {required CourseDetailsModel course}) async {
     final session = getIt<AuthSessionCubit>().state;
+    if (session.isRegistered) {
+      final allowed = await ensurePersonalInfoGate(context);
+      if (!allowed || !context.mounted) return;
+    }
     if (session.isAnonymous) {
       final previewId = course.firstGuestPreviewLessonId;
       if (previewId == null || !context.mounted) return;
@@ -166,6 +195,10 @@ mixin CourseDetailsScreenMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> openLessonPlayer(BuildContext context, {required CourseDetailsModel course, String? lessonId}) async {
     final session = getIt<AuthSessionCubit>().state;
+    if (session.isRegistered) {
+      final allowed = await ensurePersonalInfoGate(context);
+      if (!allowed || !context.mounted) return;
+    }
     if (session.isRegistered && !course.isEnrolled) {
       if (!context.mounted) return;
       final enroll = await _confirmCourseEnroll(context);

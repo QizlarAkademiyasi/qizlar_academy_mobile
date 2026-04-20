@@ -42,17 +42,14 @@ abstract final class AppDeepLinkConfig {
 
   /// Android `manifestPlaceholders["deepLinkHost"]` va iOS Associated Domains bilan bir xil host.
   /// `android/local.properties` da `deeplink.host=sizning.host` orqali almashtiriladi (ixtiyoriy).
-  static const String defaultUniversalLinkHost = 'link.qizlarakademiyasi.uz';
+  static const String defaultUniversalLinkHost = 'www.qizlarakademiyasi.uz';
 
   /// Remote Config API domenidan tashqari ruxsat etilgan HTTPS hostlar.
-  static const Set<String> additionalAllowedHosts = {};
+  static const Set<String> additionalAllowedHosts = {'qizlarakademiyasi.uz'};
 
   /// HTTPS havolalar uchun ruxsat etilgan hostlar to‘plami.
   static Set<String> resolvedHttpsHosts() {
-    final hosts = <String>{
-      defaultUniversalLinkHost,
-      ...additionalAllowedHosts,
-    };
+    final hosts = <String>{defaultUniversalLinkHost, ...additionalAllowedHosts};
     final raw = AppRemoteConfig.instance.domain.trim();
     if (raw.isEmpty) {
       return hosts;

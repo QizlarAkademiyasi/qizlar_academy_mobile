@@ -1,8 +1,9 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/enum/education_type.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_language_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_menu_item_model.dart';
 
-/// Profil «HISOB» bo‘limidagi uchta band (API bo‘sh qaytarsa ham shu tartibda ko‘rsatiladi).
+/// Profil «HISOB» bo'limidagi uchta band (API bo'sh qaytarsa ham shu tartibda ko'rsatiladi).
 const List<ProfileMenuItemModel> kDefaultProfileAchievementItems = <ProfileMenuItemModel>[
   ProfileMenuItemModel(
     id: 'achievements-certificates',
@@ -58,7 +59,7 @@ class ProfileOverviewModel extends Equatable {
   /// `/user/me` yoki nested `stats` dan; subtitl va sertifikat badge uchun.
   final int? certificatesCount;
   final int? activeCoursesCount;
-  /// Reyting (alohida maydon bo‘lmasa, API `points` bilan to‘ldiriladi).
+  /// Reyting (alohida maydon bo'lmasa, API `points` bilan to'ldiriladi).
   final int? rating;
 
   ProfileOverviewModel copyWith({
@@ -122,7 +123,16 @@ class ProfileUserModel extends Equatable {
     required this.userId,
     required this.phoneNumber,
     required this.avatarUrl,
+    this.occupation = '',
     this.badgeId = 0,
+    this.birthday,
+    this.regionId = 0,
+    this.regionName = '',
+    this.districtId = 0,
+    this.districtName = '',
+    this.neighborhoodId = 0,
+    this.neighborhoodName = '',
+    this.educationType,
   });
 
   final String firstName;
@@ -132,11 +142,30 @@ class ProfileUserModel extends Equatable {
   /// Backenddan keladigan telefon (masalan +998… yoki raqamlar qatori).
   final String phoneNumber;
   final String avatarUrl;
+  /// `GET /user/me` `occupation`.
+  final String occupation;
   /// Profil badge indeksi (`PATCH` da `badge`); [assets/profile/profile_badges.json] dagi `id`.
   final int badgeId;
+  /// Tug'ilgan sana (`GET /user/me` `birthday`).
+  final DateTime? birthday;
+  /// Manzil: viloyat.
+  final int regionId;
+  final String regionName;
+  /// Manzil: tuman.
+  final int districtId;
+  final String districtName;
+  /// Manzil: mahalla.
+  final int neighborhoodId;
+  final String neighborhoodName;
+  /// Ta'lim turi (`GET /user/me` `education.type`).
+  final EducationType? educationType;
 
   @override
-  List<Object?> get props => [firstName, lastName, fullName, userId, phoneNumber, avatarUrl, badgeId];
+  List<Object?> get props => [
+    firstName, lastName, fullName, userId, phoneNumber, avatarUrl,
+    occupation, badgeId, birthday, regionId, regionName, districtId,
+    districtName, neighborhoodId, neighborhoodName, educationType,
+  ];
 }
 
 class ProfileStatModel extends Equatable {

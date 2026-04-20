@@ -1,4 +1,4 @@
-import FBSDKCoreKit
+import FirebaseCore
 import FirebaseMessaging
 import Flutter
 import UIKit
@@ -10,11 +10,9 @@ import UserNotifications
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    ApplicationDelegate.shared.application(
-      application,
-      didFinishLaunchingWithOptions: launchOptions
-    )
-    // Flutter pluginlar ro‘yxatdan o‘tishi uchun avvalo super; keyin APNs.
+    // Firebase ichki logi default `.notice` — shu darajada FCM swizzling haqidagi [I-FCM001000] chiqadi.
+    // Flutter uchun swizzling o‘chirilmasligi kerak; bu yerda faqat konsol shovqinini kamaytiramiz.
+    FirebaseConfiguration.shared.setLoggerLevel(.warning)
     let ok = super.application(application, didFinishLaunchingWithOptions: launchOptions)
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self
@@ -25,22 +23,11 @@ import UserNotifications
     return ok
   }
 
-  override func application(
-    _ app: UIApplication,
-    open url: URL,
-    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-  ) -> Bool {
-    if ApplicationDelegate.shared.application(app, open: url, options: options) {
-      return true
-    }
-    return super.application(app, open: url, options: options)
-  }
-
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
   }
 
-  /// FCM: swizzling (Facebook / implicit engine) APNS tokenni Messaging ga yetkazmasa, Flutter [getAPNSToken] doim `null` bo‘ladi.
+  /// FCM: swizzling ba’zan APNS tokenni Messaging ga yetkazmasa, Flutter [getAPNSToken] `null` bo‘lishi mumkin.
   override func application(
     _ application: UIApplication,
     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data

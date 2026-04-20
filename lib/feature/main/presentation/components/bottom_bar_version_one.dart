@@ -10,15 +10,10 @@ import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_profile_tab_icon.dart';
 
 /// Creates a jelly transform matrix based on velocity for organic squash and stretch effect
-Matrix4 buildJellyTransform({
-  required Offset velocity,
-  double maxDistortion = 0.7,
-  double velocityScale = 1000.0,
-}) {
+Matrix4 buildJellyTransform({required Offset velocity, double maxDistortion = 0.7, double velocityScale = 1000.0}) {
   final speed = velocity.distance;
   final direction = speed > 0 ? velocity / speed : Offset.zero;
-  final distortionFactor =
-      (speed / velocityScale).clamp(0.0, 1.0) * maxDistortion;
+  final distortionFactor = (speed / velocityScale).clamp(0.0, 1.0) * maxDistortion;
 
   if (distortionFactor == 0) {
     return Matrix4.identity();
@@ -97,12 +92,7 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
       child: LiquidGlassBlendGroup(
         blend: 5,
         child: Padding(
-          padding: EdgeInsets.only(
-            right: widget.horizontalPadding,
-            left: widget.horizontalPadding,
-            bottom: widget.bottomPadding,
-            top: widget.bottomPadding,
-          ),
+          padding: EdgeInsets.only(right: widget.horizontalPadding, left: widget.horizontalPadding, bottom: widget.bottomPadding, top: widget.bottomPadding),
           child: Row(
             children: [
               Expanded(
@@ -124,11 +114,7 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
                         children: [
                           for (var i = 0; i < widget.tabs.length; i++)
                             Expanded(
-                              child: _BottomBarTab(
-                                tab: widget.tabs[i],
-                                selected: widget.selectedIndex == i,
-                                onTap: () => widget.onTabSelected(i),
-                              ),
+                              child: _BottomBarTab(tab: widget.tabs[i], selected: widget.selectedIndex == i, onTap: () => widget.onTabSelected(i)),
                             ),
                         ],
                       ),
@@ -136,10 +122,7 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
                   ),
                 ),
               ),
-              if (widget.extraButton != null) ...[
-                SizedBox(width: widget.spacing),
-                _ExtraButton(config: widget.extraButton!, fake: widget.fake),
-              ],
+              if (widget.extraButton != null) ...[SizedBox(width: widget.spacing), _ExtraButton(config: widget.extraButton!, fake: widget.fake)],
             ],
           ),
         ),
@@ -149,16 +132,8 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
 }
 
 class LiquidGlassBottomBarTab {
-  const LiquidGlassBottomBarTab({
-    required this.label,
-    this.icon,
-    this.selectedIcon,
-    this.iconBuilder,
-    this.glowColor,
-  }) : assert(
-          icon != null || iconBuilder != null,
-          'LiquidGlassBottomBarTab requires icon or iconBuilder',
-        );
+  const LiquidGlassBottomBarTab({required this.label, this.icon, this.selectedIcon, this.iconBuilder, this.glowColor})
+    : assert(icon != null || iconBuilder != null, 'LiquidGlassBottomBarTab requires icon or iconBuilder');
 
   final String label;
   final IconData? icon;
@@ -168,12 +143,7 @@ class LiquidGlassBottomBarTab {
 }
 
 class LiquidGlassBottomBarExtraButton {
-  const LiquidGlassBottomBarExtraButton({
-    required this.icon,
-    required this.onTap,
-    required this.label,
-    this.size = 64,
-  });
+  const LiquidGlassBottomBarExtraButton({required this.icon, required this.onTap, required this.label, this.size = 64});
 
   final IconData icon;
   final VoidCallback onTap;
@@ -182,11 +152,7 @@ class LiquidGlassBottomBarExtraButton {
 }
 
 class _BottomBarTab extends StatelessWidget {
-  const _BottomBarTab({
-    required this.tab,
-    required this.selected,
-    required this.onTap,
-  });
+  const _BottomBarTab({required this.tab, required this.selected, required this.onTap});
 
   final LiquidGlassBottomBarTab tab;
   final bool selected;
@@ -195,9 +161,7 @@ class _BottomBarTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    final iconColor = selected
-        ? appColors.primary
-        : appColors.bottomBarTabUnselected;
+    final iconColor = selected ? appColors.primary : appColors.bottomBarTabUnselected;
 
     return GestureDetector(
       onTap: onTap,
@@ -237,15 +201,7 @@ class _BottomBarTab extends StatelessWidget {
                             child: Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: tab.glowColor!.withValues(
-                                      alpha: selected ? 0.6 : 0,
-                                    ),
-                                    blurRadius: 32,
-                                    spreadRadius: 8,
-                                  ),
-                                ],
+                                boxShadow: [BoxShadow(color: tab.glowColor!.withValues(alpha: selected ? 0.6 : 0), blurRadius: 32, spreadRadius: 8)],
                               ),
                             ),
                           ),
@@ -254,15 +210,7 @@ class _BottomBarTab extends StatelessWidget {
                     AnimatedScale(
                       scale: 1,
                       duration: const Duration(milliseconds: 150),
-                      child: tab.iconBuilder != null
-                          ? tab.iconBuilder!(context, iconColor, 24, selected)
-                          : Icon(
-                              selected
-                                  ? (tab.selectedIcon ?? tab.icon!)
-                                  : tab.icon!,
-                              color: iconColor,
-                              size: 24,
-                            ),
+                      child: tab.iconBuilder != null ? tab.iconBuilder!(context, iconColor, 24, selected) : Icon(selected ? (tab.selectedIcon ?? tab.icon!) : tab.icon!, color: iconColor, size: 24),
                     ),
                   ],
                 ),
@@ -273,11 +221,7 @@ class _BottomBarTab extends StatelessWidget {
                 maxLines: 1,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: iconColor,
-                  fontSize: 11,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                ),
+                style: TextStyle(color: iconColor, fontSize: 11, fontWeight: selected ? FontWeight.w600 : FontWeight.w500),
               ),
             ],
           ),
@@ -314,13 +258,7 @@ class _ExtraButtonState extends State<_ExtraButton> {
               child: SizedBox(
                 height: widget.config.size,
                 width: widget.config.size,
-                child: Center(
-                  child: Icon(
-                    widget.config.icon,
-                    size: 24,
-                    color: appColors.bottomBarTabUnselected,
-                  ),
-                ),
+                child: Center(child: Icon(widget.config.icon, size: 24, color: appColors.bottomBarTabUnselected)),
               ),
             ),
           ),
@@ -331,14 +269,7 @@ class _ExtraButtonState extends State<_ExtraButton> {
 }
 
 class _TabIndicator extends StatefulWidget {
-  const _TabIndicator({
-    required this.child,
-    required this.tabIndex,
-    required this.tabCount,
-    required this.onTabChanged,
-    this.visible = true,
-    this.indicatorColor,
-  });
+  const _TabIndicator({required this.child, required this.tabIndex, required this.tabCount, required this.onTabChanged, this.visible = true, this.indicatorColor});
 
   final int tabIndex;
   final int tabCount;
@@ -351,8 +282,7 @@ class _TabIndicator extends StatefulWidget {
   State<_TabIndicator> createState() => _TabIndicatorState();
 }
 
-class _TabIndicatorState extends State<_TabIndicator>
-    with SingleTickerProviderStateMixin {
+class _TabIndicatorState extends State<_TabIndicator> with SingleTickerProviderStateMixin {
   bool _isDown = false;
   bool _isDragging = false;
 
@@ -366,8 +296,7 @@ class _TabIndicatorState extends State<_TabIndicator>
 
   @override
   void didUpdateWidget(covariant _TabIndicator oldWidget) {
-    if (oldWidget.tabIndex != widget.tabIndex ||
-        oldWidget.tabCount != widget.tabCount) {
+    if (oldWidget.tabIndex != widget.tabIndex || oldWidget.tabCount != widget.tabCount) {
       setState(() {
         xAlign = _computeXAlignmentForTab(widget.tabIndex);
       });
@@ -433,8 +362,7 @@ class _TabIndicatorState extends State<_TabIndicator>
 
     final indicatorWidth = 1.0 / widget.tabCount;
     final draggableRange = 1.0 - indicatorWidth;
-    final velocityX =
-        (details.velocity.pixelsPerSecond.dx / box.size.width) / draggableRange;
+    final velocityX = (details.velocity.pixelsPerSecond.dx / box.size.width) / draggableRange;
 
     int targetTabIndex;
 
@@ -446,29 +374,16 @@ class _TabIndicatorState extends State<_TabIndicator>
       const velocityThreshold = 0.5;
       if (velocityX.abs() > velocityThreshold) {
         final projectedX = (currentRelativeX + velocityX * 0.3).clamp(0.0, 1.0);
-        targetTabIndex = (projectedX / tabWidth).round().clamp(
-          0,
-          widget.tabCount - 1,
-        );
+        targetTabIndex = (projectedX / tabWidth).round().clamp(0, widget.tabCount - 1);
 
-        final currentTabIndex = (currentRelativeX / tabWidth).round().clamp(
-          0,
-          widget.tabCount - 1,
-        );
-        if (velocityX > velocityThreshold &&
-            targetTabIndex <= currentTabIndex &&
-            currentTabIndex < widget.tabCount - 1) {
+        final currentTabIndex = (currentRelativeX / tabWidth).round().clamp(0, widget.tabCount - 1);
+        if (velocityX > velocityThreshold && targetTabIndex <= currentTabIndex && currentTabIndex < widget.tabCount - 1) {
           targetTabIndex = currentTabIndex + 1;
-        } else if (velocityX < -velocityThreshold &&
-            targetTabIndex >= currentTabIndex &&
-            currentTabIndex > 0) {
+        } else if (velocityX < -velocityThreshold && targetTabIndex >= currentTabIndex && currentTabIndex > 0) {
           targetTabIndex = currentTabIndex - 1;
         }
       } else {
-        targetTabIndex = (currentRelativeX / tabWidth).round().clamp(
-          0,
-          widget.tabCount - 1,
-        );
+        targetTabIndex = (currentRelativeX / tabWidth).round().clamp(0, widget.tabCount - 1);
       }
     }
     xAlign = _computeXAlignmentForTab(targetTabIndex);
@@ -483,8 +398,7 @@ class _TabIndicatorState extends State<_TabIndicator>
     final appColors = context.appColors;
     final brightness = MediaQuery.platformBrightnessOf(context);
     final isDark = brightness == Brightness.dark;
-    final indicatorColor =
-        widget.indicatorColor ?? appColors.bottomBarIndicator;
+    final indicatorColor = widget.indicatorColor ?? appColors.bottomBarIndicator;
     final targetAlignment = _computeXAlignmentForTab(widget.tabIndex);
 
     return GestureDetector(
@@ -498,21 +412,12 @@ class _TabIndicatorState extends State<_TabIndicator>
       child: VelocityMotionBuilder(
         converter: SingleMotionConverter(),
         value: xAlign,
-        motion: _isDragging
-            ? const Motion.interactiveSpring(snapToEnd: true)
-            : const Motion.snappySpring(snapToEnd: true),
+        motion: _isDragging ? const Motion.interactiveSpring(snapToEnd: true) : const Motion.snappySpring(snapToEnd: true),
         builder: (context, value, velocity, child) {
           final alignment = Alignment(value, 0);
           return SingleMotionBuilder(
-            motion: const Motion.snappySpring(
-              snapToEnd: true,
-              duration: Duration(milliseconds: 150),
-            ),
-            value:
-                widget.visible &&
-                    (_isDown || (alignment.x - targetAlignment).abs() > 0.30)
-                ? 1.0
-                : 0.0,
+            motion: const Motion.snappySpring(snapToEnd: true, duration: Duration(milliseconds: 150)),
+            value: widget.visible && (_isDown || (alignment.x - targetAlignment).abs() > 0.30) ? 1.0 : 0.0,
             builder: (context, thickness, child) {
               return Stack(
                 clipBehavior: Clip.none,
@@ -527,10 +432,7 @@ class _TabIndicatorState extends State<_TabIndicator>
                         duration: const Duration(milliseconds: 120),
                         opacity: widget.visible && thickness <= .2 ? 1 : 0,
                         child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: indicatorColor,
-                            borderRadius: BorderRadius.circular(64),
-                          ),
+                          decoration: BoxDecoration(color: indicatorColor, borderRadius: BorderRadius.circular(64)),
                           child: const SizedBox.expand(),
                         ),
                       ),
@@ -548,9 +450,7 @@ class _TabIndicatorState extends State<_TabIndicator>
                         fake: false,
                         settings: LiquidGlassSettings(
                           visibility: thickness,
-                          glassColor: isDark
-                              ? Color.fromARGB(70, 54, 61, 77)
-                              : Color.fromARGB(166, 213, 213, 213),
+                          glassColor: isDark ? Color.fromARGB(70, 54, 61, 77) : Color.fromARGB(166, 213, 213, 213),
                           saturation: 1.05,
                           refractiveIndex: 1.1,
                           thickness: 10,
@@ -558,9 +458,7 @@ class _TabIndicatorState extends State<_TabIndicator>
                           chromaticAberration: .2,
                           blur: 1,
                         ),
-                        shape: const LiquidRoundedSuperellipse(
-                          borderRadius: 64,
-                        ),
+                        shape: const LiquidRoundedSuperellipse(borderRadius: 64),
                         child: GlassGlow(child: const SizedBox.expand()),
                       ),
                     ),
@@ -577,13 +475,7 @@ class _TabIndicatorState extends State<_TabIndicator>
 }
 
 class _IndicatorTransform extends StatelessWidget {
-  const _IndicatorTransform({
-    required this.velocity,
-    required this.tabCount,
-    required this.alignment,
-    required this.thickness,
-    required this.child,
-  });
+  const _IndicatorTransform({required this.velocity, required this.tabCount, required this.alignment, required this.thickness, required this.child});
 
   final double velocity;
   final int tabCount;
@@ -593,11 +485,7 @@ class _IndicatorTransform extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rect = RelativeRect.lerp(
-      RelativeRect.fill,
-      const RelativeRect.fromLTRB(-8, -8, -8, -8),
-      thickness,
-    );
+    final rect = RelativeRect.lerp(RelativeRect.fill, const RelativeRect.fromLTRB(-8, -8, -8, -8), thickness);
     return Positioned.fill(
       left: 4,
       right: 4,
@@ -612,18 +500,12 @@ class _IndicatorTransform extends StatelessWidget {
             Positioned.fromRelativeRect(
               rect: rect ?? RelativeRect.fill,
               child: SingleMotionBuilder(
-                motion: Motion.bouncySpring(
-                  duration: const Duration(milliseconds: 150),
-                ),
+                motion: Motion.bouncySpring(duration: const Duration(milliseconds: 150)),
                 value: velocity,
                 builder: (context, velocityValue, child) {
                   return Transform(
                     alignment: Alignment.center,
-                    transform: buildJellyTransform(
-                      velocity: Offset(velocityValue, 0),
-                      maxDistortion: .8,
-                      velocityScale: 10,
-                    ),
+                    transform: buildJellyTransform(velocity: Offset(velocityValue, 0), maxDistortion: .8, velocityScale: 10),
                     child: child,
                   );
                 },
@@ -639,12 +521,7 @@ class _IndicatorTransform extends StatelessWidget {
 
 /// Simple fractionally sized box for indicator (no motor dependency in this path)
 class FractionallySizedBox extends StatelessWidget {
-  const FractionallySizedBox({
-    super.key,
-    required this.widthFactor,
-    required this.child,
-    this.alignment = Alignment.center,
-  });
+  const FractionallySizedBox({super.key, required this.widthFactor, required this.child, this.alignment = Alignment.center});
 
   final double widthFactor;
   final Widget child;
@@ -667,12 +544,7 @@ class FractionallySizedBox extends StatelessWidget {
 /// MainBottomBar — loyiha ekranlari uchun wrapper: GitHub'dagi LiquidGlassBottomBar
 /// xuddi shu iOS uslubida, faqat bizning tablarimiz bilan.
 class GlassBottomNavigationVersionOne extends StatelessWidget {
-  const GlassBottomNavigationVersionOne({
-    super.key,
-    required this.currentIndex,
-    required this.onTap,
-    this.fake = false,
-  });
+  const GlassBottomNavigationVersionOne({super.key, required this.currentIndex, required this.onTap, this.fake = false});
 
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -681,26 +553,13 @@ class GlassBottomNavigationVersionOne extends StatelessWidget {
   static List<LiquidGlassBottomBarTab> _tabs(BuildContext context) {
     final l10n = context.l10n;
     return [
-      LiquidGlassBottomBarTab(
-        label: l10n.mainTabHome,
-        iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.home(color, size, selected),
-      ),
-      LiquidGlassBottomBarTab(
-        label: l10n.mainTabCourses,
-        iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.courses(color, size, selected),
-      ),
-      LiquidGlassBottomBarTab(
-        label: l10n.mainTabLeaderboard,
-        iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.leaderboard(color, size, selected),
-      ),
+      LiquidGlassBottomBarTab(label: l10n.mainTabHome, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.home(color, size, selected)),
+      LiquidGlassBottomBarTab(label: l10n.mainTabCourses, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.courses(color, size, selected)),
+      LiquidGlassBottomBarTab(label: l10n.mainTabLeaderboard, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.leaderboard(color, size, selected)),
       LiquidGlassBottomBarTab(
         label: l10n.mainTabProfile,
-        iconBuilder: (ctx, color, size, selected) => MainBottomNavProfileTabIcon(
-          isGuestMode: false,
-          selected: selected,
-          selectedColor: ctx.appColors.primary,
-          unselectedColor: ctx.appColors.bottomBarTabUnselected,
-        ),
+        iconBuilder: (ctx, color, size, selected) =>
+            MainBottomNavProfileTabIcon(isGuestMode: false, selected: selected, selectedColor: ctx.appColors.primary, unselectedColor: ctx.appColors.bottomBarTabUnselected),
       ),
     ];
   }
@@ -712,12 +571,7 @@ class GlassBottomNavigationVersionOne extends StatelessWidget {
       bottom: false,
       child: Align(
         alignment: Alignment.bottomCenter,
-        child: LiquidGlassBottomBar(
-          tabs: _tabs(context),
-          selectedIndex: currentIndex,
-          onTabSelected: onTap,
-          fake: fake,
-        ),
+        child: LiquidGlassBottomBar(tabs: _tabs(context), selectedIndex: currentIndex, onTabSelected: onTap, fake: fake),
       ),
     );
   }

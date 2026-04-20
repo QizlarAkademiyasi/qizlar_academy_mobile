@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
+import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/core/deeplink/app_deep_link_coordinator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
@@ -77,27 +78,48 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   }
 
   Future<void> _bootstrapSplashExit() async {
-    final cubit = getIt<AuthSessionCubit>();
-    // Logo + hamkorlar animatsiyasi ~1.6s; keyin qisqa barqaror kutish.
-    final delay = Future<void>.delayed(const Duration(milliseconds: 2600));
-    if (cubit.state.isRegistered) {
-      await Future.wait<void>([delay, cubit.ensureProfileGateResolved()]);
-    } else {
-      await delay;
-    }
-    if (!mounted) return;
-    final deferred = getIt<AppDeepLinkCoordinator>().consumeDeferredPushNavigation();
-    if (deferred != null && deferred.isNotEmpty) {
+    try {
+      final cubit = getIt<AuthSessionCubit>();
+      final deepLinks = getIt<AppDeepLinkCoordinator>();
+      final delay = Future<void>.delayed(const Duration(milliseconds: 2600));
+      final waitInitialLink = deepLinks.waitForInitialLinkResolved();
+      if (cubit.state.isRegistered) {
+        await Future.wait<void>([
+          delay,
+          waitInitialLink,
+          cubit.ensureProfileGateResolved(),
+        ]);
+      } else {
+        await Future.wait<void>([delay, waitInitialLink]);
+      }
       if (!mounted) return;
-      context.go(deferred);
-      return;
-    }
-    final session = cubit.state;
-    if (!session.isRegistered) {
-      context.go(Routes.main);
-    } else if (session.needsProfileRegistration) {
-      context.go(Routes.register);
-    } else {
+
+      final deferred = deepLinks.consumeDeferredPushNavigation();
+      if (deferred != null && deferred.isNotEmpty) {
+        if (!mounted) return;
+        if (AppDeepLinkCoordinator.isDetailPath(deferred)) {
+          context.go(Routes.main);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            context.push(deferred);
+          });
+        } else {
+          context.go(deferred);
+        }
+        return;
+      }
+
+      final session = cubit.state;
+      if (!session.isRegistered) {
+        context.go(Routes.main);
+      } else if (session.needsProfileRegistration) {
+        context.go(Routes.register);
+      } else {
+        context.go(Routes.main);
+      }
+    } catch (error, stackTrace) {
+      AppLogger.e('splash_exit_error', error: error, stackTrace: stackTrace);
+      if (!mounted) return;
       context.go(Routes.main);
     }
   }

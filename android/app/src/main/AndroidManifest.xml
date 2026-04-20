@@ -48,6 +48,13 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="${deepLinkHost}" />
             </intent-filter>
+            <!-- App Links: www siz variant -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="www.qizlarakademiyasi.uz" />
+            </intent-filter>
             <!-- Custom scheme qizlaracademy — lib/config/constants/app_deep_link_config.dart -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -87,15 +94,6 @@
     <queries>
         <!-- Google Sign-In / Credential Manager (Android 11+ package visibility) -->
         <package android:name="com.google.android.gms" />
-        <package android:name="com.instagram.android" />
-        <!-- Instagram Story: appinio_social_share implicit intent (Android 11+ package visibility) -->
-        <intent>
-            <action android:name="com.instagram.share.ADD_TO_STORY" />
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="instagram-stories" />
-        </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

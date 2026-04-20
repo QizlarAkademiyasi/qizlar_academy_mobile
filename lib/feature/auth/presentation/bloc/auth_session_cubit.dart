@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_otp_bot_response.dart';
+import 'package:qizlar_academy_mobile/feature/personal_info_gate/data/personal_info_gate_checker.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_session_model.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/repository/auth_repository.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_state.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/exception/profile_registration_required_exception.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
+import 'package:qizlar_academy_mobile/feature/referral/domain/service/referral_use_service.dart';
 
 class AuthSessionCubit extends Cubit<AuthSessionState> {
   AuthSessionCubit(this._repository) : super(const AuthSessionState.initial());
@@ -17,6 +21,9 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
   Future<void> loadSession() async {
     final model = await _repository.readSession();
     emit(state.fromModel(model));
+    if (state.isRegistered) {
+      unawaited(_applyPendingReferral());
+    }
   }
 
   Future<void> continueAsGuest() async {
@@ -43,6 +50,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
       keyHash: keyHash,
     );
     emit(state.fromModel(model));
+    unawaited(_applyPendingReferral());
   }
 
   Future<void> signInWithGoogle({
@@ -56,6 +64,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
       lastname: lastname,
     );
     emit(state.fromModel(model));
+    unawaited(_applyPendingReferral());
   }
 
   Future<void> setRegisteredSession({
@@ -69,10 +78,23 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
       tokenType: tokenType,
     );
     emit(state.fromModel(model));
+    unawaited(_applyPendingReferral());
+  }
+
+  Future<void> _applyPendingReferral() async {
+    if (!getIt.isRegistered<ReferralUseService>()) return;
+    try {
+      await getIt<ReferralUseService>().applyPendingIfPossible();
+    } catch (error, stackTrace) {
+      AppLogger.w('Referral auto-apply after auth failed', error: error, stackTrace: stackTrace);
+    }
   }
 
   Future<void> clearSession() async {
     await _repository.clearSession();
+    if (getIt.isRegistered<PersonalInfoGateChecker>()) {
+      await getIt<PersonalInfoGateChecker>().reset();
+    }
     emit(state.fromModel(const AuthSessionModel(userType: UserType.guest)));
   }
 

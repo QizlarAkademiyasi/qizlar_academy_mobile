@@ -162,6 +162,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mainTabProfile => 'Профиль';
 
   @override
+  String get mainTabMore => 'Ещё';
+
+  @override
+  String get mainMoreEmptyHint =>
+      'Нажмите «Ещё» на панели вкладок и выберите раздел.';
+
+  @override
   String get guestSignInCta => 'Войти';
 
   @override
@@ -216,14 +223,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get courseDetailsLoadError =>
       'Не удалось загрузить данные курса. Попробуйте ещё раз.';
-
-  @override
-  String get courseDetailsShareTooltip => 'Поделиться курсом';
-
-  @override
-  String courseDetailsShareMessage(String title, String link) {
-    return '$title\n$link';
-  }
 
   @override
   String get editProfileLoadError =>
@@ -667,10 +666,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileNotificationsSubtitle => 'Push-уведомления';
 
   @override
-  String get profileNotificationsEnableFailed =>
-      'Не удалось включить уведомления. Проверьте разрешения и попробуйте снова.';
-
-  @override
   String get profileDarkMode => 'Тёмная тема';
 
   @override
@@ -809,19 +804,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get aboutUsLinkOpenError => 'Не удалось открыть ссылку.';
-
-  @override
-  String get appUpdateAvailableTitle => 'Доступно обновление!';
-
-  @override
-  String get appUpdateAvailableBody =>
-      'Мы ещё больше улучшили приложение! Обновите его, чтобы пользоваться новыми возможностями и удобнее учиться.';
-
-  @override
-  String get appUpdateLater => 'Позже';
-
-  @override
-  String get appUpdateCta => 'Обновить';
 
   @override
   String get guestGateNotificationSettings =>
@@ -1080,4 +1062,128 @@ class AppLocalizationsRu extends AppLocalizations {
   String reviewTimeYearsAgo(int count) {
     return '$count г. назад';
   }
+
+  @override
+  String get personalInfoGateSubmitError =>
+      'Не удалось сохранить. Попробуйте снова.';
+
+  @override
+  String get personalInfoGateContinue => 'Продолжить';
+
+  @override
+  String get personalInfoGateAddressTitle => 'Адрес';
+
+  @override
+  String get personalInfoGateAddressSubtitle =>
+      'Выберите область, район и махаллю.';
+
+  @override
+  String get personalInfoGateCountry => 'Страна';
+
+  @override
+  String get personalInfoGateRegion => 'Область';
+
+  @override
+  String get personalInfoGateDistrict => 'Район';
+
+  @override
+  String get personalInfoGateNeighborhood => 'Махалля';
+
+  @override
+  String get personalInfoGatePersonalInfoTitle => 'Личные данные';
+
+  @override
+  String get personalInfoGatePersonalInfoSubtitle => 'Укажите дату рождения.';
+
+  @override
+  String get personalInfoGateBirthday => 'Дата рождения';
+
+  @override
+  String get personalInfoGateEducationTitle => 'Образование';
+
+  @override
+  String get personalInfoGateEducationSubtitle => 'Выберите тип образования.';
+
+  @override
+  String get courseDetailsShareTooltip => 'Поделиться курсом';
+
+  @override
+  String courseDetailsShareMessage(String title, String url) {
+    return 'Курс «$title»: $url';
+  }
+
+  @override
+  String get certificatesSheetInstagramStory => 'История Instagram';
+
+  @override
+  String get profileDeleteAccountTile => 'Удалить аккаунт';
+
+  @override
+  String get profileDeleteAccountTitle => 'Удалить аккаунт?';
+
+  @override
+  String profileDeleteAccountConfirmBody(String webUrl) {
+    return 'Аккаунт будет удалён безвозвратно. Запрос можно также отправить на сайте: $webUrl';
+  }
+
+  @override
+  String get profileDeleteAccountCancel => 'Отмена';
+
+  @override
+  String get profileDeleteAccountContinue => 'Продолжить';
+
+  @override
+  String get profileDeleteAccountFinalTitle => 'Вы уверены?';
+
+  @override
+  String get profileDeleteAccountFinalBody =>
+      'Это действие нельзя отменить. Данные будут удалены.';
+
+  @override
+  String get profileDeleteAccountConfirmAction => 'Удалить';
+
+  @override
+  String get profileDeleteAccountProgress => 'Удаление аккаунта…';
+
+  @override
+  String get profileDeleteAccountError =>
+      'Не удалось удалить аккаунт. Попробуйте снова.';
+
+  @override
+  String get appUpdateAvailableTitle => 'Доступно обновление';
+
+  @override
+  String get appUpdateAvailableBody =>
+      'Вышла новая версия приложения. Обновитесь для лучшей работы.';
+
+  @override
+  String get appUpdateLater => 'Позже';
+
+  @override
+  String get appUpdateCta => 'Обновить';
+
+  @override
+  String get profileNotificationsEnableFailed =>
+      'Не удалось изменить настройки уведомлений. Попробуйте снова.';
+
+  @override
+  String get profileInformationPersonalTitle => 'Номер телефона';
+
+  @override
+  String get profileInformationOccupation => 'Профессия';
+
+  @override
+  String get profileInformationBirthday => 'Дата рождения';
+
+  @override
+  String get profileInformationAddressTitle => 'Адрес';
+
+  @override
+  String get profileInformationRegion => 'Область';
+
+  @override
+  String get profileInformationDistrict => 'Район';
+
+  @override
+  String get profileInformationNeighborhood => 'Махалля';
 }

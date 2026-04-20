@@ -3,7 +3,11 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 import 'package:qizlar_academy_mobile/feature/leaderboard/domain/model/leaderboard_user_model.dart';
 
 class LeaderboardListItem extends StatelessWidget {
-  const LeaderboardListItem({super.key, required this.user, required this.onTap});
+  const LeaderboardListItem({
+    super.key,
+    required this.user,
+    required this.onTap,
+  });
 
   final LeaderboardUserModel user;
   final VoidCallback onTap;
@@ -15,9 +19,15 @@ class LeaderboardListItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
-          color: user.isCurrentUser ? context.appColors.primary.withValues(alpha: 0.12) : context.appColors.onContainer,
+          color: user.isCurrentUser
+              ? context.appColors.primary.withValues(alpha: 0.12)
+              : context.appColors.onContainer,
           borderRadius: AppRadius.radiusXl,
-          border: Border.all(color: user.isCurrentUser ? context.appColors.primary : context.appColors.stroke),
+          border: Border.all(
+            color: user.isCurrentUser
+                ? context.appColors.primary
+                : context.appColors.stroke,
+          ),
         ),
         child: Row(
           children: [
@@ -28,7 +38,9 @@ class LeaderboardListItem extends StatelessWidget {
                 textAlign: TextAlign.start,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.textTheme.heading5.copyWith(color: context.appColors.grey),
+                style: context.textTheme.heading5.copyWith(
+                  color: context.appColors.grey,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -39,7 +51,11 @@ class LeaderboardListItem extends StatelessWidget {
               resolvedNetworkUrl: user.avatarUrl,
               placeholder: ColoredBox(
                 color: context.appColors.stroke,
-                child: Icon(LucideIcons.user, size: 22, color: context.appColors.grey),
+                child: Icon(
+                  LucideIcons.user,
+                  size: 22,
+                  color: context.appColors.grey,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -51,19 +67,27 @@ class LeaderboardListItem extends StatelessWidget {
                     user.fullName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.bodyLargeBold.copyWith(color: context.appColors.text),
+                    style: context.textTheme.bodyLargeBold.copyWith(
+                      color: context.appColors.text,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(LucideIcons.star, size: 14, color: context.appColors.grey),
+                      Icon(
+                        LucideIcons.star,
+                        size: 14,
+                        color: context.appColors.grey,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          _formatCoins(user.coins),
+                          _formatRating(user.rating),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.grey),
+                          style: context.textTheme.bodyXSmallRegular.copyWith(
+                            color: context.appColors.grey,
+                          ),
                         ),
                       ),
                     ],
@@ -78,7 +102,10 @@ class LeaderboardListItem extends StatelessWidget {
     );
   }
 
-  static String _formatCoins(int coins) {
-    return coins.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]} ').trim();
+  static String _formatRating(double rating) {
+    if (rating == rating.truncateToDouble()) {
+      return rating.toInt().toString();
+    }
+    return rating.toStringAsFixed(1);
   }
 }

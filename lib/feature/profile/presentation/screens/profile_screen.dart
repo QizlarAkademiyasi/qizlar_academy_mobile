@@ -135,6 +135,11 @@ class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_Pro
                             ),
                           ),
                           const SizedBox(height: 12),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: buildDeleteAccountSection(context),
+                          ),
+                          const SizedBox(height: 10),
                           Padding(padding: const EdgeInsets.symmetric(horizontal: 24), child: buildLogoutSection(context)),
                           const SizedBox(height: 16),
                           Center(

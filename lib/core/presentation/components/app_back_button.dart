@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 enum AppBackButtonType { plain, glass }
@@ -20,17 +21,26 @@ class AppBackButton extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? iconColor;
 
+  void _handleBack(BuildContext context) {
+    if (onTap != null) {
+      onTap!();
+      return;
+    }
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      router.pop();
+      return;
+    }
+    router.go(Routes.main);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (type == AppBackButtonType.glass) {
       return Bounce(
         onTap: () {
           Gaimon.light();
-          if (onTap != null) {
-            onTap!();
-          } else {
-            context.pop();
-          }
+          _handleBack(context);
         },
         child: ClipOval(
           child: BackdropFilter(
@@ -60,11 +70,7 @@ class AppBackButton extends StatelessWidget {
     return IconButton(
       onPressed: () {
         Gaimon.light();
-        if (onTap != null) {
-          onTap!();
-        } else {
-          context.pop();
-        }
+        _handleBack(context);
       },
       splashRadius: 20,
       icon: Icon(

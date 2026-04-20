@@ -6,7 +6,8 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:link.qizlarakademiyasi.uz</string>
+		<string>applinks:www.qizlarakademiyasi.uz</string>
+			<string>applinks:qizlarakademiyasi.uz</string>
 	</array>
 </dict>
 </plist>

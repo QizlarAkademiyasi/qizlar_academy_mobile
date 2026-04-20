@@ -57,6 +57,7 @@ class LeaderboardApiDatasource implements LeaderboardDatasource {
             lastname: (map['lastname'] ?? '').toString(),
             photoUrl: Apis.resolveUrl((map['photo'] ?? '').toString()),
             coins: (map['coins'] ?? 0).toString().parseIntSafe(),
+            rating: _parseRating(map['rating']),
             isCurrentUser: (map['isCurrentUser'] ?? false) == true,
           );
         })
@@ -107,6 +108,12 @@ class LeaderboardApiDatasource implements LeaderboardDatasource {
         return 'monthly';
     }
   }
+}
+
+double _parseRating(dynamic value) {
+  if (value == null) return 0;
+  if (value is num) return value.toDouble();
+  return double.tryParse(value.toString()) ?? 0;
 }
 
 extension on String {
