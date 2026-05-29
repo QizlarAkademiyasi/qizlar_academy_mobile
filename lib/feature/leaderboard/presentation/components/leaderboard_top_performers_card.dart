@@ -82,80 +82,85 @@ class _PodiumItem extends StatelessWidget {
     final size = isFirst ? 80.0 : 56.0;
     final displayName = user.fullName.split(' ').first;
 
-    return Bounce(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isFirst) Icon(LucideIcons.crown, color: const Color(0xFFFFD700), size: 28),
-          if (isFirst) const SizedBox(height: 6),
-          Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.bottomCenter,
-            children: [
-              Container(
-                padding: AppPadding.paddingZero,
-                width: size,
-                height: size,
-
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: context.appColors.onContainer,
-                  border: Border.all(
-                    color: rank == 1
-                        ? AppColors.otherYellow
-                        : rank == 2
-                        ? AppColors.otherOrange
-                        : AppColors.grey,
-                    width: 3,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: AppRadius.radius5xl,
-                  child: AppCachedNetworkImage(
-                    imageUrl: user.avatarUrl,
-                    fit: BoxFit.cover,
-                    fallback: AppNetworkImageFallbackAvatar(iconSize: size * 0.5, errorShowsBackground: false),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: -8,
-                child: Container(
-                  width: 24,
-                  height: 24,
+    return AppLiquidStretch.compact(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          Gaimon.light();
+          onTap();
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isFirst) Icon(LucideIcons.crown, color: const Color(0xFFFFD700), size: 28),
+            if (isFirst) const SizedBox(height: 6),
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.bottomCenter,
+              children: [
+                Container(
+                  padding: AppPadding.paddingZero,
+                  width: size,
+                  height: size,
                   decoration: BoxDecoration(
-                    color: rank == 1
-                        ? AppColors.otherYellow
-                        : rank == 2
-                        ? AppColors.otherOrange
-                        : AppColors.grey,
                     shape: BoxShape.circle,
-                    border: Border.all(color: context.appColors.stroke),
+                    color: context.appColors.onContainer,
+                    border: Border.all(
+                      color: rank == 1
+                          ? AppColors.otherYellow
+                          : rank == 2
+                              ? AppColors.otherOrange
+                              : AppColors.grey,
+                      width: 3,
+                    ),
                   ),
-                  alignment: Alignment.center,
-                  child: Text('$rank', style: context.textTheme.bodyXSmallBold.copyWith(color: rank == 1 ? AppColors.textDark : context.appColors.text)),
+                  child: ClipRRect(
+                    borderRadius: AppRadius.radius5xl,
+                    child: AppCachedNetworkImage(
+                      imageUrl: user.avatarUrl,
+                      fit: BoxFit.cover,
+                      fallback: AppNetworkImageFallbackAvatar(iconSize: size * 0.5, errorShowsBackground: false),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          Text(
-            displayName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: context.textTheme.bodyMediumBold.copyWith(color: context.appColors.text),
-          ),
-          const SizedBox(height: 4),
-          Text('$rank-o\'rin', style: context.textTheme.bodyXSmallSemibold.copyWith(color: context.appColors.grey)),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(999)),
-            child: Text(_formatCoins(user.coins), style: context.textTheme.bodySmallBold.copyWith(color: AppColors.primary)),
-          ),
-        ],
+                Positioned(
+                  bottom: -8,
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: rank == 1
+                          ? AppColors.otherYellow
+                          : rank == 2
+                              ? AppColors.otherOrange
+                              : AppColors.grey,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: context.appColors.stroke),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('$rank', style: context.textTheme.bodyXSmallBold.copyWith(color: rank == 1 ? AppColors.textDark : context.appColors.text)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              displayName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: context.textTheme.bodyMediumBold.copyWith(color: context.appColors.text),
+            ),
+            const SizedBox(height: 4),
+            Text('$rank-o\'rin', style: context.textTheme.bodyXSmallSemibold.copyWith(color: context.appColors.grey)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(999)),
+              child: Text(_formatCoins(user.coins), style: context.textTheme.bodySmallBold.copyWith(color: AppColors.primary)),
+            ),
+          ],
+        ),
       ),
     );
   }

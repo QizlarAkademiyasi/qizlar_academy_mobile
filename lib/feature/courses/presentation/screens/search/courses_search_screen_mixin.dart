@@ -44,20 +44,18 @@ mixin CoursesSearchScreenMixin on State<CoursesSearchView> {
     await bloc.stream.firstWhere((s) => !s.isRefreshing);
   }
 
-  Widget buildSearchHeroField(BuildContext context) {
+  Widget buildSearchHeroField(BuildContext context, {bool forAppBar = false}) {
     return CoursesSearchField(
       controller: searchController,
       autofocus: true,
       onChanged: (value) => onSearchChanged(context, value),
       heroTag: CoursesSearchField.kHeroTag,
+      padding: forAppBar ? EdgeInsets.zero : null,
     );
   }
 
   Widget buildSearchInProgressCard(BuildContext context, CourseInProgressModel model) {
-    return CoursesInProgressCard(
-      course: model,
-      onTap: () => onSearchOpenCourse(context, model.courseId),
-    );
+    return CoursesInProgressCard(course: model, onTap: () => onSearchOpenCourse(context, model.courseId));
   }
 
   Widget buildSearchCourseCard(BuildContext context, CourseCatalogItemModel model) {
@@ -67,7 +65,7 @@ mixin CoursesSearchScreenMixin on State<CoursesSearchView> {
       mentorName: model.mentorName,
       rating: model.rating,
       reviewsCount: model.reviewsCount,
-      durationHours: model.durationHours,
+      durationSeconds: model.durationSeconds,
       tagLabel: model.tagLabel,
       onTap: () => onSearchOpenCourse(context, model.id),
     );

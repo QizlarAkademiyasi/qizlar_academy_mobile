@@ -509,6 +509,81 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileMenuMyActivity => 'Mening faolligim';
 
   @override
+  String dailyCoinStreakTitle(int count) {
+    return '$count kunlik ketma-ketlik';
+  }
+
+  @override
+  String get dailyCoinStreakSubtitle => 'To‘g‘ri yo‘ldasiz';
+
+  @override
+  String dailyCoinRewardToday(int coins) {
+    return 'Bugun +$coins tanga';
+  }
+
+  @override
+  String get dailyCoinClaimButton => 'Olish';
+
+  @override
+  String get dailyCoinClaimedButton => 'Olingan';
+
+  @override
+  String get dailyCoinLoadError =>
+      'Ma\'lumotni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get dailyCoinClaimError =>
+      'Tanga olishda xatolik. Keyinroq urinib ko‘ring.';
+
+  @override
+  String get activityScreenTitle => 'Faollik';
+
+  @override
+  String get activityTabWeekly => 'Haftalik';
+
+  @override
+  String get activityTabMonthly => 'Oylik';
+
+  @override
+  String get activitySectionStats => 'Statistika';
+
+  @override
+  String get activityStatTotalTime => 'Ilovadagi umumiy vaqtingiz';
+
+  @override
+  String get activityStatAverageTime => 'O‘rtacha vaqtingiz';
+
+  @override
+  String get activityStatDailyRecord => 'Kunlik rekordingiz';
+
+  @override
+  String get activityStatCoursesCompleted => 'Jami tugatilgan kurslar';
+
+  @override
+  String get activityLoadError =>
+      'Faollikni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String activityDurationMinutes(int minutes) {
+    return '$minutes daqiqa';
+  }
+
+  @override
+  String activityDurationHours(int hours) {
+    return '$hours soat';
+  }
+
+  @override
+  String activityDurationHoursMinutes(int hours, int minutes) {
+    return '$hours soat $minutes daqiqa';
+  }
+
+  @override
+  String activityCompletedCourses(int count) {
+    return '$count ta';
+  }
+
+  @override
   String get profileMenuVacancies => 'Vakansiyalar';
 
   @override
@@ -905,6 +980,16 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String courseDurationMinutes(int minutes) {
+    return '$minutes daqiqa';
+  }
+
+  @override
+  String courseDurationHoursMinutes(int hours, int minutes) {
+    return '$hours soat $minutes daqiqa';
+  }
+
+  @override
   String get myCoursesEmptyTitle => 'Hozircha kurslar yo\'q';
 
   @override
@@ -1190,4 +1275,96 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get profileInformationNeighborhood => 'Mahalla';
+
+  @override
+  String get storeTitle => 'Market';
+
+  @override
+  String get storeProduct => 'Mahsulot';
+
+  @override
+  String get storeAllCategories => 'Barchasi';
+
+  @override
+  String get storeNoProducts => 'Hozircha mahsulot yo\'q';
+
+  @override
+  String get storeLoadError => 'Mahsulotlarni yuklashda xatolik';
+
+  @override
+  String get storeLoadMoreError => 'Ko\'proq yuklashda xatolik';
+
+  @override
+  String get storeDetailTitle => 'Mahsulot';
+
+  @override
+  String get storeAboutProduct => 'Mahsulot haqida';
+
+  @override
+  String storeInStock(Object count) {
+    return '$count ta omborda';
+  }
+
+  @override
+  String get storeSoldOut => 'Tugagan';
+
+  @override
+  String get storeBuyButton => 'Sotib olish';
+
+  @override
+  String get storeReturnButton => 'Qaytarish';
+
+  @override
+  String get storeViewButton => 'Ko\'rish';
+
+  @override
+  String get storeAllTypes => 'Barcha turlar';
+
+  @override
+  String get storeSize => 'O\'lcham';
+
+  @override
+  String get storeOrderSuccess => 'Buyurtma muvaffaqiyatli berildi!';
+
+  @override
+  String get storeOrderError => 'Buyurtma berishda xatolik';
+
+  @override
+  String get storePromoExpired => 'Promo kod tugagan';
+
+  @override
+  String get storeInsufficientStock => 'Mahsulot tugagan';
+
+  @override
+  String get storeCopied => 'Nusxa olindi';
+
+  @override
+  String get storeHistoryTitle => 'Buyurtmalar tarixi';
+
+  @override
+  String get storeHistoryEmpty => 'Hali buyurtma yo\'q';
+
+  @override
+  String get storeHistoryLoadError => 'Buyurtmalarni yuklashda xatolik';
+
+  @override
+  String get storeStatusPending => 'Kutilmoqda';
+
+  @override
+  String get storeStatusPaid => 'To\'langan';
+
+  @override
+  String get storeStatusShipped => 'Yuborilgan';
+
+  @override
+  String get storeStatusDelivered => 'Yetkazilgan';
+
+  @override
+  String get storeStatusCancelled => 'Bekor qilingan';
+
+  @override
+  String get storeStatusRefunded => 'Qaytarilgan';
+
+  @override
+  String get storeExtraMenuTitle => 'Ko\'proq';
 }

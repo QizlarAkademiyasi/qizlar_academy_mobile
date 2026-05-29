@@ -7,11 +7,18 @@ import 'package:qizlar_academy_mobile/feature/certificates/data/service/certific
 import 'package:qizlar_academy_mobile/feature/certificates/data/service/certificate_instagram_story_share.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/domain/model/certificate_item_model.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/domain/model/certificate_tier.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/presentation/bloc/my_certificates_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/components/certificate_preview_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/components/my_certificate_card.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/presentation/components/my_courses_top_bar.dart';
 
 mixin MyCertificatesScreenMixin<T extends StatefulWidget> on State<T> {
+  Future<void> onMyCertificatesPullToRefresh(BuildContext context) async {
+    final bloc = context.read<MyCertificatesBloc>();
+    bloc.add(const MyCertificatesStarted());
+    await bloc.stream.firstWhere((s) => s.status == MyCertificatesStatus.success || s.status == MyCertificatesStatus.failure);
+  }
+
   void onMyCertificatesBackTap(BuildContext context) {
     Gaimon.light();
     context.pop();

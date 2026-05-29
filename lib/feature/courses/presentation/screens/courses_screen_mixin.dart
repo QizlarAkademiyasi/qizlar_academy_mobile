@@ -40,13 +40,16 @@ mixin CoursesScreenMixin<T extends StatefulWidget> on State<T> {
     final bloc = context.read<CoursesCatalogBloc>();
     final initial = bloc.state.query;
     context
-        .push(Routes.coursesSearch, extra: CoursesSearchArgs(catalogBloc: bloc, initialQuery: initial))
+        .push(
+          Routes.coursesSearch,
+          extra: CoursesSearchArgs(catalogBloc: bloc, initialQuery: initial),
+        )
         .then((_) {
-      if (!mounted) return;
-      setState(() {
-        searchController.text = context.read<CoursesCatalogBloc>().state.query;
-      });
-    });
+          if (!mounted) return;
+          setState(() {
+            searchController.text = context.read<CoursesCatalogBloc>().state.query;
+          });
+        });
   }
 
   void onNotificationTap(BuildContext context) {
@@ -72,13 +75,7 @@ mixin CoursesScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   Widget buildSearchField(BuildContext context) {
-    return CoursesSearchField(
-      controller: searchController,
-      readOnly: true,
-      onTap: () => openCoursesSearch(context),
-      onChanged: (_) {},
-      heroTag: CoursesSearchField.kHeroTag,
-    );
+    return CoursesSearchField(controller: searchController, readOnly: true, onTap: () => openCoursesSearch(context), onChanged: (_) {}, heroTag: CoursesSearchField.kHeroTag);
   }
 
   Widget buildInProgressCard(BuildContext context, CourseInProgressModel model) {
@@ -92,7 +89,7 @@ mixin CoursesScreenMixin<T extends StatefulWidget> on State<T> {
       mentorName: model.mentorName,
       rating: model.rating,
       reviewsCount: model.reviewsCount,
-      durationHours: model.durationHours,
+      durationSeconds: model.durationSeconds,
       tagLabel: model.tagLabel,
       onTap: () => openCourseDetails(context, model.id),
     );

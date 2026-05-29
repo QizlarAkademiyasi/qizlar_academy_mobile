@@ -367,7 +367,7 @@ abstract class AppLocalizations {
   /// No description provided for @mainTabLeaderboard.
   ///
   /// In en, this message translates to:
-  /// **'Leaderboard'**
+  /// **'Leader'**
   String get mainTabLeaderboard;
 
   /// No description provided for @mainTabProfile.
@@ -1005,6 +1005,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My activity'**
   String get profileMenuMyActivity;
+
+  /// No description provided for @dailyCoinStreakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} day streak} other{{count} days streak}}'**
+  String dailyCoinStreakTitle(int count);
+
+  /// No description provided for @dailyCoinStreakSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You are on the right track'**
+  String get dailyCoinStreakSubtitle;
+
+  /// No description provided for @dailyCoinRewardToday.
+  ///
+  /// In en, this message translates to:
+  /// **'+{coins} coins today'**
+  String dailyCoinRewardToday(int coins);
+
+  /// No description provided for @dailyCoinClaimButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim'**
+  String get dailyCoinClaimButton;
+
+  /// No description provided for @dailyCoinClaimedButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed'**
+  String get dailyCoinClaimedButton;
+
+  /// No description provided for @dailyCoinLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load streak. Try again.'**
+  String get dailyCoinLoadError;
+
+  /// No description provided for @dailyCoinClaimError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not claim reward. Try again later.'**
+  String get dailyCoinClaimError;
+
+  /// No description provided for @activityScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityScreenTitle;
+
+  /// No description provided for @activityTabWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get activityTabWeekly;
+
+  /// No description provided for @activityTabMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get activityTabMonthly;
+
+  /// No description provided for @activitySectionStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get activitySectionStats;
+
+  /// No description provided for @activityStatTotalTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Your total time in the app'**
+  String get activityStatTotalTime;
+
+  /// No description provided for @activityStatAverageTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Your average time'**
+  String get activityStatAverageTime;
+
+  /// No description provided for @activityStatDailyRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily record'**
+  String get activityStatDailyRecord;
+
+  /// No description provided for @activityStatCoursesCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Total courses completed'**
+  String get activityStatCoursesCompleted;
+
+  /// No description provided for @activityLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load activity. Try again.'**
+  String get activityLoadError;
+
+  /// No description provided for @activityDurationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String activityDurationMinutes(int minutes);
+
+  /// No description provided for @activityDurationHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h'**
+  String activityDurationHours(int hours);
+
+  /// No description provided for @activityDurationHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String activityDurationHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @activityCompletedCourses.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} courses'**
+  String activityCompletedCourses(int count);
 
   /// No description provided for @profileMenuVacancies.
   ///
@@ -1714,6 +1834,18 @@ abstract class AppLocalizations {
   /// **'{hours} h'**
   String myCoursesDurationHours(int hours);
 
+  /// No description provided for @courseDurationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String courseDurationMinutes(int minutes);
+
+  /// No description provided for @courseDurationHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String courseDurationHoursMinutes(int hours, int minutes);
+
   /// No description provided for @myCoursesEmptyTitle.
   ///
   /// In en, this message translates to:
@@ -2199,6 +2331,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Neighborhood'**
   String get profileInformationNeighborhood;
+
+  /// No description provided for @storeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Market'**
+  String get storeTitle;
+
+  /// No description provided for @storeProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get storeProduct;
+
+  /// No description provided for @storeAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get storeAllCategories;
+
+  /// No description provided for @storeNoProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'No products yet'**
+  String get storeNoProducts;
+
+  /// No description provided for @storeLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load products'**
+  String get storeLoadError;
+
+  /// No description provided for @storeLoadMoreError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading more'**
+  String get storeLoadMoreError;
+
+  /// No description provided for @storeDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get storeDetailTitle;
+
+  /// No description provided for @storeAboutProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'About product'**
+  String get storeAboutProduct;
+
+  /// No description provided for @storeInStock.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} in stock'**
+  String storeInStock(Object count);
+
+  /// No description provided for @storeSoldOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold out'**
+  String get storeSoldOut;
+
+  /// No description provided for @storeBuyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy now'**
+  String get storeBuyButton;
+
+  /// No description provided for @storeReturnButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get storeReturnButton;
+
+  /// No description provided for @storeViewButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get storeViewButton;
+
+  /// No description provided for @storeAllTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'All types'**
+  String get storeAllTypes;
+
+  /// No description provided for @storeSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get storeSize;
+
+  /// No description provided for @storeOrderSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Order placed successfully!'**
+  String get storeOrderSuccess;
+
+  /// No description provided for @storeOrderError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to place order'**
+  String get storeOrderError;
+
+  /// No description provided for @storePromoExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo code expired'**
+  String get storePromoExpired;
+
+  /// No description provided for @storeInsufficientStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Product out of stock'**
+  String get storeInsufficientStock;
+
+  /// No description provided for @storeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get storeCopied;
+
+  /// No description provided for @storeHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order history'**
+  String get storeHistoryTitle;
+
+  /// No description provided for @storeHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet'**
+  String get storeHistoryEmpty;
+
+  /// No description provided for @storeHistoryLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load orders'**
+  String get storeHistoryLoadError;
+
+  /// No description provided for @storeStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get storeStatusPending;
+
+  /// No description provided for @storeStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get storeStatusPaid;
+
+  /// No description provided for @storeStatusShipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipped'**
+  String get storeStatusShipped;
+
+  /// No description provided for @storeStatusDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get storeStatusDelivered;
+
+  /// No description provided for @storeStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get storeStatusCancelled;
+
+  /// No description provided for @storeStatusRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get storeStatusRefunded;
+
+  /// No description provided for @storeExtraMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get storeExtraMenuTitle;
 }
 
 class _AppLocalizationsDelegate

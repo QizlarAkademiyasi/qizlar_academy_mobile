@@ -8,11 +8,7 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 
 /// Kurs detali hero: fon rasmi, pastga qorayuvchi gradient, shisha orqaga, pastda kategoriya + sarlavha + o‘qituvchi.
 class CourseDetailsSliverHeader extends StatelessWidget {
-  const CourseDetailsSliverHeader({
-    super.key,
-    required this.course,
-    required this.onShareTap,
-  });
+  const CourseDetailsSliverHeader({super.key, required this.course, required this.onShareTap});
 
   final CourseDetailsModel course;
   final VoidCallback onShareTap;
@@ -182,29 +178,26 @@ class _CourseDetailsShareGlassButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Bounce(
-      onTap: () {
-        Gaimon.light();
-        onTap();
-      },
-      child: ClipOval(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            width: 44,
-            height: 44,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: AppColors.black.withValues(alpha: 0.22),
-              border: Border.all(
-                color: AppColors.white.withValues(alpha: 0.14),
+    return AppLiquidStretch.compact(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          Gaimon.light();
+          onTap();
+        },
+        child: ClipOval(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              width: 44,
+              height: 44,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.black.withValues(alpha: 0.22),
+                border: Border.all(color: AppColors.white.withValues(alpha: 0.14)),
+                shape: BoxShape.circle,
               ),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              LucideIcons.share2,
-              color: AppColors.white,
-              size: 20,
+              child: Icon(LucideIcons.share2, color: AppColors.white, size: 20),
             ),
           ),
         ),

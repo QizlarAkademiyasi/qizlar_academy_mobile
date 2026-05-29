@@ -3,7 +3,7 @@ import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/data/location_data_loader.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/data/personal_info_gate_checker.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/district_model.dart';
-import 'package:qizlar_academy_mobile/config/enum/education_type.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/education_type.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/neighborhood_model.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/region_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_datasource.dart';

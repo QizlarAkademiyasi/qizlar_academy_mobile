@@ -5,6 +5,7 @@ import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dar
 import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
+import 'package:qizlar_academy_mobile/feature/home/domain/model/home_startup_snapshot.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/teacher_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/repository/home_repository.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
@@ -17,6 +18,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     this._repository,
     this._profileRepository,
     this._authSessionCubit,
+    this._startupCache,
   ) : super(const HomeState()) {
     on<HomeStarted>(_onHomeStarted);
     on<HomeUserGreetingRefreshRequested>(_onUserGreetingRefreshRequested);
@@ -25,11 +27,32 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HomeRepository _repository;
   final ProfileRepository _profileRepository;
   final AuthSessionCubit _authSessionCubit;
+  final HomeStartupCache _startupCache;
 
   Future<void> _onHomeStarted(
     HomeStarted event,
     Emitter<HomeState> emit,
   ) async {
+    final cached = _startupCache.consumeIfMatches(
+      _authSessionCubit.state.userType,
+    );
+    if (cached != null) {
+      emit(
+        state.copyWith(
+          status: HomeStatus.success,
+          categoriesLoading: false,
+          homeStats: cached.homeStats,
+          categories: cached.categories,
+          teachers: cached.teachers,
+          courses: cached.courses,
+          banners: cached.banners,
+          userGreetingName: cached.userGreetingName,
+          message: null,
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         status: HomeStatus.loading,
@@ -44,27 +67,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await Future.wait<void>([
         _loadCategories(emit).catchError((error, stackTrace) {
           failure ??= error;
-          AppLogger.e('HomeBloc: load categories failed', error: error, stackTrace: stackTrace);
+          AppLogger.e(
+            'HomeBloc: load categories failed',
+            error: error,
+            stackTrace: stackTrace,
+          );
         }),
         _loadMainContent(emit).catchError((error, stackTrace) {
           failure ??= error;
-          AppLogger.e('HomeBloc: load main content failed', error: error, stackTrace: stackTrace);
+          AppLogger.e(
+            'HomeBloc: load main content failed',
+            error: error,
+            stackTrace: stackTrace,
+          );
         }),
       ]);
 
       if (failure != null) {
-        emit(
-          state.copyWith(
-            status: HomeStatus.failure,
-            message: null,
-          ),
-        );
+        emit(state.copyWith(status: HomeStatus.failure, message: null));
         return;
       }
 
       emit(state.copyWith(status: HomeStatus.success, message: null));
     } catch (error, stackTrace) {
-      AppLogger.e('HomeBloc: home started failed', error: error, stackTrace: stackTrace);
+      AppLogger.e(
+        'HomeBloc: home started failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
       emit(state.copyWith(status: HomeStatus.failure, message: null));
     }
   }
@@ -72,12 +102,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<void> _loadCategories(Emitter<HomeState> emit) async {
     try {
       final categories = await _repository.getCategories();
-      emit(
-        state.copyWith(
-          categories: categories,
-          categoriesLoading: false,
-        ),
-      );
+      emit(state.copyWith(categories: categories, categoriesLoading: false));
     } catch (_) {
       emit(state.copyWith(categoriesLoading: false));
       rethrow;

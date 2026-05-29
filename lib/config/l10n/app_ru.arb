@@ -168,6 +168,71 @@
   "profileMenuCertificates": "Мои сертификаты",
   "profileMenuMyCourses": "Мои курсы",
   "profileMenuMyActivity": "Моя активность",
+  "dailyCoinStreakTitle": "{count, plural, one{{count} день подряд} few{{count} дня подряд} many{{count} дней подряд} other{{count} дней подряд}}",
+  "@dailyCoinStreakTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCoinStreakSubtitle": "Вы на верном пути",
+  "dailyCoinRewardToday": "+{coins} монет сегодня",
+  "@dailyCoinRewardToday": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCoinClaimButton": "Получить",
+  "dailyCoinClaimedButton": "Получено",
+  "dailyCoinLoadError": "Не удалось загрузить данные. Попробуйте ещё раз.",
+  "dailyCoinClaimError": "Не удалось получить награду. Попробуйте позже.",
+  "activityScreenTitle": "Активность",
+  "activityTabWeekly": "Неделя",
+  "activityTabMonthly": "Месяц",
+  "activitySectionStats": "Статистика",
+  "activityStatTotalTime": "Общее время в приложении",
+  "activityStatAverageTime": "Ваше среднее время",
+  "activityStatDailyRecord": "Ваш дневной рекорд",
+  "activityStatCoursesCompleted": "Всего завершено курсов",
+  "activityLoadError": "Не удалось загрузить активность. Попробуйте ещё раз.",
+  "activityDurationMinutes": "{minutes} мин",
+  "@activityDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "activityDurationHours": "{hours} ч",
+  "@activityDurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "activityDurationHoursMinutes": "{hours} ч {minutes} мин",
+  "@activityDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "activityCompletedCourses": "{count} шт.",
+  "@activityCompletedCourses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "profileMenuVacancies": "Вакансии",
   "vacanciesTitle": "Вакансии",
   "vacancyDetailCta": "Подробнее",
@@ -358,6 +423,25 @@
       }
     }
   },
+  "courseDurationMinutes": "{minutes} мин",
+  "@courseDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "courseDurationHoursMinutes": "{hours} ч {minutes} мин",
+  "@courseDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "myCoursesEmptyTitle": "Пока нет курсов",
   "myCoursesEmptySubtitle": "Запишитесь на курс — он появится здесь.",
   "myCoursesLoadError": "Не удалось загрузить курсы. Попробуйте снова.",
@@ -521,5 +605,35 @@
   "profileInformationAddressTitle": "Адрес",
   "profileInformationRegion": "Область",
   "profileInformationDistrict": "Район",
-  "profileInformationNeighborhood": "Махалля"
+  "profileInformationNeighborhood": "Махалля",
+  "storeTitle": "Маркет",
+  "storeProduct": "Товар",
+  "storeAllCategories": "Все",
+  "storeNoProducts": "Пока нет товаров",
+  "storeLoadError": "Ошибка загрузки товаров",
+  "storeLoadMoreError": "Ошибка при загрузке",
+  "storeDetailTitle": "Товар",
+  "storeAboutProduct": "О товаре",
+  "storeInStock": "{count} на складе",
+  "storeSoldOut": "Распродано",
+  "storeBuyButton": "Купить",
+  "storeReturnButton": "Вернуть",
+  "storeViewButton": "Посмотреть",
+  "storeAllTypes": "Все типы",
+  "storeSize": "Размер",
+  "storeOrderSuccess": "Заказ успешно оформлен!",
+  "storeOrderError": "Ошибка при оформлении заказа",
+  "storePromoExpired": "Промокод недоступен",
+  "storeInsufficientStock": "Товар распродан",
+  "storeCopied": "Скопировано",
+  "storeHistoryTitle": "История заказов",
+  "storeHistoryEmpty": "Заказов пока нет",
+  "storeHistoryLoadError": "Ошибка загрузки заказов",
+  "storeStatusPending": "Ожидает",
+  "storeStatusPaid": "Оплачен",
+  "storeStatusShipped": "Отправлен",
+  "storeStatusDelivered": "Доставлен",
+  "storeStatusCancelled": "Отменён",
+  "storeStatusRefunded": "Возврат",
+  "storeExtraMenuTitle": "Ещё"
 }

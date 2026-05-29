@@ -53,7 +53,7 @@ class _EditInformationScreenState extends State<EditInformationScreen> with Edit
                       padding: const EdgeInsets.fromLTRB(8, 8, 20, 0),
                       child: Row(
                         children: [
-                          AppBackButton(onTap: () => unawaited(onEditInformationBackTap(blocContext))),
+                          AppBackButton.ghost(onTap: () => unawaited(onEditInformationBackTap(blocContext))),
                           Expanded(
                             child: Text(
                               context.l10n.profileInformationTitle,

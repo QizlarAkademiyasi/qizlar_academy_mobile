@@ -67,4 +67,24 @@ sealed class Routes {
   /// Maxfiylik siyosati
   static const String privacyPolicy = '/privacy-policy';
   static const String privacyPolicyName = 'privacyPolicy';
+
+  /// Market (do'kon)
+  static const String store = '/store';
+  static const String storeName = 'store';
+
+  static String storeDetail(String id) => '/store/$id';
+  static const String storeDetailName = 'storeDetail';
+
+  static const String storeHistory = '/store-history';
+  static const String storeHistoryName = 'storeHistory';
+
+  static String storeOrderDetail(String orderId) => '/store-history/$orderId';
+  static const String storeOrderDetailName = 'storeOrderDetail';
+
+  static const String referral = '/referral';
+  static const String referralName = 'referral';
+
+  /// Mening faolligim (haftalik / oylik statistikasi).
+  static const String myActivity = '/my-activity';
+  static const String myActivityName = 'myActivity';
 }

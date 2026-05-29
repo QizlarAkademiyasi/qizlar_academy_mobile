@@ -156,7 +156,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainTabCourses => 'Courses';
 
   @override
-  String get mainTabLeaderboard => 'Leaderboard';
+  String get mainTabLeaderboard => 'Leader';
 
   @override
   String get mainTabProfile => 'Profile';
@@ -503,6 +503,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileMenuMyActivity => 'My activity';
+
+  @override
+  String dailyCoinStreakTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days streak',
+      one: '$count day streak',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dailyCoinStreakSubtitle => 'You are on the right track';
+
+  @override
+  String dailyCoinRewardToday(int coins) {
+    return '+$coins coins today';
+  }
+
+  @override
+  String get dailyCoinClaimButton => 'Claim';
+
+  @override
+  String get dailyCoinClaimedButton => 'Claimed';
+
+  @override
+  String get dailyCoinLoadError => 'Could not load streak. Try again.';
+
+  @override
+  String get dailyCoinClaimError => 'Could not claim reward. Try again later.';
+
+  @override
+  String get activityScreenTitle => 'Activity';
+
+  @override
+  String get activityTabWeekly => 'Weekly';
+
+  @override
+  String get activityTabMonthly => 'Monthly';
+
+  @override
+  String get activitySectionStats => 'Statistics';
+
+  @override
+  String get activityStatTotalTime => 'Your total time in the app';
+
+  @override
+  String get activityStatAverageTime => 'Your average time';
+
+  @override
+  String get activityStatDailyRecord => 'Your daily record';
+
+  @override
+  String get activityStatCoursesCompleted => 'Total courses completed';
+
+  @override
+  String get activityLoadError => 'Could not load activity. Try again.';
+
+  @override
+  String activityDurationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String activityDurationHours(int hours) {
+    return '$hours h';
+  }
+
+  @override
+  String activityDurationHoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String activityCompletedCourses(int count) {
+    return '$count courses';
+  }
 
   @override
   String get profileMenuVacancies => 'Vacancies';
@@ -895,6 +973,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String courseDurationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String courseDurationHoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
   String get myCoursesEmptyTitle => 'No courses yet';
 
   @override
@@ -1177,4 +1265,96 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileInformationNeighborhood => 'Neighborhood';
+
+  @override
+  String get storeTitle => 'Market';
+
+  @override
+  String get storeProduct => 'Product';
+
+  @override
+  String get storeAllCategories => 'All';
+
+  @override
+  String get storeNoProducts => 'No products yet';
+
+  @override
+  String get storeLoadError => 'Failed to load products';
+
+  @override
+  String get storeLoadMoreError => 'Error loading more';
+
+  @override
+  String get storeDetailTitle => 'Product';
+
+  @override
+  String get storeAboutProduct => 'About product';
+
+  @override
+  String storeInStock(Object count) {
+    return '$count in stock';
+  }
+
+  @override
+  String get storeSoldOut => 'Sold out';
+
+  @override
+  String get storeBuyButton => 'Buy now';
+
+  @override
+  String get storeReturnButton => 'Return';
+
+  @override
+  String get storeViewButton => 'View';
+
+  @override
+  String get storeAllTypes => 'All types';
+
+  @override
+  String get storeSize => 'Size';
+
+  @override
+  String get storeOrderSuccess => 'Order placed successfully!';
+
+  @override
+  String get storeOrderError => 'Failed to place order';
+
+  @override
+  String get storePromoExpired => 'Promo code expired';
+
+  @override
+  String get storeInsufficientStock => 'Product out of stock';
+
+  @override
+  String get storeCopied => 'Copied';
+
+  @override
+  String get storeHistoryTitle => 'Order history';
+
+  @override
+  String get storeHistoryEmpty => 'No orders yet';
+
+  @override
+  String get storeHistoryLoadError => 'Failed to load orders';
+
+  @override
+  String get storeStatusPending => 'Pending';
+
+  @override
+  String get storeStatusPaid => 'Paid';
+
+  @override
+  String get storeStatusShipped => 'Shipped';
+
+  @override
+  String get storeStatusDelivered => 'Delivered';
+
+  @override
+  String get storeStatusCancelled => 'Cancelled';
+
+  @override
+  String get storeStatusRefunded => 'Refunded';
+
+  @override
+  String get storeExtraMenuTitle => 'More';
 }

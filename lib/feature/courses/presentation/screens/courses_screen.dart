@@ -1,6 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
-import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/bloc/courses_catalog_bloc.dart';
@@ -14,7 +13,8 @@ class CoursesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<CoursesCatalogBloc>()..add(const CoursesCatalogStarted()), child: const _CoursesView());
+    // [CoursesCatalogBloc] [app_routes] dagi [MainScreen] ota-providers orqali beriladi.
+    return const _CoursesView();
   }
 }
 
@@ -116,7 +116,7 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
 
     return [
       SliverPadding(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset + 48),
         sliver: SliverList(
           delegate: SliverChildBuilderDelegate((context, index) {
             if (hasInProgress && index == 0) {

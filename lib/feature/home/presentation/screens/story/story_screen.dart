@@ -50,7 +50,10 @@ class _StoryScreenState extends State<StoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dismissBorderRadius = 12 + (20 * _dismissProgress);
+
     return SafeArea(
+      top: false,
       bottom: false,
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -78,7 +81,7 @@ class _StoryScreenState extends State<StoryScreen> {
               child: Transform.scale(
                 scale: 1 - (_dismissProgress * 0.2),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(_dismissProgress > 0 ? 32 * _dismissProgress : 0),
+                  borderRadius: BorderRadius.circular(dismissBorderRadius),
                   child: Hero(
                     tag: 'story_${widget.categories[_currentIndex].id}_$_currentIndex',
                     flightShuttleBuilder: (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
@@ -99,94 +102,109 @@ class _StoryScreenState extends State<StoryScreen> {
                     },
                     child: Material(
                       type: MaterialType.transparency,
-                      child: StoryPageView(
-                        indicatorVisitedColor: context.appColors.primary,
-                        indicatorUnvisitedColor: context.appColors.primary.withValues(alpha: 0.12),
-                        indicatorHeight: 3,
-                        initialPage: widget.initialIndex,
-                        itemBuilder: (context, pageIndex, storyIndex) {
-                          final category = widget.categories[pageIndex];
-                          return Stack(
-                            children: [
-                              Positioned.fill(
-                                child: category.imageUrl.trim().isEmpty
-                                    ? ColoredBox(color: context.appColors.onContainer)
-                                    : AppCachedNetworkImage(imageUrl: category.imageUrl.trim(), fit: BoxFit.contain, fallback: const AppNetworkImageFallbackSurface()),
-                              ),
-                              Positioned.fill(
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    // gradient: LinearGradient(
-                                    //   colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent, Colors.black.withValues(alpha: 0.8)],
-                                    //   begin: Alignment.topCenter,
-                                    //   end: Alignment.bottomCenter,
-                                    //   stops: const [0.0, 0.4, 0.8],
-                                    // ),
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 50,
-                                left: 16,
-                                right: 16,
-                                child: LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    // Hero pop'ning oxirida konteyner juda torayadi.
-                                    // Shu holatda row soddalashib overflow'ni oldini oladi.
-                                    final isVeryTight = constraints.maxWidth < 56;
-                                    final isTight = constraints.maxWidth < 96;
-
-                                    if (isVeryTight) {
-                                      return const SizedBox.shrink();
-                                    }
-
-                                    return Row(
-                                      children: [
-                                        Container(
-                                          height: 24,
-                                          width: 24,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: category.thumbnailUrl.trim().isEmpty ? context.appColors.onContainer : null,
-                                            border: Border.all(color: Colors.white, width: 1.5),
-                                            image: category.thumbnailUrl.trim().isEmpty ? null : DecorationImage(image: CachedNetworkImageProvider(category.thumbnailUrl.trim()), fit: BoxFit.cover),
-                                          ),
-                                        ),
-                                        if (!isTight) const SizedBox(width: 8),
-                                        if (!isTight)
-                                          Expanded(
-                                            child: Text(
-                                              category.name,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: context.textTheme.bodySmallBold.copyWith(color: context.appColors.text),
+                      child: Container(
+                        color: context.appColors.background,
+                        height: double.infinity,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: 9 / 16,
+                            child: StoryPageView(
+                              backgroundColor: context.appColors.background,
+                              indicatorVisitedColor: context.appColors.primary,
+                              indicatorUnvisitedColor: context.appColors.primary.withValues(alpha: 0.12),
+                              indicatorHeight: 3,
+                              initialPage: widget.initialIndex,
+                              itemBuilder: (context, pageIndex, storyIndex) {
+                                final category = widget.categories[pageIndex];
+                                return Stack(
+                                  children: [
+                                    Positioned.fill(
+                                      child: category.imageUrl.trim().isEmpty
+                                          ? ColoredBox(color: context.appColors.onContainer)
+                                          : ClipRRect(
+                                              borderRadius: BorderRadius.circular(12),
+                                              child: AppCachedNetworkImage(imageUrl: category.imageUrl.trim(), fit: BoxFit.cover, fallback: const AppNetworkImageFallbackSurface()),
                                             ),
-                                          ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                        gestureItemBuilder: (context, pageIndex, storyIndex) {
-                          return const SizedBox.shrink();
-                        },
-                        pageLength: widget.categories.length,
-                        storyLength: (int pageIndex) {
-                          return 1;
-                        },
-                        onPageLimitReached: () {
-                          _safePop();
-                        },
-                        indicatorAnimationController: indicatorAnimationController,
-                        onPageChanged: (pageIndex) {
-                          setState(() {
-                            _currentIndex = pageIndex;
-                          });
-                          widget.onView(widget.categories[pageIndex].id);
-                        },
+                                    ),
+                                    // Positioned.fill(
+                                    //   child: DecoratedBox(
+                                    //     decoration: BoxDecoration(
+                                    //       // gradient: LinearGradient(
+                                    //       //   colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent, Colors.black.withValues(alpha: 0.8)],
+                                    //       //   begin: Alignment.topCenter,
+                                    //       //   end: Alignment.bottomCenter,
+                                    //       //   stops: const [0.0, 0.4, 0.8],
+                                    //       // ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    Positioned(
+                                      top: 50,
+                                      left: 16,
+                                      right: 16,
+                                      child: LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          // Hero pop'ning oxirida konteyner juda torayadi.
+                                          // Shu holatda row soddalashib overflow'ni oldini oladi.
+                                          final isVeryTight = constraints.maxWidth < 56;
+                                          final isTight = constraints.maxWidth < 96;
+
+                                          if (isVeryTight) {
+                                            return const SizedBox.shrink();
+                                          }
+
+                                          return Row(
+                                            children: [
+                                              Container(
+                                                height: 24,
+                                                width: 24,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: category.thumbnailUrl.trim().isEmpty ? context.appColors.onContainer : null,
+                                                  border: Border.all(color: Colors.white, width: 1.5),
+                                                  image: category.thumbnailUrl.trim().isEmpty
+                                                      ? null
+                                                      : DecorationImage(image: CachedNetworkImageProvider(category.thumbnailUrl.trim()), fit: BoxFit.cover),
+                                                ),
+                                              ),
+                                              if (!isTight) const SizedBox(width: 8),
+                                              if (!isTight)
+                                                Expanded(
+                                                  child: Text(
+                                                    category.name,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: context.textTheme.bodySmallBold.copyWith(color: context.appColors.text),
+                                                  ),
+                                                ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                              gestureItemBuilder: (context, pageIndex, storyIndex) {
+                                return const SizedBox.shrink();
+                              },
+                              pageLength: widget.categories.length,
+                              storyLength: (int pageIndex) {
+                                return 1;
+                              },
+                              onPageLimitReached: () {
+                                _safePop();
+                              },
+                              indicatorAnimationController: indicatorAnimationController,
+                              onPageChanged: (pageIndex) {
+                                setState(() {
+                                  _currentIndex = pageIndex;
+                                });
+                                widget.onView(widget.categories[pageIndex].id);
+                              },
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),

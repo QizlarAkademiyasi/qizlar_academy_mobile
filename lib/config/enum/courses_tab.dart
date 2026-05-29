@@ -1,2 +1,2 @@
-/// Kurs detallari ekranidagi tablar.
-enum CoursesTab { lessons, info, reviews }
+export '../constants/enum/courses_tab.dart';
+

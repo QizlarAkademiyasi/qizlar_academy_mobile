@@ -158,7 +158,7 @@ class ModelBinding extends StatefulWidget {
   State<ModelBinding> createState() => _ModelBindingState();
 }
 
-class _ModelBindingState extends State<ModelBinding> {
+class _ModelBindingState extends State<ModelBinding> with WidgetsBindingObserver {
   late AppOptions currentModel;
   StreamSubscription<ThemeMode>? _themeModeSubscription;
   StreamSubscription<Locale>? _localeSubscription;
@@ -166,8 +166,25 @@ class _ModelBindingState extends State<ModelBinding> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     currentModel = widget.initialModel;
     _setupListeners();
+  }
+
+  /// [ThemeMode.system] bo‘lsa, tizim qorong‘i/yorug‘lik o‘zgarganda MaterialApp
+  /// daraxti qayta chiziladi — ba’zi sahifalar MediaQuery ga bog‘lanmasdan qolmasin.
+  @override
+  void didChangePlatformBrightness() {
+    if (!mounted || currentModel.themeMode != ThemeMode.system) return;
+    setState(() {});
+  }
+
+  /// Sozlamalardan qaytganida tizim rejimi o‘zgargan bo‘lishi mumkin (brightness signal kelmagan).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && currentModel.themeMode == ThemeMode.system && mounted) {
+      setState(() {});
+    }
   }
 
   void _setupListeners() {
@@ -205,6 +222,7 @@ class _ModelBindingState extends State<ModelBinding> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _themeModeSubscription?.cancel();
     _localeSubscription?.cancel();
     super.dispose();

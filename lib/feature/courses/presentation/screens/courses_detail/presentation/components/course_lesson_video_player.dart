@@ -17,56 +17,65 @@ bool isYoutubeLessonVideoUrl(String? rawUrl) {
 }
 
 /// Dars videosi:
-/// - YouTube URL → [YoutubePlayer] (youtube_player_flutter)
+/// - YouTube URL → [YoutubePlayer] (iframe/webview)
 /// - Boshqa URL  → [OmniVideoPlayer] (network stream)
 ///
-/// [SliverPersistentHeader] ichida ishlashi uchun YouTube player'da
-/// `controller.pause()` / `play()` to'g'ri ishlaydi chunki widget
-/// pinned bo'lib ekranda qoladi.
+/// [SliverPersistentHeader] ichida ishlashi uchun player pinned bo'lib ekranda qoladi.
 class CourseLessonVideoPlayer extends StatefulWidget {
-  const CourseLessonVideoPlayer({super.key, required this.lessonId, required this.videoUrl, this.onPlaybackFinished});
+  const CourseLessonVideoPlayer({
+    super.key,
+    required this.lessonId,
+    required this.videoUrl,
+    this.onPlaybackFinished,
+    this.controller,
+  });
 
   final String lessonId;
   final String? videoUrl;
   final VoidCallback? onPlaybackFinished;
+  final CourseLessonVideoPlayerController? controller;
 
   @override
   State<CourseLessonVideoPlayer> createState() => _CourseLessonVideoPlayerState();
 }
 
+class CourseLessonVideoPlayerController {
+  _CourseLessonVideoPlayerState? _state;
+
+  bool get isAttached => _state != null;
+
+  Future<void> pause() async {
+    final s = _state;
+    if (s == null) return;
+    await s._pause();
+  }
+}
+
 class _CourseLessonVideoPlayerState extends State<CourseLessonVideoPlayer> {
   Uri? _parsedUri;
-  bool _isYoutube = false;
+  YoutubePlayerController? _youtubeController;
   String? _youtubeVideoId;
-
-  YoutubePlayerController? _ytController;
+  OmniPlaybackController? _omniController;
 
   static const Duration _playbackTimeout = Duration(seconds: 30);
 
   @override
   void initState() {
     super.initState();
+    widget.controller?._state = this;
     _resolveUri();
   }
 
   @override
   void didUpdateWidget(covariant CourseLessonVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?._state = null;
+      widget.controller?._state = this;
+    }
     if (oldWidget.videoUrl != widget.videoUrl) {
-      _disposeYtController();
       _resolveUri();
     }
-  }
-
-  @override
-  void dispose() {
-    _disposeYtController();
-    super.dispose();
-  }
-
-  void _disposeYtController() {
-    _ytController?.dispose();
-    _ytController = null;
   }
 
   void _resolveUri() {
@@ -74,9 +83,8 @@ class _CourseLessonVideoPlayerState extends State<CourseLessonVideoPlayer> {
     if (rawUrl.isEmpty) {
       setState(() {
         _parsedUri = null;
-        _isYoutube = false;
-        _youtubeVideoId = null;
       });
+      _disposeYoutubeController();
       return;
     }
 
@@ -87,47 +95,78 @@ class _CourseLessonVideoPlayerState extends State<CourseLessonVideoPlayer> {
     if (u == null || u.host.isEmpty) {
       setState(() {
         _parsedUri = null;
-        _isYoutube = false;
-        _youtubeVideoId = null;
       });
+      _disposeYoutubeController();
       return;
     }
 
-    final host = u.host.toLowerCase();
-    final isYt = host.contains('youtube.com') || host.contains('youtu.be');
-    final videoId = isYt ? YoutubePlayer.convertUrlToId(u.toString()) : null;
+    final youtubeId = YoutubePlayer.convertUrlToId(u.toString());
+    final shouldUseYoutube = youtubeId != null;
 
-    if (isYt && videoId != null) {
-      final controller = YoutubePlayerController(
-        initialVideoId: videoId,
-        flags: const YoutubePlayerFlags(autoPlay: true, mute: false, disableDragSeek: false, enableCaption: false, hideControls: false, controlsVisibleAtStart: true),
-      )..addListener(_ytListener);
+    setState(() {
+      _parsedUri = u;
+      _youtubeVideoId = youtubeId;
+    });
 
-      setState(() {
-        _parsedUri = u;
-        _isYoutube = true;
-        _youtubeVideoId = videoId;
-        _ytController = controller;
-      });
+    if (shouldUseYoutube) {
+      _ensureYoutubeController(videoId: youtubeId);
     } else {
-      setState(() {
-        _parsedUri = u;
-        _isYoutube = false;
-        _youtubeVideoId = null;
-      });
+      _disposeYoutubeController();
     }
   }
 
-  void _ytListener() {
-    final controller = _ytController;
-    if (controller == null) return;
-    if (controller.value.playerState == PlayerState.ended) {
-      Future.microtask(() => widget.onPlaybackFinished?.call());
+  void _ensureYoutubeController({required String videoId}) {
+    final currentId = _youtubeController?.initialVideoId;
+    if (_youtubeController != null && currentId == videoId) return;
+
+    _youtubeController?.dispose();
+    _youtubeController = YoutubePlayerController(
+      initialVideoId: videoId,
+      flags: const YoutubePlayerFlags(
+        autoPlay: true,
+        enableCaption: true,
+        controlsVisibleAtStart: true,
+      ),
+    );
+  }
+
+  void _disposeYoutubeController() {
+    _youtubeController?.dispose();
+    _youtubeController = null;
+    _youtubeVideoId = null;
+  }
+
+  Future<void> _pause() async {
+    try {
+      _youtubeController?.pause();
+    } catch (_) {
+      // ignore
+    }
+    try {
+      await _omniController?.pause();
+    } catch (_) {
+      // ignore
     }
   }
 
-  VideoSourceConfiguration _networkSource() {
-    return VideoSourceConfiguration.network(videoUrl: _parsedUri!).copyWith(autoPlay: true, pauseWhenOutOfView: false, timeoutDuration: _playbackTimeout);
+  VideoSourceConfiguration _source() {
+    final uri = _parsedUri!;
+    final base = VideoSourceConfiguration.network(videoUrl: uri);
+    return base.copyWith(
+      autoPlay: true,
+      pauseWhenOutOfView: false,
+      timeoutDuration: _playbackTimeout,
+      initialPlaybackSpeed: 1.0,
+      availablePlaybackSpeed: const [0.5, 1.0, 1.25, 1.5, 2.0],
+    );
+  }
+
+  @override
+  void dispose() {
+    widget.controller?._state = null;
+    _disposeYoutubeController();
+    _omniController = null;
+    super.dispose();
   }
 
   @override
@@ -140,53 +179,48 @@ class _CourseLessonVideoPlayerState extends State<CourseLessonVideoPlayer> {
       );
     }
 
-    if (_isYoutube && _ytController != null) {
-      return _YoutubePlayerWidget(key: ValueKey<String>('yt_${widget.lessonId}_$_youtubeVideoId'), controller: _ytController!, openUri: _parsedUri!);
+    final youtubeId = _youtubeVideoId;
+    final controller = _youtubeController;
+    if (youtubeId != null && controller != null) {
+      return YoutubePlayerBuilder(
+        player: YoutubePlayer(
+          controller: controller,
+          onEnded: (_) => Future.microtask(() => widget.onPlaybackFinished?.call()),
+          onReady: () {},
+          progressIndicatorColor: context.appColors.primary,
+          showVideoProgressIndicator: true,
+          bottomActions: const [
+            CurrentPosition(),
+            ProgressBar(isExpanded: true),
+            RemainingDuration(),
+            PlaybackSpeedButton(),
+            FullScreenButton(),
+          ],
+        ),
+        builder: (context, player) => player,
+      );
     }
 
-    // Non-YouTube: OmniVideoPlayer (network)
-    final scheme = const VideoPlayerColorScheme().copyWith(backgroundError: context.appColors.onContainer, textError: context.appColors.text);
-    return OmniVideoPlayer(
-      key: ValueKey<String>('net_${widget.lessonId}_$_parsedUri'),
-      configuration: VideoPlayerConfiguration(
-        videoSourceConfiguration: _networkSource(),
-        playerTheme: OmniVideoPlayerThemeData(colors: scheme),
-        customPlayerWidgets: CustomPlayerWidgets(errorPlaceholder: _LessonVideoErrorPlaceholder(isYoutube: false, openUri: _parsedUri!)),
-      ),
-      callbacks: VideoPlayerCallbacks(onFinished: () => Future.microtask(() => widget.onPlaybackFinished?.call())),
+    final scheme = const VideoPlayerColorScheme().copyWith(
+      backgroundError: context.appColors.onContainer,
+      textError: context.appColors.text,
+      volumeColorActiveSlider: context.appColors.primary,
+      volumeColorInactiveSlider: context.appColors.primary,
     );
-  }
-}
-
-/// YouTube player widget — [YoutubePlayerController] ni qabul qiladi.
-/// [YoutubePlayerBuilder] orqali to'liq ekran rejimi ham ishlaydi.
-class _YoutubePlayerWidget extends StatelessWidget {
-  const _YoutubePlayerWidget({super.key, required this.controller, required this.openUri});
-
-  final YoutubePlayerController controller;
-  final Uri openUri;
-
-  static const ProgressBarColors _progressColors = ProgressBarColors(playedColor: AppColors.primary, handleColor: AppColors.primary);
-
-  @override
-  Widget build(BuildContext context) {
-    return YoutubePlayerBuilder(
-      player: YoutubePlayer(
-        controller: controller,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: AppColors.primary,
-        progressColors: _progressColors,
-        onEnded: (_) {},
-        bottomActions: [
-          const SizedBox(width: 14.0),
-          const CurrentPosition(),
-          const SizedBox(width: 8.0),
-          ProgressBar(isExpanded: true, colors: _progressColors),
-          const RemainingDuration(),
-          const FullScreenButton(),
-        ],
+    return OmniVideoPlayer(
+      key: ValueKey<String>('omni_${widget.lessonId}_$_parsedUri'),
+      configuration: VideoPlayerConfiguration(
+        videoSourceConfiguration: _source(),
+        playerUIVisibilityOptions: const PlayerUIVisibilityOptions(showPlaybackSpeedButton: true),
+        playerTheme: OmniVideoPlayerThemeData(colors: scheme),
+        customPlayerWidgets: CustomPlayerWidgets(
+          errorPlaceholder: _LessonVideoErrorPlaceholder(isYoutube: false, openUri: _parsedUri!),
+        ),
       ),
-      builder: (context, player) => player,
+      callbacks: VideoPlayerCallbacks(
+        onControllerCreated: (controller) => _omniController = controller,
+        onFinished: () => Future.microtask(() => widget.onPlaybackFinished?.call()),
+      ),
     );
   }
 }

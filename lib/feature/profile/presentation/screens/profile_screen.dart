@@ -18,7 +18,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<ProfileBloc>()..add(const ProfileStarted()), child: const _ProfileView());
+    // [ProfileBloc] [app_routes] dagi [MainScreen] ota-providers orqali beriladi (faqat [mainUser]).
+    return const _ProfileView();
   }
 }
 
@@ -30,7 +31,8 @@ class _ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_ProfileView> {
-  ProfileOverviewModel _skeletonOverview(AppLocalizations l10n) {
+  ProfileOverviewModel _skeletonOverview(BuildContext context) {
+    final l10n = context.l10n;
     return ProfileOverviewModel(
       user: const ProfileUserModel(firstName: '---', lastName: '-------', fullName: '--- -------', userId: '------', phoneNumber: '+998901234567', avatarUrl: '', badgeId: 0),
       stats: const [],
@@ -76,7 +78,7 @@ class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_Pro
           if (state.overview == null && !isInitialLoading) {
             return AppFailureState(message: l10n.profileOverviewLoadError, onRetry: () => retry(context));
           }
-          final overview = state.overview ?? _skeletonOverview(l10n);
+          final overview = state.overview ?? _skeletonOverview(context);
 
           final bottomInset = MediaQuery.paddingOf(context).bottom;
           return ListenableBuilder(
@@ -102,7 +104,7 @@ class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_Pro
                       ),
                     ),
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset + 56),
                       sliver: SliverList(
                         delegate: SliverChildListDelegate([
                           Skeletonizer.zone(
@@ -135,10 +137,7 @@ class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_Pro
                             ),
                           ),
                           const SizedBox(height: 12),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: buildDeleteAccountSection(context),
-                          ),
+                          Padding(padding: const EdgeInsets.symmetric(horizontal: 24), child: buildDeleteAccountSection(context)),
                           const SizedBox(height: 10),
                           Padding(padding: const EdgeInsets.symmetric(horizontal: 24), child: buildLogoutSection(context)),
                           const SizedBox(height: 16),

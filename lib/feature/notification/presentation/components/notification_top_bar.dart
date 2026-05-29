@@ -15,7 +15,7 @@ class NotificationTopBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 6, 12, 8),
       child: Row(
         children: [
-          AppBackButton(onTap: onBackTap),
+          AppBackButton.ghost(onTap: onBackTap),
           Expanded(
             child: Text(context.l10n.notificationsTitle, style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
           ),

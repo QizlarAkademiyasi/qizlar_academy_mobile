@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
+import 'package:qizlar_academy_mobile/config/enum/user_type.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_otp_bot_response.dart';
@@ -17,6 +17,10 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
   AuthSessionCubit(this._repository) : super(const AuthSessionState.initial());
 
   final AuthRepository _repository;
+
+  /// Bir vaqtning o‘zida bir nechta `ensureProfileGateResolved` chaqiruvlarini
+  /// (router redirect, splash, verification, app_bootstrap) bo‘g‘ib qo‘yadi.
+  Future<void>? _profileGateInFlight;
 
   Future<void> loadSession() async {
     final model = await _repository.readSession();
@@ -112,7 +116,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     }
   }
 
-  Future<void> ensureProfileGateResolved() async {
+  Future<void> ensureProfileGateResolved() {
     if (!state.isRegistered) {
       if (!state.profileGateResolved) {
         emit(
@@ -122,10 +126,23 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
           ),
         );
       }
-      return;
+      return Future<void>.value();
     }
-    if (state.profileGateResolved) return;
+    if (state.profileGateResolved) return Future<void>.value();
 
+    final inFlight = _profileGateInFlight;
+    if (inFlight != null) return inFlight;
+
+    final future = _resolveProfileGate();
+    _profileGateInFlight = future;
+    return future.whenComplete(() {
+      if (identical(_profileGateInFlight, future)) {
+        _profileGateInFlight = null;
+      }
+    });
+  }
+
+  Future<void> _resolveProfileGate() async {
     try {
       final overview = await getIt<ProfileRepository>().getProfileOverview();
       final needs = overview.user.firstName.trim().isEmpty;

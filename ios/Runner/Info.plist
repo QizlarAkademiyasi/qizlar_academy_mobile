@@ -49,9 +49,35 @@
 				<string>qizlaracademy</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>uz.qizlar.akademiyasi.facebook</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb1226563685979967</string>
+			</array>
+		</dict>
 	</array>
+	<!-- Meta App Events (Facebook SDK).
+	     `FacebookAppID` lib/config/constants/facebook_config.dart `_fallbackAppId` bilan sinxron.
+	     `FacebookClientToken` Meta Developer Console -> Settings -> Advanced -> Client Token dan olinadi;
+	     bo‘sh bo‘lsa SDK App Events ni init qila olmaydi (analytics ishlamaydi). -->
+	<key>FacebookAppID</key>
+	<string>1226563685979967</string>
+	<key>FacebookClientToken</key>
+	<string>fcbc01e45e69affc5e766a8af604629d</string>
+	<key>FacebookDisplayName</key>
+	<string>Qizlar Akademiyasi</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<true/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>FLTEnableImpeller</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>

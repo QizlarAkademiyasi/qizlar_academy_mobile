@@ -1,9 +1,14 @@
+import 'dart:async' show unawaited;
+
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/constants/daily_coin_feature.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
+import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/screens/daily_coin_bottom_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_state.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
@@ -23,18 +28,38 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with HomeScreenMixin<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with HomeScreenMixin<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _headerOverscrollSnapScheduled = false;
 
   /// [MainScreen] PageView / pastki bar tartibi bilan mos.
   static const int _mainTabLeaderboard = 2;
-  static const int _mainTabProfile = 3;
 
-  static const HomeStatsModel _skeletonStats = HomeStatsModel(coins: 1200, grade: 12, rating: 8, lastLessonCategory: 'Arab tili', lastLessonProgress: 0.6);
+  static const HomeStatsModel _skeletonStats = HomeStatsModel(
+    coins: 1200,
+    grade: 12,
+    rating: 8,
+    lastLessonCategory: 'Arab tili',
+    lastLessonProgress: 0.6,
+  );
   static const List<CourseModel> _skeletonCourses = [
-    CourseModel(id: 'c1', title: 'Arab tiliga kirish', author: 'Mentor', imageUrl: '', durationHours: 24, studentCount: 1000),
-    CourseModel(id: 'c2', title: 'Ayollar psixologiyasi', author: 'Mentor', imageUrl: '', durationHours: 16, studentCount: 740),
+    CourseModel(
+      id: 'c1',
+      title: 'Arab tiliga kirish',
+      author: 'Mentor',
+      imageUrl: '',
+      durationSeconds: 24 * 3600,
+      studentCount: 1000,
+    ),
+    CourseModel(
+      id: 'c2',
+      title: 'Ayollar psixologiyasi',
+      author: 'Mentor',
+      imageUrl: '',
+      durationSeconds: 16 * 3600,
+      studentCount: 740,
+    ),
   ];
   static const List<BannerModel> _skeletonBanners = [
     BannerModel(id: 'b1', title: '', subtitle: '', imageUrl: ''),
@@ -76,6 +101,28 @@ class _HomeScreenState extends State<HomeScreen> with HomeScreenMixin<HomeScreen
     });
   }
 
+  Future<void> _maybeAutopresentDailyCoinSheet() async {
+    if (!kDailyCoinFeatureEnabled) return;
+    for (var i = 0; i < 14; i++) {
+      if (!mounted) return;
+      final auth = getIt<AuthSessionCubit>().state;
+      if (!auth.isRegistered || (auth.accessToken ?? '').trim().isEmpty) {
+        return;
+      }
+      final result = await tryAutopresentDailyCoinSheetFromHomePrefetch(context);
+      if (result != null) return;
+      await Future<void>.delayed(Duration(milliseconds: 260 + i * 140));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_maybeAutopresentDailyCoinSheet());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthSessionCubit, AuthSessionState>(
@@ -84,11 +131,16 @@ class _HomeScreenState extends State<HomeScreen> with HomeScreenMixin<HomeScreen
         final isAnonymous = authState.isAnonymous;
         return BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
-            final isLoading = state.status == HomeStatus.initial || state.status == HomeStatus.loading;
+            final isLoading =
+                state.status == HomeStatus.initial ||
+                state.status == HomeStatus.loading;
             final isFailure = state.status == HomeStatus.failure;
-            final lastLessonTitle = state.homeStats?.lastLessonCategory.trim() ?? '';
-            final showRegisteredStatsSection = isLoading || lastLessonTitle.isNotEmpty;
-            final staggerIndexBeforeBanners = isAnonymous || showRegisteredStatsSection ? 1 : 0;
+            final lastLessonTitle =
+                state.homeStats?.lastLessonCategory.trim() ?? '';
+            final showRegisteredStatsSection =
+                isLoading || lastLessonTitle.isNotEmpty;
+            final staggerIndexBeforeBanners =
+                isAnonymous || showRegisteredStatsSection ? 1 : 0;
 
             return Scaffold(
               backgroundColor: context.theme.scaffoldBackgroundColor,
@@ -114,18 +166,40 @@ class _HomeScreenState extends State<HomeScreen> with HomeScreenMixin<HomeScreen
                             isLoading: state.categoriesLoading,
                             list: state.categories,
                             onNotificationTap: () => onNotificationTap(context),
-                            appBar: buildHeader(context, userGreetingName: state.userGreetingName),
+                            appBar: buildHeader(
+                              context,
+                              userGreetingName: state.userGreetingName,
+                            ),
                           ),
                           if (isFailure) ...[
-                            if (isAnonymous) SliverToBoxAdapter(child: _staggeredSection(position: 0, child: buildGuestCard(context))),
+                            if (isAnonymous)
+                              SliverToBoxAdapter(
+                                child: _staggeredSection(
+                                  position: 0,
+                                  child: buildGuestCard(context),
+                                ),
+                              ),
                             SliverFillRemaining(
                               hasScrollBody: false,
-                              child: AppFailureState(message: context.l10n.homeLoadErrorMessage, onRetry: () => context.read<HomeBloc>().add(const HomeStarted())),
+                              child: AppFailureState(
+                                message: context.l10n.homeLoadErrorMessage,
+                                onRetry: () => context.read<HomeBloc>().add(
+                                  const HomeStarted(),
+                                ),
+                              ),
                             ),
                           ] else ...[
-                            if (isAnonymous) SliverToBoxAdapter(child: _staggeredSection(position: 0, child: buildGuestCard(context))),
+                            if (isAnonymous)
+                              SliverToBoxAdapter(
+                                child: _staggeredSection(
+                                  position: 0,
+                                  child: buildGuestCard(context),
+                                ),
+                              ),
                             if (!isAnonymous && showRegisteredStatsSection) ...[
-                              const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                              const SliverToBoxAdapter(
+                                child: SizedBox(height: 12),
+                              ),
                               SliverToBoxAdapter(
                                 child: _staggeredSection(
                                   position: 0,
@@ -133,28 +207,62 @@ class _HomeScreenState extends State<HomeScreen> with HomeScreenMixin<HomeScreen
                                     context,
                                     state.homeStats ?? _skeletonStats,
                                     isLoading: isLoading,
-                                    onCoinsAndGradeTap: () {},
-                                    onRatingTap: () => widget.onSwitchMainTab?.call(_mainTabLeaderboard),
-                                    onLastLessonTap: () => context.push(Routes.myCourses),
+                                    onCoinsAndGradeTap: () async {
+                                      if (!kDailyCoinFeatureEnabled) return;
+                                      final canOpen =
+                                          await getIt<GuestTapGateService>()
+                                              .allowAction(
+                                                context,
+                                                key: 'home_daily_coin_streak',
+                                                title: context
+                                                    .l10n
+                                                    .guestGateProfileFeatures,
+                                              );
+                                      if (!canOpen) return;
+                                      if (!context.mounted) return;
+                                      await showDailyCoinBottomSheet(context);
+                                    },
+                                    onRatingTap: () => widget.onSwitchMainTab
+                                        ?.call(_mainTabLeaderboard),
+                                    onLastLessonTap: () =>
+                                        context.push(Routes.myCourses),
                                   ),
                                 ),
                               ),
                             ],
-                            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                            const SliverToBoxAdapter(
+                              child: SizedBox(height: 20),
+                            ),
+
                             SliverToBoxAdapter(
                               child: _staggeredSection(
                                 position: staggerIndexBeforeBanners,
-                                child: buildBannersSection(context, isLoading ? _skeletonBanners : state.banners, isLoading: isLoading),
+                                child: buildBannersSection(
+                                  context,
+                                  isLoading ? _skeletonBanners : state.banners,
+                                  isLoading: isLoading,
+                                ),
                               ),
                             ),
-                            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                            const SliverToBoxAdapter(
+                              child: SizedBox(height: 20),
+                            ),
                             SliverToBoxAdapter(
                               child: _staggeredSection(
                                 position: staggerIndexBeforeBanners + 1,
-                                child: buildCoursesSection(context, isLoading ? _skeletonCourses : state.courses, isLoading: isLoading),
+                                child: buildCoursesSection(
+                                  context,
+                                  isLoading ? _skeletonCourses : state.courses,
+                                  isLoading: isLoading,
+                                ),
                               ),
                             ),
                           ],
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: MediaQuery.paddingOf(context).bottom + 56,
+                            ),
+                          ),
                         ],
                       ),
                     ),

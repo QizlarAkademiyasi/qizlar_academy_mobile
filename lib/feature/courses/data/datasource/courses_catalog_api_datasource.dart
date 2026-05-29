@@ -1,7 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
-import 'package:qizlar_academy_mobile/core/format/course_duration_format.dart';
-import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
+import 'package:qizlar_academy_mobile/config/enum/user_type.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/domain/model/course_catalog_item_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/domain/model/course_in_progress_model.dart';
@@ -60,7 +59,7 @@ class CoursesCatalogApiDatasource implements CoursesCatalogDatasource {
       imageUrl: _resolveCourseImageUrl(parsed),
       rating: _parseDouble(parsed['avgRating']),
       reviewsCount: _parseInt(parsed['totalRatings']),
-      durationHours: CourseDurationFormat.displayHoursFromApiMinutes(_parseInt(parsed['totalDuration'])),
+      durationSeconds: _parseInt(parsed['totalDuration']),
       tagLabel: null,
     );
   }

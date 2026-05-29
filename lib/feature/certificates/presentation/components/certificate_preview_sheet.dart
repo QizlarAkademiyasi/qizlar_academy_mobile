@@ -145,7 +145,7 @@ class CertificatePreviewSheet extends StatelessWidget {
                         },
                         child: Tooltip(
                           message: (instagramStoryLabel ?? '').trim(),
-                          child: SizedBox(width: 52, height: 52, child: Icon(LucideIcons.instagram, size: 22, color: context.appColors.text)),
+                          child: SizedBox(width: 52, height: 52, child: Icon(LucideIcons.camera, size: 22, color: context.appColors.text)),
                         ),
                       ),
                     ),

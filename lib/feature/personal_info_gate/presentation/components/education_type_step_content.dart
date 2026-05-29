@@ -1,7 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
-import 'package:qizlar_academy_mobile/config/enum/education_type.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/education_type.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/presentation/bloc/personal_info_gate_bloc.dart';
 
 /// Tashkilot turi bosqichi: Maktab, Kollej/Litsey, Universitet, Hozir o'qimayman.

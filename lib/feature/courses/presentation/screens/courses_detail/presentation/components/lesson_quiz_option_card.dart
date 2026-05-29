@@ -55,44 +55,46 @@ class LessonQuizOptionCard extends StatelessWidget {
       letterFg = context.appColors.grey;
     }
 
-    return Bounce(
-      tilt: false,
-      onTap: revealed || !enabled
-          ? () {}
-          : () {
-              Gaimon.light();
-              onTap();
-            },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          color: fill ?? context.appColors.onContainer,
-          borderRadius: AppRadius.radiusXl,
-          border: Border.all(color: borderColor, width: selected || (revealed && selected) ? 1.5 : 1),
-          boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: letterBg,
-                shape: BoxShape.circle,
-                border: Border.all(color: revealed && !selected ? context.appColors.stroke : context.appColors.stroke),
+    return AppLiquidStretch(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: revealed || !enabled
+            ? null
+            : () {
+                Gaimon.light();
+                onTap();
+              },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          decoration: BoxDecoration(
+            color: fill ?? context.appColors.onContainer,
+            borderRadius: AppRadius.radiusXl,
+            border: Border.all(color: borderColor, width: selected || (revealed && selected) ? 1.5 : 1),
+            boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: letterBg,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: revealed && !selected ? context.appColors.stroke : context.appColors.stroke),
+                ),
+                child: Text(letter, style: context.textTheme.bodySmallBold.copyWith(color: letterFg)),
               ),
-              child: Text(letter, style: context.textTheme.bodySmallBold.copyWith(color: letterFg)),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(label, style: context.textTheme.bodyMediumRegular.copyWith(color: textColor, height: 1.35)),
-            ),
-            if (revealed && selected) ...[
-              const SizedBox(width: 8),
-              Icon(wasCorrectChoice == true ? LucideIcons.circleCheck : LucideIcons.circleX, color: wasCorrectChoice == true ? const Color(0xFF22C55E) : const Color(0xFFEF4444), size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(label, style: context.textTheme.bodyMediumRegular.copyWith(color: textColor, height: 1.35)),
+              ),
+              if (revealed && selected) ...[
+                const SizedBox(width: 8),
+                Icon(wasCorrectChoice == true ? LucideIcons.circleCheck : LucideIcons.circleX, color: wasCorrectChoice == true ? const Color(0xFF22C55E) : const Color(0xFFEF4444), size: 22),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

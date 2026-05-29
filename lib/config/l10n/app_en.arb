@@ -58,7 +58,7 @@
   "verificationBackConfirmLeave": "Go back",
   "mainTabHome": "Home",
   "mainTabCourses": "Courses",
-  "mainTabLeaderboard": "Leaderboard",
+  "mainTabLeaderboard": "Leader",
   "mainTabProfile": "Profile",
   "mainTabMore": "More",
   "mainMoreEmptyHint": "Open “More” in the tab bar and choose a section.",
@@ -206,6 +206,71 @@
   "profileMenuCertificates": "My certificates",
   "profileMenuMyCourses": "My courses",
   "profileMenuMyActivity": "My activity",
+  "dailyCoinStreakTitle": "{count, plural, one{{count} day streak} other{{count} days streak}}",
+  "@dailyCoinStreakTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCoinStreakSubtitle": "You are on the right track",
+  "dailyCoinRewardToday": "+{coins} coins today",
+  "@dailyCoinRewardToday": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCoinClaimButton": "Claim",
+  "dailyCoinClaimedButton": "Claimed",
+  "dailyCoinLoadError": "Could not load streak. Try again.",
+  "dailyCoinClaimError": "Could not claim reward. Try again later.",
+  "activityScreenTitle": "Activity",
+  "activityTabWeekly": "Weekly",
+  "activityTabMonthly": "Monthly",
+  "activitySectionStats": "Statistics",
+  "activityStatTotalTime": "Your total time in the app",
+  "activityStatAverageTime": "Your average time",
+  "activityStatDailyRecord": "Your daily record",
+  "activityStatCoursesCompleted": "Total courses completed",
+  "activityLoadError": "Could not load activity. Try again.",
+  "activityDurationMinutes": "{minutes} min",
+  "@activityDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "activityDurationHours": "{hours} h",
+  "@activityDurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "activityDurationHoursMinutes": "{hours} h {minutes} min",
+  "@activityDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "activityCompletedCourses": "{count} courses",
+  "@activityCompletedCourses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "profileMenuVacancies": "Vacancies",
   "vacanciesTitle": "Vacancies",
   "vacancyDetailCta": "Details",
@@ -403,6 +468,25 @@
       }
     }
   },
+  "courseDurationMinutes": "{minutes} min",
+  "@courseDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "courseDurationHoursMinutes": "{hours} h {minutes} min",
+  "@courseDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "myCoursesEmptyTitle": "No courses yet",
   "myCoursesEmptySubtitle": "Enroll in a course and it will show up here.",
   "myCoursesLoadError": "Could not load your courses. Try again.",
@@ -566,5 +650,35 @@
   "profileInformationAddressTitle": "Address",
   "profileInformationRegion": "Region",
   "profileInformationDistrict": "District",
-  "profileInformationNeighborhood": "Neighborhood"
+  "profileInformationNeighborhood": "Neighborhood",
+  "storeTitle": "Market",
+  "storeProduct": "Product",
+  "storeAllCategories": "All",
+  "storeNoProducts": "No products yet",
+  "storeLoadError": "Failed to load products",
+  "storeLoadMoreError": "Error loading more",
+  "storeDetailTitle": "Product",
+  "storeAboutProduct": "About product",
+  "storeInStock": "{count} in stock",
+  "storeSoldOut": "Sold out",
+  "storeBuyButton": "Buy now",
+  "storeReturnButton": "Return",
+  "storeViewButton": "View",
+  "storeAllTypes": "All types",
+  "storeSize": "Size",
+  "storeOrderSuccess": "Order placed successfully!",
+  "storeOrderError": "Failed to place order",
+  "storePromoExpired": "Promo code expired",
+  "storeInsufficientStock": "Product out of stock",
+  "storeCopied": "Copied",
+  "storeHistoryTitle": "Order history",
+  "storeHistoryEmpty": "No orders yet",
+  "storeHistoryLoadError": "Failed to load orders",
+  "storeStatusPending": "Pending",
+  "storeStatusPaid": "Paid",
+  "storeStatusShipped": "Shipped",
+  "storeStatusDelivered": "Delivered",
+  "storeStatusCancelled": "Cancelled",
+  "storeStatusRefunded": "Refunded",
+  "storeExtraMenuTitle": "More"
 }

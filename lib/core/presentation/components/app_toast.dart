@@ -1,6 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
-import 'package:qizlar_academy_mobile/config/enum/app_toast_type.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/app_toast_type.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 /// Ilova bo'ylab yagona toast API.

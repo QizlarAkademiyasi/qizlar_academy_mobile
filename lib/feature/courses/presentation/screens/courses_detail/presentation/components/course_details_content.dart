@@ -12,7 +12,7 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_details_content_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_meta_row.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_tabs.dart';
-import 'package:qizlar_academy_mobile/config/enum/courses_tab.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/courses_tab.dart';
 
 /// Kurs detallari: [NestedScrollView] + [TabBarView] (silliq siljitish, sliver bilan ziddiyatsiz).
 class CourseDetailsContent extends StatefulWidget {

@@ -5,6 +5,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
+import 'package:qizlar_academy_mobile/config/bootstrap/home_startup_preloader.dart';
 import 'package:qizlar_academy_mobile/core/deeplink/app_deep_link_coordinator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
@@ -17,7 +18,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin, SplashScreenMixin<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin, SplashScreenMixin<SplashScreen> {
   static const _logoDuration = Duration(milliseconds: 880);
   static const _partnersDuration = Duration(milliseconds: 720);
   static const _partnersStartDelay = Duration(milliseconds: 340);
@@ -45,13 +47,20 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       ),
     );
 
-    _partnersController = AnimationController(vsync: this, duration: _partnersDuration);
+    _partnersController = AnimationController(
+      vsync: this,
+      duration: _partnersDuration,
+    );
     _partnersOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _partnersController, curve: Curves.easeOutCubic),
     );
-    _partnersSlide = Tween<Offset>(begin: const Offset(0, 0.14), end: Offset.zero).animate(
-      CurvedAnimation(parent: _partnersController, curve: Curves.easeOutCubic),
-    );
+    _partnersSlide =
+        Tween<Offset>(begin: const Offset(0, 0.14), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _partnersController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     _runIntro();
   }
@@ -83,14 +92,19 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       final deepLinks = getIt<AppDeepLinkCoordinator>();
       final delay = Future<void>.delayed(const Duration(milliseconds: 2600));
       final waitInitialLink = deepLinks.waitForInitialLinkResolved();
+      final preloadHome = HomeStartupPreloader.preload().timeout(
+        const Duration(seconds: 12),
+        onTimeout: () => AppLogger.w('HomeStartupPreloader timeout'),
+      );
       if (cubit.state.isRegistered) {
         await Future.wait<void>([
           delay,
           waitInitialLink,
           cubit.ensureProfileGateResolved(),
+          preloadHome,
         ]);
       } else {
-        await Future.wait<void>([delay, waitInitialLink]);
+        await Future.wait<void>([delay, waitInitialLink, preloadHome]);
       }
       if (!mounted) return;
 
@@ -136,7 +150,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       child: Scaffold(
         body: Stack(
           children: [
-            Positioned.fill(child: (isDark ? UiKitAssets.images.splashDark : UiKitAssets.images.splashLight).image(fit: BoxFit.cover)),
+            Positioned.fill(
+              child:
+                  (isDark
+                          ? UiKitAssets.images.splashDark
+                          : UiKitAssets.images.splashLight)
+                      .image(fit: BoxFit.cover),
+            ),
             SafeArea(
               child: Column(
                 children: [

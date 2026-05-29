@@ -27,11 +27,11 @@ class _HomeBannersCarouselState extends State<HomeBannersCarousel> {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: 210,
+          height: 200,
           child: CarouselSlider.builder(
             itemCount: banners.length,
             options: CarouselOptions(
-              height: 210,
+              height: 200,
               viewportFraction: 1,
               autoPlay: true,
               enableInfiniteScroll: false,
@@ -86,9 +86,9 @@ class _BannerCardMediaState extends State<_BannerCardMedia> {
           imageUrl: widget.imageUrl,
           fit: BoxFit.cover,
           alignment: Alignment.topCenter,
-          fadeInDuration: const Duration(milliseconds: 100),
-          fadeOutDuration: const Duration(milliseconds: 100),
-          placeholder: (context, url) => const _BannerCardSkeleton(),
+          fadeInDuration: const Duration(milliseconds: 320),
+          fadeOutDuration: const Duration(milliseconds: 200),
+          placeholder: (context, url) => const _BannerImageShimmer(),
           errorWidget: (context, url, error) {
             return DecoratedBox(
               decoration: BoxDecoration(
@@ -109,7 +109,7 @@ class _BannerCardMediaState extends State<_BannerCardMedia> {
                   _scheduleGradientReveal();
                   return child;
                 }
-                return const _BannerCardSkeleton();
+                return const _BannerImageShimmer();
               },
             );
           },
@@ -121,6 +121,20 @@ class _BannerCardMediaState extends State<_BannerCardMedia> {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Rasm tarmoqqa chiqishi / decode bo‘lganicha — silliq shimmer.
+class _BannerImageShimmer extends StatelessWidget {
+  const _BannerImageShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return AppImageShimmer(
+      borderRadius: AppRadius.radius2xl,
+      baseColor: context.appColors.onSecondaryContainer,
+      highlightColor: Color.lerp(context.appColors.onSecondaryContainer, context.appColors.onContainer, 0.42) ?? context.appColors.onSecondaryContainer,
     );
   }
 }
@@ -187,61 +201,63 @@ class _BannerCard extends StatelessWidget {
 
     final imageUrl = banner.imageUrl.trim();
 
-    return Bounce(
-      tilt: false,
-      onTap: () => onTap?.call(banner),
-      child: Padding(
-        padding: AppPadding.paddingHorizontalMd,
-        child: ClipRRect(
-          borderRadius: AppRadius.radius2xl,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              SizedBox.expand(
-                child: imageUrl.isEmpty
-                    ? DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: context.appColors.onContainer,
-                          border: Border.all(color: context.appColors.stroke),
-                        ),
-                      )
-                    : _BannerCardMedia(key: ValueKey(banner.id), imageUrl: imageUrl),
-              ),
-              // Padding(
-              //   padding: const EdgeInsets.all(16),
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     mainAxisAlignment: MainAxisAlignment.end,
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: [
-              //       Skeletonizer(
-              //         enabled: isLoading,
-              //         child: Text(
-              //           banner.title,
-              //           maxLines: 1,
-              //           overflow: TextOverflow.ellipsis,
-              //           style: context.textTheme.bodyLargeBold.copyWith(
-              //             color: AppColors.white,
-              //           ),
-              //         ),
-              //       ),
-              //       const SizedBox(height: 4),
-              //       Skeletonizer(
-              //         enabled: isLoading,
-              //         child: Text(
-              //           banner.subtitle,
-              //           maxLines: 2,
-              //           overflow: TextOverflow.ellipsis,
-              //           style: context.textTheme.bodySmallRegular.copyWith(
-              //             color: AppColors.white.withValues(alpha: 0.9),
-              //             height: 1.25,
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-            ],
+    return AppLiquidStretch(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => onTap?.call(banner),
+        child: Padding(
+          padding: AppPadding.paddingHorizontalMd,
+          child: ClipRRect(
+            borderRadius: AppRadius.radius2xl,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                SizedBox.expand(
+                  child: imageUrl.isEmpty
+                      ? DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: context.appColors.onContainer,
+                            border: Border.all(color: context.appColors.stroke),
+                          ),
+                        )
+                      : _BannerCardMedia(key: ValueKey(banner.id), imageUrl: imageUrl),
+                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(16),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     mainAxisAlignment: MainAxisAlignment.end,
+                //     mainAxisSize: MainAxisSize.min,
+                //     children: [
+                //       Skeletonizer(
+                //         enabled: isLoading,
+                //         child: Text(
+                //           banner.title,
+                //           maxLines: 1,
+                //           overflow: TextOverflow.ellipsis,
+                //           style: context.textTheme.bodyLargeBold.copyWith(
+                //             color: AppColors.white,
+                //           ),
+                //         ),
+                //       ),
+                //       const SizedBox(height: 4),
+                //       Skeletonizer(
+                //         enabled: isLoading,
+                //         child: Text(
+                //           banner.subtitle,
+                //           maxLines: 2,
+                //           overflow: TextOverflow.ellipsis,
+                //           style: context.textTheme.bodySmallRegular.copyWith(
+                //             color: AppColors.white.withValues(alpha: 0.9),
+                //             height: 1.25,
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),

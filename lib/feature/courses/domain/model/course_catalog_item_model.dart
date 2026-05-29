@@ -8,7 +8,7 @@ class CourseCatalogItemModel extends Equatable {
     required this.imageUrl,
     required this.rating,
     required this.reviewsCount,
-    required this.durationHours,
+    required this.durationSeconds,
     this.tagLabel,
   });
 
@@ -18,18 +18,9 @@ class CourseCatalogItemModel extends Equatable {
   final String imageUrl;
   final double rating;
   final int reviewsCount;
-  final int durationHours;
+  final int durationSeconds;
   final String? tagLabel;
 
   @override
-  List<Object?> get props => [
-    id,
-    title,
-    mentorName,
-    imageUrl,
-    rating,
-    reviewsCount,
-    durationHours,
-    tagLabel,
-  ];
+  List<Object?> get props => [id, title, mentorName, imageUrl, rating, reviewsCount, durationSeconds, tagLabel];
 }

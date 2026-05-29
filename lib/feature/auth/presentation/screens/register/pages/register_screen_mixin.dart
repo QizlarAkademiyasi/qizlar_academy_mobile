@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
+import 'package:qizlar_academy_mobile/core/analytics/meta_analytics_service.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
@@ -45,6 +48,11 @@ mixin RegisterScreenMixin<T extends StatefulWidget> on State<T> {
 
       if (!mounted) return;
       getIt<AuthSessionCubit>().markProfileRegistrationComplete();
+      unawaited(
+        getIt<MetaAnalyticsService>().logCompletedRegistration(
+          method: 'phone_otp',
+        ),
+      );
       if (!mounted) return;
       context.go(Routes.main);
     } on DioException catch (error, stackTrace) {

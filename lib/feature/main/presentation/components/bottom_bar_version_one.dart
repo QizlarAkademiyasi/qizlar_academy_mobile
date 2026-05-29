@@ -5,6 +5,7 @@ import 'dart:math' as math;
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
+import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_profile_tab_icon.dart';
@@ -69,8 +70,7 @@ class LiquidGlassBottomBar extends StatefulWidget {
 class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
   @override
   Widget build(BuildContext context) {
-    final brightness = MediaQuery.platformBrightnessOf(context);
-    final isDark = brightness == Brightness.dark;
+    final isDark = context.isDarkTheme;
     final appColors = context.appColors;
 
     final glassSettings =
@@ -396,8 +396,7 @@ class _TabIndicatorState extends State<_TabIndicator> with SingleTickerProviderS
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    final brightness = MediaQuery.platformBrightnessOf(context);
-    final isDark = brightness == Brightness.dark;
+    final isDark = context.isDarkTheme;
     final indicatorColor = widget.indicatorColor ?? appColors.bottomBarIndicator;
     final targetAlignment = _computeXAlignmentForTab(widget.tabIndex);
 
@@ -450,7 +449,7 @@ class _TabIndicatorState extends State<_TabIndicator> with SingleTickerProviderS
                         fake: false,
                         settings: LiquidGlassSettings(
                           visibility: thickness,
-                          glassColor: isDark ? Color.fromARGB(70, 54, 61, 77) : Color.fromARGB(166, 213, 213, 213),
+                          glassColor: isDark ? AppColors.darkBottomBarIndicatorGlass : AppColors.lightBottomBarIndicatorGlass,
                           saturation: 1.05,
                           refractiveIndex: 1.1,
                           thickness: 10,

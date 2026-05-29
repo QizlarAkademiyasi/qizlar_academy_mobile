@@ -89,6 +89,7 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> onEditInformationBackTap(BuildContext context) async {
+    if (!context.mounted) return;
     Gaimon.light();
     final bloc = context.read<EditInformationBloc>();
     final state = bloc.state;
@@ -257,7 +258,7 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
           child: Padding(
             padding: AppPadding.paddingMd,
             child: Padding(
-              padding: EdgeInsets.only(bottom: bottomInset - 12),
+              padding: EdgeInsets.only(bottom: bottomInset > 12 ? bottomInset - 12 : 0),
               child: PrimaryButton.elevated(label: l10n.profileInformationSave, isLoading: state.isSaving, onPressed: canSave ? () => onEditInformationSaveTap(context) : null),
             ),
           ),

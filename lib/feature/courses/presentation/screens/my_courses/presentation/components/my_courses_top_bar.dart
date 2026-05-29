@@ -13,7 +13,7 @@ class MyCoursesTopBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 6, 8, 12),
       child: Row(
         children: [
-          AppBackButton(onTap: onBackTap),
+          AppBackButton.ghost(onTap: onBackTap),
           Text(
             title,
             textAlign: TextAlign.center,

@@ -16,6 +16,7 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_lesson_video_player.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_launch_context.dart';
+import 'package:qizlar_academy_mobile/core/analytics/meta_analytics_service.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/data/personal_info_gate_checker.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/presentation/screens/personal_info_gate_sheet.dart';
 
@@ -232,6 +233,13 @@ mixin CourseLessonPlayerScreenMixin<T extends StatefulWidget> on State<T> {
     try {
       await getIt<CoursesRepository>().completeLesson(lessonId: lesson.id);
       if (!mounted) return;
+      unawaited(
+        getIt<MetaAnalyticsService>().logLessonCompleted(
+          courseId: args.course.id,
+          lessonId: lesson.id,
+          completionSource: 'manual',
+        ),
+      );
       // Darhol test qatorini ochish: API hydrate kechiksa ham `CourseQuizTile` `isCompleted` ni ko‘radi.
       final current = _hydratedLessons[lesson.id] ?? lesson;
       setState(() => _hydratedLessons[lesson.id] = current.copyWith(isCompleted: true));
@@ -249,6 +257,8 @@ mixin CourseLessonPlayerScreenMixin<T extends StatefulWidget> on State<T> {
     final lesson = selectedLesson;
     if (lesson == null || lesson.isCompleted) return;
     if (_isCompleting) return;
+    // Video tugashi orqali yakun: manual complete ichida event ketadi.
+    // Playback finish source kerak bo‘lsa, eventni shu yerda alohida yuboring.
     await completeSelectedLesson();
     if (mounted) await _showPendingPersonalInfoStep();
   }

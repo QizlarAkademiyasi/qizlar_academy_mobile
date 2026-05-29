@@ -11,6 +11,9 @@ class L10n {
   static List<Locale> get supportedLocales =>
       List<Locale>.from(AppLocalizations.supportedLocales);
 
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      AppLocalizations.localizationsDelegates;
+
   /// [AppOptions] / [SettingsDataSource] uchun standart locale kodlari.
   static const Locale uz = Locale('uz', 'UZ');
   static const Locale ru = Locale('ru', 'RU');

@@ -15,13 +15,17 @@ class ProfileMenuTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Bounce(
-          tilt: false,
-          // borderRadius: AppRadius.radiusLg,
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            child: InkWell(
+        AppLiquidStretch(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onTap == null
+                ? null
+                : () {
+                    Gaimon.light();
+                    onTap?.call();
+                  },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               child: Row(
                 children: [
                   Container(

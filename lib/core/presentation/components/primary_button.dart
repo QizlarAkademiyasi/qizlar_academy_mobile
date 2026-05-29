@@ -2,6 +2,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_radius.dart';
 import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_liquid_stretch.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_tablet_max_width.dart';
 
 enum _PrimaryButtonType { elevated, text, outlined }
@@ -104,9 +105,9 @@ class PrimaryButton extends StatelessWidget {
   }
 
   Widget _wrap(Widget child) {
-    final bounced = Bounce(child: child);
-    if (!applyTabletMaxWidth) return bounced;
-    return AppTabletMaxWidth(child: bounced);
+    final stretched = AppLiquidStretch(child: child);
+    if (!applyTabletMaxWidth) return stretched;
+    return AppTabletMaxWidth(child: stretched);
   }
 
   @override

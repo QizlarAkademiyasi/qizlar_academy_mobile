@@ -1,5 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/enum/education_type.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/education_type.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_language_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_menu_item_model.dart';
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SplashScreen: [SplashBottomPartners] + SizedBox(32) in Flutter -->
+    <dimen name="splash_partners_bottom_inset">32dp</dimen>
+    <!-- Markaz: 717×165; balandlik = kenglik × 165/717 (fill emas, center — ezilish yo‘q) -->
+    <dimen name="splash_logo_width">230dp</dimen>
+    <dimen name="splash_logo_height">52.93dp</dimen>
+    <!-- splash_partners_row.png 1041×112 — nisbat: balandlik = kenglik × 112/1041 -->
+    <dimen name="splash_partners_row_width">340dp</dimen>
+    <dimen name="splash_partners_row_height">36.57dp</dimen>
+</resources>

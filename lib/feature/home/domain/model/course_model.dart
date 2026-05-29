@@ -6,7 +6,7 @@ class CourseModel extends Equatable {
     required this.title,
     required this.author,
     required this.imageUrl,
-    required this.durationHours,
+    required this.durationSeconds,
     required this.studentCount,
   });
 
@@ -14,16 +14,9 @@ class CourseModel extends Equatable {
   final String title;
   final String author;
   final String imageUrl;
-  final int durationHours;
+  final int durationSeconds;
   final int studentCount;
 
   @override
-  List<Object?> get props => [
-    id,
-    title,
-    author,
-    imageUrl,
-    durationHours,
-    studentCount,
-  ];
+  List<Object?> get props => [id, title, author, imageUrl, durationSeconds, studentCount];
 }

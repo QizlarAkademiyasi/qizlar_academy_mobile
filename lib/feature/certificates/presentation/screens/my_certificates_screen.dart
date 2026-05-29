@@ -53,31 +53,66 @@ class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertifi
                       final loadingEmpty = (state.status == MyCertificatesStatus.loading || state.status == MyCertificatesStatus.initial) && state.items.isEmpty;
 
                       if (state.status == MyCertificatesStatus.failure && state.items.isEmpty) {
-                        return TgsFailureContent(message: context.l10n.certificatesLoadError, onRetry: () => context.read<MyCertificatesBloc>().add(const MyCertificatesRetryRequested()));
-                      }
-
-                      if (loadingEmpty) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (state.status == MyCertificatesStatus.success && state.items.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
-                            child: TgsEmptyContent(message: context.l10n.certificatesEmptyTitle, subtitle: context.l10n.certificatesEmptySubtitle),
+                        return RefreshIndicator(
+                          onRefresh: () => onMyCertificatesPullToRefresh(context),
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
+                            children: [
+                              TgsFailureContent(message: context.l10n.certificatesLoadError, onRetry: () => context.read<MyCertificatesBloc>().add(const MyCertificatesRetryRequested())),
+                            ],
                           ),
                         );
                       }
 
-                      return AppStaggeredScrollLimiter(
-                        child: ListView.separated(
-                          padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: state.items.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 14),
-                          itemBuilder: (context, index) {
-                            return AppStaggeredListItem(position: index, child: buildCertificateCard(context, state.items[index], index));
-                          },
+                      if (loadingEmpty) {
+                        return RefreshIndicator(
+                          onRefresh: () => onMyCertificatesPullToRefresh(context),
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
+                            children: const [
+                              SizedBox(height: 180),
+                              Center(child: CircularProgressIndicator()),
+                            ],
+                          ),
+                        );
+                      }
+
+                      if (state.status == MyCertificatesStatus.success && state.items.isEmpty) {
+                        return RefreshIndicator(
+                          onRefresh: () => onMyCertificatesPullToRefresh(context),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                                      child: TgsEmptyContent(message: context.l10n.certificatesEmptyTitle, subtitle: context.l10n.certificatesEmptySubtitle),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
+
+                      return RefreshIndicator(
+                        onRefresh: () => onMyCertificatesPullToRefresh(context),
+                        child: AppStaggeredScrollLimiter(
+                          child: ListView.separated(
+                            padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
+                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            itemCount: state.items.length,
+                            separatorBuilder: (_, _) => const SizedBox(height: 14),
+                            itemBuilder: (context, index) {
+                              return AppStaggeredListItem(position: index, child: buildCertificateCard(context, state.items[index], index));
+                            },
+                          ),
                         ),
                       );
                     },
@@ -87,7 +122,22 @@ class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertifi
             ),
             Align(
               alignment: Alignment.bottomCenter,
-              child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover) : UiKitAssets.images.bottomNavLight.image(fit: BoxFit.cover),
+              child: Container(
+                height: 120,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground),
+                      (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.6),
+                      (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.0),
+                    ],
+                    stops: [0, 0.5, 1],
+                  ),
+                ),
+              ),
             ),
           ],
         ),

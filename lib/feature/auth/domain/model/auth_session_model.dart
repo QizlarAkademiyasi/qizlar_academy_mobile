@@ -1,12 +1,7 @@
-import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/user_type.dart';
 
 class AuthSessionModel {
-  const AuthSessionModel({
-    required this.userType,
-    this.accessToken,
-    this.refreshToken,
-    this.tokenType = 'Bearer',
-  });
+  const AuthSessionModel({required this.userType, this.accessToken, this.refreshToken, this.tokenType = 'Bearer'});
 
   final UserType userType;
   final String? accessToken;

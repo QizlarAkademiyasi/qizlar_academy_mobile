@@ -1,5 +1,4 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/format/course_duration_format.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/data/datasource/my_courses_datasource.dart';
@@ -37,7 +36,7 @@ class MyCoursesApiDatasource implements MyCoursesDatasource {
       bannerImageUrl: Apis.resolveUrl(banner),
       teacherFullname: (m['teacherFullname'] ?? '').toString(),
       enrollmentCount: _parseInt(m['enrollmentCount']),
-      totalDurationHours: CourseDurationFormat.displayHoursFromApiMinutes(_parseInt(m['totalDuration'])),
+      totalDurationSeconds: _parseInt(m['totalDuration']),
       avgRating: _parseDouble(m['avgRating']),
       totalRatings: _parseInt(m['totalRatings']),
     );

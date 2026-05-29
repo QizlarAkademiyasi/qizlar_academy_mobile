@@ -17,7 +17,7 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_launch_context.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_submit_review/course_submit_review_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/bloc/course_details_bloc.dart';
-import 'package:qizlar_academy_mobile/config/enum/courses_tab.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/courses_tab.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/helpers/course_certificate_after_quiz_helper.dart';
 
 /// Kurs detallari ekrani uchun mixin: tab holati, Bloc listener, retry, va kontentni mixin orqali qaytarish.

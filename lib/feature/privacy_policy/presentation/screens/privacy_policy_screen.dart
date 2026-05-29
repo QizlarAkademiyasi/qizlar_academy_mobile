@@ -23,9 +23,9 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> with PrivacyP
         backgroundColor: context.theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: context.appColors.background,
-          leading: AppBackButton(onTap: () => onPrivacyPolicyBackTap(context)),
+          leading: AppBackButton.ghost(onTap: () => onPrivacyPolicyBackTap(context)),
           title: Text(context.l10n.profileMenuPrivacy, style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
-          centerTitle: true,
+          centerTitle: false,
         ),
         body: SafeArea(
           bottom: false,
@@ -64,8 +64,7 @@ class _PrivacyPolicyScrollBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
       child: PrivacyPolicyMarkdownView(markdown: markdown),
     );
   }

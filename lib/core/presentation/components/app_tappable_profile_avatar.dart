@@ -4,6 +4,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_radius.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_cached_network_image.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_image_shimmer.dart';
 
 /// Profil rasmini ko‘rsatadi; bosilganda [photo_viewer] orqali to‘liq ekran.
 /// [Hero] ikkala uchida ham [ClipRRect] — yopish / zoom qaytarishda dumaloq radius saqlanadi.
@@ -51,15 +52,17 @@ class AppTappableProfileAvatar extends StatelessWidget {
         fit: imageFit,
         width: width,
         height: height,
-        placeholder: (ctx, _) => ColoredBox(
-          color: context.appColors.stroke,
-          child: Center(
-            child: SizedBox(
-              width: (width ?? size) * 0.35,
-              height: (height ?? size) * 0.35,
-              child: CircularProgressIndicator(strokeWidth: 2, color: context.appColors.primary),
-            ),
-          ),
+        placeholder: (ctx, _) => AppImageShimmer(
+          width: width ?? size,
+          height: height ?? size,
+          shape: BoxShape.circle,
+          baseColor: context.appColors.stroke,
+          highlightColor: Color.lerp(
+                context.appColors.stroke,
+                context.appColors.onContainer,
+                0.45,
+              ) ??
+              context.appColors.stroke,
         ),
         errorWidget: (ctx, _, err) => ColoredBox(
           color: context.appColors.stroke,

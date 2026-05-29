@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 
 /// Plus Jakarta Sans — `qizlar_academy_kit` `pubspec` orqali bundle qilingan;
 /// tarmoq / gstatic talab qilinmaydi (Crashlytics: "Failed to load font" oldini).
@@ -84,7 +85,15 @@ class AppTextTheme {
   });
 
   static AppTextTheme of(BuildContext context) {
-    return _AppThemeInheritedWidget.of(context).textTheme;
+    final inherited = context.dependOnInheritedWidgetOfExactType<_AppThemeInheritedWidget>();
+    if (inherited != null) {
+      return inherited.textTheme;
+    }
+    AppLogger.w(
+      'AppTextTheme.of: _AppThemeInheritedWidget topilmadi — Plus Jakarta fallback ishlatiladi. '
+      'Bu odatda noto‘g‘ri BuildContext (masalan, overlay) bilan ishlashdan beriladi.',
+    );
+    return AppTextTheme.plusJakartaTheme();
   }
 
   factory AppTextTheme.plusJakartaTheme() {
@@ -143,12 +152,6 @@ class _AppThemeInheritedWidget extends InheritedWidget {
   const _AppThemeInheritedWidget({required this.textTheme, required super.child});
 
   final AppTextTheme textTheme;
-
-  static _AppThemeInheritedWidget of(BuildContext context) {
-    final _AppThemeInheritedWidget? result = context.dependOnInheritedWidgetOfExactType<_AppThemeInheritedWidget>();
-    assert(result != null, 'No ChessThemeWidget found in context');
-    return result!;
-  }
 
   @override
   bool updateShouldNotify(_AppThemeInheritedWidget old) {

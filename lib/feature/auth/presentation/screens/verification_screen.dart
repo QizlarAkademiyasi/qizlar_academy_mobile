@@ -66,79 +66,94 @@ class _VerificationScreenState extends State<VerificationScreen>
       },
       child: Scaffold(
         backgroundColor: context.appColors.background,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-            child: AutofillGroup(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildBackButton(context),
-                  const SizedBox(height: 24),
-                  Text(
-                    context.l10n.verificationTitle,
-                    style: context.textTheme.heading3.copyWith(color: textColor),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    context.l10n.verificationCodeSentTo(
-                      formatPhoneForUi(widget.args.phone),
-                    ),
-                    style: context.textTheme.bodyXLargeRegular.copyWith(
-                      color: secondary,
-                      height: 1.35,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Pinput(
-                    controller: _pinController,
-                    length: 6,
-                    autofocus: true,
-                    enabled: !isVerifying,
-                    keyboardType: TextInputType.number,
-                    smsRetriever: _smsRetriever,
-                    onChanged: onOtpPinEdited,
-                    onCompleted: _onCodeCompleted,
-                    forceErrorState: otpPinError,
-                    showErrorWhenFocused: true,
-                    defaultPinTheme: _pinTheme(context),
-                    focusedPinTheme: _pinTheme(
-                      context,
-                      borderColor: context.appColors.primary,
-                    ),
-                    submittedPinTheme: _pinTheme(context),
-                    errorPinTheme: _pinTheme(
-                      context,
-                      borderColor: context.appColors.error,
-                      textColor: context.appColors.error,
-                    ),
-                  ),
-                  const Spacer(),
-              Center(
-                child: canResendCode
-                    ? PrimaryButton.text(
-                        label: isResending
-                            ? context.l10n.resending
-                            : context.l10n.resendCode,
-                        onPressed: isResending ? null : _onResendTap,
-                        textStyle: context.textTheme.bodyLargeSemibold.copyWith(
-                          color: context.appColors.text,
-                        ),
-                      )
-                    : Text(
-                        context.l10n.resendCodeCountdown(
-                          formatResendCountdown(),
-                        ),
-                        style: context.textTheme.bodyLargeRegular.copyWith(
-                          color: textColor,
-                        ),
-                        textAlign: TextAlign.center,
+        body: Stack(
+          children: [
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                child: AutofillGroup(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildBackButton(context),
+                      const SizedBox(height: 24),
+                      Text(
+                        context.l10n.verificationTitle,
+                        style: context.textTheme.heading3.copyWith(color: textColor),
                       ),
-              ),
-                ],
+                      const SizedBox(height: 10),
+                      Text(
+                        context.l10n.verificationCodeSentTo(
+                          formatPhoneForUi(widget.args.phone),
+                        ),
+                        style: context.textTheme.bodyXLargeRegular.copyWith(
+                          color: secondary,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Pinput(
+                        controller: _pinController,
+                        length: 6,
+                        autofocus: true,
+                        enabled: !isVerifying,
+                        keyboardType: TextInputType.number,
+                        smsRetriever: _smsRetriever,
+                        onChanged: onOtpPinEdited,
+                        onCompleted: _onCodeCompleted,
+                        forceErrorState: otpPinError,
+                        showErrorWhenFocused: true,
+                        defaultPinTheme: _pinTheme(context),
+                        focusedPinTheme: _pinTheme(
+                          context,
+                          borderColor: context.appColors.primary,
+                        ),
+                        submittedPinTheme: _pinTheme(context),
+                        errorPinTheme: _pinTheme(
+                          context,
+                          borderColor: context.appColors.error,
+                          textColor: context.appColors.error,
+                        ),
+                      ),
+                      const Spacer(),
+                      Center(
+                        child: canResendCode
+                            ? PrimaryButton.text(
+                                label: isResending
+                                    ? context.l10n.resending
+                                    : context.l10n.resendCode,
+                                onPressed: isResending ? null : _onResendTap,
+                                textStyle: context.textTheme.bodyLargeSemibold.copyWith(
+                                  color: context.appColors.text,
+                                ),
+                              )
+                            : Text(
+                                context.l10n.resendCodeCountdown(
+                                  formatResendCountdown(),
+                                ),
+                                style: context.textTheme.bodyLargeRegular.copyWith(
+                                  color: textColor,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
+            if (isVerifying)
+              Positioned.fill(
+                child: ColoredBox(
+                  color: Colors.black.withValues(alpha: 0.22),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: context.appColors.primary,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

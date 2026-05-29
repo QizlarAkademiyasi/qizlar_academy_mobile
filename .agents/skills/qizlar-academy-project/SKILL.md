@@ -49,4 +49,10 @@ This skill provides architectural guidelines and rules for the `qizlar_academy_m
 ## 8. Logging
 - **All app logs** must go through `lib/config/logs/app_logger.dart` via `AppLogger`. Never instantiate `Logger` directly in features, screens, or blocs.
 
+## 9. Store release version (`pubspec.yaml` + iOS)
+- `pubspec.yaml` uses **`version: x.y.z+build`** (`x.y.z` = user-visible / marketing, `+build` = build number for Play / App Store).
+- **Rutin store build:** faqat **build raqamini** oshiring (`+` dan keyingi butun son). **Marketing** (`x.y.z`) ni foydalanuvchi/PM yangi “versiya” (masalan, 1.7.2 → 1.7.3) so‘ramaguncha o‘zgartirmang.
+- **iOS muvofiqlik:** `ios/Runner.xcodeproj/project.pbxproj` ichida Runner target: `MARKETING_VERSION` = `x.y.z`, `CURRENT_PROJECT_VERSION` = `build` (pubspec dagi `+` bilan bir xil).
+- **Keyingi reja (baseline):** keyingi store yuklovdan keyin odatda **1.7.3+46** dan keyingi build — avvalgidan faqat `+1` (marketing o‘zgarishsiz, agar alohida talab bo‘lmasa).
+
 *Always apply these rules when generating or refactoring code in this project.*

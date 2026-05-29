@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
+import 'package:qizlar_academy_mobile/core/analytics/meta_analytics_service.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/course_details_review_merge.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_module_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/lesson_quiz_question_model.dart';
@@ -7,7 +10,6 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/model/course_review_model.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/domain/repository/courses_repository.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
-
 part 'course_details_event.dart';
 part 'course_details_state.dart';
 
@@ -31,16 +33,14 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
     try {
       final course = await _repository.fetchCourseDetails(courseId: event.courseId);
       emit(state.copyWith(status: CoursesStatus.success, course: course, isEnrolling: false));
+      unawaited(getIt<MetaAnalyticsService>().logViewContent(contentId: course.id, contentType: 'course', extraParameters: <String, dynamic>{'fb_content_name': course.title}));
     } catch (e, st) {
       AppLogger.e('CourseDetailsBloc: load course failed', error: e, stackTrace: st);
       emit(state.copyWith(status: CoursesStatus.failure, clearMessage: true, isEnrolling: false));
     }
   }
 
-  Future<void> _onCourseDetailsBackgroundRefreshRequested(
-    CoursesCourseDetailsBackgroundRefreshRequested event,
-    Emitter<CourseDetailsState> emit,
-  ) async {
+  Future<void> _onCourseDetailsBackgroundRefreshRequested(CoursesCourseDetailsBackgroundRefreshRequested event, Emitter<CourseDetailsState> emit) async {
     if (state.course?.id != event.courseId) return;
     try {
       final course = await _repository.fetchCourseDetails(courseId: event.courseId);
@@ -106,6 +106,7 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
           openLessonPlayerLessonId: event.lessonIdAfterSuccess,
         ),
       );
+      unawaited(getIt<MetaAnalyticsService>().logEnrolledCourse(courseId: course.id, courseTitle: course.title, source: 'course_details'));
     } catch (e, st) {
       AppLogger.e('CourseDetailsBloc: enroll failed', error: e, stackTrace: st);
       emit(state.copyWith(isEnrolling: false, clearOpenLessonPlayerPending: true, enrollError: 'Kursga yozilishda xatolik. Iltimos, qayta urinib ko‘ring.'));
@@ -133,9 +134,7 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
     // 2. Submit javobida isFail: false bo'lsa keyingi darsning qulfi ochiladi (server refreshdan oldin).
     final flat = withQuizUpdate.expand((m) => m.lessons).toList();
     final idx = flat.indexWhere((l) => l.id == event.lessonId);
-    final finalModules = (idx >= 0 && idx < flat.length - 1 && !event.result.isFail)
-        ? _unlockLesson(withQuizUpdate, flat[idx + 1].id)
-        : withQuizUpdate;
+    final finalModules = (idx >= 0 && idx < flat.length - 1 && !event.result.isFail) ? _unlockLesson(withQuizUpdate, flat[idx + 1].id) : withQuizUpdate;
 
     emit(state.copyWith(course: course.copyWith(modules: finalModules)));
   }
@@ -144,12 +143,7 @@ class CourseDetailsBloc extends Bloc<CourseDetailsEvent, CourseDetailsState> {
     return modules.map((module) {
       final updatedLessons = module.lessons.map((lesson) {
         if (lesson.id != lessonId) return lesson;
-        return lesson.copyWith(
-          quizPassed: !result.isFail,
-          isQuizAttempted: true,
-          quizCorrectCount: result.correctAnswerCount,
-          quizTotalCount: result.totalCount,
-        );
+        return lesson.copyWith(quizPassed: !result.isFail, isQuizAttempted: true, quizCorrectCount: result.correctAnswerCount, quizTotalCount: result.totalCount);
       }).toList();
       return module.copyWith(lessons: updatedLessons);
     }).toList();

@@ -168,6 +168,71 @@
   "profileMenuCertificates": "Sertifikatlarim",
   "profileMenuMyCourses": "Mening kurslarim",
   "profileMenuMyActivity": "Mening faolligim",
+  "dailyCoinStreakTitle": "{count} kunlik ketma-ketlik",
+  "@dailyCoinStreakTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCoinStreakSubtitle": "To‘g‘ri yo‘ldasiz",
+  "dailyCoinRewardToday": "Bugun +{coins} tanga",
+  "@dailyCoinRewardToday": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCoinClaimButton": "Olish",
+  "dailyCoinClaimedButton": "Olingan",
+  "dailyCoinLoadError": "Ma'lumotni yuklab bo‘lmadi. Qayta urinib ko‘ring.",
+  "dailyCoinClaimError": "Tanga olishda xatolik. Keyinroq urinib ko‘ring.",
+  "activityScreenTitle": "Faollik",
+  "activityTabWeekly": "Haftalik",
+  "activityTabMonthly": "Oylik",
+  "activitySectionStats": "Statistika",
+  "activityStatTotalTime": "Ilovadagi umumiy vaqtingiz",
+  "activityStatAverageTime": "O‘rtacha vaqtingiz",
+  "activityStatDailyRecord": "Kunlik rekordingiz",
+  "activityStatCoursesCompleted": "Jami tugatilgan kurslar",
+  "activityLoadError": "Faollikni yuklab bo‘lmadi. Qayta urinib ko‘ring.",
+  "activityDurationMinutes": "{minutes} daqiqa",
+  "@activityDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "activityDurationHours": "{hours} soat",
+  "@activityDurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "activityDurationHoursMinutes": "{hours} soat {minutes} daqiqa",
+  "@activityDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "activityCompletedCourses": "{count} ta",
+  "@activityCompletedCourses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "profileMenuVacancies": "Vakansiyalar",
   "vacanciesTitle": "Vakansiyalar",
   "vacancyDetailCta": "Batafsil",
@@ -358,6 +423,25 @@
       }
     }
   },
+  "courseDurationMinutes": "{minutes} daqiqa",
+  "@courseDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "courseDurationHoursMinutes": "{hours} soat {minutes} daqiqa",
+  "@courseDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "myCoursesEmptyTitle": "Hozircha kurslar yo'q",
   "myCoursesEmptySubtitle": "Kursga yoziling — u shu yerda paydo bo'ladi.",
   "myCoursesLoadError": "Kurslarni yuklab bo'lmadi. Qayta urinib ko'ring.",
@@ -521,5 +605,35 @@
   "profileInformationAddressTitle": "Manzil",
   "profileInformationRegion": "Viloyat",
   "profileInformationDistrict": "Tuman",
-  "profileInformationNeighborhood": "Mahalla"
+  "profileInformationNeighborhood": "Mahalla",
+  "storeTitle": "Market",
+  "storeProduct": "Mahsulot",
+  "storeAllCategories": "Barchasi",
+  "storeNoProducts": "Hozircha mahsulot yo'q",
+  "storeLoadError": "Mahsulotlarni yuklashda xatolik",
+  "storeLoadMoreError": "Ko'proq yuklashda xatolik",
+  "storeDetailTitle": "Mahsulot",
+  "storeAboutProduct": "Mahsulot haqida",
+  "storeInStock": "{count} ta omborda",
+  "storeSoldOut": "Tugagan",
+  "storeBuyButton": "Sotib olish",
+  "storeReturnButton": "Qaytarish",
+  "storeViewButton": "Ko'rish",
+  "storeAllTypes": "Barcha turlar",
+  "storeSize": "O'lcham",
+  "storeOrderSuccess": "Buyurtma muvaffaqiyatli berildi!",
+  "storeOrderError": "Buyurtma berishda xatolik",
+  "storePromoExpired": "Promo kod tugagan",
+  "storeInsufficientStock": "Mahsulot tugagan",
+  "storeCopied": "Nusxa olindi",
+  "storeHistoryTitle": "Buyurtmalar tarixi",
+  "storeHistoryEmpty": "Hali buyurtma yo'q",
+  "storeHistoryLoadError": "Buyurtmalarni yuklashda xatolik",
+  "storeStatusPending": "Kutilmoqda",
+  "storeStatusPaid": "To'langan",
+  "storeStatusShipped": "Yuborilgan",
+  "storeStatusDelivered": "Yetkazilgan",
+  "storeStatusCancelled": "Bekor qilingan",
+  "storeStatusRefunded": "Qaytarilgan",
+  "storeExtraMenuTitle": "Ko'proq"
 }

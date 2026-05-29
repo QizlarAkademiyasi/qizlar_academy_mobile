@@ -1,6 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_image_shimmer.dart';
 
 /// Loyiha bo‘ylab tarmoq rasmlari uchun yagona [CachedNetworkImage] o‘rami.
 /// Standart placeholder/xato holatlari [AppNetworkImageFallback] orqali beriladi;
@@ -40,8 +41,8 @@ class AppCachedNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      fadeInDuration: const Duration(milliseconds: 100),
-      fadeOutDuration: const Duration(milliseconds: 100),
+      fadeInDuration: const Duration(milliseconds: 280),
+      fadeOutDuration: const Duration(milliseconds: 200),
       imageUrl: imageUrl,
       cacheKey: cacheKey,
       httpHeaders: httpHeaders,
@@ -49,14 +50,8 @@ class AppCachedNetworkImage extends StatelessWidget {
       height: height,
       fit: fit,
       alignment: alignment,
-      placeholder:
-          placeholder ??
-          (ctx, url) =>
-              fallback.buildPlaceholder(ctx, width: width, height: height),
-      errorWidget:
-          errorWidget ??
-          (ctx, url, err) =>
-              fallback.buildError(ctx, err, width: width, height: height),
+      placeholder: placeholder ?? (ctx, url) => fallback.buildPlaceholder(ctx, width: width, height: height),
+      errorWidget: errorWidget ?? (ctx, url, err) => fallback.buildError(ctx, err, width: width, height: height),
     );
   }
 }
@@ -65,29 +60,14 @@ class AppCachedNetworkImage extends StatelessWidget {
 sealed class AppNetworkImageFallback {
   const AppNetworkImageFallback();
 
-  Widget buildPlaceholder(
-    BuildContext context, {
-    double? width,
-    double? height,
-  });
+  Widget buildPlaceholder(BuildContext context, {double? width, double? height});
 
-  Widget buildError(
-    BuildContext context,
-    Object error, {
-    double? width,
-    double? height,
-  });
+  Widget buildError(BuildContext context, Object error, {double? width, double? height});
 }
 
 /// Avatar: odatda `stroke` fon, markazda foydalanuvchi ikonkasi.
 final class AppNetworkImageFallbackAvatar extends AppNetworkImageFallback {
-  const AppNetworkImageFallbackAvatar({
-    this.iconSize = 22,
-    this.icon = LucideIcons.user,
-    this.placeholderShowsIcon = true,
-    this.errorShowsBackground = true,
-    this.iconColor,
-  });
+  const AppNetworkImageFallbackAvatar({this.iconSize = 22, this.icon = LucideIcons.user, this.placeholderShowsIcon = true, this.errorShowsBackground = true, this.iconColor});
 
   final double iconSize;
   final IconData icon;
@@ -96,30 +76,41 @@ final class AppNetworkImageFallbackAvatar extends AppNetworkImageFallback {
   final Color? iconColor;
 
   @override
-  Widget buildPlaceholder(
-    BuildContext context, {
-    double? width,
-    double? height,
-  }) {
-    final stroke = context.appColors.stroke;
-    final grey = iconColor ?? context.appColors.grey;
-    final iconWidget = Icon(icon, size: iconSize, color: grey);
-    final Widget child = placeholderShowsIcon
-        ? ColoredBox(
-            color: stroke,
-            child: Center(child: iconWidget),
-          )
-        : ColoredBox(color: stroke);
-    return _maybeConstrain(child, width, height);
+  Widget buildPlaceholder(BuildContext context, {double? width, double? height}) {
+    if (placeholderShowsIcon) {
+      return _maybeConstrain(
+        Stack(
+          fit: StackFit.expand,
+          children: [
+            AppImageShimmer(
+              width: width,
+              height: height,
+              baseColor: context.appColors.stroke,
+              highlightColor: Color.lerp(context.appColors.stroke, context.appColors.onContainer, 0.4) ?? context.appColors.stroke,
+            ),
+            Center(
+              child: Icon(icon, size: iconSize, color: iconColor ?? context.appColors.grey),
+            ),
+          ],
+        ),
+        width,
+        height,
+      );
+    }
+    return _maybeConstrain(
+      AppImageShimmer(
+        width: width,
+        height: height,
+        baseColor: context.appColors.stroke,
+        highlightColor: Color.lerp(context.appColors.stroke, context.appColors.onContainer, 0.45) ?? context.appColors.stroke,
+      ),
+      width,
+      height,
+    );
   }
 
   @override
-  Widget buildError(
-    BuildContext context,
-    Object error, {
-    double? width,
-    double? height,
-  }) {
+  Widget buildError(BuildContext context, Object error, {double? width, double? height}) {
     final grey = iconColor ?? context.appColors.grey;
     final iconWidget = Icon(icon, size: iconSize, color: grey);
     final Widget child = errorShowsBackground
@@ -134,42 +125,31 @@ final class AppNetworkImageFallbackAvatar extends AppNetworkImageFallback {
 
 /// Kurs / kontent kartochkalari: primary tint + kitob ikonkasi.
 final class AppNetworkImageFallbackCourse extends AppNetworkImageFallback {
-  const AppNetworkImageFallbackCourse({
-    this.iconSize = 32,
-    this.tintAlpha = 0.08,
-  });
+  const AppNetworkImageFallbackCourse({this.iconSize = 32, this.tintAlpha = 0.08});
 
   final double iconSize;
   final double tintAlpha;
 
   @override
-  Widget buildPlaceholder(
-    BuildContext context, {
-    double? width,
-    double? height,
-  }) {
-    return _courseBox(width, height);
+  Widget buildPlaceholder(BuildContext context, {double? width, double? height}) {
+    return _courseBox(context, width, height, isPlaceholder: true);
   }
 
   @override
-  Widget buildError(
-    BuildContext context,
-    Object error, {
-    double? width,
-    double? height,
-  }) {
-    return _courseBox(width, height);
+  Widget buildError(BuildContext context, Object error, {double? width, double? height}) {
+    return _courseBox(context, width, height, isPlaceholder: false);
   }
 
-  Widget _courseBox(double? width, double? height) {
+  Widget _courseBox(BuildContext context, double? width, double? height, {required bool isPlaceholder}) {
+    final base = AppColors.curriculumLessonLockedSurfaceLight.withValues(alpha: tintAlpha * 1.25);
+    final highlight = Color.lerp(base, context.appColors.background, 0.5) ?? base;
+    if (isPlaceholder) {
+      return _maybeConstrain(AppImageShimmer(width: width, height: height, baseColor: base, highlightColor: highlight), width, height);
+    }
     final child = ColoredBox(
       color: AppColors.primary.withValues(alpha: tintAlpha),
       child: Center(
-        child: Icon(
-          LucideIcons.bookOpen,
-          color: AppColors.primary,
-          size: iconSize,
-        ),
+        child: Icon(LucideIcons.bookOpen, color: AppColors.primary, size: iconSize),
       ),
     );
     return _maybeConstrain(child, width, height);
@@ -183,26 +163,21 @@ final class AppNetworkImageFallbackCoverTint extends AppNetworkImageFallback {
   final double tintAlpha;
 
   @override
-  Widget buildPlaceholder(
-    BuildContext context, {
-    double? width,
-    double? height,
-  }) {
-    return _box(context);
+  Widget buildPlaceholder(BuildContext context, {double? width, double? height}) {
+    return _box(context, width, height, isPlaceholder: true);
   }
 
   @override
-  Widget buildError(
-    BuildContext context,
-    Object error, {
-    double? width,
-    double? height,
-  }) {
-    return _box(context);
+  Widget buildError(BuildContext context, Object error, {double? width, double? height}) {
+    return _box(context, width, height, isPlaceholder: false);
   }
 
-  Widget _box(BuildContext context) {
-    return ColoredBox(color: AppColors.primary.withValues(alpha: tintAlpha));
+  Widget _box(BuildContext context, double? width, double? height, {required bool isPlaceholder}) {
+    if (isPlaceholder) {
+      final base = AppColors.primary.withValues(alpha: (tintAlpha * 0.9).clamp(0.0, 1.0));
+      return _maybeConstrain(AppImageShimmer(width: width, height: height, baseColor: base, highlightColor: Color.lerp(base, context.appColors.onContainer, 0.45) ?? base), width, height);
+    }
+    return _maybeConstrain(ColoredBox(color: AppColors.primary.withValues(alpha: tintAlpha)), width, height);
   }
 }
 
@@ -211,22 +186,22 @@ final class AppNetworkImageFallbackSurface extends AppNetworkImageFallback {
   const AppNetworkImageFallbackSurface();
 
   @override
-  Widget buildPlaceholder(
-    BuildContext context, {
-    double? width,
-    double? height,
-  }) {
-    return ColoredBox(color: context.appColors.onContainer);
+  Widget buildPlaceholder(BuildContext context, {double? width, double? height}) {
+    return _maybeConstrain(
+      AppImageShimmer(
+        width: width,
+        height: height,
+        baseColor: context.appColors.onContainer,
+        highlightColor: Color.lerp(context.appColors.onContainer, context.appColors.background, 0.45) ?? context.appColors.onContainer,
+      ),
+      width,
+      height,
+    );
   }
 
   @override
-  Widget buildError(
-    BuildContext context,
-    Object error, {
-    double? width,
-    double? height,
-  }) {
-    return ColoredBox(color: context.appColors.onContainer);
+  Widget buildError(BuildContext context, Object error, {double? width, double? height}) {
+    return _maybeConstrain(ColoredBox(color: context.appColors.onContainer), width, height);
   }
 }
 

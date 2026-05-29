@@ -174,7 +174,7 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
       return;
     }
     if (item.type == ProfileMenuItemType.myActivity) {
-      await showProfileTezKundaBottomSheet(context);
+      context.push(Routes.myActivity);
       return;
     }
     if (item.type == ProfileMenuItemType.profileInfo) {

@@ -4,7 +4,7 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_info_tab.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_lessons_tab.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/components/course_reviews_tab.dart';
-import 'package:qizlar_academy_mobile/config/enum/courses_tab.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/courses_tab.dart';
 
 mixin CourseDetailsContentMixin on State<CourseDetailsContent> {
   CourseDetailsModel get _course => widget.course;

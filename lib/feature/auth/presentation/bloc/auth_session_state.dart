@@ -1,5 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/user_type.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_session_model.dart';
 
 class AuthSessionState extends Equatable {

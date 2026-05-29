@@ -17,5 +17,6 @@ Loyiha qoidalari **CLAUDE.md** (loyiha ildizi) va **.cursor/skills/qizlar-academ
 - **Bloc:** part event/state; Equatable; repository constructor orqali.
 - **Router/DI:** `config/router/app_routes.dart`, `path_routes.dart`; `config/di/setup_locator.dart` (getIt).
 - **Logging:** barcha loglar `lib/config/logs/` orqali; `AppLogger` dan foydalaning (`logger` package).
+- **Store versiya:** rutin yuklovda faqat `pubspec` `+build` oshiriladi; marketing `x.y.z` o‘zgarishi alohida talab qilinadi. iOS `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION` sync. Batafsil: [CLAUDE.md](/CLAUDE.md) **§8**.
 
 To‘liq qoidalar: [CLAUDE.md](/CLAUDE.md) va [reference.md](.cursor/skills/qizlar-academy-project/reference.md).

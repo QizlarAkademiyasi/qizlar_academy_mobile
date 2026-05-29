@@ -5,7 +5,7 @@ import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_da
 import 'package:qizlar_academy_mobile/feature/profile/domain/exception/profile_registration_required_exception.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_language_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_menu_item_model.dart';
-import 'package:qizlar_academy_mobile/config/enum/education_type.dart';
+import 'package:qizlar_academy_mobile/config/constants/enum/education_type.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_user_public_model.dart';
 

@@ -507,6 +507,89 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileMenuMyActivity => 'Моя активность';
 
   @override
+  String dailyCoinStreakTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дней подряд',
+      many: '$count дней подряд',
+      few: '$count дня подряд',
+      one: '$count день подряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dailyCoinStreakSubtitle => 'Вы на верном пути';
+
+  @override
+  String dailyCoinRewardToday(int coins) {
+    return '+$coins монет сегодня';
+  }
+
+  @override
+  String get dailyCoinClaimButton => 'Получить';
+
+  @override
+  String get dailyCoinClaimedButton => 'Получено';
+
+  @override
+  String get dailyCoinLoadError =>
+      'Не удалось загрузить данные. Попробуйте ещё раз.';
+
+  @override
+  String get dailyCoinClaimError =>
+      'Не удалось получить награду. Попробуйте позже.';
+
+  @override
+  String get activityScreenTitle => 'Активность';
+
+  @override
+  String get activityTabWeekly => 'Неделя';
+
+  @override
+  String get activityTabMonthly => 'Месяц';
+
+  @override
+  String get activitySectionStats => 'Статистика';
+
+  @override
+  String get activityStatTotalTime => 'Общее время в приложении';
+
+  @override
+  String get activityStatAverageTime => 'Ваше среднее время';
+
+  @override
+  String get activityStatDailyRecord => 'Ваш дневной рекорд';
+
+  @override
+  String get activityStatCoursesCompleted => 'Всего завершено курсов';
+
+  @override
+  String get activityLoadError =>
+      'Не удалось загрузить активность. Попробуйте ещё раз.';
+
+  @override
+  String activityDurationMinutes(int minutes) {
+    return '$minutes мин';
+  }
+
+  @override
+  String activityDurationHours(int hours) {
+    return '$hours ч';
+  }
+
+  @override
+  String activityDurationHoursMinutes(int hours, int minutes) {
+    return '$hours ч $minutes мин';
+  }
+
+  @override
+  String activityCompletedCourses(int count) {
+    return '$count шт.';
+  }
+
+  @override
   String get profileMenuVacancies => 'Вакансии';
 
   @override
@@ -902,6 +985,16 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String courseDurationMinutes(int minutes) {
+    return '$minutes мин';
+  }
+
+  @override
+  String courseDurationHoursMinutes(int hours, int minutes) {
+    return '$hours ч $minutes мин';
+  }
+
+  @override
   String get myCoursesEmptyTitle => 'Пока нет курсов';
 
   @override
@@ -1186,4 +1279,96 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileInformationNeighborhood => 'Махалля';
+
+  @override
+  String get storeTitle => 'Маркет';
+
+  @override
+  String get storeProduct => 'Товар';
+
+  @override
+  String get storeAllCategories => 'Все';
+
+  @override
+  String get storeNoProducts => 'Пока нет товаров';
+
+  @override
+  String get storeLoadError => 'Ошибка загрузки товаров';
+
+  @override
+  String get storeLoadMoreError => 'Ошибка при загрузке';
+
+  @override
+  String get storeDetailTitle => 'Товар';
+
+  @override
+  String get storeAboutProduct => 'О товаре';
+
+  @override
+  String storeInStock(Object count) {
+    return '$count на складе';
+  }
+
+  @override
+  String get storeSoldOut => 'Распродано';
+
+  @override
+  String get storeBuyButton => 'Купить';
+
+  @override
+  String get storeReturnButton => 'Вернуть';
+
+  @override
+  String get storeViewButton => 'Посмотреть';
+
+  @override
+  String get storeAllTypes => 'Все типы';
+
+  @override
+  String get storeSize => 'Размер';
+
+  @override
+  String get storeOrderSuccess => 'Заказ успешно оформлен!';
+
+  @override
+  String get storeOrderError => 'Ошибка при оформлении заказа';
+
+  @override
+  String get storePromoExpired => 'Промокод недоступен';
+
+  @override
+  String get storeInsufficientStock => 'Товар распродан';
+
+  @override
+  String get storeCopied => 'Скопировано';
+
+  @override
+  String get storeHistoryTitle => 'История заказов';
+
+  @override
+  String get storeHistoryEmpty => 'Заказов пока нет';
+
+  @override
+  String get storeHistoryLoadError => 'Ошибка загрузки заказов';
+
+  @override
+  String get storeStatusPending => 'Ожидает';
+
+  @override
+  String get storeStatusPaid => 'Оплачен';
+
+  @override
+  String get storeStatusShipped => 'Отправлен';
+
+  @override
+  String get storeStatusDelivered => 'Доставлен';
+
+  @override
+  String get storeStatusCancelled => 'Отменён';
+
+  @override
+  String get storeStatusRefunded => 'Возврат';
+
+  @override
+  String get storeExtraMenuTitle => 'Ещё';
 }

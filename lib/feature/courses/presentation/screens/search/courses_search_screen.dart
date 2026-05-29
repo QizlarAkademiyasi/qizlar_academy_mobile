@@ -51,46 +51,34 @@ class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearc
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          onPressed: () => onSearchDismiss(context),
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: context.appColors.text, size: 20),
-        ),
-        title: Text(
-          context.l10n.coursesSearchScreenTitle,
-          style: context.textTheme.bodyLargeBold.copyWith(color: context.appColors.text),
-        ),
+        automaticallyImplyLeading: false,
+        titleSpacing: 16,
+        title: buildSearchHeroField(context, forAppBar: true),
+        actions: [
+          AppBackButton(onTap: () => onSearchDismiss(context), icon: Icons.close_rounded, tooltip: context.l10n.courseCompleteClose),
+          const SizedBox(width: 16),
+        ],
       ),
       body: SafeArea(
         top: false,
         child: BlocConsumer<CoursesCatalogBloc, CoursesCatalogState>(
           listener: coursesSearchBlocListener,
           builder: (context, state) {
-            final isInitialLoading =
-                (state.status == CoursesCatalogStatus.loading || state.status == CoursesCatalogStatus.initial) && !state.hasData;
+            final isInitialLoading = (state.status == CoursesCatalogStatus.loading || state.status == CoursesCatalogStatus.initial) && !state.hasData;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 12),
-                  child: buildSearchHeroField(context),
-                ),
-                Expanded(
-                  child: AppStaggeredScrollLimiter(
-                    key: ValueKey(_searchStaggerScrollKey(state)),
-                    child: RefreshIndicator(
-                      color: AppColors.primary,
-                      onRefresh: () => onSearchPullRefresh(context),
-                      child: CustomScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                        slivers: [
-                          ..._searchBodySlivers(context, state, isInitialLoading),
-                        ],
-                      ),
-                    ),
+            return AppStaggeredScrollLimiter(
+              key: ValueKey(_searchStaggerScrollKey(state)),
+              child: RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: () => onSearchPullRefresh(context),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                    slivers: [..._searchBodySlivers(context, state, isInitialLoading)],
                   ),
                 ),
-              ],
+              ),
             );
           },
         ),
@@ -159,14 +147,7 @@ class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearc
                 duration: AppStaggeredListAnimation.duration,
                 delay: AppStaggeredListAnimation.staggerDelay,
                 verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    buildSearchInProgressCard(context, lastViewed),
-                    const SizedBox(height: 16),
-                  ],
-                ),
+                child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [buildSearchInProgressCard(context, lastViewed), const SizedBox(height: 16)]),
               );
             }
             final courseIndex = hasInProgress ? index - 1 : index;
@@ -176,10 +157,7 @@ class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearc
               duration: AppStaggeredListAnimation.duration,
               delay: AppStaggeredListAnimation.staggerDelay,
               verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: buildSearchCourseCard(context, courses[courseIndex]),
-              ),
+              child: Padding(padding: const EdgeInsets.only(bottom: 16), child: buildSearchCourseCard(context, courses[courseIndex])),
             );
           }, childCount: itemCount),
         ),

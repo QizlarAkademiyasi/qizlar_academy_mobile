@@ -1,7 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
-import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_empty_content.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/domain/repository/leaderboard_repository.dart';
@@ -15,7 +14,8 @@ class LeaderboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<LeaderboardBloc>()..add(const LeaderboardStarted()), child: const _LeaderboardView());
+    // [LeaderboardBloc] [app_routes] dagi [MainScreen] ota-providers orqali beriladi.
+    return const _LeaderboardView();
   }
 }
 
@@ -182,7 +182,7 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                   // timeframe o'zgarganda bloc state yangilanadi va PageView animatsiya bilan
                   // yangi data ko'rsatadi.
                   if (isBootstrapping) {
-                    return ListView(padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset), children: const [LeaderboardTopPerformersSkeleton(), SizedBox(height: 24), LeaderboardFullListSkeleton()]);
+                    return ListView(padding: EdgeInsets.fromLTRB(20, 0, 20, 0), children: const [LeaderboardTopPerformersSkeleton(), SizedBox(height: 24), LeaderboardFullListSkeleton()]);
                   }
 
                   if (!isLoading && state.fullList.isEmpty) {
@@ -195,7 +195,7 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                   }
 
                   return ListView(
-                    padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset + 48),
                     children: [
                       buildLeaderboardTopPerformers(
                         context,

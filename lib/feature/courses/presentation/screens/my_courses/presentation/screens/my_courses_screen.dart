@@ -101,7 +101,22 @@ class _MyCoursesViewState extends State<_MyCoursesView> with MyCoursesScreenMixi
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover) : UiKitAssets.images.bottomNavLight.image(fit: BoxFit.cover),
+                  child: Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground),
+                          (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.6),
+                          (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.0),
+                        ],
+                        stops: [0, 0.5, 1],
+                      ),
+                    ),
+                  ),
                 ),
               ],
             );

@@ -39,12 +39,15 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Local folder for `flutter build ... --split-debug-info=./debug-symbols`
+/debug-symbols/
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
 
 # AI Coding Tools
-.claude
-.cursor
-.openclaw
+# .claude
+# .cursor
+# .openclaw

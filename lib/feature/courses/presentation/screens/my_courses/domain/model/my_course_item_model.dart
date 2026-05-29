@@ -8,7 +8,7 @@ class MyCourseItemModel extends Equatable {
     required this.bannerImageUrl,
     required this.teacherFullname,
     required this.enrollmentCount,
-    required this.totalDurationHours,
+    required this.totalDurationSeconds,
     required this.avgRating,
     required this.totalRatings,
   });
@@ -18,19 +18,10 @@ class MyCourseItemModel extends Equatable {
   final String bannerImageUrl;
   final String teacherFullname;
   final int enrollmentCount;
-  final int totalDurationHours;
+  final int totalDurationSeconds;
   final double avgRating;
   final int totalRatings;
 
   @override
-  List<Object?> get props => [
-    id,
-    name,
-    bannerImageUrl,
-    teacherFullname,
-    enrollmentCount,
-    totalDurationHours,
-    avgRating,
-    totalRatings,
-  ];
+  List<Object?> get props => [id, name, bannerImageUrl, teacherFullname, enrollmentCount, totalDurationSeconds, avgRating, totalRatings];
 }

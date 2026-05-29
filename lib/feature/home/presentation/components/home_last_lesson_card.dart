@@ -19,90 +19,91 @@ class HomeLastLessonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Bounce(
-      onTap: () {
-        Gaimon.light();
-        onTap?.call();
-      },
-      child: Container(
-        height: 220,
-        padding: const EdgeInsets.all(16),
-
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: AppRadius.radiusXl,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow.withValues(alpha: 0.05),
-              blurRadius: 2,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Skeletonizer(
-                          enabled: isLoading,
-                          child: Text(
-                            category,
-                            style: context.textTheme.bodyXLargeBold.copyWith(
-                              color: AppColors.white,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Skeletonizer(
-                        enabled: isLoading,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: AppColors.white.withValues(alpha: 0.4),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            LucideIcons.arrowUpRight,
-                            color: AppColors.white,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Skeletonizer(
-                    enabled: isLoading,
-                    child: Text(
-                      "Oxirgi ko’rilgan dars",
-                      style: context.textTheme.bodyXSmallRegular.copyWith(
-                        color: AppColors.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                  ),
-
-                  Spacer(),
-                  Skeletonizer(
-                    enabled: isLoading,
-                    child: Text(
-                      '${(progress * 100).round()}%',
-                      style: context.textTheme.heading4.copyWith(
-                        color: AppColors.white.withValues(alpha: 0.8),
-                      ),
-                    ),
-                  ),
-                ],
+    return AppLiquidStretch(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          Gaimon.light();
+          onTap?.call();
+        },
+        child: Container(
+          height: 220,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: AppRadius.radiusXl,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow.withValues(alpha: 0.05),
+                blurRadius: 2,
+                offset: const Offset(0, 2),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Skeletonizer(
+                            enabled: isLoading,
+                            child: Text(
+                              category,
+                              style: context.textTheme.bodyXLargeBold.copyWith(
+                                color: AppColors.white,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Skeletonizer(
+                          enabled: isLoading,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: AppColors.white.withValues(alpha: 0.4),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              LucideIcons.arrowUpRight,
+                              color: AppColors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Skeletonizer(
+                      enabled: isLoading,
+                      child: Text(
+                        "Oxirgi ko’rilgan dars",
+                        style: context.textTheme.bodyXSmallRegular.copyWith(
+                          color: AppColors.white.withValues(alpha: 0.9),
+                        ),
+                      ),
+                    ),
+                    Spacer(),
+                    Skeletonizer(
+                      enabled: isLoading,
+                      child: Text(
+                        '${(progress * 100).round()}%',
+                        style: context.textTheme.heading4.copyWith(
+                          color: AppColors.white.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

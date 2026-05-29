@@ -42,7 +42,7 @@ mixin MyCoursesScreenMixin<T extends StatefulWidget> on State<T> {
         mentorName: course.teacherFullname,
         rating: course.avgRating,
         reviewsCount: course.totalRatings,
-        durationHours: course.totalDurationHours,
+        durationSeconds: course.totalDurationSeconds,
         titleMaxLines: 3,
         coverHeroCourseId: course.id,
         onTap: () => onCourseTap(context, courseId: course.id),

@@ -143,9 +143,8 @@ mixin SignInScreenMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> _navigateAfterAuth() async {
     getIt<GuestTapGateService>().reset();
-    await getIt<AuthSessionCubit>().ensureProfileGateResolved();
     if (!mounted) return;
-    context.go(Routes.main);
+    context.go(Routes.splash);
   }
 
   Future<void> onTelegramTap({required String localPhone}) async {

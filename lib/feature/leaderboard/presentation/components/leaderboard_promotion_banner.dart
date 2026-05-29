@@ -61,21 +61,24 @@ class LeaderboardPromotionBanner extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Bounce(
-            onTap: () {
-              Gaimon.light();
-              onStartTap();
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                context.l10n.promotionStart,
-                style: context.textTheme.bodySmallSemibold.copyWith(
-                  color: AppColors.white,
+          AppLiquidStretch.compact(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                Gaimon.light();
+                onStartTap();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  context.l10n.promotionStart,
+                  style: context.textTheme.bodySmallSemibold.copyWith(
+                    color: AppColors.white,
+                  ),
                 ),
               ),
             ),

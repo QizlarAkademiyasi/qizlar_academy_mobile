@@ -51,6 +51,7 @@ export 'package:adaptive_media_picker/adaptive_media_picker.dart' hide ImageSour
 export 'package:url_launcher/url_launcher.dart';
 export 'package:share_plus/share_plus.dart';
 export 'package:appinio_social_share/appinio_social_share.dart';
+export 'package:facebook_app_events/facebook_app_events.dart';
 export 'package:package_info_plus/package_info_plus.dart';
 export 'package:pdfrx/pdfrx.dart';
 export 'package:dropdown_flutter/custom_dropdown.dart';

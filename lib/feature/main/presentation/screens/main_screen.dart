@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
@@ -8,7 +7,8 @@ import 'package:qizlar_academy_mobile/core/app_update/app_update_prompt_coordina
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_screen.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen.dart';
-import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_more_tab_page.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/liquid_bottom_nav_second.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_action_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/profile_screen.dart';
 
@@ -82,19 +82,68 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
           Positioned.fill(
             child: _MainTabPageViewWithFade(pageController: pageController, selectedIndex: selectedIndex, tabBarFadeNonce: tabBarFadeNonce, onPageChanged: onPageChanged, pages: pages),
           ),
-          if (Platform.isIOS)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
-                child: buildGlassBottomBarVersionTwo(context),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: Container(
+          //     height: MediaQuery.of(context).padding.bottom,
+          //     width: double.infinity,
+          //     decoration: BoxDecoration(
+          //       gradient: LinearGradient(
+          //         begin: Alignment.bottomCenter,
+          //         end: Alignment.topCenter,
+          //         colors: [
+          //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground),
+          //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.6),
+          //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.0),
+          //         ],
+          //         stops: [0, 0.5, 1],
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: Container(
+          //     height: 100,
+          //     width: double.infinity,
+          //     decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
+          //   ),
+          // ),
+          Positioned(bottom: 0, left: 0, right: 0, child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image() : UiKitAssets.images.bottomNavLight.image()),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                boxShadow: [BoxShadow(offset: Offset(0, 5), spreadRadius: -10, blurRadius: 30, color: AppColors.shadow.withValues(alpha: .2))],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 0),
+                child: SecondLiquidBottomNav(
+                  items: mainAppSecondLiquidBottomNavItems(context, isGuestMode: isGuestMode),
+                  currentIndex: selectedIndex,
+                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                  onChanged: onTabTap,
+                  selectedColor: context.appColors.primary,
+                  unselectedColor: context.appColors.bottomBarTabUnselected,
+                  extraActionIcon: Icons.add,
+                  onExtraActionTap: () => showAppBottomSheet<void>(context, child: const MainExtraActionSheet()),
+                  extraActionSemanticLabel: context.l10n.mainTabMore,
+                ),
               ),
             ),
+          ),
+          // if (Platform.isIOS)
+          //   Positioned(
+          //     bottom: 0,
+          //     left: 0,
+          //     right: 0,
+          //     child: Container(
+          //       decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
+          //       child: buildGlassBottomBarVersionOne(context),
+          //     ),
+          //   ),
         ],
       ),
-      bottomNavigationBar: Platform.isIOS ? null : buildNavigationBar(context),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/format/course_duration_format.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
-import 'package:qizlar_academy_mobile/config/constants/user_type.dart';
+import 'package:qizlar_academy_mobile/config/enum/user_type.dart';
 import 'package:qizlar_academy_mobile/feature/home/data/datasource/home_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
@@ -27,13 +26,7 @@ class HomeApiDatasource implements HomeDatasource {
     return rawList
         .map((item) {
           final mediaUrl = Apis.resolveUrl((item['mediaUrl'] ?? '').toString());
-          return StoryModel(
-            id: (item['id'] ?? '').toString(),
-            name: (item['title'] ?? '').toString(),
-            imageUrl: mediaUrl,
-            thumbnailUrl: mediaUrl,
-            isViewed: _parseBool(item['isViewed']),
-          );
+          return StoryModel(id: (item['id'] ?? '').toString(), name: (item['title'] ?? '').toString(), imageUrl: mediaUrl, thumbnailUrl: mediaUrl, isViewed: _parseBool(item['isViewed']));
         })
         .toList(growable: false);
   }
@@ -55,7 +48,9 @@ class HomeApiDatasource implements HomeDatasource {
 
     return HomeStatsModel(
       coins: _parseInt(progressData['coins']),
-      grade: 0,
+      // API: `last-progress` endpoint'dan "rating" ham keladi.
+      // Home'dagi "Reyting" (oldin "Baho") shu qiymat bo'ladi.
+      grade: _parseInt(progressData['rating']),
       rating: _parseInt(progressData['leaderboardRank']),
       lastLessonCategory: (progressData['lastLessonTitle'] ?? '').toString(),
       lastLessonProgress: (progressPercent / 100).clamp(0, 1),
@@ -94,6 +89,8 @@ class HomeApiDatasource implements HomeDatasource {
       title: (item['title'] ?? '').toString(),
       subtitle: (item['content'] ?? '').toString(),
       imageUrl: Apis.resolveUrl((item['photo'] ?? '').toString()),
+      targetId: (item['targetId'] ?? item['target_id'] ?? '').toString().trim(),
+      link: (item['link'] ?? item['url'] ?? '').toString().trim(),
     );
   }
 
@@ -103,7 +100,7 @@ class HomeApiDatasource implements HomeDatasource {
       title: (item['name'] ?? '').toString(),
       author: (item['teacherFullname'] ?? '').toString(),
       imageUrl: _resolveCourseImageUrl(item),
-      durationHours: CourseDurationFormat.displayHoursFromApiMinutes(_parseInt(item['totalDuration'])),
+      durationSeconds: _parseInt(item['totalDuration']),
       studentCount: _parseInt(item['enrollmentCount']),
     );
   }
