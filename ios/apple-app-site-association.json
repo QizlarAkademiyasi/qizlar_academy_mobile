@@ -1,0 +1,26 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "C8ASSFN5K9.uz.qizlar.akademiyasi",
+        "paths": [
+          "/courses/*",
+          "/courses/*/*",
+          "/vacancies",
+          "/vacancies/*",
+          "/notification",
+          "/my-courses",
+          "/my-certificates",
+          "/about-us",
+          "/privacy-policy",
+          "/sign-in",
+          "/register",
+          "/main",
+          "/main/*",
+          "/lesson-quiz/*"
+        ]
+      }
+    ]
+  }
+}

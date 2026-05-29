@@ -12,6 +12,7 @@ import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 class AppColorScheme extends ThemeExtension<AppColorScheme> {
   const AppColorScheme({
     required this.primary,
+    required this.shadow,
     required this.background,
     required this.navBar,
     required this.text,
@@ -24,6 +25,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     required this.onSecondaryContainer,
     required this.iconSecondary,
     required this.error,
+    required this.bottomBarGlass,
+    required this.bottomBarIndicator,
+    required this.bottomBarTabUnselected,
   });
 
   final Color primary;
@@ -36,6 +40,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
 
   /// Asosiy matn rangi.
   final Color text;
+
+  /// Shadow rangi.
+  final Color shadow;
 
   /// Ikkinchi darajali grey (icon, subtitle).
   final Color grey;
@@ -64,10 +71,20 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   /// Xato holati rangi.
   final Color error;
 
+  /// Bottom bar (Liquid Glass) shisha fon tinti.
+  final Color bottomBarGlass;
+
+  /// Bottom bar indikator pill (oddiy fallback).
+  final Color bottomBarIndicator;
+
+  /// Bottom bar tanlanmagan tab icon/label.
+  final Color bottomBarTabUnselected;
+
   // ─── Light ───────────────────────────────────────────────────────────────
 
   static final AppColorScheme light = AppColorScheme(
     primary: AppColors.primary,
+    shadow: AppColors.shadow,
     background: AppColors.lightBackground,
     navBar: AppColors.lightNavBar,
     text: AppColors.lightText,
@@ -80,6 +97,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     onSecondaryContainer: AppColors.lightOnSecondaryContainer,
     iconSecondary: AppColors.lightIconSecondary,
     error: AppColors.redAction,
+    bottomBarGlass: AppColors.lightBottomBarGlass,
+    bottomBarIndicator: AppColors.lightBottomBarIndicator,
+    bottomBarTabUnselected: AppColors.lightBottomBarTabUnselected,
   );
 
   // ─── Dark ────────────────────────────────────────────────────────────────
@@ -89,6 +109,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     background: AppColors.darkBackground,
     navBar: AppColors.darkNavBar,
     text: AppColors.darkText,
+    shadow: AppColors.shadow,
     grey: AppColors.grey,
     secondaryGrey: AppColors.secondaryGrey,
     action: AppColors.darkAction,
@@ -98,6 +119,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     onSecondaryContainer: AppColors.darkOnSecondaryContainer,
     iconSecondary: AppColors.darkIconSecondary,
     error: AppColors.redAction,
+    bottomBarGlass: AppColors.darkBottomBarGlass,
+    bottomBarIndicator: AppColors.darkBottomBarIndicator,
+    bottomBarTabUnselected: AppColors.darkBottomBarTabUnselected,
   );
 
   // ─── ThemeExtension impl ──────────────────────────────────────────────────
@@ -117,12 +141,16 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     Color? onSecondaryContainer,
     Color? iconSecondary,
     Color? error,
+    Color? bottomBarGlass,
+    Color? bottomBarIndicator,
+    Color? bottomBarTabUnselected,
   }) {
     return AppColorScheme(
       primary: primary ?? this.primary,
       background: background ?? this.background,
       navBar: navBar ?? this.navBar,
       text: text ?? this.text,
+      shadow: shadow ?? shadow,
       grey: grey ?? this.grey,
       secondaryGrey: secondaryGrey ?? this.secondaryGrey,
       action: action ?? this.action,
@@ -132,6 +160,10 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       onSecondaryContainer: onSecondaryContainer ?? this.onSecondaryContainer,
       iconSecondary: iconSecondary ?? this.iconSecondary,
       error: error ?? this.error,
+      bottomBarGlass: bottomBarGlass ?? this.bottomBarGlass,
+      bottomBarIndicator: bottomBarIndicator ?? this.bottomBarIndicator,
+      bottomBarTabUnselected:
+          bottomBarTabUnselected ?? this.bottomBarTabUnselected,
     );
   }
 
@@ -143,15 +175,31 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       background: Color.lerp(background, other.background, t)!,
       navBar: Color.lerp(navBar, other.navBar, t)!,
       text: Color.lerp(text, other.text, t)!,
+      shadow: Color.lerp(shadow, other.shadow, t)!,
       grey: Color.lerp(grey, other.grey, t)!,
       secondaryGrey: Color.lerp(secondaryGrey, other.secondaryGrey, t)!,
       action: Color.lerp(action, other.action, t)!,
       stroke: Color.lerp(stroke, other.stroke, t)!,
       onContainer: Color.lerp(onContainer, other.onContainer, t)!,
       bigOpacity: Color.lerp(bigOpacity, other.bigOpacity, t)!,
-      onSecondaryContainer: Color.lerp(onSecondaryContainer, other.onSecondaryContainer, t)!,
+      onSecondaryContainer: Color.lerp(
+        onSecondaryContainer,
+        other.onSecondaryContainer,
+        t,
+      )!,
       iconSecondary: Color.lerp(iconSecondary, other.iconSecondary, t)!,
       error: Color.lerp(error, other.error, t)!,
+      bottomBarGlass: Color.lerp(bottomBarGlass, other.bottomBarGlass, t)!,
+      bottomBarIndicator: Color.lerp(
+        bottomBarIndicator,
+        other.bottomBarIndicator,
+        t,
+      )!,
+      bottomBarTabUnselected: Color.lerp(
+        bottomBarTabUnselected,
+        other.bottomBarTabUnselected,
+        t,
+      )!,
     );
   }
 }

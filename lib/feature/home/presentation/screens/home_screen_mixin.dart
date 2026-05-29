@@ -1,121 +1,223 @@
+import 'dart:async' show unawaited;
+
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/components/app_components.dart';
+import 'package:qizlar_academy_mobile/config/constants/app_gap.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
+import 'package:qizlar_academy_mobile/config/constants/app_margin.dart';
+import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
+import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
+import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
-import 'package:qizlar_academy_mobile/feature/home/domain/model/teacher_model.dart';
-import 'package:qizlar_academy_mobile/feature/home/presentation/bloc/home_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_banners_carousel.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_category_item.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_course_card.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_guest_card.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_header_component.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_stats_section.dart';
-import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_teacher_card.dart';
 
 mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
-  Widget buildHeader(BuildContext context, String userName) {
-    return HomeHeaderComponent(userName: userName);
+  void _pushSignInDeferred(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+      context.push(Routes.signIn);
+    });
   }
 
-  Widget buildCategoriesRow(BuildContext context, List<CategoryModel> categories) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Kategoriyalar',
-            style: context.textTheme.heading6.copyWith(
-              color: context.colorScheme.onSurface,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 90,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(left: 12),
-            itemCount: categories.length,
-            itemBuilder: (context, index) => HomeCategoryItem(category: categories[index]),
-          ),
-        ),
-      ],
+  Widget buildHeader(BuildContext context, {String userGreetingName = ''}) {
+    final isAnonymous = getIt<AuthSessionCubit>().state.isAnonymous;
+    final l10n = context.l10n;
+    final title = isAnonymous
+        ? l10n.homeWelcomeGuestTitle
+        : _registeredHeaderTitle(context, userGreetingName);
+    final subtitle = isAnonymous
+        ? l10n.homeWelcomeGuestSubtitle
+        : l10n.homeWelcomeBack;
+
+    return HomeHeaderComponent(
+      title: title,
+      subtitle: subtitle,
+      onNotificationTap: () => onNotificationTap(context),
     );
   }
 
-  Widget buildStatsSection(BuildContext context, HomeStatsModel stats) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Statistika',
-            style: context.textTheme.heading6.copyWith(
-              color: context.colorScheme.onSurface,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        HomeStatsSection(stats: stats),
-      ],
-    );
+  String _registeredHeaderTitle(BuildContext context, String userGreetingName) {
+    final trimmed = userGreetingName.trim();
+    if (trimmed.isNotEmpty) return trimmed;
+    return context.l10n.homeRegisteredUserFallback;
   }
 
-  Widget buildTeachersRow(BuildContext context, List<TeacherModel> teachers) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            "O'qituvchilar",
-            style: context.textTheme.heading6.copyWith(
-              color: context.colorScheme.onSurface,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 190,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(left: 20),
-            itemCount: teachers.length,
-            itemBuilder: (context, index) => HomeTeacherCard(teacher: teachers[index]),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildCoursesSection(BuildContext context, List<CourseModel> courses) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+  Widget buildStoryBoard(BuildContext context, List<StoryModel> stories) {
+    return DecoratedBox(
+      decoration: BoxDecoration(color: context.appColors.background),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Mashhur kurslar',
-            style: context.textTheme.heading6.copyWith(
-              color: context.colorScheme.onSurface,
+          SizedBox(
+            height: 90,
+            width: MediaQuery.of(context).size.width,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(left: AppGap.gapSm),
+              itemCount: stories.length,
+              itemBuilder: (context, index) =>
+                  StoryBoardItem(story: stories[index]),
             ),
           ),
-          const SizedBox(height: 12),
-          ...courses.map((course) => HomeCourseCard(course: course)),
         ],
       ),
     );
   }
 
-  void homeBlocListener(BuildContext context, HomeState state) {
-    if (state.status == HomeStatus.failure) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.message ?? 'Xatolik yuz berdi'),
-          backgroundColor: AppColors.redAction,
+  Widget buildStatsSection(
+    BuildContext context,
+    HomeStatsModel stats, {
+    bool isLoading = false,
+    VoidCallback? onCoinsAndGradeTap,
+    VoidCallback? onRatingTap,
+    VoidCallback? onLastLessonTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HomeStatsSection(
+          stats: stats,
+          isLoading: isLoading,
+          onCoinsAndGradeTap: onCoinsAndGradeTap,
+          onRatingTap: onRatingTap,
+          onLastLessonTap: onLastLessonTap,
         ),
-      );
+      ],
+    );
+  }
+
+  Widget buildGuestCard(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [HomeGuestCard(onPressed: () => _pushSignInDeferred(context))],
+    );
+  }
+
+  /// Kurs kartasiga bosilganda detallar sahifasiga o‘tkazadi.
+  Future<void> openCourseDetails(BuildContext context, String courseId) async {
+    final canOpen = await getIt<GuestTapGateService>().allowAction(
+      context,
+      key: 'home_course_$courseId',
+      title: context.l10n.homeGuestCoursesGate,
+    );
+    if (!canOpen) return;
+    if (!context.mounted) return;
+    context.push(Routes.courseDetails(courseId));
+  }
+
+  /// Opens course when [BannerModel.targetId] is set, otherwise opens [BannerModel.link] in the browser.
+  void handleHomeBannerTap(BuildContext context, BannerModel banner) {
+    unawaited(_handleHomeBannerTapAsync(context, banner));
+  }
+
+  Future<void> _handleHomeBannerTapAsync(
+    BuildContext context,
+    BannerModel banner,
+  ) async {
+    final targetId = banner.targetId.trim();
+    if (targetId.isNotEmpty) {
+      await openCourseDetails(context, targetId);
+      return;
     }
+    final link = banner.link.trim();
+    if (link.isNotEmpty) {
+      await _openHomeBannerWebLink(context, link);
+    }
+  }
+
+  Future<void> _openHomeBannerWebLink(BuildContext context, String link) async {
+    var normalized = link;
+    if (!normalized.contains('://')) {
+      normalized = 'https://$normalized';
+    }
+    final uri = Uri.tryParse(normalized);
+    if (uri == null || !uri.hasScheme) {
+      if (context.mounted) {
+        AppToast.error(context, message: context.l10n.aboutUsLinkOpenError);
+      }
+      return;
+    }
+    if (!(uri.isScheme('http') || uri.isScheme('https'))) {
+      if (context.mounted) {
+        AppToast.error(context, message: context.l10n.aboutUsLinkOpenError);
+      }
+      return;
+    }
+    final canOpen = await canLaunchUrl(uri);
+    if (!canOpen) {
+      if (context.mounted) {
+        AppToast.error(context, message: context.l10n.aboutUsLinkOpenError);
+      }
+      return;
+    }
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      AppToast.error(context, message: context.l10n.aboutUsLinkOpenError);
+    }
+  }
+
+  Future<void> onNotificationTap(BuildContext context) async {
+    if (getIt<AuthSessionCubit>().state.isAnonymous) {
+      _pushSignInDeferred(context);
+      return;
+    }
+    final canOpen = await getIt<GuestTapGateService>().allowAction(
+      context,
+      key: 'home_notification_bell',
+      title: context.l10n.homeGuestNotificationsGate,
+    );
+    if (!canOpen) return;
+    if (!context.mounted) return;
+    context.push(Routes.notification);
+  }
+
+  Widget buildCoursesSection(
+    BuildContext context,
+    List<CourseModel> courses, {
+    bool isLoading = false,
+  }) {
+    return Padding(
+      padding: AppMargin.pageHorizontal,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.homePopularCourses,
+            style: context.textTheme.heading6.copyWith(
+              color: context.appColors.text,
+            ),
+          ),
+          const SizedBox(height: AppGap.gapSm),
+          ...courses.map(
+            (course) => HomeCourseCard(
+              course: course,
+              isLoading: isLoading,
+              onTap: () => openCourseDetails(context, course.id),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBannersSection(
+    BuildContext context,
+    List<BannerModel> banners, {
+    bool isLoading = false,
+  }) {
+    return HomeBannersCarousel(
+      banners: banners,
+      isLoading: isLoading,
+      onBannerTap: (banner) => handleHomeBannerTap(context, banner),
+    );
   }
 }

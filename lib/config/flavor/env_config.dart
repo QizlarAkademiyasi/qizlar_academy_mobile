@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:qizlar_academy_mobile/config/logs/app_log_config.dart';
 
 enum AppFlavors {
   dev(remoteConfigKey: 'devUrl'),
@@ -15,25 +16,19 @@ final class EnvConfig {
 
   String get remoteConfigKey => flavor.remoteConfigKey;
 
-  EnvConfig._({
-    required this.appName,
-    required this.flavor,
-  });
+  EnvConfig._({required this.appName, required this.flavor});
 
   static EnvConfig? _instance;
 
-  static void initialize({
-    required String appName,
-    required AppFlavors flavor,
-  }) {
-    _instance = EnvConfig._(
-      appName: appName,
-      flavor: flavor,
-    );
-    debugPrint(
-      '[EnvConfig] Flavor: ${_instance!.flavor.name.toUpperCase()} | '
-      'App: ${_instance!.appName}',
-    );
+  static void initialize({required String appName, required AppFlavors flavor}) {
+    _instance = EnvConfig._(appName: appName, flavor: flavor);
+    AppLogConfig.loggingEnabled = flavor == AppFlavors.dev;
+    if (AppLogConfig.loggingEnabled) {
+      debugPrint(
+        '[EnvConfig] Flavor: ${_instance!.flavor.name.toUpperCase()} | '
+        'App: ${_instance!.appName}',
+      );
+    }
   }
 
   static bool get isInitialized => _instance != null;
@@ -42,7 +37,7 @@ final class EnvConfig {
     assert(
       _instance != null,
       'EnvConfig.initialize() chaqirilmagan. '
-      'main_dev.dart yoki main_prod.dart orqali ilovani ishga tushiring.',
+      'main.dart da EnvConfig.initialize() chaqirilishini tekshiring.',
     );
     return _instance!;
   }

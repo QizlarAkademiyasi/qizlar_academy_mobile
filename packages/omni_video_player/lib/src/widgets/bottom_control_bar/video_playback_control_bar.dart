@@ -1,0 +1,142 @@
+import 'package:flutter/material.dart';
+import 'package:omni_video_player/omni_video_player.dart';
+import 'package:omni_video_player/src/widgets/bottom_control_bar/video_seek_bar.dart';
+import 'package:omni_video_player/src/widgets/bottom_control_bar/volume_slider_control.dart';
+import 'package:omni_video_player/src/widgets/controls/fullscreen_toggle_button.dart';
+import 'package:omni_video_player/src/widgets/controls/video_quality_menu_button.dart';
+import 'package:omni_video_player/src/_core/omni_video_player_fullscreen.dart';
+
+import '../controls/playback_speed_menu_button.dart';
+
+/// A widget that displays the bottom bar of video player controls.
+///
+/// [VideoPlaybackControlBar] includes mute/unmute button, seek bar,
+/// and full screen toggle button. It connects with the provided
+/// [OmniPlaybackController], [VideoPlayerConfiguration], and [VideoPlayerCallbacks]
+/// to handle user interactions and playback configuration.
+///
+/// This widget is typically used as part of a video player UI.
+class VideoPlaybackControlBar extends StatelessWidget {
+  /// Creates a control bar widget for the bottom of a video player.
+  const VideoPlaybackControlBar({
+    super.key,
+    required this.controller,
+    required this.options,
+    required this.callbacks,
+    required this.onStartInteraction,
+    required this.onEndInteraction,
+  });
+
+  /// Controls the video playback (e.g., play, pause, seek, mute).
+  final OmniPlaybackController controller;
+
+  /// Configuration options that define how the controls behave and appear.
+  final VideoPlayerConfiguration options;
+
+  /// Callbacks to handle user interactions like mute and fullscreen toggle.
+  final VideoPlayerCallbacks callbacks;
+
+  final VoidCallback onStartInteraction;
+  final VoidCallback onEndInteraction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        if (options.playerUIVisibilityOptions.showMuteUnMuteButton)
+          VolumeSliderControl(
+            controller: controller,
+            onAudioToggled: callbacks.onMuteToggled,
+            onStartInteraction: onStartInteraction,
+            onEndInteraction: onEndInteraction,
+          ),
+        ...options.customPlayerWidgets.leadingBottomButtons,
+        Expanded(
+          child: VideoSeekBar(
+            onSeekStart: (value) {
+              callbacks.onSeekStart?.call(value);
+              onStartInteraction();
+            },
+            onSeekEnd: (value) {
+              callbacks.onSeekEnd?.call(value);
+              onEndInteraction();
+            },
+            controller: controller,
+            liveLabel: options.liveLabel,
+            showCurrentTime: options.playerUIVisibilityOptions.showCurrentTime,
+            showScrubbingThumbnailPreview:
+                options.playerUIVisibilityOptions.showScrubbingThumbnailPreview,
+            showDurationTime:
+                options.playerUIVisibilityOptions.showDurationTime,
+            showRemainingTime:
+                options.playerUIVisibilityOptions.showRemainingTime,
+            customSeekBar: options.customPlayerWidgets.customSeekBar,
+            showLiveIndicator:
+                options.playerUIVisibilityOptions.showLiveIndicator,
+            showSeekBar: options.playerUIVisibilityOptions.showSeekBar,
+            customTimeDisplay:
+                options.customPlayerWidgets.customDurationDisplay,
+            allowSeeking: options.videoSourceConfiguration.allowSeeking,
+            customDurationDisplay:
+                options.customPlayerWidgets.customDurationDisplay,
+            customRemainingTimeDisplay:
+                options.customPlayerWidgets.customRemainingTimeDisplay,
+          ),
+        ),
+        if (options.playerUIVisibilityOptions.showPlaybackSpeedButton &&
+            !controller.isLive)
+          PlaybackSpeedMenuButton(
+            speedList: options.videoSourceConfiguration.availablePlaybackSpeed,
+            currentSpeed: controller.playbackSpeed,
+            onSpeedSelected: (speed) {
+              if (speed == controller.playbackSpeed) {
+                return;
+              }
+              controller.setPlaybackSpeed(speed);
+            },
+            onStartInteraction: onStartInteraction,
+            onEndInteraction: onEndInteraction,
+          ),
+        ...options.customPlayerWidgets.trailingBottomButtons,
+
+        /// Mostra il bottone per cambiare qualità video.
+        ///
+        /// - Viene mostrato solo se [showSwitchVideoQuality] è `true`.
+        /// - Se [controller.availableVideoQualities] non è vuoto, il bottone apre
+        ///   la dialog con le qualità disponibili.
+        /// - Se [controller.availableVideoQualities] è vuoto:
+        ///   - Se [showSwitchWhenOnlyAuto] è `true`, viene comunque mostrato il bottone
+        ///     che apre la dialog con la sola opzione "Auto".
+        ///   - Se [showSwitchWhenOnlyAuto] è `false`, il bottone non viene mostrato.
+        if (options.playerUIVisibilityOptions.showSwitchVideoQuality &&
+            (controller.availableVideoQualities?.isNotEmpty == true ||
+                options.playerUIVisibilityOptions.showSwitchWhenOnlyAuto))
+          VideoQualityMenuButton(
+            qualityList: controller.availableVideoQualities,
+            currentQuality: controller.currentVideoQuality,
+            onQualitySelected: (quality) {
+              if (quality == controller.currentVideoQuality) {
+                return;
+              }
+              controller.switchQuality(quality);
+            },
+            onStartInteraction: onStartInteraction,
+            onEndInteraction: onEndInteraction,
+          ),
+        if (options.playerUIVisibilityOptions.showFullScreenButton)
+          FullscreenToggleButton(
+            controller: controller,
+            fullscreenPageBuilder: (context) => OmniVideoPlayerTheme(
+              data: options.playerTheme,
+              child: OmniVideoPlayerFullscreen(
+                controller: controller,
+                configuration: options,
+                callbacks: callbacks,
+              ),
+            ),
+            onFullscreenToggled: callbacks.onFullScreenToggled,
+          ),
+      ],
+    );
+  }
+}

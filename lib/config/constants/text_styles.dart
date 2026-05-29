@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 
-/// Plus Jakarta Sans — design system typography (rasmdagi typography tizimi).
-TextStyle _plusJakarta(double fontSize, FontWeight weight) =>
-    GoogleFonts.plusJakartaSans(fontSize: fontSize, fontWeight: weight);
+/// Plus Jakarta Sans — `qizlar_academy_kit` `pubspec` orqali bundle qilingan;
+/// tarmoq / gstatic talab qilinmaydi (Crashlytics: "Failed to load font" oldini).
+TextStyle _plusJakarta(double fontSize, FontWeight weight) => TextStyle(fontFamily: 'Plus Jakarta Sans', fontSize: fontSize, fontWeight: weight);
 
 class AppTextTheme {
   // --- Heading ---
@@ -85,16 +85,24 @@ class AppTextTheme {
   });
 
   static AppTextTheme of(BuildContext context) {
-    return _AppThemeInheritedWidget.of(context).textTheme;
+    final inherited = context.dependOnInheritedWidgetOfExactType<_AppThemeInheritedWidget>();
+    if (inherited != null) {
+      return inherited.textTheme;
+    }
+    AppLogger.w(
+      'AppTextTheme.of: _AppThemeInheritedWidget topilmadi — Plus Jakarta fallback ishlatiladi. '
+      'Bu odatda noto‘g‘ri BuildContext (masalan, overlay) bilan ishlashdan beriladi.',
+    );
+    return AppTextTheme.plusJakartaTheme();
   }
 
   factory AppTextTheme.plusJakartaTheme() {
     return AppTextTheme(
       heading1: _plusJakarta(72, FontWeight.w700),
-      heading2: _plusJakarta(48, FontWeight.w600),
-      heading3: _plusJakarta(32, FontWeight.w500),
-      heading4: _plusJakarta(24, FontWeight.w400),
-      heading5: _plusJakarta(20, FontWeight.w500),
+      heading2: _plusJakarta(48, FontWeight.w700),
+      heading3: _plusJakarta(32, FontWeight.w700),
+      heading4: _plusJakarta(24, FontWeight.w700),
+      heading5: _plusJakarta(20, FontWeight.w700),
       heading6: _plusJakarta(16, FontWeight.w700),
       bodyXLargeBold: _plusJakarta(18, FontWeight.w700),
       bodyXLargeSemibold: _plusJakarta(18, FontWeight.w600),
@@ -137,31 +145,13 @@ class AppTextTheme {
     bodySmall: bodySmallRegular,
   );
 
-  Map<String, TextStyle> get htmlStyle => {
-    'h1': heading1,
-    'h2': heading2,
-    'h3': heading3,
-    'h4': heading4,
-    'h5': heading5,
-    'h6': heading6,
-    'p': bodyLargeRegular,
-  };
+  Map<String, TextStyle> get htmlStyle => {'h1': heading1, 'h2': heading2, 'h3': heading3, 'h4': heading4, 'h5': heading5, 'h6': heading6, 'p': bodyLargeRegular};
 }
 
 class _AppThemeInheritedWidget extends InheritedWidget {
-  const _AppThemeInheritedWidget({
-    required this.textTheme,
-    required super.child,
-  });
+  const _AppThemeInheritedWidget({required this.textTheme, required super.child});
 
   final AppTextTheme textTheme;
-
-  static _AppThemeInheritedWidget of(BuildContext context) {
-    final _AppThemeInheritedWidget? result = context
-        .dependOnInheritedWidgetOfExactType<_AppThemeInheritedWidget>();
-    assert(result != null, 'No ChessThemeWidget found in context');
-    return result!;
-  }
 
   @override
   bool updateShouldNotify(_AppThemeInheritedWidget old) {

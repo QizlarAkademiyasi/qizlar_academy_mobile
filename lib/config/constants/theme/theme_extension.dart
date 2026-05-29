@@ -11,7 +11,7 @@ import 'package:qizlar_academy_mobile/config/constants/theme/app_color_scheme.da
 extension ThemeExtension on BuildContext {
   AppTextTheme get textTheme => AppTextTheme.of(this);
   ThemeData get theme => Theme.of(this);
-  ColorScheme get colorScheme => theme.colorScheme;
+  // ColorScheme get colorScheme => theme.colorScheme;
   bool get isDarkTheme => theme.brightness == Brightness.dark;
   bool get isLightTheme => theme.brightness == Brightness.light;
 

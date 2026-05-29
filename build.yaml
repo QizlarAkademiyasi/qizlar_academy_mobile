@@ -1,5 +1,6 @@
-# build_runner / flutter_gen_runner pubspec.yaml va assets ni o'qiydi.
-# Asset generatsiya: dart run flutter_gen_runner
+# Ilova paketida build_runner yo'q. Assetlar FlutterGen orqali kitda generatsiya qilinadi:
+#   cd packages/qizlar_academy_kit && dart run build_runner build --delete-conflicting-outputs
+# Ilova: `lib/core/assets/assets.gen.dart` → `package:qizlar_academy_kit/gen/assets.gen.dart` re-export.
 targets:
   $default:
     sources:

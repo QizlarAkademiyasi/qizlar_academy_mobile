@@ -29,6 +29,55 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.17451483765-igr4sughli1vjv54iltokl8ke6v2guhr</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>uz.qizlar.akademiyasi.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>qizlaracademy</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>uz.qizlar.akademiyasi.facebook</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb1226563685979967</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Meta App Events (Facebook SDK).
+	     `FacebookAppID` lib/config/constants/facebook_config.dart `_fallbackAppId` bilan sinxron.
+	     `FacebookClientToken` Meta Developer Console -> Settings -> Advanced -> Client Token dan olinadi;
+	     bo‘sh bo‘lsa SDK App Events ni init qila olmaydi (analytics ishlamaydi). -->
+	<key>FacebookAppID</key>
+	<string>1226563685979967</string>
+	<key>FacebookClientToken</key>
+	<string>fcbc01e45e69affc5e766a8af604629d</string>
+	<key>FacebookDisplayName</key>
+	<string>Qizlar Akademiyasi</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<true/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>FLTEnableImpeller</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -39,9 +88,9 @@
 		<true/>
 	</dict>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>We need your permission to save images to your photo library</string>
+	<string>Qizlar Academy saves to your Photo Library only when you choose to save an image—for example, if you save a certificate image or another export to Photos from the share sheet.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need your permission to access your photo library</string>
+	<string>Qizlar Academy reads your Photo Library only when you pick a profile photo—for example, in Edit profile, when you choose Photo from gallery, we let you select one picture to upload as your avatar.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera access required</string>
 	<key>NSContactsUsageDescription</key>

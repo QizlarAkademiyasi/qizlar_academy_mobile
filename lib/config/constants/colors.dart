@@ -12,32 +12,87 @@ abstract class AppColors {
   static const Color secondaryGrey = Color(0xFF94A3B8);
   static const Color textDark = Color(0xFF0F172A);
   static const Color redAction = Color(0xFFEF4444);
-  static const Color darkBackground = Color(0xFF0B0E13);
+
+  /// Modul ro‘yxati: muvaffaqiyatli topshirilgan test (badge + check).
+  static const Color quizSuccess = Color(0xFF22C55E);
+
+  /// Kurs darslari ro‘yxati: hozirgi (tanlangan) dars qatori — dark.
+  static const Color curriculumLessonActiveRowDark = Color(0xFF2A1B24);
+
+  /// Tanlangan dars tartib badge foni — dark (to‘q pushti).
+  static const Color curriculumLessonActiveBadgeBgDark = Color(0xFF4D2038);
+
+  /// Kurs darslari ro‘yxati: tanlangan dars qatori — light.
+  static const Color curriculumLessonActiveRowLight = Color(0xFFFFF5F8);
+
+  /// Tanlangan dars tartib badge foni — light.
+  static const Color curriculumLessonActiveBadgeBgLight = Color(0xFFFFE4EE);
+
+  /// Qulflangan dars: tartib badge va qulf doira foni — light (neutral kulrang).
+  static const Color curriculumLessonLockedSurfaceLight = Color(0xFFF2F2F2);
+
+  /// Qulflangan dars: raqam / qulf ikonkasi — light (slate).
+  static const Color curriculumLessonLockedFgLight = Color(0xFF4A5568);
+
+  /// Qulflangan dars: tartib badge va qulf doira foni — dark (muted surface).
+  static const Color curriculumLessonLockedSurfaceDark = Color(0xFF2C2C2E);
+
+  /// Qulflangan dars: raqam / qulf ikonkasi — dark.
+  static const Color curriculumLessonLockedFgDark = Color(0xFF94A3B8);
+
+  static const Color darkBackground = Color(0xFF121212);
   static const Color bigOpacityDark = Color(0xFFB0B0B0);
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color lightBackground = Color(0xFFF7F7F6);
+  static const Color lightBackground = Color(0xFFF7F7F5);
+  static const Color shadow = Color(0xFF000000);
 
   // ─── Light theme ─────────────────────────────────────────────────────────
 
-  static const Color lightScaffold = white;
+  static const Color lightScaffold = lightBackground;
   static const Color lightNavBar = white;
   static const Color lightText = textDark;
-  static const Color lightAction = white;
-  static const Color lightStroke = Color(0xFFE2E8F0);
+  static const Color lightAction = Color(0xFF8FAFC0);
+  static const Color lightStroke = Color(0xFFF1F5F9);
   static const Color lightOnContainer = white;
-  static const Color lightOnSecondaryContainer = white;
+  static const Color lightOnSecondaryContainer = Color(0xFFF1F5F9);
   static const Color lightIconSecondary = Color(0xFFF8FAFC);
 
   // ─── Dark theme ──────────────────────────────────────────────────────────
 
-  static const Color darkNavBar = Color(0xFF161C26);
+  static const Color darkNavBar = Color(0xFF121212);
   static const Color darkText = white;
-  static const Color darkAction = Color(0xFF1E293B);
-  static const Color darkStroke = Color(0xFF1E293B);
-  static const Color darkOnContainer = black;
-  static const Color darkOnSecondaryContainer = black;
-  static const Color darkIconSecondary = textDark;
+  static const Color darkAction = Color(0xFF334155);
+  static const Color darkStroke = Color(0xFF252C36);
+  static const Color darkOnContainer = Color(0xFF171717);
+  static const Color darkOnSecondaryContainer = Color(0xFF171717);
+  static const Color darkIconSecondary = Color(0xFF1E1E1E);
+
+  // ─── Bottom bar (Liquid Glass) — Light / Dark ──────────────────────────────
+
+  /// Light: shisha bar fon tint (glassColor).
+  static final Color lightBottomBarGlass = lightOnContainer.withValues(alpha: 0.65);
+
+  /// Dark: shisha bar fon tint (glassColor).
+  static final Color darkBottomBarGlass = const Color.fromARGB(255, 87, 87, 87).withValues(alpha: 0.65);
+
+  /// Light: indikator pill (fallback) — neytral, shisha ustida yumshoq soyada.
+  static final Color lightBottomBarIndicator = textDark.withValues(alpha: 0.10);
+
+  /// Dark: indikator pill (fallback) — yorug‘likli “pill”, primary’siz.
+  static final Color darkBottomBarIndicator = white.withValues(alpha: 0.18);
+
+  /// Light: LiquidGlass indikator `glassColor` (sutli kulrang shisha).
+  static final Color lightBottomBarIndicatorGlass = const Color(0xFFE8EAED).withValues(alpha: 0.72);
+
+  /// Dark: LiquidGlass indikator `glassColor`.
+  static final Color darkBottomBarIndicatorGlass = const Color(0xFFD1D5DB).withValues(alpha: 0.22);
+
+  /// Light: tanlanmagan tab icon/label.
+  static const Color lightBottomBarTabUnselected = secondaryGrey;
+
+  /// Dark: tanlanmagan tab icon/label.
+  static const Color darkBottomBarTabUnselected = secondaryGrey;
 
   // ─── Splash screen (light / dark) ─────────────────────────────────────────
 
@@ -73,12 +128,12 @@ abstract class AppColors {
 
   // ─── Opacity colors ───────────────────────────────────────────────────────
 
-  static Color get whiteOpacity40 => white.withValues(alpha: 0.4);
-  static Color get whiteOpacity20 => white.withValues(alpha: 0.2);
-  static Color get whiteOpacity10 => white.withValues(alpha: 0.1);
-  static Color get blackOpacity40 => black.withValues(alpha: 0.4);
-  static Color get blackOpacity20 => black.withValues(alpha: 0.2);
-  static Color get blackOpacity10 => black.withValues(alpha: 0.1);
+  static Color get whiteOpacity40 => white.withValues(alpha: 0.04);
+  static Color get whiteOpacity20 => white.withValues(alpha: 0.02);
+  static Color get whiteOpacity10 => white.withValues(alpha: 0.01);
+  static Color get blackOpacity40 => black.withValues(alpha: 0.04);
+  static Color get blackOpacity20 => black.withValues(alpha: 0.02);
+  static Color get blackOpacity10 => black.withValues(alpha: 0.01);
 
   // ─── Flutter ColorScheme (Light) ─────────────────────────────────────────
 
