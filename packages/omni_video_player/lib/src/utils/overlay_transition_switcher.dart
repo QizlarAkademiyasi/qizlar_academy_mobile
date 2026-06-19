@@ -50,10 +50,7 @@ class OverlayTransitionSwitcher extends StatelessWidget {
       layoutBuilder: (currentChild, previousChildren) => Stack(
         alignment: Alignment.center,
         fit: fit,
-        children: <Widget>[
-          ...previousChildren,
-          if (currentChild != null) currentChild,
-        ],
+        children: <Widget>[...previousChildren, ?currentChild],
       ),
     );
   }

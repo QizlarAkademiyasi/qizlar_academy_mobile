@@ -64,15 +64,6 @@ class ReferralLeaderboardItem extends StatelessWidget {
                     color: context.appColors.text,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  'Vizajit Kursi',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.bodySmallRegular.copyWith(
-                    color: context.appColors.grey,
-                  ),
-                ),
               ],
             ),
           ),
