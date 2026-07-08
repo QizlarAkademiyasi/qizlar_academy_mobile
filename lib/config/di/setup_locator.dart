@@ -18,6 +18,14 @@ import 'package:qizlar_academy_mobile/feature/about_us/presentation/bloc/about_u
 import 'package:qizlar_academy_mobile/feature/privacy_policy/data/repository/privacy_policy_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/privacy_policy/domain/repository/privacy_policy_repository.dart';
 import 'package:qizlar_academy_mobile/feature/privacy_policy/presentation/bloc/privacy_policy_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/data/datasource/portfolio_api_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/data/datasource/portfolio_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/data/repository/portfolio_repository_impl.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/domain/repository/portfolio_repository.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/bloc/portfolio_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/comments/bloc/portfolio_comments_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/create/bloc/portfolio_create_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/detail/bloc/portfolio_detail_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_datasource.dart';
@@ -407,6 +415,31 @@ Future<void> setupLocator() async {
   );
   getIt.registerFactory<StoreOrderDetailBloc>(
     () => StoreOrderDetailBloc(getIt<StoreRepository>()),
+  );
+
+  getIt.registerLazySingleton<PortfolioApiDatasource>(
+    () => PortfolioApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<PortfolioDatasource>(
+    () => getIt<PortfolioApiDatasource>(),
+  );
+  getIt.registerLazySingleton<PortfolioRepository>(
+    () => PortfolioRepositoryImpl(
+      apiDatasource: getIt<PortfolioApiDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<PortfolioBloc>(
+    () => PortfolioBloc(getIt<PortfolioRepository>()),
+  );
+  getIt.registerFactory<PortfolioDetailBloc>(
+    () => PortfolioDetailBloc(getIt<PortfolioRepository>()),
+  );
+  getIt.registerFactory<PortfolioCreateBloc>(
+    () => PortfolioCreateBloc(getIt<PortfolioRepository>()),
+  );
+  getIt.registerFactory<PortfolioCommentsBloc>(
+    () => PortfolioCommentsBloc(getIt<PortfolioRepository>()),
   );
 
   getIt.registerLazySingleton<AboutUsRepository>(() => AboutUsRepositoryImpl());

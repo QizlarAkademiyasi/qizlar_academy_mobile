@@ -1,0 +1,281 @@
+import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/domain/model/portfolio_post_model.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/portfolio_avatar.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/portfolio_like_button.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/portfolio_media_preview.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/utils/portfolio_formatting.dart';
+
+class PortfolioPostCard extends StatelessWidget {
+  const PortfolioPostCard({
+    super.key,
+    required this.post,
+    required this.onTap,
+    required this.onLikeTap,
+    required this.onCommentTap,
+    required this.onShareTap,
+    this.onDeleteTap,
+    this.isDetail = false,
+  });
+
+  final PortfolioPostModel post;
+  final VoidCallback onTap;
+  final VoidCallback onLikeTap;
+  final VoidCallback onCommentTap;
+  final VoidCallback onShareTap;
+  final VoidCallback? onDeleteTap;
+  final bool isDetail;
+
+  @override
+  Widget build(BuildContext context) {
+    final name = post.author.fullName.isEmpty
+        ? 'Qizlar Akademiyasi'
+        : post.author.fullName;
+    final mediaHeight = isDetail ? 433.0 : 386.0;
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            PortfolioAvatar(
+              photoUrl: post.author.photoUrl,
+              name: name,
+              size: isDetail ? 40 : 24,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.bodyMediumBold.copyWith(
+                            color: context.appColors.text,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 3,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: context.appColors.grey,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        PortfolioFormatting.relativeTime(post.createdAt),
+                        style: context.textTheme.bodySmallRegular.copyWith(
+                          color: context.appColors.secondaryGrey,
+                        ),
+                      ),
+                      if (onDeleteTap != null) ...[
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: onDeleteTap,
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              LucideIcons.ellipsis,
+                              size: 18,
+                              color: context.appColors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  if (post.caption.trim().isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      post.caption.trim(),
+                      maxLines: isDetail ? null : 3,
+                      overflow: isDetail
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
+                      style: context.textTheme.bodyMediumRegular.copyWith(
+                        color: context.appColors.text,
+                        height: 1.45,
+                      ),
+                    ),
+                  ],
+                  if (post.media.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    PortfolioMediaPreview(
+                      media: post.media,
+                      height: mediaHeight,
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                  if (isDetail) _DetailMeta(post: post),
+                  if (isDetail) const SizedBox(height: 12),
+                  if (isDetail) ...[
+                    Row(
+                      children: [
+                        PortfolioLikeButton(
+                          isLiked: post.isLiked,
+                          onTap: onLikeTap,
+                          likesCount: post.likesCount,
+                          iconSize: 20,
+                        ),
+                        const Spacer(),
+                        InkWell(
+                          onTap: onShareTap,
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              LucideIcons.share2,
+                              size: 20,
+                              color: context.appColors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    Row(
+                      children: [
+                        _ActionCounter(
+                          icon: LucideIcons.messageCircle,
+                          value: post.commentsCount,
+                          onTap: onCommentTap,
+                        ),
+                        const SizedBox(width: 24),
+                        PortfolioLikeButton(
+                          isLiked: post.isLiked,
+                          likesCount: post.likesCount,
+                          onTap: onLikeTap,
+                        ),
+                        const Spacer(),
+                        InkWell(
+                          onTap: onShareTap,
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              LucideIcons.share2,
+                              size: 16,
+                              color: context.appColors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    if (isDetail) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 0),
+        child: content,
+      );
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: content,
+      ),
+    );
+  }
+}
+
+class _DetailMeta extends StatelessWidget {
+  const _DetailMeta({required this.post});
+
+  final PortfolioPostModel post;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = context.textTheme.bodySmallRegular.copyWith(
+      color: context.appColors.secondaryGrey,
+    );
+    return Row(
+      children: [
+        Text(PortfolioFormatting.detailTime(post.createdAt), style: style),
+        _Dot(),
+        Text(PortfolioFormatting.detailDate(post.createdAt), style: style),
+        _Dot(),
+        Text(
+          '${PortfolioFormatting.compactCount(post.viewsCount)} ko\'rganlar',
+          style: style,
+        ),
+        _Dot(),
+        Text(
+          '${PortfolioFormatting.compactCount(post.likesCount)} yoqtirganlar',
+          style: style,
+        ),
+      ],
+    );
+  }
+}
+
+class _Dot extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Container(
+        width: 3,
+        height: 3,
+        decoration: BoxDecoration(
+          color: context.appColors.secondaryGrey,
+          shape: BoxShape.circle,
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionCounter extends StatelessWidget {
+  const _ActionCounter({
+    required this.icon,
+    required this.value,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final int value;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveColor = context.appColors.grey;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: effectiveColor),
+            const SizedBox(width: 4),
+            Text(
+              PortfolioFormatting.compactCount(value),
+              style: context.textTheme.bodySmallRegular.copyWith(
+                color: effectiveColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

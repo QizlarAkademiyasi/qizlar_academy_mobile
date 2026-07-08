@@ -35,26 +35,39 @@ class ReferralBloc extends Bloc<ReferralEvent, ReferralState> {
   Future<void> _load(Emitter<ReferralState> emit) async {
     emit(state.copyWith(status: ReferralStatus.loading, clearMessage: true));
     try {
-      final responses = await Future.wait<dynamic>([
-        _repository.fetchMyReferralCode(),
-        _repository.fetchLeaderboard(pageNumber: 1, pageSize: _pageSize),
-      ]);
-      final code = responses[0] as ReferralCodeModel;
-      final leaderboard = responses[1] as ReferralLeaderboardPageModel;
+      final code = await _repository.fetchMyReferralCode();
       final hasCode = code.referralCode.trim().isNotEmpty;
       final hasLink = code.referralLink.trim().isNotEmpty;
+
+      ReferralLeaderboardPageModel? leaderboard;
+      if (hasCode && hasLink) {
+        try {
+          leaderboard = await _repository.fetchLeaderboard(
+            pageNumber: 1,
+            pageSize: _pageSize,
+          );
+        } catch (error, stackTrace) {
+          AppLogger.w(
+            'ReferralBloc: leaderboard load failed',
+            error: error,
+            stackTrace: stackTrace,
+          );
+        }
+      }
+
       emit(
         state.copyWith(
           status: hasCode && hasLink
               ? ReferralStatus.success
               : ReferralStatus.failure,
           code: code,
-          leaderboard: leaderboard.items,
-          currentUser: leaderboard.currentUser,
-          pageNumber: leaderboard.pagination.pageNumber,
-          pageSize: leaderboard.pagination.pageSize,
-          totalCount: leaderboard.pagination.count,
-          pageCount: leaderboard.pagination.pageCount,
+          leaderboard: leaderboard?.items ?? const [],
+          currentUser: leaderboard?.currentUser,
+          clearCurrentUser: leaderboard == null,
+          pageNumber: leaderboard?.pagination.pageNumber ?? 1,
+          pageSize: leaderboard?.pagination.pageSize ?? _pageSize,
+          totalCount: leaderboard?.pagination.count ?? 0,
+          pageCount: leaderboard?.pagination.pageCount ?? 1,
           message: hasCode && hasLink
               ? null
               : "Referral ma'lumotlari topilmadi",

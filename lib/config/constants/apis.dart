@@ -180,3 +180,21 @@ sealed class StoreApis {
   static String orderById(String id) =>
       '/api/v1/order/${Uri.encodeComponent(id)}';
 }
+
+sealed class PortfolioApis {
+  static const String posts = '/api/v1/post';
+  static const String publicFeed = '/api/v1/post/feed/public';
+  static const String feed = '/api/v1/post/feed';
+
+  static String postById(String id) =>
+      '/api/v1/post/${Uri.encodeComponent(id)}';
+
+  static String like(String id) =>
+      '/api/v1/post/${Uri.encodeComponent(id)}/like';
+
+  static String comments(String postId) =>
+      '/api/v1/post/${Uri.encodeComponent(postId)}/comment';
+
+  static String replies({required String postId, required String commentId}) =>
+      '/api/v1/post/${Uri.encodeComponent(postId)}/comment/${Uri.encodeComponent(commentId)}/reply';
+}

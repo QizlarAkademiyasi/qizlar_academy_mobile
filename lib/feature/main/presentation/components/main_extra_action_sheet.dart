@@ -28,7 +28,20 @@ class MainExtraActionSheet extends StatelessWidget {
             subtitle: 'Kelajak kasbingizni toping',
             onTap: () => _openRoute(context, Routes.vacancies),
           ),
-          _ExtraActionItem(icon: LucideIcons.medal, iconBackground: const Color(0xFF6A4A3B), label: 'Elchilar', subtitle: 'Faol taklif qiluvchilar', onTap: () => _openRoute(context, Routes.referral)),
+          _ExtraActionItem(
+            icon: LucideIcons.images,
+            iconBackground: const Color(0xFF1EA672),
+            label: 'Portfolio',
+            subtitle: 'Loyihalarni ko\'ring va ulashing',
+            onTap: () => _openRoute(context, Routes.portfolio),
+          ),
+          _ExtraActionItem(
+            icon: LucideIcons.medal,
+            iconBackground: const Color(0xFF6A4A3B),
+            label: 'Elchilar',
+            subtitle: 'Faol taklif qiluvchilar',
+            onTap: () => _openRoute(context, Routes.referral),
+          ),
           // _ExtraActionItem(icon: LucideIcons.bookOpenCheck, iconBackground: const Color(0xFF8A2BE2), label: 'Kurslar', subtitle: 'Barcha kurslar', onTap: () => _openRoute(context, Routes.mainUser)),
           // _ExtraActionItem(
           //   icon: LucideIcons.clipboardCheck,
@@ -63,13 +76,21 @@ class _SearchFieldPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 46,
-      decoration: BoxDecoration(color: context.appColors.stroke, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+        color: context.appColors.stroke,
+        borderRadius: BorderRadius.circular(14),
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Row(
         children: [
           Icon(LucideIcons.search, color: context.appColors.text, size: 18),
           const SizedBox(width: 8),
-          Text('Izlash', style: context.textTheme.bodyLargeMedium.copyWith(color: context.appColors.text.withValues(alpha: 0.8))),
+          Text(
+            'Izlash',
+            style: context.textTheme.bodyLargeMedium.copyWith(
+              color: context.appColors.text.withValues(alpha: 0.8),
+            ),
+          ),
         ],
       ),
     );
@@ -77,7 +98,13 @@ class _SearchFieldPlaceholder extends StatelessWidget {
 }
 
 class _ExtraActionItem extends StatelessWidget {
-  const _ExtraActionItem({required this.icon, required this.iconBackground, required this.label, required this.subtitle, required this.onTap});
+  const _ExtraActionItem({
+    required this.icon,
+    required this.iconBackground,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
 
   final IconData icon;
   final Color iconBackground;
@@ -100,7 +127,10 @@ class _ExtraActionItem extends StatelessWidget {
               Container(
                 width: 42,
                 height: 42,
-                decoration: BoxDecoration(color: iconBackground, borderRadius: BorderRadius.circular(11)),
+                decoration: BoxDecoration(
+                  color: iconBackground,
+                  borderRadius: BorderRadius.circular(11),
+                ),
                 child: Icon(icon, color: AppColors.white, size: 20),
               ),
               const SizedBox(width: 14),
@@ -108,9 +138,19 @@ class _ExtraActionItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label, style: context.textTheme.bodyLargeSemibold.copyWith(color: context.appColors.text)),
+                    Text(
+                      label,
+                      style: context.textTheme.bodyLargeSemibold.copyWith(
+                        color: context.appColors.text,
+                      ),
+                    ),
                     const SizedBox(height: 1),
-                    Text(subtitle, style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.grey)),
+                    Text(
+                      subtitle,
+                      style: context.textTheme.bodyMediumRegular.copyWith(
+                        color: context.appColors.grey,
+                      ),
+                    ),
                   ],
                 ),
               ),
