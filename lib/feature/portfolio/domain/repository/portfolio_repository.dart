@@ -19,6 +19,11 @@ abstract class PortfolioRepository {
     required int pageSize,
   });
 
+  Future<PortfolioFeedPageModel> fetchMyPosts({
+    required int pageNumber,
+    required int pageSize,
+  });
+
   Future<PortfolioPostModel> fetchById(String id);
 
   Future<PortfolioLikeResultModel> like(String id);

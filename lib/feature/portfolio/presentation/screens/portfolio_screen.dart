@@ -1,9 +1,9 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
-import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_empty_content.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_failure_content.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/bloc/portfolio_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/portfolio_empty_content.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/portfolio_list_skeleton.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/portfolio_screen_mixin.dart';
 
@@ -137,13 +137,15 @@ class _PortfolioViewState extends State<_PortfolioView>
                         _ when isInitialLoading =>
                           const PortfolioListSkeleton(),
                         PortfolioStatus.success when state.items.isEmpty =>
-                          const Center(
+                          Center(
                             child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 32),
-                              child: TgsEmptyContent(
-                                message: 'Portfolio hali bo\'sh',
-                                subtitle:
-                                    'Yangi loyihalar paydo bo\'lganda shu yerda ko\'rasiz.',
+                              padding: const EdgeInsets.symmetric(horizontal: 32),
+                              child: PortfolioEmptyContent(
+                                tab: state.tab,
+                                isGuest: state.isGuest,
+                                onCreateTap: state.isGuest
+                                    ? null
+                                    : () => onCreateTap(context, state),
                               ),
                             ),
                           ),

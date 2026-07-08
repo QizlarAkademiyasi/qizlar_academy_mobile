@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/domain/model/portfolio_feed_page_model.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/domain/model/portfolio_post_model.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/domain/repository/portfolio_repository.dart';
 
@@ -247,11 +248,10 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     emit(state.copyWith(authRequired: false));
   }
 
-  Future<dynamic> _fetchPage({required int cursor}) {
+  Future<PortfolioFeedPageModel> _fetchPage({required int cursor}) {
     if (state.tab == PortfolioFeedTab.mine) {
-      return _repository.fetchUserFeed(
-        seed: state.seed,
-        cursor: cursor,
+      return _repository.fetchMyPosts(
+        pageNumber: cursor <= 0 ? 1 : cursor,
         pageSize: _pageSize,
       );
     }

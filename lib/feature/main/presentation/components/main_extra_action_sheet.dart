@@ -1,6 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
 
 class MainExtraActionSheet extends StatelessWidget {
   const MainExtraActionSheet({super.key});
@@ -8,59 +8,37 @@ class MainExtraActionSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBottomSheetContainer(
-      // isBackgorun: false,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // const _SearchFieldPlaceholder(),
-          // const SizedBox(height: 14),
-          _ExtraActionItem(
-            icon: LucideIcons.store,
-            iconBackground: const Color(0xFF3357C9),
-            label: "Do'kon",
-            subtitle: "Ballarni sovg'aga almashtiring",
-            onTap: () => _openRoute(context, Routes.store),
-          ),
-          _ExtraActionItem(
-            icon: LucideIcons.briefcaseBusiness,
-            iconBackground: const Color(0xFFFF6B1A),
-            label: 'Vakansiyalar',
-            subtitle: 'Kelajak kasbingizni toping',
-            onTap: () => _openRoute(context, Routes.vacancies),
-          ),
-          _ExtraActionItem(
-            icon: LucideIcons.images,
-            iconBackground: const Color(0xFF1EA672),
-            label: 'Portfolio',
-            subtitle: 'Loyihalarni ko\'ring va ulashing',
-            onTap: () => _openRoute(context, Routes.portfolio),
-          ),
-          _ExtraActionItem(
-            icon: LucideIcons.medal,
-            iconBackground: const Color(0xFF6A4A3B),
-            label: 'Elchilar',
-            subtitle: 'Faol taklif qiluvchilar',
-            onTap: () => _openRoute(context, Routes.referral),
-          ),
-          // _ExtraActionItem(icon: LucideIcons.bookOpenCheck, iconBackground: const Color(0xFF8A2BE2), label: 'Kurslar', subtitle: 'Barcha kurslar', onTap: () => _openRoute(context, Routes.mainUser)),
-          // _ExtraActionItem(
-          //   icon: LucideIcons.clipboardCheck,
-          //   iconBackground: const Color(0xFF00A3FF),
-          //   label: 'Vazifalar',
-          //   subtitle: 'Description',
-          //   onTap: () => Navigator.of(context).pop(),
-          // ),
-          _ExtraActionItem(
-            icon: LucideIcons.badgePlus,
-            iconBackground: const Color(0xFFE8357D),
-            label: "Bizning jamoaga qo'shilish",
-            subtitle: "Bilimingiz va tajribangiz bilan bo'lishing",
-            onTap: () => Navigator.of(context).pop(),
-          ),
+          for (final item in kMainExtraMenuItems)
+            _ExtraActionItem(
+              icon: item.icon,
+              iconBackground: item.iconBackground,
+              label: item.label,
+              subtitle: _subtitleForItem(item),
+              onTap: () {
+                if (item.route != null) {
+                  _openRoute(context, item.route!);
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
           const SizedBox(height: 6),
         ],
       ),
     );
+  }
+
+  String _subtitleForItem(MainExtraMenuItem item) {
+    return switch (item.label) {
+      "Do'kon" => "Ballarni sovg'aga almashtiring",
+      'Vakansiyalar' => 'Kelajak kasbingizni toping',
+      'Portfolio' => "Loyihalarni ko'ring va ulashing",
+      'Elchilar' => 'Faol taklif qiluvchilar',
+      _ => "Bilimingiz va tajribangiz bilan bo'lishing",
+    };
   }
 
   void _openRoute(BuildContext context, String route) {

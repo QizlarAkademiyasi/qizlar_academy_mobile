@@ -12,19 +12,20 @@ class MyCoursesListSkeleton extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
         children: const [
-          _SkeletonCard(),
+          MyCourseSkeletonCard(),
           SizedBox(height: 16),
-          _SkeletonCard(),
+          MyCourseSkeletonCard(),
           SizedBox(height: 16),
-          _SkeletonCard(),
+          MyCourseSkeletonCard(),
         ],
       ),
     );
   }
 }
 
-class _SkeletonCard extends StatelessWidget {
-  const _SkeletonCard();
+/// [AppCourseListItemCard] tuzilmasi: rasm + sarlavha + mentor + qator.
+class MyCourseSkeletonCard extends StatelessWidget {
+  const MyCourseSkeletonCard({super.key});
 
   @override
   Widget build(BuildContext context) {

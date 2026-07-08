@@ -7,8 +7,9 @@ import 'package:qizlar_academy_mobile/core/app_update/app_update_prompt_coordina
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_screen.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_action_grid.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/liquid_bottom_nav_second.dart';
-import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_action_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/profile_screen.dart';
 
@@ -109,6 +110,21 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
           //     decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
           //   ),
           // ),
+          Positioned.fill(
+            child: AnimatedOpacity(
+              opacity: isExtraMenuExpanded ? 1 : 0,
+              duration: const Duration(milliseconds: 280),
+              curve: Curves.easeOut,
+              child: IgnorePointer(
+                ignoring: !isExtraMenuExpanded,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: closeExtraMenu,
+                  child: const SizedBox.expand(),
+                ),
+              ),
+            ),
+          ),
           Positioned(bottom: 0, left: 0, right: 0, child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image() : UiKitAssets.images.bottomNavLight.image()),
           Align(
             alignment: Alignment.bottomCenter,
@@ -126,8 +142,11 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
                   selectedColor: context.appColors.primary,
                   unselectedColor: context.appColors.bottomBarTabUnselected,
                   extraActionIcon: Icons.add,
-                  onExtraActionTap: () => showAppBottomSheet<void>(context, child: const MainExtraActionSheet()),
+                  onExtraActionTap: toggleExtraMenu,
                   extraActionSemanticLabel: context.l10n.mainTabMore,
+                  isExpanded: isExtraMenuExpanded,
+                  expandedContent: MainExtraActionGrid(onItemTap: onExtraMenuItemTap),
+                  expandedContentHeight: MainExtraActionGrid.preferredHeightFor(kMainExtraMenuItems.length),
                 ),
               ),
             ),

@@ -44,6 +44,24 @@ class PortfolioApiDatasource implements PortfolioDatasource {
     );
   }
 
+  @override
+  Future<PortfolioFeedPageModel> fetchMyPosts({
+    required int pageNumber,
+    required int pageSize,
+  }) async {
+    final response = await _dio.get<dynamic>(
+      PortfolioApis.myPosts,
+      queryParameters: <String, dynamic>{
+        'pageNumber': pageNumber,
+        'pageSize': pageSize,
+      },
+    );
+    return parseMyPostsPayload(
+      response.data,
+      fallbackPageSize: pageSize,
+    );
+  }
+
   Future<PortfolioFeedPageModel> _fetchFeed(
     String path, {
     required String seed,
@@ -69,6 +87,33 @@ class PortfolioApiDatasource implements PortfolioDatasource {
       items: items,
       nextCursor: _parseInt(data['nextCursor']),
       hasMore: _parseBool(data['hasMore']),
+    );
+  }
+
+  PortfolioFeedPageModel parseMyPostsPayload(
+    dynamic payload, {
+    required int fallbackPageSize,
+  }) {
+    final envelope = _asMap(payload);
+    final data = _asMap(envelope['data']);
+    final items = _asList(data['data']).map(_mapPost).toList(growable: false);
+    final meta = _asMap(data['meta']);
+    final pagination = _asMap(meta['pagination']);
+    if (pagination.isEmpty) {
+      return PortfolioFeedPageModel(
+        items: items,
+        nextCursor: 1,
+        hasMore: false,
+      );
+    }
+    final pageNumber = _parseInt(pagination['pageNumber']).clamp(1, 1 << 30);
+    final rawPageCount = _parseInt(pagination['pageCount']);
+    final pageCount = rawPageCount <= 0 ? 1 : rawPageCount;
+    final hasMore = pageNumber < pageCount;
+    return PortfolioFeedPageModel(
+      items: items,
+      nextCursor: hasMore ? pageNumber + 1 : pageNumber,
+      hasMore: hasMore,
     );
   }
 

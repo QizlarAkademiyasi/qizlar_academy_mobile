@@ -13,10 +13,20 @@ import 'package:qizlar_academy_mobile/feature/certificates/presentation/componen
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/presentation/components/my_courses_top_bar.dart';
 
 mixin MyCertificatesScreenMixin<T extends StatefulWidget> on State<T> {
+  void myCertificatesBlocListener(BuildContext context, MyCertificatesState state) {
+    if (!state.loadMoreFailed) return;
+    AppToast.error(context, message: context.l10n.myCoursesLoadMoreError);
+    context.read<MyCertificatesBloc>().add(const MyCertificatesLoadMoreFailureConsumed());
+  }
+
   Future<void> onMyCertificatesPullToRefresh(BuildContext context) async {
     final bloc = context.read<MyCertificatesBloc>();
     bloc.add(const MyCertificatesStarted());
     await bloc.stream.firstWhere((s) => s.status == MyCertificatesStatus.success || s.status == MyCertificatesStatus.failure);
+  }
+
+  void onScrollNearEnd(BuildContext context) {
+    context.read<MyCertificatesBloc>().add(const MyCertificatesLoadMoreRequested());
   }
 
   void onMyCertificatesBackTap(BuildContext context) {

@@ -1,4 +1,4 @@
-import 'dart:ui' show ImageFilter;
+import 'dart:ui' show ImageFilter, lerpDouble;
 
 import 'package:flutter/material.dart';
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
@@ -17,6 +17,20 @@ Color _secondLiquidBottomNavWhiten(Color base, {required bool lightBar}) {
 /// Dark truba: biroz yoritilgan qora/kulrang sirt (oq emas).
 Color _secondLiquidBottomNavDarkSurface(Color base) {
   return Color.lerp(base, const Color(0xFF3A3A3C), 0.28)!;
+}
+
+/// Kengaygan grid va tashqi komponentlar uchun truba sirt rangi.
+Color secondLiquidBottomNavSurfaceTint(BuildContext context, {Color? backgroundColor}) {
+  final Color base = backgroundColor ?? secondLiquidBottomNavThemePalette(context).backgroundColor;
+  final bool lightBar = base.computeLuminance() > 0.5;
+  return lightBar ? _secondLiquidBottomNavWhiten(base, lightBar: true) : _secondLiquidBottomNavDarkSurface(base);
+}
+
+/// Grid kafel fon — truba sirtidan biroz farq qiladi (ajratish uchun).
+Color secondLiquidBottomNavTileSurface(BuildContext context, {Color? backgroundColor}) {
+  final Color surface = secondLiquidBottomNavSurfaceTint(context, backgroundColor: backgroundColor);
+  final bool lightBar = (backgroundColor ?? secondLiquidBottomNavThemePalette(context).backgroundColor).computeLuminance() > 0.5;
+  return Color.lerp(surface, lightBar ? const Color(0xFF000000) : const Color(0xFFFFFFFF), lightBar ? 0.05 : 0.1)!;
 }
 
 /// Chiziq qalinligi: pikselga mos ince hairline.
@@ -82,6 +96,7 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
     required this.backgroundBlurSigma,
     required this.iconColor,
     this.semanticLabel,
+    this.isActive = false,
   });
 
   final double height;
@@ -91,6 +106,7 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
   final double backgroundBlurSigma;
   final Color iconColor;
   final String? semanticLabel;
+  final bool isActive;
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +151,7 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
             ),
           )
         : inner;
-    return Semantics(
+    final Widget button = Semantics(
       button: true,
       label: semanticLabel ?? 'Menu',
       child: DecoratedBox(
@@ -145,6 +161,32 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
         ),
         child: clipped,
       ),
+    );
+    if (!isActive) return button;
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: [
+        Positioned(
+          top: -6,
+          child: Container(
+            width: height + 18,
+            height: height + 18,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  const Color(0xFFB794F6).withValues(alpha: 0.45),
+                  const Color(0xFF7DD3FC).withValues(alpha: 0.28),
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.55, 1.0],
+              ),
+            ),
+          ),
+        ),
+        button,
+      ],
     );
   }
 }
@@ -223,6 +265,11 @@ class SecondLiquidBottomNav extends StatefulWidget {
 
     /// Pill blur: `null` — [backgroundBlurSigma] > 0 bo‘lsa `~0.58` omili; `0` — qattiq pill.
     this.indicatorBlurSigma,
+
+    /// Plus bosilganda truba vertikal kengayadi va [expandedContent] ko‘rsatiladi.
+    this.isExpanded = false,
+    this.expandedContent,
+    this.expandedContentHeight,
   }) : assert(items.length > 1, 'Bottom nav should contain at least 2 items.'),
        assert(extraActionIcon == null || onExtraActionTap != null, 'onExtraActionTap is required when extraActionIcon is set.'),
        assert(extraActionIcon == null || extraButton == null, 'Use extraActionIcon or extraButton, not both.');
@@ -258,6 +305,15 @@ class SecondLiquidBottomNav extends StatefulWidget {
 
   /// Tanlovdagi pill blur (sigma). [indicatorBlurSigma] orqali alohida sozlash mumkin.
   final double? indicatorBlurSigma;
+
+  /// Truba kengaygan holat (plus menyu ochiq).
+  final bool isExpanded;
+
+  /// Kengaygan qismda ko‘rsatiladigan kontent (masalan, grid menyu).
+  final Widget? expandedContent;
+
+  /// [expandedContent] balandligi — animatsiya uchun (masalan, [MainExtraActionGrid.preferredHeightFor]).
+  final double? expandedContentHeight;
 
   @override
   State<SecondLiquidBottomNav> createState() => _SecondLiquidBottomNavState();
@@ -301,53 +357,56 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
   @override
   Widget build(BuildContext context) {
     final p = secondLiquidBottomNavThemePalette(context);
+    final bool isExpanded = widget.isExpanded && widget.expandedContent != null;
     final Widget? resolvedExtra = widget.extraActionIcon != null
         ? _SecondLiquidBottomNavExtraIconButton(
             height: widget.height,
-            icon: widget.extraActionIcon!,
+            icon: isExpanded ? Icons.close : widget.extraActionIcon!,
             onTap: widget.onExtraActionTap!,
             backgroundColor: widget.backgroundColor ?? p.backgroundColor,
             backgroundBlurSigma: widget.backgroundBlurSigma,
             iconColor: widget.unselectedColor ?? p.unselectedColor,
             semanticLabel: widget.extraActionSemanticLabel,
+            isActive: isExpanded,
           )
         : widget.extraButton;
     final bool hasExtraButton = resolvedExtra != null;
     final double resolvedIndicatorSigma = widget.indicatorBlurSigma ?? (widget.backgroundBlurSigma > 0 ? widget.backgroundBlurSigma * 0.58 : 0.0);
-    return SizedBox(
-      height: widget.height + widget.margin.vertical + 18,
-      child: SafeArea(
-        top: false,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              left: widget.margin.left,
-              right: widget.margin.right,
-              bottom: 0,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: AppLiquidStretch(
-                      child: _SecondLiquidBottomNavBarContainer(
-                        height: widget.height,
-                        borderRadius: widget.borderRadius,
-                        backgroundColor: widget.backgroundColor ?? p.backgroundColor,
-                        backgroundBlurSigma: widget.backgroundBlurSigma,
-                        indicatorBlurSigma: resolvedIndicatorSigma,
-                        pulseTick: _navPulseTick,
-                        padding: widget.padding,
-                        items: widget.items,
-                        activeIndex: _activeIndex,
-                        onTap: _onTap,
-                        iconSize: widget.iconSize,
-                        selectedColor: widget.selectedColor ?? p.selectedColor,
-                        unselectedColor: widget.unselectedColor ?? p.unselectedColor,
-                        indicatorColor: widget.indicatorColor ?? p.indicatorColor,
-                      ),
+    return SafeArea(
+      top: false,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: widget.margin.left,
+            right: widget.margin.right,
+            bottom: 0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: AppLiquidStretch(
+                    child: _SecondLiquidBottomNavBarContainer(
+                      height: widget.height,
+                      borderRadius: widget.borderRadius,
+                      backgroundColor: widget.backgroundColor ?? p.backgroundColor,
+                      backgroundBlurSigma: widget.backgroundBlurSigma,
+                      indicatorBlurSigma: resolvedIndicatorSigma,
+                      pulseTick: _navPulseTick,
+                      padding: widget.padding,
+                      items: widget.items,
+                      activeIndex: _activeIndex,
+                      onTap: _onTap,
+                      iconSize: widget.iconSize,
+                      selectedColor: widget.selectedColor ?? p.selectedColor,
+                      unselectedColor: widget.unselectedColor ?? p.unselectedColor,
+                      indicatorColor: widget.indicatorColor ?? p.indicatorColor,
+                      isExpanded: isExpanded,
+                      expandedContent: widget.expandedContent,
+                      expandedContentHeight: widget.expandedContentHeight,
                     ),
                   ),
+                ),
                   if (hasExtraButton) ...[
                     SizedBox(width: widget.extraButtonSpacing),
                     Padding(
@@ -381,7 +440,6 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
             ),
           ],
         ),
-      ),
     );
   }
 }
@@ -548,7 +606,7 @@ class _SecondLiquidBottomNavPillWithTabsState extends State<_SecondLiquidBottomN
   }
 }
 
-class _SecondLiquidBottomNavBarContainer extends StatelessWidget {
+class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
   const _SecondLiquidBottomNavBarContainer({
     required this.height,
     required this.borderRadius,
@@ -564,6 +622,9 @@ class _SecondLiquidBottomNavBarContainer extends StatelessWidget {
     required this.selectedColor,
     required this.unselectedColor,
     required this.indicatorColor,
+    this.isExpanded = false,
+    this.expandedContent,
+    this.expandedContentHeight,
   });
 
   final double height;
@@ -580,35 +641,97 @@ class _SecondLiquidBottomNavBarContainer extends StatelessWidget {
   final Color selectedColor;
   final Color unselectedColor;
   final Color indicatorColor;
+  final bool isExpanded;
+  final Widget? expandedContent;
+  final double? expandedContentHeight;
+
+  @override
+  State<_SecondLiquidBottomNavBarContainer> createState() => _SecondLiquidBottomNavBarContainerState();
+}
+
+class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomNavBarContainer> with SingleTickerProviderStateMixin {
+  static const Duration _expandDuration = Duration(milliseconds: 420);
+
+  late final AnimationController _expandController = AnimationController(vsync: this, duration: _expandDuration);
+  late final Animation<double> _expandCurve = CurvedAnimation(
+    parent: _expandController,
+    curve: Curves.easeOutCubic,
+    reverseCurve: Curves.easeInCubic,
+  );
+  late final Animation<double> _contentOpacity = CurvedAnimation(
+    parent: _expandController,
+    curve: const Interval(0.16, 1, curve: Curves.easeOut),
+    reverseCurve: const Interval(0, 0.5, curve: Curves.easeIn),
+  );
+  late final Animation<Offset> _contentSlide = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+    CurvedAnimation(parent: _expandController, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isExpanded) {
+      _expandController.value = 1;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _SecondLiquidBottomNavBarContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isExpanded && !oldWidget.isExpanded) {
+      _expandController.forward();
+    } else if (!widget.isExpanded && oldWidget.isExpanded) {
+      _expandController.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _expandController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleMotionBuilder(
-      value: pulseTick.toDouble(),
+      value: widget.pulseTick.toDouble(),
       motion: const CupertinoMotion.smooth(duration: Duration(milliseconds: 400), extraBounce: 0),
       builder: (context, animatedTick, child) {
-        final double pulse = _secondLiquidBottomNavPulseFromProgress(animatedTick);
-        final bool lightBar = backgroundColor.computeLuminance() > 0.5;
+        return AnimatedBuilder(
+          animation: _expandController,
+          builder: (context, child) {
+            return _buildBar(context, pulse: _secondLiquidBottomNavPulseFromProgress(animatedTick), expandT: _expandCurve.value, child: child);
+          },
+          child: child,
+        );
+      },
+    );
+  }
+
+  Widget _buildBar(BuildContext context, {required double pulse, required double expandT, Widget? child}) {
+        final bool lightBar = widget.backgroundColor.computeLuminance() > 0.5;
         final Color pulseToward = lightBar ? AppColors.textDark : AppColors.white;
-        final Color dynamicBackground = Color.lerp(backgroundColor, pulseToward, 0.08 * pulse)!;
+        final Color dynamicBackground = Color.lerp(widget.backgroundColor, pulseToward, 0.08 * pulse)!;
         final Color surfaceTint = lightBar ? _secondLiquidBottomNavWhiten(dynamicBackground, lightBar: true) : _secondLiquidBottomNavDarkSurface(dynamicBackground);
         final Color barShadow = AppColors.shadow.withValues(alpha: lightBar ? 0.14 : 0.42);
-        final bool useBlur = backgroundBlurSigma > 0;
-        final double sigma = backgroundBlurSigma;
-        final BorderRadius outerRadius = BorderRadius.circular(borderRadius);
+        final bool useBlur = widget.backgroundBlurSigma > 0;
+        final double sigma = widget.backgroundBlurSigma;
+        final bool showExpandedStyle = expandT > 0.001;
+        final double resolvedRadius = lerpDouble(widget.borderRadius, 28, expandT) ?? widget.borderRadius;
+        final BorderRadius outerRadius = BorderRadius.circular(resolvedRadius);
         final double edgeW = _secondLiquidBottomNavHairlineWidth(context);
         final Color edgeColor = _secondLiquidBottomNavEdgeColor(surfaceTint, lightBar: lightBar);
         final Widget pillTabs = _SecondLiquidBottomNavPillWithTabs(
-          itemCount: items.length,
-          activeIndex: activeIndex,
-          items: items,
-          onIndexChanged: onTap,
-          iconSize: iconSize,
-          selectedColor: selectedColor,
-          unselectedColor: unselectedColor,
+          itemCount: widget.items.length,
+          activeIndex: widget.activeIndex,
+          items: widget.items,
+          onIndexChanged: widget.onTap,
+          iconSize: widget.iconSize,
+          selectedColor: widget.selectedColor,
+          unselectedColor: widget.unselectedColor,
           lightBar: lightBar,
-          indicatorColor: indicatorColor,
-          indicatorBlurSigma: indicatorBlurSigma,
+          indicatorColor: widget.indicatorColor,
+          indicatorBlurSigma: widget.indicatorBlurSigma,
         );
         final LiquidGlassSettings glassSettingsLight = LiquidGlassSettings(
           blur: 30,
@@ -631,32 +754,81 @@ class _SecondLiquidBottomNavBarContainer extends StatelessWidget {
         final Color innerVeilLight = Color.lerp(surfaceTint, Colors.white, 0.65)!.withValues(alpha: 0.36);
         final Color innerVeilDark = Color.lerp(surfaceTint, const Color(0xFF000000), 0.18)!.withValues(alpha: 0.9);
 
-        final Widget inner = useBlur
+        final Widget tabRow = SizedBox(
+          height: widget.height,
+          child: Padding(
+            padding: widget.padding,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (useBlur && !showExpandedStyle) ColoredBox(color: lightBar ? innerVeilLight : innerVeilDark),
+                  pillTabs,
+                ],
+              ),
+            ),
+          ),
+        );
+        final double expandHeight = widget.expandedContentHeight ?? 0;
+        final Widget? expandedSection = widget.expandedContent != null && expandHeight > 0 && (expandT > 0 || _expandController.isAnimating)
+            ? SizedBox(
+                height: expandHeight * expandT,
+                width: double.infinity,
+                child: ClipRect(
+                  child: OverflowBox(
+                    alignment: Alignment.bottomCenter,
+                    minHeight: expandHeight,
+                    maxHeight: expandHeight,
+                    child: FadeTransition(
+                      opacity: _contentOpacity,
+                      child: SlideTransition(
+                        position: _contentSlide,
+                        child: widget.expandedContent!,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : null;
+        final Widget columnBody = Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (expandedSection != null) expandedSection,
+            tabRow,
+          ],
+        );
+        final Widget barBody = showExpandedStyle && useBlur
+            ? ColoredBox(color: lightBar ? innerVeilLight : innerVeilDark, child: columnBody)
+            : columnBody;
+        final Widget inner = showExpandedStyle
+            ? DecoratedBox(
+                decoration: BoxDecoration(
+                  color: useBlur ? (lightBar ? innerVeilLight : innerVeilDark) : surfaceTint,
+                  border: Border.all(color: edgeColor, width: edgeW),
+                  borderRadius: outerRadius,
+                ),
+                child: useBlur
+                    ? ClipRRect(
+                        borderRadius: outerRadius,
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+                          child: barBody,
+                        ),
+                      )
+                    : barBody,
+              )
+            : useBlur
             ? LiquidGlassLayer(
                 fake: false,
                 useBackdropGroup: true,
                 settings: lightBar ? glassSettingsLight : glassSettingsDark,
                 child: LiquidGlass(
                   shape: LiquidRoundedSuperellipse(
-                    borderRadius: borderRadius,
+                    borderRadius: resolvedRadius,
                     side: BorderSide(color: edgeColor, width: edgeW),
                   ),
-                  child: SizedBox(
-                    height: height,
-                    child: Padding(
-                      padding: padding,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            ColoredBox(color: lightBar ? innerVeilLight : innerVeilDark),
-                            pillTabs,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  child: barBody,
                 ),
               )
             : DecoratedBox(
@@ -665,15 +837,9 @@ class _SecondLiquidBottomNavBarContainer extends StatelessWidget {
                   border: Border.all(color: edgeColor, width: edgeW),
                   borderRadius: outerRadius,
                 ),
-                child: SizedBox(
-                  height: height,
-                  child: Padding(
-                    padding: padding,
-                    child: ClipRRect(borderRadius: BorderRadius.circular(999), child: pillTabs),
-                  ),
-                ),
+                child: barBody,
               );
-        final Widget clipped = useBlur ? ClipRRect(borderRadius: outerRadius, child: inner) : inner;
+        final Widget clipped = useBlur && !showExpandedStyle ? ClipRRect(borderRadius: outerRadius, child: inner) : inner;
         return Transform.scale(
           scale: 1 - (0.006 * pulse),
           child: DecoratedBox(
@@ -681,11 +847,14 @@ class _SecondLiquidBottomNavBarContainer extends StatelessWidget {
               borderRadius: outerRadius,
               boxShadow: [BoxShadow(color: barShadow, blurRadius: 24 - (1.5 * pulse), spreadRadius: -8, offset: Offset(0, 12 - (0.6 * pulse)))],
             ),
-            child: Material(type: MaterialType.transparency, borderRadius: outerRadius, clipBehavior: Clip.antiAlias, child: clipped),
+            child: Material(
+              type: MaterialType.transparency,
+              borderRadius: outerRadius,
+              clipBehavior: showExpandedStyle ? Clip.none : Clip.antiAlias,
+              child: clipped,
+            ),
           ),
         );
-      },
-    );
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_failure_content.dart';
 import 'package:qizlar_academy_mobile/feature/store/presentation/screens/history_screen/bloc/store_history_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/store/presentation/screens/history_screen/components/store_order_history_grid_item.dart';
+import 'package:qizlar_academy_mobile/feature/store/presentation/screens/history_screen/components/store_order_history_grid_skeleton.dart';
 import 'package:qizlar_academy_mobile/feature/store/presentation/screens/history_screen/screens/store_history_screen_mixin.dart';
 
 class StoreHistoryScreen extends StatelessWidget {
@@ -68,32 +69,7 @@ class _StoreHistoryViewState extends State<_StoreHistoryView> with StoreHistoryS
                 Expanded(
                   child: switch (state.status) {
                     StoreHistoryStatus.failure when state.items.isEmpty => TgsFailureContent(message: "Buyurtmalarni yuklashda xatolik", onRetry: () => retryFirstPage(context)),
-                    _ when isInitialLoading => Skeletonizer(
-                      child: GridView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        itemCount: 6,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 14, mainAxisSpacing: 16, childAspectRatio: 0.64),
-                        itemBuilder: (_, _) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: Container(
-                                decoration: BoxDecoration(color: context.appColors.stroke, borderRadius: BorderRadius.circular(16)),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Bone.text(words: 2),
-                            const SizedBox(height: 6),
-                            Container(
-                              height: 28,
-                              width: 120,
-                              decoration: BoxDecoration(color: context.appColors.stroke, borderRadius: BorderRadius.circular(999)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    _ when isInitialLoading => const StoreOrderHistoryGridSkeleton(),
                     StoreHistoryStatus.success when state.items.isEmpty => Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -122,25 +98,7 @@ class _StoreHistoryViewState extends State<_StoreHistoryView> with StoreHistoryS
                           itemBuilder: (context, index) {
                             if (index >= state.items.length) {
                               return Skeletonizer.zone(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    AspectRatio(
-                                      aspectRatio: 1,
-                                      child: Container(
-                                        decoration: BoxDecoration(color: context.appColors.stroke, borderRadius: BorderRadius.circular(16)),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Bone.text(words: 2),
-                                    const SizedBox(height: 6),
-                                    Container(
-                                      height: 28,
-                                      width: 120,
-                                      decoration: BoxDecoration(color: context.appColors.stroke, borderRadius: BorderRadius.circular(999)),
-                                    ),
-                                  ],
-                                ),
+                                child: const StoreOrderHistorySkeletonCard(),
                               );
                             }
                             final order = state.items[index];
