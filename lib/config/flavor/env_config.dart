@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show appFlavor;
 import 'package:qizlar_academy_mobile/config/logs/app_log_config.dart';
 
 enum AppFlavors {
@@ -20,13 +21,36 @@ final class EnvConfig {
 
   static EnvConfig? _instance;
 
-  static void initialize({required String appName, required AppFlavors flavor}) {
+  /// Android `--flavor` → [appFlavor]; iOS/flavor yo‘q build → release=prod, debug=dev.
+  static AppFlavors resolveFlavor() {
+    const fromDefine = String.fromEnvironment('FLAVOR', defaultValue: '');
+    switch (fromDefine.trim().toLowerCase()) {
+      case 'prod':
+        return AppFlavors.prod;
+      case 'dev':
+        return AppFlavors.dev;
+    }
+
+    switch (appFlavor?.trim().toLowerCase()) {
+      case 'prod':
+        return AppFlavors.prod;
+      case 'dev':
+        return AppFlavors.dev;
+    }
+
+    return kReleaseMode ? AppFlavors.prod : AppFlavors.dev;
+  }
+
+  static void initialize({
+    required String appName,
+    required AppFlavors flavor,
+  }) {
     _instance = EnvConfig._(appName: appName, flavor: flavor);
-    AppLogConfig.loggingEnabled = flavor == AppFlavors.dev;
+    AppLogConfig.loggingEnabled = flavor == AppFlavors.prod;
     if (AppLogConfig.loggingEnabled) {
       debugPrint(
         '[EnvConfig] Flavor: ${_instance!.flavor.name.toUpperCase()} | '
-        'App: ${_instance!.appName}',
+        'App: ${_instance!.appName} | appFlavor: ${appFlavor ?? 'null'}',
       );
     }
   }

@@ -14,3 +14,11 @@ final class MyCertificatesStarted extends MyCertificatesEvent {
 final class MyCertificatesRetryRequested extends MyCertificatesEvent {
   const MyCertificatesRetryRequested();
 }
+
+final class MyCertificatesLoadMoreRequested extends MyCertificatesEvent {
+  const MyCertificatesLoadMoreRequested();
+}
+
+final class MyCertificatesLoadMoreFailureConsumed extends MyCertificatesEvent {
+  const MyCertificatesLoadMoreFailureConsumed();
+}

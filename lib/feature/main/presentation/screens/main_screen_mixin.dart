@@ -7,6 +7,7 @@ import 'package:qizlar_academy_mobile/feature/main/presentation/components/botto
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/bottom_bar_version_two.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_profile_tab_icon.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
 
 /// Main shell ekrani uchun tab tanlashi va pastki bar qismini qaytaruvchi mixin.
 mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
@@ -18,6 +19,9 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   /// Pastki bar orqali tab almashganda oshadi — [MainScreen] fade faqat shu bilan ishlaydi.
   int get tabBarFadeNonce => _tabBarFadeNonce;
   int _tabBarFadeNonce = 0;
+
+  bool get isExtraMenuExpanded => _isExtraMenuExpanded;
+  bool _isExtraMenuExpanded = false;
 
   late final PageController pageController;
 
@@ -34,7 +38,28 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void onTabTap(int index) {
+    if (_isExtraMenuExpanded) {
+      setState(() => _isExtraMenuExpanded = false);
+    }
     _handleTabTap(index);
+  }
+
+  void toggleExtraMenu() {
+    setState(() => _isExtraMenuExpanded = !_isExtraMenuExpanded);
+  }
+
+  void closeExtraMenu() {
+    if (_isExtraMenuExpanded) {
+      setState(() => _isExtraMenuExpanded = false);
+    }
+  }
+
+  void onExtraMenuItemTap(MainExtraMenuItem item) {
+    closeExtraMenu();
+    final route = item.route;
+    if (route != null) {
+      context.push(route);
+    }
   }
 
   Future<void> _handleTabTap(int index) async {

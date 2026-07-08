@@ -78,8 +78,8 @@ class _VacanciesViewState extends State<_VacanciesView> with VacanciesScreenMixi
                                       if (index >= state.items.length) {
                                         return Skeletonizer.zone(
                                           child: const Padding(
-                                            padding: EdgeInsets.symmetric(vertical: 20),
-                                            child: Center(child: Bone.text(words: 4)),
+                                            padding: EdgeInsets.only(bottom: 16),
+                                            child: VacancySkeletonCard(),
                                           ),
                                         );
                                       }

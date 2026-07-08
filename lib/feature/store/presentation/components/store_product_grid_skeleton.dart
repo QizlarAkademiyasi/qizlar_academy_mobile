@@ -1,12 +1,11 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class StoreProductGridSkeleton extends StatelessWidget {
   const StoreProductGridSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Skeletonizer(
+    return Skeletonizer.zone(
       child: GridView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         shrinkWrap: true,
@@ -18,14 +17,15 @@ class StoreProductGridSkeleton extends StatelessWidget {
           childAspectRatio: 0.62,
         ),
         itemCount: 4,
-        itemBuilder: (_, _) => const _SkeletonCard(),
+        itemBuilder: (_, _) => const StoreProductSkeletonCard(),
       ),
     );
   }
 }
 
-class _SkeletonCard extends StatelessWidget {
-  const _SkeletonCard();
+/// [StoreProductCard] tuzilmasi: rasm + sarlavha + narx qatori.
+class StoreProductSkeletonCard extends StatelessWidget {
+  const StoreProductSkeletonCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +34,22 @@ class _SkeletonCard extends StatelessWidget {
       children: [
         AspectRatio(
           aspectRatio: 1,
-          child: Container(
-            decoration: BoxDecoration(color: context.appColors.stroke, borderRadius: BorderRadius.circular(16)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: const Bone.button(),
           ),
         ),
         const SizedBox(height: 8),
         const Bone.text(words: 2),
         const SizedBox(height: 4),
-        const Bone.text(words: 3, fontSize: 12),
+        Row(
+          children: const [
+            Bone.icon(size: 14),
+            SizedBox(width: 4),
+            Expanded(child: Bone.text(words: 3)),
+            Bone.text(words: 2),
+          ],
+        ),
       ],
     );
   }

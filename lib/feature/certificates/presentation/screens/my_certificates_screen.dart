@@ -3,6 +3,7 @@ import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/bloc/my_certificates_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/presentation/components/my_certificates_list_skeleton.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/screens/my_certificates_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_empty_content.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_failure_content.dart';
@@ -24,6 +25,18 @@ class _MyCertificatesView extends StatefulWidget {
 }
 
 class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertificatesScreenMixin<_MyCertificatesView> {
+  bool _onScrollNotification(ScrollNotification n, BuildContext context) {
+    if (n.metrics.axis != Axis.vertical) return false;
+    if (n is! ScrollUpdateNotification && n is! OverscrollNotification) {
+      return false;
+    }
+    final m = n.metrics;
+    if (m.pixels >= m.maxScrollExtent - 220) {
+      onScrollNearEnd(context);
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
@@ -45,10 +58,14 @@ class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertifi
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: buildMyCertificatesTopBar(context)),
                 Expanded(
-                  child: BlocBuilder<MyCertificatesBloc, MyCertificatesState>(
-                    buildWhen: (p, c) => p.status != c.status || p.items != c.items,
+                  child: BlocConsumer<MyCertificatesBloc, MyCertificatesState>(
+                    listenWhen: (previous, current) => current.loadMoreFailed && !previous.loadMoreFailed,
+                    listener: myCertificatesBlocListener,
+                    buildWhen: (p, c) =>
+                        p.status != c.status ||
+                        p.items != c.items ||
+                        p.isLoadingMore != c.isLoadingMore,
                     builder: (context, state) {
                       final loadingEmpty = (state.status == MyCertificatesStatus.loading || state.status == MyCertificatesStatus.initial) && state.items.isEmpty;
 
@@ -68,13 +85,17 @@ class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertifi
                       if (loadingEmpty) {
                         return RefreshIndicator(
                           onRefresh: () => onMyCertificatesPullToRefresh(context),
-                          child: ListView(
-                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                            padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
-                            children: const [
-                              SizedBox(height: 180),
-                              Center(child: CircularProgressIndicator()),
-                            ],
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                                padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                                  child: const MyCertificatesListSkeleton(),
+                                ),
+                              );
+                            },
                           ),
                         );
                       }
@@ -103,15 +124,28 @@ class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertifi
 
                       return RefreshIndicator(
                         onRefresh: () => onMyCertificatesPullToRefresh(context),
-                        child: AppStaggeredScrollLimiter(
-                          child: ListView.separated(
-                            padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
-                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                            itemCount: state.items.length,
-                            separatorBuilder: (_, _) => const SizedBox(height: 14),
-                            itemBuilder: (context, index) {
-                              return AppStaggeredListItem(position: index, child: buildCertificateCard(context, state.items[index], index));
-                            },
+                        child: NotificationListener<ScrollNotification>(
+                          onNotification: (n) => _onScrollNotification(n, context),
+                          child: AppStaggeredScrollLimiter(
+                            child: ListView.separated(
+                              padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
+                              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                              itemCount: state.items.length + (state.isLoadingMore ? 1 : 0),
+                              separatorBuilder: (_, index) {
+                                if (index >= state.items.length - 1 && state.isLoadingMore) {
+                                  return const SizedBox.shrink();
+                                }
+                                return const SizedBox(height: 14);
+                              },
+                              itemBuilder: (context, index) {
+                                if (index >= state.items.length) {
+                                  return Skeletonizer.zone(
+                                    child: const MyCertificateSkeletonCard(),
+                                  );
+                                }
+                                return AppStaggeredListItem(position: index, child: buildCertificateCard(context, state.items[index], index));
+                              },
+                            ),
                           ),
                         ),
                       );

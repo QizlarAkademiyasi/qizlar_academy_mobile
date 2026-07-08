@@ -1,5 +1,5 @@
 import 'package:qizlar_academy_mobile/feature/certificates/data/datasource/my_certificates_datasource.dart';
-import 'package:qizlar_academy_mobile/feature/certificates/domain/model/certificate_item_model.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/domain/model/my_certificates_page_model.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/domain/repository/my_certificates_repository.dart';
 
 class MyCertificatesRepositoryImpl implements MyCertificatesRepository {
@@ -8,7 +8,7 @@ class MyCertificatesRepositoryImpl implements MyCertificatesRepository {
   final MyCertificatesDatasource _datasource;
 
   @override
-  Future<List<CertificateItemModel>> fetchMyCertificates() {
-    return _datasource.fetchMyCertificates();
+  Future<MyCertificatesPageModel> fetchPage({required int pageNumber, int pageSize = 10}) {
+    return _datasource.fetchPage(pageNumber: pageNumber, pageSize: pageSize);
   }
 }

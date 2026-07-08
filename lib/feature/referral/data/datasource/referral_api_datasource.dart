@@ -50,6 +50,7 @@ class ReferralApiDatasource implements ReferralRemoteDatasource {
         'pageNumber': pageNumber,
         'pageSize': pageSize,
       },
+      options: Options(receiveTimeout: const Duration(seconds: 45)),
     );
     final envelope = _asMap(response.data);
     final data = _asMap(envelope['data'], logOnInvalidType: false);

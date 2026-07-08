@@ -87,4 +87,13 @@ sealed class Routes {
   /// Mening faolligim (haftalik / oylik statistikasi).
   static const String myActivity = '/my-activity';
   static const String myActivityName = 'myActivity';
+
+  static const String portfolio = '/portfolio';
+  static const String portfolioName = 'portfolio';
+
+  static String portfolioDetailPath(String postId) => '/portfolio/$postId';
+  static const String portfolioDetailName = 'portfolioDetail';
+
+  static const String portfolioCreate = '/portfolio/create';
+  static const String portfolioCreateName = 'portfolioCreate';
 }

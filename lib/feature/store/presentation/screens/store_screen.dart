@@ -87,19 +87,7 @@ class _StoreViewState extends State<_StoreView> with StoreScreenMixin<_StoreView
                           itemBuilder: (context, index) {
                             if (index >= state.items.length) {
                               return Skeletonizer.zone(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    AspectRatio(
-                                      aspectRatio: 1,
-                                      child: Container(
-                                        decoration: BoxDecoration(color: context.appColors.stroke, borderRadius: BorderRadius.circular(16)),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Bone.text(words: 2),
-                                  ],
-                                ),
+                                child: const StoreProductSkeletonCard(),
                               );
                             }
                             final product = state.items[index];

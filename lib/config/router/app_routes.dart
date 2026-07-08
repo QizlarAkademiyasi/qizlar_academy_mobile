@@ -27,6 +27,9 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/searc
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
 import 'package:qizlar_academy_mobile/feature/about_us/presentation/screens/about_us_screen.dart';
 import 'package:qizlar_academy_mobile/feature/privacy_policy/presentation/screens/privacy_policy_screen.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/create/portfolio_create_screen.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/detail/portfolio_detail_screen.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/portfolio_screen.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/screens/my_certificates_screen.dart';
 import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacancies_screen.dart';
 import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacancy_detail/vacancy_detail_screen.dart';
@@ -204,6 +207,12 @@ class AppRoute {
         if (location == Routes.myActivity && isGuest) {
           return Routes.signIn;
         }
+        if (location == Routes.portfolioCreate && isGuest) {
+          return Routes.signIn;
+        }
+        if (RegExp(r'^/portfolio/[^/]+$').hasMatch(state.uri.path) && isGuest) {
+          return Routes.signIn;
+        }
         if (state.uri.path.startsWith('/lesson-quiz/') && isGuest) {
           return Routes.signIn;
         }
@@ -244,6 +253,10 @@ class AppRoute {
           }
           if (location == Routes.referral) return Routes.register;
           if (location == Routes.myActivity) return Routes.register;
+          if (location == Routes.portfolioCreate) return Routes.register;
+          if (RegExp(r'^/portfolio/[^/]+$').hasMatch(state.uri.path)) {
+            return Routes.register;
+          }
           if (location == Routes.mainUser) return Routes.register;
         }
 
@@ -462,6 +475,27 @@ class AppRoute {
           name: Routes.myActivityName,
           parentNavigatorKey: rootNavigatorKey,
           builder: (_, _) => const ActivityScreen(),
+        ),
+        GoRoute(
+          path: Routes.portfolio,
+          name: Routes.portfolioName,
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (_, _) => const PortfolioScreen(),
+        ),
+        GoRoute(
+          path: Routes.portfolioCreate,
+          name: Routes.portfolioCreateName,
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (_, _) => const PortfolioCreateScreen(),
+        ),
+        GoRoute(
+          path: '/portfolio/:postId',
+          name: Routes.portfolioDetailName,
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final id = state.pathParameters['postId'] ?? '';
+            return PortfolioDetailScreen(postId: id);
+          },
         ),
         GoRoute(
           path: Routes.signIn,
