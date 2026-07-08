@@ -66,6 +66,46 @@ void main() {
     expect(page.nextCursor, 0);
   });
 
+  test('parses my posts pagination', () {
+    final page = datasource.parseMyPostsPayload(
+      _myPostsPayload(
+        items: [_postPayload()],
+        pageNumber: 1,
+        pageCount: 3,
+      ),
+      fallbackPageSize: 20,
+    );
+
+    expect(page.items, hasLength(1));
+    expect(page.hasMore, isTrue);
+    expect(page.nextCursor, 2);
+  });
+
+  test('parses my posts without pagination meta', () {
+    final page = datasource.parseMyPostsPayload(
+      _myPostsPayload(items: [_postPayload()]),
+      fallbackPageSize: 20,
+    );
+
+    expect(page.items, hasLength(1));
+    expect(page.hasMore, isFalse);
+    expect(page.nextCursor, 1);
+  });
+
+  test('fetch my posts uses expected endpoint', () async {
+    final dio = Dio();
+    final adapter = _FakeAdapter();
+    dio.httpClientAdapter = adapter;
+    final api = PortfolioApiDatasource(dio);
+
+    await api.fetchMyPosts(pageNumber: 1, pageSize: 20);
+
+    expect(adapter.lastMethod, 'GET');
+    expect(adapter.lastPath, '/api/v1/post/my');
+    expect(adapter.lastQueryParameters?['pageNumber'], 1);
+    expect(adapter.lastQueryParameters?['pageSize'], 20);
+  });
+
   test('parses like response', () {
     final result = datasource.parseLikePayload({
       'statusCode': 200,
@@ -150,6 +190,32 @@ Map<String, dynamic> _feedPayload({
   };
 }
 
+Map<String, dynamic> _myPostsPayload({
+  required List<Map<String, dynamic>> items,
+  int pageNumber = 1,
+  int pageCount = 1,
+  int pageSize = 20,
+  int count = 0,
+}) {
+  return <String, dynamic>{
+    'statusCode': 200,
+    'message': 'OK',
+    'data': <String, dynamic>{
+      'data': items,
+      'meta': pageCount <= 1 && pageNumber == 1 && count == 0
+          ? <String, dynamic>{}
+          : <String, dynamic>{
+              'pagination': <String, dynamic>{
+                'pageNumber': pageNumber,
+                'pageSize': pageSize,
+                'count': count == 0 ? items.length : count,
+                'pageCount': pageCount,
+              },
+            },
+    },
+  };
+}
+
 Map<String, dynamic> _postPayload({
   String? authorPhoto,
   List<Map<String, dynamic>>? media,
@@ -222,6 +288,7 @@ Map<String, dynamic> _commentsPayload() {
 class _FakeAdapter implements HttpClientAdapter {
   String? lastMethod;
   String? lastPath;
+  Map<String, dynamic>? lastQueryParameters;
 
   @override
   void close({bool force = false}) {}
@@ -234,6 +301,7 @@ class _FakeAdapter implements HttpClientAdapter {
   ) async {
     lastMethod = options.method;
     lastPath = options.path;
+    lastQueryParameters = Map<String, dynamic>.from(options.queryParameters);
     return ResponseBody.fromString('', 204);
   }
 }

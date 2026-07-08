@@ -1,5 +1,5 @@
-import 'package:qizlar_academy_mobile/feature/certificates/domain/model/certificate_item_model.dart';
+import 'package:qizlar_academy_mobile/feature/certificates/domain/model/my_certificates_page_model.dart';
 
 abstract class MyCertificatesDatasource {
-  Future<List<CertificateItemModel>> fetchMyCertificates();
+  Future<MyCertificatesPageModel> fetchPage({required int pageNumber, required int pageSize});
 }

@@ -55,6 +55,18 @@ class PortfolioRepositoryImpl implements PortfolioRepository {
   }
 
   @override
+  Future<PortfolioFeedPageModel> fetchMyPosts({
+    required int pageNumber,
+    required int pageSize,
+  }) {
+    _ensureRegistered();
+    return _apiDatasource.fetchMyPosts(
+      pageNumber: pageNumber,
+      pageSize: pageSize,
+    );
+  }
+
+  @override
   Future<PortfolioPostModel> fetchById(String id) {
     return _apiDatasource.fetchById(id);
   }

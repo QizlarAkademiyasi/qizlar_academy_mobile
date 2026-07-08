@@ -1,12 +1,13 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:qizlar_academy_mobile/config/bootstrap/app_bootstrap.dart';
 import 'package:qizlar_academy_mobile/config/flavor/env_config.dart';
 
 void main() {
   if (!EnvConfig.isInitialized) {
-    EnvConfig.initialize(appName: 'Qizlar Akademiyasi', flavor: kReleaseMode ? AppFlavors.prod : AppFlavors.dev);
+    final flavor = EnvConfig.resolveFlavor();
+    final appName = flavor == AppFlavors.dev ? 'Qizlar Akademiyasi (Dev)' : 'Qizlar Akademiyasi';
+    EnvConfig.initialize(appName: appName, flavor: flavor);
   }
 
   runZonedGuarded<Future<void>>(() async {

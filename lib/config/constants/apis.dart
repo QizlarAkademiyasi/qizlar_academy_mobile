@@ -185,6 +185,7 @@ sealed class PortfolioApis {
   static const String posts = '/api/v1/post';
   static const String publicFeed = '/api/v1/post/feed/public';
   static const String feed = '/api/v1/post/feed';
+  static const String myPosts = '/api/v1/post/my';
 
   static String postById(String id) =>
       '/api/v1/post/${Uri.encodeComponent(id)}';
