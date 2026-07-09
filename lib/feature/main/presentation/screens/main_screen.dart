@@ -128,26 +128,21 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
           Positioned(bottom: 0, left: 0, right: 0, child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image() : UiKitAssets.images.bottomNavLight.image()),
           Align(
             alignment: Alignment.bottomCenter,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                boxShadow: [BoxShadow(offset: Offset(0, 5), spreadRadius: -10, blurRadius: 30, color: AppColors.shadow.withValues(alpha: .2))],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 0),
-                child: SecondLiquidBottomNav(
-                  items: mainAppSecondLiquidBottomNavItems(context, isGuestMode: isGuestMode),
-                  currentIndex: selectedIndex,
-                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                  onChanged: onTabTap,
-                  selectedColor: context.appColors.primary,
-                  unselectedColor: context.appColors.bottomBarTabUnselected,
-                  extraActionIcon: Icons.add,
-                  onExtraActionTap: toggleExtraMenu,
-                  extraActionSemanticLabel: context.l10n.mainTabMore,
-                  isExpanded: isExtraMenuExpanded,
-                  expandedContent: MainExtraActionGrid(onItemTap: onExtraMenuItemTap),
-                  expandedContentHeight: MainExtraActionGrid.preferredHeightFor(kMainExtraMenuItems.length),
-                ),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 0),
+              child: SecondLiquidBottomNav(
+                items: mainAppSecondLiquidBottomNavItems(context, isGuestMode: isGuestMode),
+                currentIndex: selectedIndex,
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                onChanged: onTabTap,
+                selectedColor: context.appColors.primary,
+                unselectedColor: context.appColors.bottomBarTabUnselected,
+                extraActionIcon: Icons.add,
+                onExtraActionTap: toggleExtraMenu,
+                extraActionSemanticLabel: context.l10n.mainTabMore,
+                isExpanded: isExtraMenuExpanded,
+                expandedContent: MainExtraActionGrid(onItemTap: onExtraMenuItemTap),
+                expandedContentHeight: MainExtraActionGrid.preferredHeightFor(kMainExtraMenuItems.length),
               ),
             ),
           ),
