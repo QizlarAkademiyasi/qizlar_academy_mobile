@@ -136,7 +136,29 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
             splashFactory: NoSplash.splashFactory,
             overlayColor: WidgetStateProperty.all(Colors.transparent),
             child: Center(
-              child: Icon(icon, color: iconColor, size: height * 0.44),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                switchInCurve: Curves.easeOutBack,
+                switchOutCurve: Curves.easeIn,
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return RotationTransition(
+                    turns: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+                    child: FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(
+                        scale: animation,
+                        child: child,
+                      ),
+                    ),
+                  );
+                },
+                child: Icon(
+                  icon,
+                  key: ValueKey<int>(icon.codePoint),
+                  color: iconColor,
+                  size: height * 0.44,
+                ),
+              ),
             ),
           ),
         ),
@@ -157,37 +179,12 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: pill,
-          boxShadow: [BoxShadow(color: barShadow, blurRadius: 24, spreadRadius: -8, offset: const Offset(0, 12))],
+          boxShadow: [BoxShadow(color: barShadow, blurRadius: 20, spreadRadius: -6, offset: const Offset(0, 8))],
         ),
         child: clipped,
       ),
     );
-    if (!isActive) return button;
-    return Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.center,
-      children: [
-        Positioned(
-          top: -6,
-          child: Container(
-            width: height + 18,
-            height: height + 18,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  const Color(0xFFB794F6).withValues(alpha: 0.45),
-                  const Color(0xFF7DD3FC).withValues(alpha: 0.28),
-                  Colors.transparent,
-                ],
-                stops: const [0.0, 0.55, 1.0],
-              ),
-            ),
-          ),
-        ),
-        button,
-      ],
-    );
+    return button;
   }
 }
 
@@ -374,72 +371,65 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
     final double resolvedIndicatorSigma = widget.indicatorBlurSigma ?? (widget.backgroundBlurSigma > 0 ? widget.backgroundBlurSigma * 0.58 : 0.0);
     return SafeArea(
       top: false,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            left: widget.margin.left,
-            right: widget.margin.right,
-            bottom: 0,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: AppLiquidStretch(
-                    child: _SecondLiquidBottomNavBarContainer(
-                      height: widget.height,
-                      borderRadius: widget.borderRadius,
-                      backgroundColor: widget.backgroundColor ?? p.backgroundColor,
-                      backgroundBlurSigma: widget.backgroundBlurSigma,
-                      indicatorBlurSigma: resolvedIndicatorSigma,
-                      pulseTick: _navPulseTick,
-                      padding: widget.padding,
-                      items: widget.items,
-                      activeIndex: _activeIndex,
-                      onTap: _onTap,
-                      iconSize: widget.iconSize,
-                      selectedColor: widget.selectedColor ?? p.selectedColor,
-                      unselectedColor: widget.unselectedColor ?? p.unselectedColor,
-                      indicatorColor: widget.indicatorColor ?? p.indicatorColor,
-                      isExpanded: isExpanded,
-                      expandedContent: widget.expandedContent,
-                      expandedContentHeight: widget.expandedContentHeight,
+      child: Padding(
+        padding: widget.margin,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: AppLiquidStretch(
+                child: _SecondLiquidBottomNavBarContainer(
+                  height: widget.height,
+                  borderRadius: widget.borderRadius,
+                  backgroundColor: widget.backgroundColor ?? p.backgroundColor,
+                  backgroundBlurSigma: widget.backgroundBlurSigma,
+                  indicatorBlurSigma: resolvedIndicatorSigma,
+                  pulseTick: _navPulseTick,
+                  padding: widget.padding,
+                  items: widget.items,
+                  activeIndex: _activeIndex,
+                  onTap: _onTap,
+                  iconSize: widget.iconSize,
+                  selectedColor: widget.selectedColor ?? p.selectedColor,
+                  unselectedColor: widget.unselectedColor ?? p.unselectedColor,
+                  indicatorColor: widget.indicatorColor ?? p.indicatorColor,
+                  isExpanded: isExpanded,
+                  expandedContent: widget.expandedContent,
+                  expandedContentHeight: widget.expandedContentHeight,
+                ),
+              ),
+            ),
+            if (hasExtraButton) ...[
+              SizedBox(width: widget.extraButtonSpacing),
+              Padding(
+                padding: EdgeInsets.only(bottom: widget.extraButtonBottomInset),
+                child: AppLiquidStretch.compact(
+                  child: Listener(
+                    behavior: HitTestBehavior.translucent,
+                    onPointerDown: _onExtraButtonPointerDown,
+                    child: SingleMotionBuilder(
+                      value: _extraPulseTick.toDouble(),
+                      motion: const CupertinoMotion.smooth(duration: Duration(milliseconds: 360), extraBounce: 0),
+                      builder: (context, animatedTick, child) {
+                        final double pulse = _secondLiquidBottomNavPulseFromProgress(animatedTick);
+                        return Transform.scale(
+                          scale: 1 - (0.028 * pulse),
+                          child: SizedBox(
+                            width: widget.height,
+                            height: widget.height,
+                            child: FittedBox(fit: BoxFit.contain, child: child),
+                          ),
+                        );
+                      },
+                      child: resolvedExtra,
                     ),
                   ),
                 ),
-                  if (hasExtraButton) ...[
-                    SizedBox(width: widget.extraButtonSpacing),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: widget.extraButtonBottomInset),
-                      child: AppLiquidStretch.compact(
-                        child: Listener(
-                          behavior: HitTestBehavior.translucent,
-                          onPointerDown: _onExtraButtonPointerDown,
-                          child: SingleMotionBuilder(
-                            value: _extraPulseTick.toDouble(),
-                            motion: const CupertinoMotion.smooth(duration: Duration(milliseconds: 360), extraBounce: 0),
-                            builder: (context, animatedTick, child) {
-                              final double pulse = _secondLiquidBottomNavPulseFromProgress(animatedTick);
-                              return Transform.scale(
-                                scale: 1 - (0.028 * pulse),
-                                child: SizedBox(
-                                  width: widget.height,
-                                  height: widget.height,
-                                  child: FittedBox(fit: BoxFit.contain, child: child),
-                                ),
-                              );
-                            },
-                            child: resolvedExtra,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
               ),
-            ),
+            ],
           ],
         ),
+      ),
     );
   }
 }
@@ -650,12 +640,12 @@ class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
 }
 
 class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomNavBarContainer> with SingleTickerProviderStateMixin {
-  static const Duration _expandDuration = Duration(milliseconds: 420);
+  static const Duration _expandDuration = Duration(milliseconds: 320);
 
   late final AnimationController _expandController = AnimationController(vsync: this, duration: _expandDuration);
   late final Animation<double> _expandCurve = CurvedAnimation(
     parent: _expandController,
-    curve: Curves.easeOutCubic,
+    curve: Curves.easeOutBack,
     reverseCurve: Curves.easeInCubic,
   );
   late final Animation<double> _contentOpacity = CurvedAnimation(
@@ -758,16 +748,7 @@ class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomN
           height: widget.height,
           child: Padding(
             padding: widget.padding,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(999),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (useBlur && !showExpandedStyle) ColoredBox(color: lightBar ? innerVeilLight : innerVeilDark),
-                  pillTabs,
-                ],
-              ),
-            ),
+            child: pillTabs,
           ),
         );
         final double expandHeight = widget.expandedContentHeight ?? 0;
@@ -798,27 +779,10 @@ class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomN
             tabRow,
           ],
         );
-        final Widget barBody = showExpandedStyle && useBlur
+        final Widget barBody = useBlur
             ? ColoredBox(color: lightBar ? innerVeilLight : innerVeilDark, child: columnBody)
             : columnBody;
-        final Widget inner = showExpandedStyle
-            ? DecoratedBox(
-                decoration: BoxDecoration(
-                  color: useBlur ? (lightBar ? innerVeilLight : innerVeilDark) : surfaceTint,
-                  border: Border.all(color: edgeColor, width: edgeW),
-                  borderRadius: outerRadius,
-                ),
-                child: useBlur
-                    ? ClipRRect(
-                        borderRadius: outerRadius,
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
-                          child: barBody,
-                        ),
-                      )
-                    : barBody,
-              )
-            : useBlur
+        final Widget inner = useBlur
             ? LiquidGlassLayer(
                 fake: false,
                 useBackdropGroup: true,
@@ -839,18 +803,18 @@ class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomN
                 ),
                 child: barBody,
               );
-        final Widget clipped = useBlur && !showExpandedStyle ? ClipRRect(borderRadius: outerRadius, child: inner) : inner;
+        final Widget clipped = ClipRRect(borderRadius: BorderRadius.circular(resolvedRadius), child: inner);
         return Transform.scale(
           scale: 1 - (0.006 * pulse),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              borderRadius: outerRadius,
+              borderRadius: BorderRadius.circular(resolvedRadius),
               boxShadow: [BoxShadow(color: barShadow, blurRadius: 24 - (1.5 * pulse), spreadRadius: -8, offset: Offset(0, 12 - (0.6 * pulse)))],
             ),
             child: Material(
               type: MaterialType.transparency,
-              borderRadius: outerRadius,
-              clipBehavior: showExpandedStyle ? Clip.none : Clip.antiAlias,
+              borderRadius: BorderRadius.circular(resolvedRadius),
+              clipBehavior: Clip.none,
               child: clipped,
             ),
           ),
