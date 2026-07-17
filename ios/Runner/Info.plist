@@ -73,13 +73,15 @@
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<true/>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
-	<true/>
+	<false/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Reklama samaradorligini o'lchash va sizga mos reklamalarni ko'rsatish uchun qurilma identifikatoridan foydalanishga ruxsat bering.</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
 	<key>FLTEnableImpeller</key>
-	<false/>
+	<true/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

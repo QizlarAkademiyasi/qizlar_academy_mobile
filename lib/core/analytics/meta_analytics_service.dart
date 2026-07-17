@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/facebook_config.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
@@ -19,30 +20,59 @@ class MetaAnalyticsService {
 
   final FacebookAppEvents _events = FacebookAppEvents();
   bool _initialized = false;
+  Future<void>? _initialization;
 
   bool get isInitialized => _initialized;
 
   /// SDK sozlash. Bir martagina init qilinadi; takroriy chaqiruv no-op.
   /// Agar [FacebookConfig.isConfigured] `false` bo‘lsa init skip qilinadi.
-  Future<void> initialize() async {
-    if (_initialized) return;
+  Future<void> initialize() => _initialization ??= _initialize();
+
+  Future<void> _initialize() async {
     if (!FacebookConfig.isConfigured) {
       AppLogger.w('Meta App Events: init skipped (FACEBOOK_APP_ID empty)');
       return;
     }
     try {
-      // ATT yoqilmagan rejim: SDK IDFA dan foydalanmasin.
-      // (iOS uchun xosroq; Android'da effekti yo‘q.)
-      await _events.setAdvertiserTracking(enabled: false, collectId: false);
+      final nativeAppId = (await _events.getApplicationId())?.trim();
+      if (nativeAppId != FacebookConfig.appId) {
+        AppLogger.e(<String, dynamic>{
+          'meta_analytics': 'app_id_mismatch',
+          'expected_app_id': FacebookConfig.appId,
+          'native_app_id': nativeAppId,
+        });
+        return;
+      }
+
+      String trackingStatus = 'not_applicable';
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        var status = await AppTrackingTransparency.trackingAuthorizationStatus;
+        if (status == TrackingStatus.notDetermined) {
+          status = await AppTrackingTransparency.requestTrackingAuthorization();
+        }
+        final trackingEnabled = status == TrackingStatus.authorized;
+        await _events.setAdvertiserTracking(
+          enabled: trackingEnabled,
+          collectId: trackingEnabled,
+        );
+        trackingStatus = status.name;
+      }
+
       await _events.setAutoLogAppEventsEnabled(true);
       _initialized = true;
       AppLogger.i(<String, dynamic>{
         'meta_analytics': 'initialized',
-        'app_id': FacebookConfig.appId,
+        'app_id': nativeAppId,
+        'tracking_status': trackingStatus,
       });
     } catch (e, st) {
       AppLogger.e('Meta App Events init failed', error: e, stackTrace: st);
     }
+  }
+
+  Future<bool> _ensureInitialized() async {
+    await initialize();
+    return _initialized;
   }
 
   /// Ro‘yxatdan o‘tish yakunlanganda (OTP success, profile create va h.k.).
@@ -52,7 +82,7 @@ class MetaAnalyticsService {
     String? method,
     Map<String, dynamic>? extraParameters,
   }) async {
-    if (!_initialized) return;
+    if (!await _ensureInitialized()) return;
     try {
       await _events.logEvent(
         name: FacebookAppEvents.eventNameCompletedRegistration,
@@ -86,7 +116,7 @@ class MetaAnalyticsService {
     double? price,
     Map<String, dynamic>? extraParameters,
   }) async {
-    if (!_initialized) return;
+    if (!await _ensureInitialized()) return;
     try {
       await _events.logEvent(
         name: FacebookAppEvents.eventNameViewedContent,
@@ -119,7 +149,7 @@ class MetaAnalyticsService {
     required String currency,
     Map<String, dynamic>? parameters,
   }) async {
-    if (!_initialized) return;
+    if (!await _ensureInitialized()) return;
     try {
       await _events.logPurchase(
         amount: amount,
@@ -132,11 +162,7 @@ class MetaAnalyticsService {
         'currency': currency,
       });
     } catch (e, st) {
-      AppLogger.e(
-        'Meta App Events purchase failed',
-        error: e,
-        stackTrace: st,
-      );
+      AppLogger.e('Meta App Events purchase failed', error: e, stackTrace: st);
     }
   }
 
@@ -203,7 +229,7 @@ class MetaAnalyticsService {
     Map<String, dynamic>? parameters,
     double? valueToSum,
   }) async {
-    if (!_initialized) return;
+    if (!await _ensureInitialized()) return;
     try {
       await _events.logEvent(
         name: name,
@@ -222,30 +248,22 @@ class MetaAnalyticsService {
 
   /// Login bo‘lgandan keyin user identifikatorini bog‘lash (audience uchun).
   Future<void> setUserId(String userId) async {
-    if (!_initialized) return;
+    if (!await _ensureInitialized()) return;
     try {
       await _events.setUserID(userId);
     } catch (e, st) {
-      AppLogger.e(
-        'Meta App Events setUserID failed',
-        error: e,
-        stackTrace: st,
-      );
+      AppLogger.e('Meta App Events setUserID failed', error: e, stackTrace: st);
     }
   }
 
   /// Sign-out paytida saqlangan user identifikatorlarni tozalash.
   Future<void> clearUser() async {
-    if (!_initialized) return;
+    if (!await _ensureInitialized()) return;
     try {
       await _events.clearUserID();
       await _events.clearUserData();
     } catch (e, st) {
-      AppLogger.e(
-        'Meta App Events clearUser failed',
-        error: e,
-        stackTrace: st,
-      );
+      AppLogger.e('Meta App Events clearUser failed', error: e, stackTrace: st);
     }
   }
 }

@@ -1367,4 +1367,17 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get storeExtraMenuTitle => 'Ko\'proq';
+
+  @override
+  String get offlineTitle => 'Internet aloqasi yo\'q';
+
+  @override
+  String get offlineDescription =>
+      'Internet ulanishingizni tekshiring. Aloqa tiklangach, ilova avtomatik ravishda davom etadi.';
+
+  @override
+  String get offlineRetry => 'Qayta tekshirish';
+
+  @override
+  String get offlineWaiting => 'Internet ulanishi kutilmoqda...';
 }

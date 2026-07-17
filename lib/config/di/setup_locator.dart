@@ -7,6 +7,7 @@ import 'package:qizlar_academy_mobile/core/network/daily_streak_daily_fetch_serv
 import 'package:qizlar_academy_mobile/core/network/api_client.dart';
 import 'package:qizlar_academy_mobile/core/network/app_network_logger_interceptor.dart';
 import 'package:qizlar_academy_mobile/core/network/insecure_ssl_override.dart';
+import 'package:qizlar_academy_mobile/core/network/network_status_service.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/datasource/auth_local_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/datasource/auth_remote_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/repository/auth_repository_impl.dart';
@@ -125,6 +126,9 @@ Future<void> setupLocator() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final prefs = await SharedPreferences.getInstance();
   getIt.registerSingleton<SharedPreferences>(prefs);
+  getIt.registerSingleton<NetworkStatusService>(
+    NetworkStatusService()..start(),
+  );
   await AppRemoteConfig.initialize(prefs);
   getIt.registerSingleton<SettingsDataSource>(SettingsDataSourceImpl(prefs));
   getIt.registerSingleton<AuthLocalDatasource>(AuthLocalDatasourceImpl(prefs));

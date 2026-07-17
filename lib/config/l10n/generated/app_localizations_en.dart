@@ -1357,4 +1357,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get storeExtraMenuTitle => 'More';
+
+  @override
+  String get offlineTitle => 'No internet connection';
+
+  @override
+  String get offlineDescription =>
+      'Check your internet connection. The app will continue automatically when you are back online.';
+
+  @override
+  String get offlineRetry => 'Check again';
+
+  @override
+  String get offlineWaiting => 'Waiting for an internet connection...';
 }

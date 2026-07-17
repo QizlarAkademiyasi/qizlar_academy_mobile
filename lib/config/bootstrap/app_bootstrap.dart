@@ -130,18 +130,27 @@ abstract final class AppBootstrap {
   }
 
   /// Birinchi freymdan keyin: PDF, Google Sign-In, Meta, push — [runApp] gacha emas.
-  static Future<void> _runDeferredHeavyStartup(_StartupTelemetry telemetry) async {
+  static Future<void> _runDeferredHeavyStartup(
+    _StartupTelemetry telemetry,
+  ) async {
     final sw = Stopwatch()..start();
     await Future.wait<void>([
       _initPdfrx(telemetry),
-      if (AppRemoteConfig.instance.googleSignInEnabled) _initGoogleSignIn(telemetry),
-      _initMetaAnalytics(telemetry),
-      _bindPushMessagingAfterUi(),
+      if (AppRemoteConfig.instance.googleSignInEnabled)
+        _initGoogleSignIn(telemetry),
+      _initMetaThenPush(telemetry),
     ]);
     AppLogger.i(<String, dynamic>{
       'startup_phase': 'after_first_frame_deferred_total',
       'ms': sw.elapsedMilliseconds,
     });
+  }
+
+  /// iOS bir vaqtning o‘zida ikkita native permission dialogini ko‘rsatmaydi.
+  /// ATT yakunlangachgina notification permission so‘raladi.
+  static Future<void> _initMetaThenPush(_StartupTelemetry telemetry) async {
+    await _initMetaAnalytics(telemetry);
+    await _bindPushMessagingAfterUi();
   }
 
   /// Birinchi freym chizilgach — iOS’da APNS kutishi [runApp] ni bloklamasligi uchun.

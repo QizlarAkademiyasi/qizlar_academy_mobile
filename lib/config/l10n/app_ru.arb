@@ -635,5 +635,9 @@
   "storeStatusDelivered": "Доставлен",
   "storeStatusCancelled": "Отменён",
   "storeStatusRefunded": "Возврат",
-  "storeExtraMenuTitle": "Ещё"
+  "storeExtraMenuTitle": "Ещё",
+  "offlineTitle": "Нет подключения к интернету",
+  "offlineDescription": "Проверьте подключение. Приложение продолжит работу автоматически после восстановления интернета.",
+  "offlineRetry": "Проверить снова",
+  "offlineWaiting": "Ожидание подключения к интернету..."
 }
