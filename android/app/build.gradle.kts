@@ -52,10 +52,11 @@ android {
         //   sinxron. Hard-lock qilingan, local override qo‘llanmaydi.
         // - `facebook.clientToken` — Meta Developer Console → Settings → Advanced → Client Token.
         //   Bo‘sh bo‘lsa SDK App Events ni init qila olmaydi (analytics ishlamaydi).
-        //   Override: `android/local.properties` `facebook.clientToken=...`.
-        val facebookAppId = "1226563685979967"
-        val facebookClientToken =
-            localProperties.getProperty("facebook.clientToken") ?: ""
+        //   Qiymatlar `android/gradle.properties` ichidan olinadi.
+        val facebookAppId = providers.gradleProperty("facebook.appId").orNull?.trim().orEmpty()
+        val facebookClientToken = providers.gradleProperty("facebook.clientToken").orNull?.trim().orEmpty()
+        require(facebookAppId.isNotEmpty()) { "facebook.appId is required in android/gradle.properties" }
+        require(facebookClientToken.isNotEmpty()) { "facebook.clientToken is required in android/gradle.properties" }
         manifestPlaceholders["facebookAppId"] = facebookAppId
         manifestPlaceholders["facebookClientToken"] = facebookClientToken
         // Manifest da `@string/facebook_app_id` ko‘rinishida ishlatamiz — XML

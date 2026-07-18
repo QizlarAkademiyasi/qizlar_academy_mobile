@@ -3,6 +3,8 @@ import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/network/activity_ping_service.dart';
+import 'package:qizlar_academy_mobile/core/network/network_status_service.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/offline_mode_gate.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/router_boot_placeholder.dart';
 
 class MyApp extends StatelessWidget {
@@ -19,9 +21,20 @@ class MyApp extends StatelessWidget {
       builder: (context) => ActivityPingScope(
         child: MaterialApp.router(
           routerConfig: goRouter,
-          builder: (context, child) => _GlobalKeyboardDismiss(child: ThemeCircleAnimation(child: child ?? const RouterBootPlaceholder())),
+          builder: (context, child) => OfflineModeGate(
+            service: getIt<NetworkStatusService>(),
+            child: _GlobalKeyboardDismiss(
+              child: ThemeCircleAnimation(
+                child: child ?? const RouterBootPlaceholder(),
+              ),
+            ),
+          ),
           onGenerateTitle: (ctx) => ctx.l10n.appTitle,
-          scrollBehavior: ScrollBehavior().copyWith(physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics())),
+          scrollBehavior: ScrollBehavior().copyWith(
+            physics: AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+          ),
           theme: AppOptions.of(context).themeLightData(context),
           darkTheme: AppOptions.of(context).themeDarkData(context),
           themeMode: AppOptions.of(context).themeMode,

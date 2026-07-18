@@ -635,5 +635,9 @@
   "storeStatusDelivered": "Yetkazilgan",
   "storeStatusCancelled": "Bekor qilingan",
   "storeStatusRefunded": "Qaytarilgan",
-  "storeExtraMenuTitle": "Ko'proq"
+  "storeExtraMenuTitle": "Ko'proq",
+  "offlineTitle": "Internet aloqasi yo'q",
+  "offlineDescription": "Internet ulanishingizni tekshiring. Aloqa tiklangach, ilova avtomatik ravishda davom etadi.",
+  "offlineRetry": "Qayta tekshirish",
+  "offlineWaiting": "Internet ulanishi kutilmoqda..."
 }

@@ -680,5 +680,9 @@
   "storeStatusDelivered": "Delivered",
   "storeStatusCancelled": "Cancelled",
   "storeStatusRefunded": "Refunded",
-  "storeExtraMenuTitle": "More"
+  "storeExtraMenuTitle": "More",
+  "offlineTitle": "No internet connection",
+  "offlineDescription": "Check your internet connection. The app will continue automatically when you are back online.",
+  "offlineRetry": "Check again",
+  "offlineWaiting": "Waiting for an internet connection..."
 }

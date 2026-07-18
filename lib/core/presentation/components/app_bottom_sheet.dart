@@ -2,7 +2,12 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 /// Pastdan modal sheet: [ModalSheetRoute] + [Sheet] ([SheetSize.fit]). [isScrollControlled] — API mosligi.
-Future<T?> showAppBottomSheet<T>(BuildContext context, {required Widget child, bool isScrollControlled = true, bool useSafeArea = true}) {
+Future<T?> showAppBottomSheet<T>(
+  BuildContext context, {
+  required Widget child,
+  bool isScrollControlled = true,
+  bool useSafeArea = true,
+}) {
   return Navigator.of(context).push<T>(
     ModalSheetRoute<T>(
       barrierColor: Colors.black.withValues(alpha: 0.45),
@@ -13,7 +18,12 @@ Future<T?> showAppBottomSheet<T>(BuildContext context, {required Widget child, b
       viewportBuilder: (ctx, sheetChild) {
         final mq = MediaQuery.of(ctx);
         return SheetViewport(
-          padding: EdgeInsets.only(top: useSafeArea ? mq.padding.top : 0, left: useSafeArea ? mq.padding.left : 0, right: useSafeArea ? mq.padding.right : 0, bottom: mq.viewInsets.bottom),
+          padding: EdgeInsets.only(
+            top: useSafeArea ? mq.padding.top : 0,
+            left: useSafeArea ? mq.padding.left : 0,
+            right: useSafeArea ? mq.padding.right : 0,
+            bottom: mq.viewInsets.bottom,
+          ),
           child: sheetChild,
         );
       },
@@ -21,8 +31,15 @@ Future<T?> showAppBottomSheet<T>(BuildContext context, {required Widget child, b
         initialOffset: const SheetOffset(1),
         snapGrid: const SheetSnapGrid.single(snap: SheetOffset(1)),
         physics: const BouncingSheetPhysics(),
-        decoration: MaterialSheetDecoration(size: SheetSize.fit, color: Colors.transparent, elevation: 0, shadowColor: Colors.transparent),
-        scrollConfiguration: const SheetScrollConfiguration(scrollSyncMode: SheetScrollHandlingBehavior.onlyFromTop),
+        decoration: MaterialSheetDecoration(
+          size: SheetSize.fit,
+          color: Colors.transparent,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+        ),
+        scrollConfiguration: const SheetScrollConfiguration(
+          scrollSyncMode: SheetScrollHandlingBehavior.onlyFromTop,
+        ),
         child: AppTabletMaxWidth(child: child),
       ),
     ),
@@ -38,6 +55,7 @@ class AppBottomSheetContainer extends StatelessWidget {
     this.showHandle = true,
     this.headerGradient,
     this.isBackgorun = true,
+    this.isScrollable = false,
   });
 
   final String? title;
@@ -46,6 +64,7 @@ class AppBottomSheetContainer extends StatelessWidget {
   final bool showHandle;
   final Gradient? headerGradient;
   final bool isBackgorun;
+  final bool isScrollable;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +77,11 @@ class AppBottomSheetContainer extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   fit: BoxFit.cover,
                   scale: 1.5,
-                  image: context.isDarkTheme ? UiKitAssets.images.bottomSheet.bottomSheetDark.provider() : UiKitAssets.images.bottomSheet.bottomSheetLight.provider(),
+                  image: context.isDarkTheme
+                      ? UiKitAssets.images.bottomSheet.bottomSheetDark
+                            .provider()
+                      : UiKitAssets.images.bottomSheet.bottomSheetLight
+                            .provider(),
                 )
               : null,
           color: context.appColors.background,
@@ -71,7 +94,9 @@ class AppBottomSheetContainer extends StatelessWidget {
               top: false,
               bottom: false,
               child: Padding(
-                padding: padding.add(EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom)),
+                padding: padding.add(
+                  EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -81,12 +106,27 @@ class AppBottomSheetContainer extends StatelessWidget {
                         child: Container(
                           width: 40,
                           height: 4,
-                          decoration: BoxDecoration(color: context.appColors.text, borderRadius: AppRadius.radius2),
+                          decoration: BoxDecoration(
+                            color: context.appColors.text,
+                            borderRadius: AppRadius.radius2,
+                          ),
                         ),
                       ),
-                    if (title != null && title!.isNotEmpty) ...[const SizedBox(height: 16), Text(title!, style: context.textTheme.bodyXLargeSemibold.copyWith(color: context.appColors.text))],
-                    if (showHandle || (title != null && title!.isNotEmpty)) const SizedBox(height: 16),
-                    child,
+                    if (title != null && title!.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        title!,
+                        style: context.textTheme.bodyXLargeSemibold.copyWith(
+                          color: context.appColors.text,
+                        ),
+                      ),
+                    ],
+                    if (showHandle || (title != null && title!.isNotEmpty))
+                      const SizedBox(height: 16),
+                    if (isScrollable)
+                      Flexible(child: SingleChildScrollView(child: child))
+                    else
+                      child,
                     const SizedBox(height: 12),
                   ],
                 ),

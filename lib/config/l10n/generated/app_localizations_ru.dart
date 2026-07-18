@@ -1371,4 +1371,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get storeExtraMenuTitle => 'Ещё';
+
+  @override
+  String get offlineTitle => 'Нет подключения к интернету';
+
+  @override
+  String get offlineDescription =>
+      'Проверьте подключение. Приложение продолжит работу автоматически после восстановления интернета.';
+
+  @override
+  String get offlineRetry => 'Проверить снова';
+
+  @override
+  String get offlineWaiting => 'Ожидание подключения к интернету...';
 }

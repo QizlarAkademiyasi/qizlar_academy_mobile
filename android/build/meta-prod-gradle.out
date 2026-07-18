@@ -1,0 +1,144 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :gradle
+WARNING: Unsupported Kotlin plugin version.
+The `embedded-kotlin` and `kotlin-dsl` plugins rely on features of Kotlin `2.0.21` that might work differently than in the requested version `2.2.20`.
+
+> Task :gradle:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle:compileKotlin UP-TO-DATE
+> Task :gradle:compileJava NO-SOURCE
+> Task :gradle:compileGroovy NO-SOURCE
+> Task :gradle:pluginDescriptors UP-TO-DATE
+> Task :gradle:processResources UP-TO-DATE
+> Task :gradle:classes UP-TO-DATE
+> Task :gradle:jar UP-TO-DATE
+
+> Configure project :app
+WARNING: The option setting 'android.defaults.buildfeatures.buildconfig=true' is deprecated.
+The current default is 'false'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+To keep using this feature, add the following to your module-level build.gradle files:
+    android.buildFeatures.buildConfig = true
+or from Android Studio, click: `Refactor` > `Migrate BuildConfig to Gradle Build Files`.
+w: file:///D:/Codes/Qizlar%20Akademiyasi/qizlar_academy_mobile/android/app/build.gradle.kts:35:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preProdReleaseBuild UP-TO-DATE
+> Task :app_links:preBuild UP-TO-DATE
+> Task :app_links:preReleaseBuild UP-TO-DATE
+> Task :app_links:writeReleaseAarMetadata UP-TO-DATE
+> Task :appinio_social_share:preBuild UP-TO-DATE
+> Task :appinio_social_share:preReleaseBuild UP-TO-DATE
+> Task :appinio_social_share:writeReleaseAarMetadata UP-TO-DATE
+> Task :audio_session:preBuild UP-TO-DATE
+> Task :audio_session:preReleaseBuild UP-TO-DATE
+> Task :audio_session:writeReleaseAarMetadata UP-TO-DATE
+> Task :connectivity_plus:preBuild UP-TO-DATE
+> Task :connectivity_plus:preReleaseBuild UP-TO-DATE
+> Task :connectivity_plus:writeReleaseAarMetadata UP-TO-DATE
+> Task :device_info_plus:preBuild UP-TO-DATE
+> Task :device_info_plus:preReleaseBuild UP-TO-DATE
+> Task :device_info_plus:writeReleaseAarMetadata UP-TO-DATE
+> Task :devicelocale:preBuild UP-TO-DATE
+> Task :devicelocale:preReleaseBuild UP-TO-DATE
+> Task :devicelocale:writeReleaseAarMetadata UP-TO-DATE
+> Task :facebook_app_events:preBuild UP-TO-DATE
+> Task :facebook_app_events:preReleaseBuild UP-TO-DATE
+> Task :facebook_app_events:writeReleaseAarMetadata UP-TO-DATE
+> Task :firebase_auth:preBuild UP-TO-DATE
+> Task :firebase_auth:preReleaseBuild UP-TO-DATE
+> Task :firebase_auth:writeReleaseAarMetadata UP-TO-DATE
+> Task :firebase_core:preBuild UP-TO-DATE
+> Task :firebase_core:preReleaseBuild UP-TO-DATE
+> Task :firebase_core:writeReleaseAarMetadata UP-TO-DATE
+> Task :firebase_crashlytics:preBuild UP-TO-DATE
+> Task :firebase_crashlytics:preReleaseBuild UP-TO-DATE
+> Task :firebase_crashlytics:writeReleaseAarMetadata UP-TO-DATE
+> Task :firebase_messaging:preBuild UP-TO-DATE
+> Task :firebase_messaging:preReleaseBuild UP-TO-DATE
+> Task :firebase_messaging:writeReleaseAarMetadata UP-TO-DATE
+> Task :firebase_remote_config:preBuild UP-TO-DATE
+> Task :firebase_remote_config:preReleaseBuild UP-TO-DATE
+> Task :firebase_remote_config:writeReleaseAarMetadata UP-TO-DATE
+> Task :flutter_inappwebview_android:preBuild UP-TO-DATE
+> Task :flutter_inappwebview_android:preReleaseBuild UP-TO-DATE
+> Task :flutter_inappwebview_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :flutter_local_notifications:preBuild UP-TO-DATE
+> Task :flutter_local_notifications:preReleaseBuild UP-TO-DATE
+> Task :flutter_local_notifications:writeReleaseAarMetadata UP-TO-DATE
+> Task :flutter_plugin_android_lifecycle:preBuild UP-TO-DATE
+> Task :flutter_plugin_android_lifecycle:preReleaseBuild UP-TO-DATE
+> Task :flutter_plugin_android_lifecycle:writeReleaseAarMetadata UP-TO-DATE
+> Task :fluttertoast:preBuild UP-TO-DATE
+> Task :fluttertoast:preReleaseBuild UP-TO-DATE
+> Task :fluttertoast:writeReleaseAarMetadata UP-TO-DATE
+> Task :gaimon:preBuild UP-TO-DATE
+> Task :gaimon:preReleaseBuild UP-TO-DATE
+> Task :gaimon:writeReleaseAarMetadata UP-TO-DATE
+> Task :google_sign_in_android:preBuild UP-TO-DATE
+> Task :google_sign_in_android:preReleaseBuild UP-TO-DATE
+> Task :google_sign_in_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :image_cropper:preBuild UP-TO-DATE
+> Task :image_cropper:preReleaseBuild UP-TO-DATE
+> Task :image_cropper:writeReleaseAarMetadata UP-TO-DATE
+> Task :image_picker_android:preBuild UP-TO-DATE
+> Task :image_picker_android:preReleaseBuild UP-TO-DATE
+> Task :image_picker_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :in_app_review:preBuild UP-TO-DATE
+> Task :in_app_review:preReleaseBuild UP-TO-DATE
+> Task :in_app_review:writeReleaseAarMetadata UP-TO-DATE
+> Task :jni:preBuild UP-TO-DATE
+> Task :jni:preReleaseBuild UP-TO-DATE
+> Task :jni:writeReleaseAarMetadata UP-TO-DATE
+> Task :jni_flutter:preBuild UP-TO-DATE
+> Task :jni_flutter:preReleaseBuild UP-TO-DATE
+> Task :jni_flutter:writeReleaseAarMetadata UP-TO-DATE
+> Task :just_audio:preBuild UP-TO-DATE
+> Task :just_audio:preReleaseBuild UP-TO-DATE
+> Task :just_audio:writeReleaseAarMetadata UP-TO-DATE
+> Task :map_launcher:preBuild UP-TO-DATE
+> Task :map_launcher:preReleaseBuild UP-TO-DATE
+> Task :map_launcher:writeReleaseAarMetadata UP-TO-DATE
+> Task :package_info_plus:preBuild UP-TO-DATE
+> Task :package_info_plus:preReleaseBuild UP-TO-DATE
+> Task :package_info_plus:writeReleaseAarMetadata UP-TO-DATE
+> Task :permission_handler_android:preBuild UP-TO-DATE
+> Task :permission_handler_android:preReleaseBuild UP-TO-DATE
+> Task :permission_handler_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :photo_manager:preBuild UP-TO-DATE
+> Task :photo_manager:preReleaseBuild UP-TO-DATE
+> Task :photo_manager:writeReleaseAarMetadata UP-TO-DATE
+> Task :screen_protector:preBuild UP-TO-DATE
+> Task :screen_protector:preReleaseBuild UP-TO-DATE
+> Task :screen_protector:writeReleaseAarMetadata UP-TO-DATE
+> Task :share_plus:preBuild UP-TO-DATE
+> Task :share_plus:preReleaseBuild UP-TO-DATE
+> Task :share_plus:writeReleaseAarMetadata UP-TO-DATE
+> Task :shared_preferences_android:preBuild UP-TO-DATE
+> Task :shared_preferences_android:preReleaseBuild UP-TO-DATE
+> Task :shared_preferences_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :sms_autofill:preBuild UP-TO-DATE
+> Task :sms_autofill:preReleaseBuild UP-TO-DATE
+> Task :sms_autofill:writeReleaseAarMetadata UP-TO-DATE
+> Task :sqflite_android:preBuild UP-TO-DATE
+> Task :sqflite_android:preReleaseBuild UP-TO-DATE
+> Task :sqflite_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :url_launcher_android:preBuild UP-TO-DATE
+> Task :url_launcher_android:preReleaseBuild UP-TO-DATE
+> Task :url_launcher_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :video_player_android:preBuild UP-TO-DATE
+> Task :video_player_android:preReleaseBuild UP-TO-DATE
+> Task :video_player_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :volume_controller:preBuild UP-TO-DATE
+> Task :volume_controller:preReleaseBuild UP-TO-DATE
+> Task :volume_controller:writeReleaseAarMetadata UP-TO-DATE
+> Task :wakelock_plus:preBuild UP-TO-DATE
+> Task :wakelock_plus:preReleaseBuild UP-TO-DATE
+> Task :wakelock_plus:writeReleaseAarMetadata UP-TO-DATE
+> Task :webview_flutter_android:preBuild UP-TO-DATE
+> Task :webview_flutter_android:preReleaseBuild UP-TO-DATE
+> Task :webview_flutter_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :app:checkProdReleaseAarMetadata UP-TO-DATE
+> Task :app:cleanMergeProdReleaseAssets UP-TO-DATE
+> Task :app:compileFlutterBuildProdRelease

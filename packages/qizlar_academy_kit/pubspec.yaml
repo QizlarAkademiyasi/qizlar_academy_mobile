@@ -73,6 +73,7 @@ dependencies:
   # mos keladi — `appinio_social_share` `FBSDKCoreKit '17.0.2'` ni qattiq pin
   # qilgan. 0.20.0+ FBSDK 18.x ga o‘tgan va Pod resolve konfliktiga olib keladi.
   facebook_app_events: 0.19.6
+  app_tracking_transparency: ^2.0.7
 
   # Media
   image_picker: ^1.1.2
@@ -99,7 +100,8 @@ dependencies:
   flutter_html: ^3.0.0
   flutter_markdown: ^0.7.7+1
   markdown: ^7.3.1
-  liquid_glass_renderer: ^0.2.0-dev.4
+  liquid_glass_renderer:
+    path: ../liquid_glass_renderer
   # Fork: `iconBuilder` (SVG bottom nav) — pub.dev versiyasida yo'q.
   liquid_glass_widgets:
     path: ../liquid_glass_widgets

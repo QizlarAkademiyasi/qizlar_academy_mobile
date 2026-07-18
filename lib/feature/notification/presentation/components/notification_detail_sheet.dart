@@ -12,6 +12,7 @@ Future<void> showNotificationDetailSheet(
     context,
     child: AppBottomSheetContainer(
       showHandle: true,
+      isScrollable: true,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: _NotificationDetailBody(item: item, detailsLabel: detailsLabel),
     ),

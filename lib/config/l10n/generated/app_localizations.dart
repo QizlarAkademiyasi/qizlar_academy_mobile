@@ -2511,6 +2511,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More'**
   String get storeExtraMenuTitle;
+
+  /// No description provided for @offlineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get offlineTitle;
+
+  /// No description provided for @offlineDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection. The app will continue automatically when you are back online.'**
+  String get offlineDescription;
+
+  /// No description provided for @offlineRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get offlineRetry;
+
+  /// No description provided for @offlineWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for an internet connection...'**
+  String get offlineWaiting;
 }
 
 class _AppLocalizationsDelegate
