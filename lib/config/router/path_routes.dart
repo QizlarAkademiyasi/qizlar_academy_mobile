@@ -88,6 +88,10 @@ sealed class Routes {
   static const String myActivity = '/my-activity';
   static const String myActivityName = 'myActivity';
 
+  /// Gamification vazifalari.
+  static const String tasks = '/tasks';
+  static const String tasksName = 'tasks';
+
   static const String portfolio = '/portfolio';
   static const String portfolioName = 'portfolio';
 

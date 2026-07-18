@@ -684,5 +684,21 @@
   "offlineTitle": "No internet connection",
   "offlineDescription": "Check your internet connection. The app will continue automatically when you are back online.",
   "offlineRetry": "Check again",
-  "offlineWaiting": "Waiting for an internet connection..."
+  "offlineWaiting": "Waiting for an internet connection...",
+  "tasksTitle": "Tasks",
+  "tasksBalanceLabel": "BALANCE",
+  "tasksCoinLabel": "Coins",
+  "tasksStreakTitle": "{count}-Day Streak",
+  "@tasksStreakTitle": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tasksStreakSubtitle": "Keep it going!",
+  "tasksTodayTitle": "Today's tasks",
+  "tasksOtherTitle": "Other tasks",
+  "tasksEmptyTitle": "No tasks yet",
+  "tasksEmptySubtitle": "New tasks will appear here",
+  "tasksLoadError": "Could not load tasks. Try again.",
+  "tasksActionUnavailable": "This task action is not available yet"
 }

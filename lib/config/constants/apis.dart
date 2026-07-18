@@ -86,6 +86,7 @@ sealed class UserApis {
   static String userProfileById(String id) => '/api/v1/user/profile/$id';
   static const String fileUpload = '/api/v1/file';
   static const String userLastProgress = '/api/v1/user/last-progress';
+  static const String tasksClient = '/api/v1/task/client';
   static const String activityPing = '/api/v1/activity/ping';
 
   static String activityStats({required String type}) =>

@@ -639,5 +639,21 @@
   "offlineTitle": "Нет подключения к интернету",
   "offlineDescription": "Проверьте подключение. Приложение продолжит работу автоматически после восстановления интернета.",
   "offlineRetry": "Проверить снова",
-  "offlineWaiting": "Ожидание подключения к интернету..."
+  "offlineWaiting": "Ожидание подключения к интернету...",
+  "tasksTitle": "Задания",
+  "tasksBalanceLabel": "БАЛАНС",
+  "tasksCoinLabel": "Монет",
+  "tasksStreakTitle": "Серия: {count} дней",
+  "@tasksStreakTitle": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tasksStreakSubtitle": "Продолжайте!",
+  "tasksTodayTitle": "Задания на сегодня",
+  "tasksOtherTitle": "Другие задания",
+  "tasksEmptyTitle": "Заданий пока нет",
+  "tasksEmptySubtitle": "Новые задания появятся здесь",
+  "tasksLoadError": "Не удалось загрузить задания. Попробуйте снова.",
+  "tasksActionUnavailable": "Действие для этого задания пока недоступно"
 }

@@ -639,5 +639,21 @@
   "offlineTitle": "Internet aloqasi yo'q",
   "offlineDescription": "Internet ulanishingizni tekshiring. Aloqa tiklangach, ilova avtomatik ravishda davom etadi.",
   "offlineRetry": "Qayta tekshirish",
-  "offlineWaiting": "Internet ulanishi kutilmoqda..."
+  "offlineWaiting": "Internet ulanishi kutilmoqda...",
+  "tasksTitle": "Vazifalar",
+  "tasksBalanceLabel": "BALANS",
+  "tasksCoinLabel": "Tanga",
+  "tasksStreakTitle": "{count}-Kunlik Olov",
+  "@tasksStreakTitle": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tasksStreakSubtitle": "Davom eting!",
+  "tasksTodayTitle": "Bugungi vazifalar",
+  "tasksOtherTitle": "Boshqa vazifalar",
+  "tasksEmptyTitle": "Hozircha vazifalar yo‘q",
+  "tasksEmptySubtitle": "Yangi vazifalar qo‘shilganda shu yerda ko‘rinadi",
+  "tasksLoadError": "Vazifalarni yuklab bo‘lmadi. Qayta urinib ko‘ring.",
+  "tasksActionUnavailable": "Bu vazifa uchun amal hozircha mavjud emas"
 }
