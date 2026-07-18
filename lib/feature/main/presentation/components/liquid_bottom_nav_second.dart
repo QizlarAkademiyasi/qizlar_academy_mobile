@@ -149,16 +149,17 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
             overlayColor: WidgetStateProperty.all(Colors.transparent),
             child: Center(
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
+                duration: const Duration(milliseconds: 420),
+                reverseDuration: const Duration(milliseconds: 360),
+                switchInCurve: const Cubic(0.16, 1, 0.3, 1),
+                switchOutCurve: const Cubic(0.4, 0, 0.7, 1),
                 transitionBuilder: (Widget child, Animation<double> animation) {
                   return RotationTransition(
-                    turns: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+                    turns: Tween<double>(begin: 0.18, end: 0).animate(animation),
                     child: FadeTransition(
                       opacity: animation,
                       child: ScaleTransition(
-                        scale: animation,
+                        scale: Tween<double>(begin: 0.86, end: 1).animate(animation),
                         child: child,
                       ),
                     ),
@@ -330,7 +331,6 @@ class SecondLiquidBottomNav extends StatefulWidget {
 
 class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
   late int _internalIndex;
-  int _navPulseTick = 0;
   int _extraPulseTick = 0;
 
   int get _activeIndex => widget.currentIndex ?? _internalIndex;
@@ -354,7 +354,6 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
       if (widget.currentIndex == null) {
         _internalIndex = index;
       }
-      _navPulseTick++;
     });
     widget.onChanged?.call(index);
   }
@@ -389,26 +388,23 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
-              child: AppLiquidStretch(
-                child: _SecondLiquidBottomNavBarContainer(
-                  height: widget.height,
-                  borderRadius: widget.borderRadius,
-                  backgroundColor: widget.backgroundColor ?? p.backgroundColor,
-                  backgroundBlurSigma: widget.backgroundBlurSigma,
-                  indicatorBlurSigma: resolvedIndicatorSigma,
-                  pulseTick: _navPulseTick,
-                  padding: widget.padding,
-                  items: widget.items,
-                  activeIndex: _activeIndex,
-                  onTap: _onTap,
-                  iconSize: widget.iconSize,
-                  selectedColor: widget.selectedColor ?? p.selectedColor,
-                  unselectedColor: widget.unselectedColor ?? p.unselectedColor,
-                  indicatorColor: widget.indicatorColor ?? p.indicatorColor,
-                  isExpanded: isExpanded,
-                  expandedContent: widget.expandedContent,
-                  expandedContentHeight: widget.expandedContentHeight,
-                ),
+              child: _SecondLiquidBottomNavBarContainer(
+                height: widget.height,
+                borderRadius: widget.borderRadius,
+                backgroundColor: widget.backgroundColor ?? p.backgroundColor,
+                backgroundBlurSigma: widget.backgroundBlurSigma,
+                indicatorBlurSigma: resolvedIndicatorSigma,
+                padding: widget.padding,
+                items: widget.items,
+                activeIndex: _activeIndex,
+                onTap: _onTap,
+                iconSize: widget.iconSize,
+                selectedColor: widget.selectedColor ?? p.selectedColor,
+                unselectedColor: widget.unselectedColor ?? p.unselectedColor,
+                indicatorColor: widget.indicatorColor ?? p.indicatorColor,
+                isExpanded: isExpanded,
+                expandedContent: widget.expandedContent,
+                expandedContentHeight: widget.expandedContentHeight,
               ),
             ),
             if (hasExtraButton) ...[
@@ -421,11 +417,11 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
                     onPointerDown: _onExtraButtonPointerDown,
                     child: SingleMotionBuilder(
                       value: _extraPulseTick.toDouble(),
-                      motion: const CupertinoMotion.smooth(duration: Duration(milliseconds: 360), extraBounce: 0),
+                      motion: const CupertinoMotion.smooth(duration: Duration(milliseconds: 440), extraBounce: 0.04),
                       builder: (context, animatedTick, child) {
                         final double pulse = _secondLiquidBottomNavPulseFromProgress(animatedTick);
                         return Transform.scale(
-                          scale: 1 - (0.028 * pulse),
+                          scale: 1 - (0.018 * pulse),
                           child: SizedBox(
                             width: widget.height,
                             height: widget.height,
@@ -613,7 +609,6 @@ class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
     required this.backgroundColor,
     required this.backgroundBlurSigma,
     required this.indicatorBlurSigma,
-    required this.pulseTick,
     required this.padding,
     required this.items,
     required this.activeIndex,
@@ -632,7 +627,6 @@ class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
   final Color backgroundColor;
   final double backgroundBlurSigma;
   final double indicatorBlurSigma;
-  final int pulseTick;
   final EdgeInsets padding;
   final List<SecondLiquidBottomNavItem> items;
   final int activeIndex;
@@ -650,21 +644,21 @@ class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
 }
 
 class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomNavBarContainer> with SingleTickerProviderStateMixin {
-  static const Duration _expandDuration = Duration(milliseconds: 320);
+  static const Duration _expandDuration = Duration(milliseconds: 460);
 
   late final AnimationController _expandController = AnimationController(vsync: this, duration: _expandDuration);
   late final Animation<double> _expandCurve = CurvedAnimation(
     parent: _expandController,
-    curve: Curves.easeOutCubic,
-    reverseCurve: Curves.easeInCubic,
+    curve: const Cubic(0.16, 1.06, 0.3, 1),
+    reverseCurve: const Cubic(0.4, 0, 0.7, 1),
   );
   late final Animation<double> _contentOpacity = CurvedAnimation(
     parent: _expandController,
-    curve: const Interval(0.16, 1, curve: Curves.easeOut),
-    reverseCurve: const Interval(0, 0.5, curve: Curves.easeIn),
+    curve: const Interval(0.12, 0.82, curve: Cubic(0.16, 1, 0.3, 1)),
+    reverseCurve: const Interval(0, 0.46, curve: Curves.easeIn),
   );
-  late final Animation<Offset> _contentSlide = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-    CurvedAnimation(parent: _expandController, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic),
+  late final Animation<Offset> _contentSlide = Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero).animate(
+    CurvedAnimation(parent: _expandController, curve: const Interval(0.08, 0.9, curve: Cubic(0.16, 1, 0.3, 1)), reverseCurve: const Cubic(0.4, 0, 0.7, 1)),
   );
 
   @override
@@ -693,26 +687,18 @@ class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomN
 
   @override
   Widget build(BuildContext context) {
-    return SingleMotionBuilder(
-      value: widget.pulseTick.toDouble(),
-      motion: const CupertinoMotion.smooth(duration: Duration(milliseconds: 400), extraBounce: 0),
-      builder: (context, animatedTick, child) {
-        return AnimatedBuilder(
-          animation: _expandController,
-          builder: (context, child) {
-            return _buildBar(context, pulse: _secondLiquidBottomNavPulseFromProgress(animatedTick), expandT: _expandCurve.value, child: child);
-          },
-          child: child,
-        );
+    return AnimatedBuilder(
+      animation: _expandController,
+      builder: (context, child) {
+        return _buildBar(context, expandT: _expandCurve.value, child: child);
       },
+      child: widget.expandedContent,
     );
   }
 
-  Widget _buildBar(BuildContext context, {required double pulse, required double expandT, Widget? child}) {
+  Widget _buildBar(BuildContext context, {required double expandT, Widget? child}) {
         final bool lightBar = widget.backgroundColor.computeLuminance() > 0.5;
-        final Color pulseToward = lightBar ? AppColors.textDark : AppColors.white;
-        final Color dynamicBackground = Color.lerp(widget.backgroundColor, pulseToward, 0.08 * pulse)!;
-        final Color surfaceTint = lightBar ? _secondLiquidBottomNavWhiten(dynamicBackground, lightBar: true) : _secondLiquidBottomNavDarkSurface(dynamicBackground);
+        final Color surfaceTint = lightBar ? _secondLiquidBottomNavWhiten(widget.backgroundColor, lightBar: true) : _secondLiquidBottomNavDarkSurface(widget.backgroundColor);
         final Color barShadow = AppColors.shadow.withValues(alpha: lightBar ? 0.14 : 0.42);
         final bool useBlur = widget.backgroundBlurSigma > 0;
         final double sigma = widget.backgroundBlurSigma;
@@ -775,7 +761,7 @@ class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomN
                       opacity: _contentOpacity,
                       child: SlideTransition(
                         position: _contentSlide,
-                        child: widget.expandedContent!,
+                        child: child!,
                       ),
                     ),
                   ),
@@ -814,19 +800,16 @@ class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomN
                 child: barBody,
               );
         final Widget clipped = ClipRRect(borderRadius: BorderRadius.circular(resolvedRadius), child: inner);
-        return Transform.scale(
-          scale: 1 - (0.006 * pulse),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(resolvedRadius),
-              boxShadow: [BoxShadow(color: barShadow, blurRadius: 24 - (1.5 * pulse), spreadRadius: -8, offset: Offset(0, 12 - (0.6 * pulse)))],
-            ),
-            child: Material(
-              type: MaterialType.transparency,
-              borderRadius: BorderRadius.circular(resolvedRadius),
-              clipBehavior: Clip.none,
-              child: clipped,
-            ),
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(resolvedRadius),
+            boxShadow: [BoxShadow(color: barShadow, blurRadius: 24, spreadRadius: -8, offset: const Offset(0, 12))],
+          ),
+          child: Material(
+            type: MaterialType.transparency,
+            borderRadius: BorderRadius.circular(resolvedRadius),
+            clipBehavior: Clip.none,
+            child: clipped,
           ),
         );
   }
