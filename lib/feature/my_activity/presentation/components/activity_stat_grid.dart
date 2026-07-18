@@ -15,37 +15,37 @@ class ActivityStatGrid extends StatelessWidget {
 
     final cards = [
       _StatCardSpec(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0E3D38), Color(0xFF050806)],
+          colors: _cardColors(context, const Color(0xFF0E3D38)),
         ),
         value: ActivityMinutesFormat.label(l10n, stats.totalDurationMinutes),
         caption: l10n.activityStatTotalTime,
       ),
       _StatCardSpec(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF3D2C14), Color(0xFF0A0705)],
+          colors: _cardColors(context, const Color(0xFF3D2C14)),
         ),
         value: ActivityMinutesFormat.label(l10n, stats.averageDurationMinutes),
         caption: l10n.activityStatAverageTime,
       ),
       _StatCardSpec(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF153924), Color(0xFF050806)],
+          colors: _cardColors(context, const Color(0xFF153924)),
         ),
         value: ActivityMinutesFormat.label(l10n, stats.dailyRecordMinutes),
         caption: l10n.activityStatDailyRecord,
       ),
       _StatCardSpec(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF2E1745), Color(0xFF07060A)],
+          colors: _cardColors(context, const Color(0xFF2E1745)),
         ),
         value: l10n.activityCompletedCourses(stats.completedCourses),
         caption: l10n.activityStatCoursesCompleted,
@@ -61,6 +61,14 @@ class ActivityStatGrid extends StatelessWidget {
       childAspectRatio: 1.05,
       children: cards.map((c) => _ActivityStatTile(spec: c)).toList(),
     );
+  }
+
+  List<Color> _cardColors(BuildContext context, Color accent) {
+    if (context.isDarkTheme) {
+      return [accent, const Color(0xFF070708)];
+    }
+    final surface = context.appColors.onContainer;
+    return [Color.alphaBlend(accent.withValues(alpha: 0.12), surface), surface];
   }
 }
 
@@ -88,7 +96,7 @@ class _ActivityStatTile extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: spec.gradient,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.06)),
+          border: Border.all(color: context.appColors.stroke),
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
@@ -113,14 +121,14 @@ class _ActivityStatTile extends StatelessWidget {
               Text(
                 spec.value,
                 style: context.textTheme.bodyLargeBold.copyWith(
-                  color: AppColors.white,
+                  color: context.appColors.text,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 spec.caption,
                 style: context.textTheme.bodyXSmallRegular.copyWith(
-                  color: AppColors.secondaryGrey,
+                  color: context.appColors.secondaryGrey,
                   height: 1.25,
                 ),
               ),

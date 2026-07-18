@@ -71,126 +71,131 @@ class _NotificationViewState extends State<_NotificationView>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: BlocConsumer<NotificationBloc, NotificationState>(
-          listener: (context, state) {
-            notificationBlocListener(context, state);
-            final target = _indexForTab(state.selectedTab);
+    return BlocConsumer<NotificationBloc, NotificationState>(
+      listener: (context, state) {
+        notificationBlocListener(context, state);
+        final target = _indexForTab(state.selectedTab);
+        if (_tabController.index != target) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
             if (_tabController.index != target) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!mounted) return;
-                if (_tabController.index != target) {
-                  _tabController.animateTo(target);
-                }
-              });
+              _tabController.animateTo(target);
             }
-            if (_pageController.hasClients) {
-              final page = _pageController.page;
-              final current = page != null
-                  ? page.round()
-                  : _pageController.initialPage;
-              if (current != target) {
-                _pageController.animateToPage(
-                  target,
-                  duration: _pageAnimationDuration,
-                  curve: Curves.easeOutCubic,
-                );
-              }
-            }
-          },
-          builder: (context, state) {
-            final isInitialLoading =
-                (state.status == NotificationStatus.loading ||
-                    state.status == NotificationStatus.initial) &&
-                state.sections.isEmpty;
-            final hideTabs =
-                state.status == NotificationStatus.failure &&
-                state.sections.isEmpty;
-
-            return Column(
-              children: [
-                buildTopBar(context, hasUnread: state.hasUnread),
-                if (!hideTabs)
-                  Padding(
-                    padding: AppPadding.paddingHorizontalMd.add(
-                      const EdgeInsets.only(bottom: 12),
-                    ),
-                    child: AppSegmentedTabBar(
-                      controller: _tabController,
-                      tabLabels: [
-                        context.l10n.notificationTabPlatform,
-                        context.l10n.notificationTabCommunity,
-                      ],
-                      onTap: (index) {
-                        final tab = index == 0
-                            ? NotificationListTab.platform
-                            : NotificationListTab.community;
-                        context.read<NotificationBloc>().add(
-                          NotificationTabSelected(tab),
-                        );
-                      },
-                    ),
-                  ),
-                Expanded(
-                  child: switch ((state.status, state.sections.isEmpty)) {
-                    (NotificationStatus.failure, true) => TgsFailureContent(
-                      message: context.l10n.notificationListLoadError,
-                      onRetry: () => retry(context),
-                    ),
-                    (_, true) when isInitialLoading => const Padding(
-                      padding: EdgeInsets.only(top: 6),
-                      child: NotificationListSkeleton(),
-                    ),
-                    (_, true) => const NotificationEmptyContent(),
-                    _ => PageView(
-                      controller: _pageController,
-                      physics: const BouncingScrollPhysics(),
-                      onPageChanged: (index) {
-                        final tab = index == 0
-                            ? NotificationListTab.platform
-                            : NotificationListTab.community;
-                        if (!context.mounted) return;
-                        if (context
-                                .read<NotificationBloc>()
-                                .state
-                                .selectedTab ==
-                            tab) {
-                          return;
-                        }
-                        context.read<NotificationBloc>().add(
-                          NotificationTabSelected(tab),
-                        );
-                        if (_tabController.index != index) {
-                          _tabController.animateTo(index);
-                        }
-                      },
-                      children: [
-                        _KeepAliveTabWrapper(
-                          child: _buildTabBody(
-                            context,
-                            state,
-                            NotificationListTab.platform,
-                          ),
-                        ),
-                        _KeepAliveTabWrapper(
-                          child: _buildTabBody(
-                            context,
-                            state,
-                            NotificationListTab.community,
-                          ),
-                        ),
-                      ],
-                    ),
-                  },
-                ),
-              ],
+          });
+        }
+        if (_pageController.hasClients) {
+          final page = _pageController.page;
+          final current = page != null
+              ? page.round()
+              : _pageController.initialPage;
+          if (current != target) {
+            _pageController.animateToPage(
+              target,
+              duration: _pageAnimationDuration,
+              curve: Curves.easeOutCubic,
             );
-          },
-        ),
-      ),
+          }
+        }
+      },
+      builder: (context, state) {
+        final isInitialLoading =
+            (state.status == NotificationStatus.loading ||
+                state.status == NotificationStatus.initial) &&
+            state.sections.isEmpty;
+        final hideTabs =
+            state.status == NotificationStatus.failure &&
+            state.sections.isEmpty;
+
+        return AppPageScaffold(
+          title: context.l10n.notificationsTitle,
+          onBackTap: () => onBackTap(context),
+          actions: [
+            IconButton(
+              onPressed: state.hasUnread ? () => onMarkAllTap(context) : null,
+              icon: Icon(
+                LucideIcons.checkCheck,
+                color: state.hasUnread
+                    ? context.appColors.text
+                    : context.appColors.secondaryGrey,
+              ),
+            ),
+          ],
+          body: Column(
+            children: [
+              if (!hideTabs)
+                Padding(
+                  padding: AppPadding.paddingHorizontalMd.add(
+                    const EdgeInsets.only(bottom: 12),
+                  ),
+                  child: AppSegmentedTabBar(
+                    controller: _tabController,
+                    tabLabels: [
+                      context.l10n.notificationTabPlatform,
+                      context.l10n.notificationTabCommunity,
+                    ],
+                    onTap: (index) {
+                      final tab = index == 0
+                          ? NotificationListTab.platform
+                          : NotificationListTab.community;
+                      context.read<NotificationBloc>().add(
+                        NotificationTabSelected(tab),
+                      );
+                    },
+                  ),
+                ),
+              Expanded(
+                child: switch ((state.status, state.sections.isEmpty)) {
+                  (NotificationStatus.failure, true) => TgsFailureContent(
+                    message: context.l10n.notificationListLoadError,
+                    onRetry: () => retry(context),
+                  ),
+                  (_, true) when isInitialLoading => const Padding(
+                    padding: EdgeInsets.only(top: 6),
+                    child: NotificationListSkeleton(),
+                  ),
+                  (_, true) => const NotificationEmptyContent(),
+                  _ => PageView(
+                    controller: _pageController,
+                    physics: const BouncingScrollPhysics(),
+                    onPageChanged: (index) {
+                      final tab = index == 0
+                          ? NotificationListTab.platform
+                          : NotificationListTab.community;
+                      if (!context.mounted) return;
+                      if (context.read<NotificationBloc>().state.selectedTab ==
+                          tab) {
+                        return;
+                      }
+                      context.read<NotificationBloc>().add(
+                        NotificationTabSelected(tab),
+                      );
+                      if (_tabController.index != index) {
+                        _tabController.animateTo(index);
+                      }
+                    },
+                    children: [
+                      _KeepAliveTabWrapper(
+                        child: _buildTabBody(
+                          context,
+                          state,
+                          NotificationListTab.platform,
+                        ),
+                      ),
+                      _KeepAliveTabWrapper(
+                        child: _buildTabBody(
+                          context,
+                          state,
+                          NotificationListTab.community,
+                        ),
+                      ),
+                    ],
+                  ),
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

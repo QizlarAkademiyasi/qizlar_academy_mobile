@@ -38,31 +38,6 @@ mixin ActivityScreenMixin<T extends StatefulWidget>
     context.read<MyActivityBloc>().add(MyActivityScopeChanged(scope));
   }
 
-  Widget buildActivityTopBar(BuildContext context) {
-    final l10n = context.l10n;
-    return Padding(
-      padding: AppMargin.pageHorizontal.add(const EdgeInsets.only(top: 4)),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: AppBackButton.ghost(
-              iconColor: AppColors.white,
-              tooltip: l10n.lessonBackTooltip,
-            ),
-          ),
-          Text(
-            l10n.activityScreenTitle,
-            style: context.textTheme.bodyLargeBold.copyWith(
-              color: AppColors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget buildActivityTabs(BuildContext context) {
     final l10n = context.l10n;
     return Padding(
@@ -134,7 +109,7 @@ mixin ActivityScreenMixin<T extends StatefulWidget>
         Text(
           context.l10n.activitySectionStats,
           style: context.textTheme.bodyLargeBold.copyWith(
-            color: AppColors.white,
+            color: context.appColors.text,
           ),
         ),
         const SizedBox(height: 12),

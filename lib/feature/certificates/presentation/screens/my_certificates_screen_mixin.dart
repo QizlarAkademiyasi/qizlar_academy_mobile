@@ -10,27 +10,36 @@ import 'package:qizlar_academy_mobile/feature/certificates/domain/model/certific
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/bloc/my_certificates_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/components/certificate_preview_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/components/my_certificate_card.dart';
-import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/presentation/components/my_courses_top_bar.dart';
 
 mixin MyCertificatesScreenMixin<T extends StatefulWidget> on State<T> {
-  void myCertificatesBlocListener(BuildContext context, MyCertificatesState state) {
+  void myCertificatesBlocListener(
+    BuildContext context,
+    MyCertificatesState state,
+  ) {
     if (!state.loadMoreFailed) return;
     AppToast.error(context, message: context.l10n.myCoursesLoadMoreError);
-    context.read<MyCertificatesBloc>().add(const MyCertificatesLoadMoreFailureConsumed());
+    context.read<MyCertificatesBloc>().add(
+      const MyCertificatesLoadMoreFailureConsumed(),
+    );
   }
 
   Future<void> onMyCertificatesPullToRefresh(BuildContext context) async {
     final bloc = context.read<MyCertificatesBloc>();
     bloc.add(const MyCertificatesStarted());
-    await bloc.stream.firstWhere((s) => s.status == MyCertificatesStatus.success || s.status == MyCertificatesStatus.failure);
+    await bloc.stream.firstWhere(
+      (s) =>
+          s.status == MyCertificatesStatus.success ||
+          s.status == MyCertificatesStatus.failure,
+    );
   }
 
   void onScrollNearEnd(BuildContext context) {
-    context.read<MyCertificatesBloc>().add(const MyCertificatesLoadMoreRequested());
+    context.read<MyCertificatesBloc>().add(
+      const MyCertificatesLoadMoreRequested(),
+    );
   }
 
   void onMyCertificatesBackTap(BuildContext context) {
-    Gaimon.light();
     context.pop();
   }
 
@@ -71,73 +80,135 @@ mixin MyCertificatesScreenMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  String? certificateSubtitleLine(BuildContext context, CertificateItemModel item) {
+  String? certificateSubtitleLine(
+    BuildContext context,
+    CertificateItemModel item,
+  ) {
     final at = item.createdAt;
     if (at == null) return null;
     return MaterialLocalizations.of(context).formatFullDate(at.toLocal());
   }
 
-  Future<void> onCertificateShareOrDownload(BuildContext context, CertificateItemModel item) async {
+  Future<void> onCertificateShareOrDownload(
+    BuildContext context,
+    CertificateItemModel item,
+  ) async {
     Gaimon.light();
     if (item.fileUrl.isEmpty) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.certificatesFileActionError), behavior: SnackBarBehavior.floating));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.certificatesFileActionError),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
       return;
     }
     try {
-      await getIt<CertificateFileActions>().downloadAndShare(item.fileUrl, fileBaseName: 'certificate_${item.id}');
+      await getIt<CertificateFileActions>().downloadAndShare(
+        item.fileUrl,
+        fileBaseName: 'certificate_${item.id}',
+      );
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.certificatesFileActionError), behavior: SnackBarBehavior.floating));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.certificatesFileActionError),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     }
   }
 
   /// Instagram Story: `/api/v1/certificate/image/{courseId}` dan PNG, [appinio_social_share] orqali sticker.
-  Future<void> onCertificateInstagramStoryShare(BuildContext context, CertificateItemModel item) async {
+  Future<void> onCertificateInstagramStoryShare(
+    BuildContext context,
+    CertificateItemModel item,
+  ) async {
     Gaimon.light();
     if (item.courseId.trim().isEmpty) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.certificatesFileActionError), behavior: SnackBarBehavior.floating));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.certificatesFileActionError),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
       return;
     }
-    final name = item.courseName.trim().isNotEmpty ? 'certificate_${item.courseName}' : 'certificate_${item.id}';
+    final name = item.courseName.trim().isNotEmpty
+        ? 'certificate_${item.courseName}'
+        : 'certificate_${item.id}';
     try {
-      await getIt<CertificateInstagramStoryShare>().shareCertificateSticker(item.courseId, fileBaseName: name);
+      await getIt<CertificateInstagramStoryShare>().shareCertificateSticker(
+        item.courseId,
+        fileBaseName: name,
+      );
     } on StateError catch (e) {
       if (!context.mounted) return;
       final l10n = context.l10n;
-      final text = e.message == 'facebook_app_id_missing' ? l10n.certificatesInstagramStoryNotConfigured : l10n.certificatesInstagramShareFailed;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text), behavior: SnackBarBehavior.floating));
+      final text = e.message == 'facebook_app_id_missing'
+          ? l10n.certificatesInstagramStoryNotConfigured
+          : l10n.certificatesInstagramShareFailed;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(text), behavior: SnackBarBehavior.floating),
+      );
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.certificatesInstagramShareFailed), behavior: SnackBarBehavior.floating));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.certificatesInstagramShareFailed),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     }
   }
 
   /// Bottom sheetdagi ulashish: `/api/v1/certificate/image/{courseId}` dan PNG.
-  Future<void> onCertificateImageShare(BuildContext context, CertificateItemModel item) async {
+  Future<void> onCertificateImageShare(
+    BuildContext context,
+    CertificateItemModel item,
+  ) async {
     Gaimon.light();
     if (item.courseId.trim().isEmpty) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.certificatesFileActionError), behavior: SnackBarBehavior.floating));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.certificatesFileActionError),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
       return;
     }
-    final name = item.courseName.trim().isNotEmpty ? 'certificate_${item.courseName}' : 'certificate_${item.id}';
+    final name = item.courseName.trim().isNotEmpty
+        ? 'certificate_${item.courseName}'
+        : 'certificate_${item.id}';
     try {
-      await getIt<CertificateFileActions>().downloadCertificatePngAndShare(item.courseId, fileBaseName: name);
+      await getIt<CertificateFileActions>().downloadCertificatePngAndShare(
+        item.courseId,
+        fileBaseName: name,
+      );
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.certificatesFileActionError), behavior: SnackBarBehavior.floating));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.certificatesFileActionError),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     }
   }
 
-  Future<void> onCertificateView(BuildContext context, CertificateItemModel item) async {
+  Future<void> onCertificateView(
+    BuildContext context,
+    CertificateItemModel item,
+  ) async {
     Gaimon.light();
     final l10n = context.l10n;
     final parentContext = context;
@@ -149,16 +220,18 @@ mixin MyCertificatesScreenMixin<T extends StatefulWidget> on State<T> {
       downloadLabel: l10n.certificatesSheetDownload,
       onDownload: () => onCertificateShareOrDownload(parentContext, item),
       instagramStoryLabel: l10n.certificatesSheetInstagramStory,
-      onInstagramStory: item.courseId.trim().isEmpty ? null : () => onCertificateInstagramStoryShare(parentContext, item),
+      onInstagramStory: item.courseId.trim().isEmpty
+          ? null
+          : () => onCertificateInstagramStoryShare(parentContext, item),
       onShare: () => onCertificateImageShare(parentContext, item),
     );
   }
 
-  Widget buildMyCertificatesTopBar(BuildContext context) {
-    return MyCoursesTopBar(title: context.l10n.profileMenuCertificates, onBackTap: () => onMyCertificatesBackTap(context));
-  }
-
-  Widget buildCertificateCard(BuildContext context, CertificateItemModel item, int index) {
+  Widget buildCertificateCard(
+    BuildContext context,
+    CertificateItemModel item,
+    int index,
+  ) {
     final l10n = context.l10n;
     return MyCertificateCard(
       item: item,

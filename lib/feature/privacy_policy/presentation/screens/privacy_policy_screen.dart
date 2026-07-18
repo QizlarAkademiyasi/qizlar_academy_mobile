@@ -14,42 +14,41 @@ class PrivacyPolicyScreen extends StatefulWidget {
   State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
 }
 
-class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> with PrivacyPolicyScreenMixin<PrivacyPolicyScreen> {
+class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen>
+    with PrivacyPolicyScreenMixin<PrivacyPolicyScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<PrivacyPolicyBloc>()..add(const PrivacyPolicyStarted()),
-      child: Scaffold(
-        backgroundColor: context.theme.scaffoldBackgroundColor,
-        appBar: AppBar(
-          backgroundColor: context.appColors.background,
-          leading: AppBackButton.ghost(onTap: () => onPrivacyPolicyBackTap(context)),
-          title: Text(context.l10n.profileMenuPrivacy, style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
-          centerTitle: false,
-        ),
-        body: SafeArea(
-          bottom: false,
-          child: BlocBuilder<PrivacyPolicyBloc, PrivacyPolicyState>(
-            buildWhen: (p, c) => p.status != c.status || p.markdown != c.markdown,
-            builder: (context, state) {
-              switch (state.status) {
-                case PrivacyPolicyStatus.initial:
-                case PrivacyPolicyStatus.loading:
-                  if (state.markdown == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return _PrivacyPolicyScrollBody(markdown: state.markdown!);
-                case PrivacyPolicyStatus.success:
-                  final md = state.markdown;
-                  if (md == null || md.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
-                  return _PrivacyPolicyScrollBody(markdown: md);
-                case PrivacyPolicyStatus.failure:
-                  return TgsFailureContent(message: context.l10n.aboutUsLoadError, onRetry: () => context.read<PrivacyPolicyBloc>().add(const PrivacyPolicyRetryRequested()));
-              }
-            },
-          ),
+      create: (_) =>
+          getIt<PrivacyPolicyBloc>()..add(const PrivacyPolicyStarted()),
+      child: AppPageScaffold(
+        title: context.l10n.profileMenuPrivacy,
+        onBackTap: () => onPrivacyPolicyBackTap(context),
+        body: BlocBuilder<PrivacyPolicyBloc, PrivacyPolicyState>(
+          buildWhen: (p, c) => p.status != c.status || p.markdown != c.markdown,
+          builder: (context, state) {
+            switch (state.status) {
+              case PrivacyPolicyStatus.initial:
+              case PrivacyPolicyStatus.loading:
+                if (state.markdown == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return _PrivacyPolicyScrollBody(markdown: state.markdown!);
+              case PrivacyPolicyStatus.success:
+                final md = state.markdown;
+                if (md == null || md.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return _PrivacyPolicyScrollBody(markdown: md);
+              case PrivacyPolicyStatus.failure:
+                return TgsFailureContent(
+                  message: context.l10n.aboutUsLoadError,
+                  onRetry: () => context.read<PrivacyPolicyBloc>().add(
+                    const PrivacyPolicyRetryRequested(),
+                  ),
+                );
+            }
+          },
         ),
       ),
     );

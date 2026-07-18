@@ -3,7 +3,6 @@ import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/presentation/bloc/my_courses_bloc.dart';
-import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/my_courses/presentation/components/my_courses_top_bar.dart';
 
 mixin MyCoursesScreenMixin<T extends StatefulWidget> on State<T> {
   void myCoursesBlocListener(BuildContext context, MyCoursesState state) {
@@ -28,11 +27,11 @@ mixin MyCoursesScreenMixin<T extends StatefulWidget> on State<T> {
     context.read<MyCoursesBloc>().add(const MyCoursesRetryRequested());
   }
 
-  Widget buildMyCoursesTopBar(BuildContext context) {
-    return MyCoursesTopBar(title: context.l10n.myCoursesTitle, onBackTap: () => onBackTap(context));
-  }
-
-  Widget buildMyCourseListTile(BuildContext context, {required MyCoursesState state, required int index}) {
+  Widget buildMyCourseListTile(
+    BuildContext context, {
+    required MyCoursesState state,
+    required int index,
+  }) {
     final course = state.courses[index];
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),

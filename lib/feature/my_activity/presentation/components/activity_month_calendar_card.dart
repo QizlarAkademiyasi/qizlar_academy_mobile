@@ -41,7 +41,7 @@ class ActivityMonthCalendarCard extends StatelessWidget {
 
     final heading = ActivityMinutesFormat.monthHeading(context, monthStart);
 
-    const surface = AppColors.darkOnContainer;
+    final colors = context.appColors;
 
     final totalCells = pad + daysInMonth;
     final rowCount = (totalCells / 7).ceil();
@@ -50,9 +50,9 @@ class ActivityMonthCalendarCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
       decoration: BoxDecoration(
-        color: surface,
+        color: colors.onContainer,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.darkStroke),
+        border: Border.all(color: colors.stroke),
       ),
       child: Column(
         children: [
@@ -63,7 +63,7 @@ class ActivityMonthCalendarCard extends StatelessWidget {
                 visualDensity: VisualDensity.compact,
                 icon: Icon(
                   LucideIcons.chevronLeft,
-                  color: AppColors.secondaryGrey.withValues(alpha: 0.35),
+                  color: colors.secondaryGrey.withValues(alpha: 0.35),
                 ),
               ),
               Expanded(
@@ -71,7 +71,7 @@ class ActivityMonthCalendarCard extends StatelessWidget {
                   heading,
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyLargeBold.copyWith(
-                    color: AppColors.white,
+                    color: colors.text,
                   ),
                 ),
               ),
@@ -80,7 +80,7 @@ class ActivityMonthCalendarCard extends StatelessWidget {
                 visualDensity: VisualDensity.compact,
                 icon: Icon(
                   LucideIcons.chevronRight,
-                  color: AppColors.secondaryGrey.withValues(alpha: 0.35),
+                  color: colors.secondaryGrey.withValues(alpha: 0.35),
                 ),
               ),
             ],
@@ -94,7 +94,7 @@ class ActivityMonthCalendarCard extends StatelessWidget {
                       d,
                       textAlign: TextAlign.center,
                       style: context.textTheme.bodyXSmallRegular.copyWith(
-                        color: AppColors.secondaryGrey,
+                        color: colors.secondaryGrey,
                       ),
                     ),
                   ),
@@ -135,8 +135,10 @@ class _DayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = active ? AppColors.primary : AppColors.darkIconSecondary;
-    const fg = AppColors.white;
+    final bg = active
+        ? context.appColors.primary
+        : context.appColors.iconSecondary;
+    final fg = active ? AppColors.white : context.appColors.text;
 
     return DecoratedBox(
       decoration: BoxDecoration(shape: BoxShape.circle, color: bg),

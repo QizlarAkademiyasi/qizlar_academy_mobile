@@ -1,5 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/colors.dart';
+import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/feature/my_activity/domain/repository/my_activity_repository.dart';
 
 /// Faollik ekrani yuklanayotganda — haqiqiy layoutga yaqin tuzilish (chart + Statistikalar).
@@ -25,14 +25,15 @@ class ActivityScreenLoadingBody extends StatelessWidget {
         children: [
           DecoratedBox(
             decoration: BoxDecoration(
-              color: AppColors.darkOnContainer,
+              color: context.appColors.onContainer,
               borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: AppColors.darkStroke),
+              border: Border.all(color: context.appColors.stroke),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
-              child:
-                  scope == MyActivityStatsScope.weekly ? _buildWeeklyChartSkeleton() : const _MonthlyCalendarSkeleton(),
+              child: scope == MyActivityStatsScope.weekly
+                  ? _buildWeeklyChartSkeleton()
+                  : const _MonthlyCalendarSkeleton(),
             ),
           ),
           const SizedBox(height: 22),
@@ -112,7 +113,9 @@ class _MonthlyCalendarSkeleton extends StatelessWidget {
         Row(
           children: [
             const Bone.iconButton(size: 42),
-            const Expanded(child: Center(child: Bone.text(words: 2, fontSize: 17))),
+            const Expanded(
+              child: Center(child: Bone.text(words: 2, fontSize: 17)),
+            ),
             const Bone.iconButton(size: 42),
           ],
         ),
@@ -120,9 +123,7 @@ class _MonthlyCalendarSkeleton extends StatelessWidget {
         Row(
           children: [
             for (var i = 0; i < 7; i++)
-              Expanded(
-                child: Center(child: Bone.text(words: 1, fontSize: 11)),
-              ),
+              Expanded(child: Center(child: Bone.text(words: 1, fontSize: 11))),
           ],
         ),
         const SizedBox(height: 10),
@@ -149,20 +150,14 @@ class _MonthlyCalendarSkeleton extends StatelessWidget {
 class ActivityStatTileSkeleton extends StatelessWidget {
   const ActivityStatTileSkeleton({super.key});
 
-  static const Gradient _overlayGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [Color(0xFF152220), Color(0xFF0A0C10)],
-  );
-
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: _overlayGradient,
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.06)),
+          color: context.appColors.onContainer,
+          border: Border.all(color: context.appColors.stroke),
         ),
         child: const Padding(
           padding: EdgeInsets.fromLTRB(14, 14, 14, 12),

@@ -18,7 +18,10 @@ class ReferralScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<ReferralBloc>()..add(const ReferralStarted()), child: const _ReferralView());
+    return BlocProvider(
+      create: (_) => getIt<ReferralBloc>()..add(const ReferralStarted()),
+      child: const _ReferralView(),
+    );
   }
 }
 
@@ -29,54 +32,60 @@ class _ReferralView extends StatefulWidget {
   State<_ReferralView> createState() => _ReferralViewState();
 }
 
-class _ReferralViewState extends State<_ReferralView> with ReferralScreenMixin<_ReferralView> {
+class _ReferralViewState extends State<_ReferralView>
+    with ReferralScreenMixin<_ReferralView> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: BlocBuilder<ReferralBloc, ReferralState>(
-          builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: buildTopBar(context)),
-                Expanded(
-                  child: switch (state.status) {
-                    ReferralStatus.initial || ReferralStatus.loading => const ReferralScreenSkeleton(),
-                    ReferralStatus.failure => Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: TgsFailureContent(message: state.message ?? "Referral bo'limini yuklashda xatolik", onRetry: () => onRetryTap(context)),
-                      ),
-                    ),
-                    ReferralStatus.success => _SuccessBody(
-                      state: state,
-                      bottomInset: bottomInset,
-                      onCopyTap: () {
-                        unawaited(onCopyLinkTap(context, state.code?.referralLink ?? ''));
-                      },
-                      onShareTap: () {
-                        unawaited(onShareTap(context, state.code?.referralLink ?? ''));
-                      },
-                      topThree: buildTopThree(state.leaderboard),
-                      ratingList: buildRatingList(state.leaderboard),
-                    ),
-                  },
+    return AppPageScaffold(
+      title: 'Bizning elchilarimiz',
+      centerTitle: true,
+      onBackTap: () => onBackTap(context),
+      body: BlocBuilder<ReferralBloc, ReferralState>(
+        builder: (context, state) {
+          return switch (state.status) {
+            ReferralStatus.initial ||
+            ReferralStatus.loading => const ReferralScreenSkeleton(),
+            ReferralStatus.failure => Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: TgsFailureContent(
+                  message:
+                      state.message ?? "Referral bo'limini yuklashda xatolik",
+                  onRetry: () => onRetryTap(context),
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ),
+            ReferralStatus.success => _SuccessBody(
+              state: state,
+              bottomInset: bottomInset,
+              onCopyTap: () {
+                unawaited(
+                  onCopyLinkTap(context, state.code?.referralLink ?? ''),
+                );
+              },
+              onShareTap: () {
+                unawaited(onShareTap(context, state.code?.referralLink ?? ''));
+              },
+              topThree: buildTopThree(state.leaderboard),
+              ratingList: buildRatingList(state.leaderboard),
+            ),
+          };
+        },
       ),
     );
   }
 }
 
 class _SuccessBody extends StatelessWidget {
-  const _SuccessBody({required this.state, required this.bottomInset, required this.onCopyTap, required this.onShareTap, required this.topThree, required this.ratingList});
+  const _SuccessBody({
+    required this.state,
+    required this.bottomInset,
+    required this.onCopyTap,
+    required this.onShareTap,
+    required this.topThree,
+    required this.ratingList,
+  });
 
   final ReferralState state;
   final double bottomInset;
@@ -90,7 +99,12 @@ class _SuccessBody extends StatelessWidget {
     final code = state.code;
     if (code == null) {
       return Center(
-        child: Text("Referral ma'lumoti topilmadi", style: context.textTheme.bodyLargeSemibold.copyWith(color: context.appColors.text)),
+        child: Text(
+          "Referral ma'lumoti topilmadi",
+          style: context.textTheme.bodyLargeSemibold.copyWith(
+            color: context.appColors.text,
+          ),
+        ),
       );
     }
     return SingleChildScrollView(
@@ -101,14 +115,28 @@ class _SuccessBody extends StatelessWidget {
           children: [
             AppStaggeredListItem(
               position: 0,
-              child: ReferralSummaryCard(code: code, currentUser: state.currentUser, onCopyTap: onCopyTap, onShareTap: onShareTap),
+              child: ReferralSummaryCard(
+                code: code,
+                currentUser: state.currentUser,
+                onCopyTap: onCopyTap,
+                onShareTap: onShareTap,
+              ),
             ),
             const SizedBox(height: 16),
-            if (topThree.isNotEmpty) AppStaggeredListItem(position: 1, child: ReferralPodium(items: topThree)),
+            if (topThree.isNotEmpty)
+              AppStaggeredListItem(
+                position: 1,
+                child: ReferralPodium(items: topThree),
+              ),
             const SizedBox(height: 16),
             AppStaggeredListItem(
               position: 2,
-              child: Text("To'liq reyting", style: context.textTheme.bodyMediumBold.copyWith(color: context.appColors.text)),
+              child: Text(
+                "To'liq reyting",
+                style: context.textTheme.bodyMediumBold.copyWith(
+                  color: context.appColors.text,
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             if (ratingList.isEmpty)
@@ -116,7 +144,12 @@ class _SuccessBody extends StatelessWidget {
                 position: 3,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: TgsEmptyContent(message: 'Hali reyting mavjud emas', subtitle: "Birinchi bo'lib taklif qilib, reytingni boshlab bering", animationSize: 92),
+                  child: TgsEmptyContent(
+                    message: 'Hali reyting mavjud emas',
+                    subtitle:
+                        "Birinchi bo'lib taklif qilib, reytingni boshlab bering",
+                    animationSize: 92,
+                  ),
                 ),
               )
             else

@@ -23,6 +23,7 @@ export 'package:qizlar_academy_mobile/core/presentation/components/app_course_li
 export 'package:qizlar_academy_mobile/core/presentation/components/app_segmented_tab_bar.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_toast.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_back_button.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_page_scaffold.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/primary_button.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_text_field.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/auth_required_bottom_sheet.dart';

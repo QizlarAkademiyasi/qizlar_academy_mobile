@@ -7,13 +7,8 @@ import 'package:qizlar_academy_mobile/feature/tasks/domain/model/task_item_model
 import 'package:qizlar_academy_mobile/feature/tasks/presentation/bloc/tasks_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/tasks/presentation/components/tasks_screen_skeleton.dart';
 import 'package:qizlar_academy_mobile/feature/tasks/presentation/components/tasks_success_content.dart';
-import 'package:qizlar_academy_mobile/feature/tasks/presentation/components/tasks_top_bar.dart';
 
 mixin TasksScreenMixin<T extends StatefulWidget> on State<T> {
-  Widget buildTopBar(BuildContext context) {
-    return TasksTopBar(onBackTap: () => context.pop());
-  }
-
   Widget buildBody(BuildContext context, TasksState state) {
     return switch (state.status) {
       TasksStatus.initial || TasksStatus.loading => const TasksScreenSkeleton(),
