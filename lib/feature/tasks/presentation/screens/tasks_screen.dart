@@ -46,7 +46,6 @@ class _TasksViewState extends State<_TasksView>
   Widget build(BuildContext context) {
     return AppPageScaffold(
       title: context.l10n.tasksTitle,
-      showBackButton: widget.showBackButton,
       onBackTap: widget.showBackButton ? () => context.pop() : null,
       body: BlocBuilder<TasksBloc, TasksState>(
         builder: (context, state) => buildBody(
