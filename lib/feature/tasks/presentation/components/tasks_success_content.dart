@@ -15,6 +15,7 @@ class TasksSuccessContent extends StatelessWidget {
     required this.otherTasks,
     required this.onTaskTap,
     required this.onRefresh,
+    this.bottomContentInset = 0,
   });
 
   final int balance;
@@ -23,6 +24,7 @@ class TasksSuccessContent extends StatelessWidget {
   final List<TaskItemModel> otherTasks;
   final ValueChanged<TaskItemModel> onTaskTap;
   final Future<void> Function() onRefresh;
+  final double bottomContentInset;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,12 @@ class TasksSuccessContent extends StatelessWidget {
       onRefresh: onRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(24, 26, 24, 24 + bottomInset),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          26,
+          24,
+          24 + bottomInset + bottomContentInset,
+        ),
         children: [
           TasksBalanceCard(balance: balance, streakCount: streakCount),
           if (isEmpty) ...[

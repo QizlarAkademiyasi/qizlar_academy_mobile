@@ -19,17 +19,38 @@ Color _secondLiquidBottomNavDarkSurface(Color base) {
 }
 
 /// Kengaygan grid va tashqi komponentlar uchun truba sirt rangi.
-Color secondLiquidBottomNavSurfaceTint(BuildContext context, {Color? backgroundColor}) {
-  final Color base = backgroundColor ?? secondLiquidBottomNavThemePalette(context).backgroundColor;
+Color secondLiquidBottomNavSurfaceTint(
+  BuildContext context, {
+  Color? backgroundColor,
+}) {
+  final Color base =
+      backgroundColor ??
+      secondLiquidBottomNavThemePalette(context).backgroundColor;
   final bool lightBar = base.computeLuminance() > 0.5;
-  return lightBar ? _secondLiquidBottomNavWhiten(base, lightBar: true) : _secondLiquidBottomNavDarkSurface(base);
+  return lightBar
+      ? _secondLiquidBottomNavWhiten(base, lightBar: true)
+      : _secondLiquidBottomNavDarkSurface(base);
 }
 
 /// Grid kafel fon — truba sirtidan biroz farq qiladi (ajratish uchun).
-Color secondLiquidBottomNavTileSurface(BuildContext context, {Color? backgroundColor}) {
-  final Color surface = secondLiquidBottomNavSurfaceTint(context, backgroundColor: backgroundColor);
-  final bool lightBar = (backgroundColor ?? secondLiquidBottomNavThemePalette(context).backgroundColor).computeLuminance() > 0.5;
-  return Color.lerp(surface, lightBar ? const Color(0xFF000000) : const Color(0xFFFFFFFF), lightBar ? 0.05 : 0.1)!;
+Color secondLiquidBottomNavTileSurface(
+  BuildContext context, {
+  Color? backgroundColor,
+}) {
+  final Color surface = secondLiquidBottomNavSurfaceTint(
+    context,
+    backgroundColor: backgroundColor,
+  );
+  final bool lightBar =
+      (backgroundColor ??
+              secondLiquidBottomNavThemePalette(context).backgroundColor)
+          .computeLuminance() >
+      0.5;
+  return Color.lerp(
+    surface,
+    lightBar ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+    lightBar ? 0.05 : 0.1,
+  )!;
 }
 
 /// Chiziq qalinligi: pikselga mos ince hairline.
@@ -39,11 +60,22 @@ double _secondLiquidBottomNavHairlineWidth(BuildContext context) {
 }
 
 /// Truba / extra chegarasi — `surfaceTint` va light/dark bar bilan mos, `stroke` temadan emas.
-Color _secondLiquidBottomNavEdgeColor(Color surfaceTint, {required bool lightBar}) {
+Color _secondLiquidBottomNavEdgeColor(
+  Color surfaceTint, {
+  required bool lightBar,
+}) {
   if (lightBar) {
-    return Color.lerp(surfaceTint, const Color.fromARGB(255, 232, 232, 232), 0.5)!;
+    return Color.lerp(
+      surfaceTint,
+      const Color.fromARGB(255, 232, 232, 232),
+      0.5,
+    )!;
   }
-  return Color.lerp(surfaceTint, const Color.fromARGB(255, 158, 158, 158), 0.2)!;
+  return Color.lerp(
+    surfaceTint,
+    const Color.fromARGB(255, 158, 158, 158),
+    0.2,
+  )!;
 }
 
 const double _secondLiquidBottomNavIndicatorInset = 2;
@@ -51,11 +83,21 @@ const double _secondLiquidBottomNavExpandedVisualRadius = 28;
 
 /// Indikator yoyini kengaygan barning tashqi burchagidan xavfsiz masofada saqlaydi.
 /// Radius `height` va `padding`dan hisoblangani uchun custom o'lchamlarda ham kesishmaydi.
-double _secondLiquidBottomNavSafeExpandedRadius({required double height, required EdgeInsets padding}) {
-  final double indicatorHeight = math.max(0, height - padding.vertical - (_secondLiquidBottomNavIndicatorInset * 2));
+double _secondLiquidBottomNavSafeExpandedRadius({
+  required double height,
+  required EdgeInsets padding,
+}) {
+  final double indicatorHeight = math.max(
+    0,
+    height - padding.vertical - (_secondLiquidBottomNavIndicatorInset * 2),
+  );
   final double indicatorRadius = indicatorHeight / 2;
-  final double largestPadding = math.max(math.max(padding.left, padding.right), math.max(padding.top, padding.bottom));
-  final double concentricRadius = indicatorRadius + largestPadding + _secondLiquidBottomNavIndicatorInset;
+  final double largestPadding = math.max(
+    math.max(padding.left, padding.right),
+    math.max(padding.top, padding.bottom),
+  );
+  final double concentricRadius =
+      indicatorRadius + largestPadding + _secondLiquidBottomNavIndicatorInset;
   return math.max(_secondLiquidBottomNavExpandedVisualRadius, concentricRadius);
 }
 
@@ -66,19 +108,36 @@ double _secondLiquidBottomNavPulseFromProgress(double value) {
 }
 
 /// Surilmali indikator pill: rang [baseColor] dan biroz ochroq, blur yoqilganda shisha qatlami.
-Widget _secondLiquidBottomNavSlidingIndicator({required double x, required double width, required Color baseColor, required bool lightBar, required double indicatorBlurSigma}) {
+Widget _secondLiquidBottomNavSlidingIndicator({
+  required double x,
+  required double width,
+  required Color baseColor,
+  required bool lightBar,
+  required double indicatorBlurSigma,
+}) {
   final bool useIndBlur = indicatorBlurSigma > 0;
-  final Color softer = lightBar ? Color.lerp(Color.lerp(baseColor, const Color.fromARGB(255, 0, 0, 0), 0.12)!, Colors.white, 0.22)! : Color.lerp(baseColor, const Color(0xFF8E8E93), 0.38)!;
+  final Color softer = lightBar
+      ? Color.lerp(
+          Color.lerp(baseColor, const Color.fromARGB(255, 0, 0, 0), 0.12)!,
+          Colors.white,
+          0.22,
+        )!
+      : Color.lerp(baseColor, const Color(0xFF8E8E93), 0.38)!;
   if (useIndBlur) {
     return Transform.translate(
       offset: Offset(x, 0),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(999),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: indicatorBlurSigma, sigmaY: indicatorBlurSigma),
+          filter: ImageFilter.blur(
+            sigmaX: indicatorBlurSigma,
+            sigmaY: indicatorBlurSigma,
+          ),
           child: Container(
             width: width,
-            margin: const EdgeInsets.symmetric(vertical: _secondLiquidBottomNavIndicatorInset),
+            margin: const EdgeInsets.symmetric(
+              vertical: _secondLiquidBottomNavIndicatorInset,
+            ),
             decoration: BoxDecoration(
               color: softer.withValues(alpha: lightBar ? 0.08 : 0.18),
               borderRadius: BorderRadius.circular(999),
@@ -92,8 +151,13 @@ Widget _secondLiquidBottomNavSlidingIndicator({required double x, required doubl
     offset: Offset(x, 0),
     child: Container(
       width: width,
-      margin: const EdgeInsets.symmetric(vertical: _secondLiquidBottomNavIndicatorInset),
-      decoration: BoxDecoration(color: softer, borderRadius: BorderRadius.circular(999)),
+      margin: const EdgeInsets.symmetric(
+        vertical: _secondLiquidBottomNavIndicatorInset,
+      ),
+      decoration: BoxDecoration(
+        color: softer,
+        borderRadius: BorderRadius.circular(999),
+      ),
     ),
   );
 }
@@ -125,12 +189,21 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
     final bool lightBar = backgroundColor.computeLuminance() > 0.5;
     final bool useBlur = backgroundBlurSigma > 0;
     final double sigma = backgroundBlurSigma;
-    final Color surface = lightBar ? _secondLiquidBottomNavWhiten(backgroundColor, lightBar: true) : _secondLiquidBottomNavDarkSurface(backgroundColor);
-    final Color fillColor = useBlur ? surface.withValues(alpha: lightBar ? 0.52 : 0.82) : surface;
-    final Color barShadow = AppColors.shadow.withValues(alpha: lightBar ? 0.14 : 0.42);
+    final Color surface = lightBar
+        ? _secondLiquidBottomNavWhiten(backgroundColor, lightBar: true)
+        : _secondLiquidBottomNavDarkSurface(backgroundColor);
+    final Color fillColor = useBlur
+        ? surface.withValues(alpha: lightBar ? 0.52 : 0.82)
+        : surface;
+    final Color barShadow = AppColors.shadow.withValues(
+      alpha: lightBar ? 0.14 : 0.42,
+    );
     final BorderRadius pill = BorderRadius.circular(999);
     final double edgeW = _secondLiquidBottomNavHairlineWidth(context);
-    final Color edgeColor = _secondLiquidBottomNavEdgeColor(surface, lightBar: lightBar);
+    final Color edgeColor = _secondLiquidBottomNavEdgeColor(
+      surface,
+      lightBar: lightBar,
+    );
     final inner = DecoratedBox(
       decoration: BoxDecoration(
         color: fillColor,
@@ -155,11 +228,17 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
                 switchOutCurve: const Cubic(0.4, 0, 0.7, 1),
                 transitionBuilder: (Widget child, Animation<double> animation) {
                   return RotationTransition(
-                    turns: Tween<double>(begin: 0.18, end: 0).animate(animation),
+                    turns: Tween<double>(
+                      begin: 0.18,
+                      end: 0,
+                    ).animate(animation),
                     child: FadeTransition(
                       opacity: animation,
                       child: ScaleTransition(
-                        scale: Tween<double>(begin: 0.86, end: 1).animate(animation),
+                        scale: Tween<double>(
+                          begin: 0.86,
+                          end: 1,
+                        ).animate(animation),
                         child: child,
                       ),
                     ),
@@ -192,7 +271,14 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: pill,
-          boxShadow: [BoxShadow(color: barShadow, blurRadius: 20, spreadRadius: -6, offset: const Offset(0, 8))],
+          boxShadow: [
+            BoxShadow(
+              color: barShadow,
+              blurRadius: 20,
+              spreadRadius: -6,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: clipped,
       ),
@@ -204,7 +290,12 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
 /// [SecondLiquidBottomNav] ranglari: `Color?` ishlatilganda yoki barcha `null` qoldirilganda
 /// [secondLiquidBottomNavThemePalette] yordamida olinadi.
 class SecondLiquidBottomNavThemePalette {
-  const SecondLiquidBottomNavThemePalette({required this.backgroundColor, required this.selectedColor, required this.unselectedColor, required this.indicatorColor});
+  const SecondLiquidBottomNavThemePalette({
+    required this.backgroundColor,
+    required this.selectedColor,
+    required this.unselectedColor,
+    required this.indicatorColor,
+  });
 
   final Color backgroundColor;
   final Color selectedColor;
@@ -214,7 +305,9 @@ class SecondLiquidBottomNavThemePalette {
 
 /// Light: oqroq truba, surilmali pill, tanlangan (pill ustida) qora, tanlanmagan kulrang.
 /// Dark: ko‘tarilgan qora shisha truba, och kulrang pill, tanlangan/ tanlanmagan iOS uslubida.
-SecondLiquidBottomNavThemePalette secondLiquidBottomNavThemePalette(BuildContext context) {
+SecondLiquidBottomNavThemePalette secondLiquidBottomNavThemePalette(
+  BuildContext context,
+) {
   if (Theme.of(context).brightness == Brightness.dark) {
     return SecondLiquidBottomNavThemePalette(
       backgroundColor: const Color(0xEE1C1C1E),
@@ -232,15 +325,33 @@ SecondLiquidBottomNavThemePalette secondLiquidBottomNavThemePalette(BuildContext
 }
 
 class SecondLiquidBottomNavItem {
-  const SecondLiquidBottomNavItem({this.icon, this.activeIcon, this.iconBuilder, required this.label, this.tooltip})
-    : assert(icon != null || iconBuilder != null, 'SecondLiquidBottomNavItem requires icon or iconBuilder');
+  const SecondLiquidBottomNavItem({
+    this.icon,
+    this.activeIcon,
+    this.iconBuilder,
+    required this.label,
+    this.tooltip,
+    this.selectedLabelTrailingIcon,
+  }) : assert(
+         icon != null || iconBuilder != null,
+         'SecondLiquidBottomNavItem requires icon or iconBuilder',
+       );
 
   /// [iconBuilder] berilganda [Icon] o‘rniga loyiha SVG/tab widgetlari (masalan, [MainBottomNavKitIcons]) ishlatiladi.
   final IconData? icon;
   final IconData? activeIcon;
-  final Widget Function(BuildContext context, Color color, double size, bool selected)? iconBuilder;
+  final Widget Function(
+    BuildContext context,
+    Color color,
+    double size,
+    bool selected,
+  )?
+  iconBuilder;
   final String label;
   final String? tooltip;
+
+  /// Tanlangan tab labelidan keyin ko‘rinadigan qayta bosish indikatori.
+  final IconData? selectedLabelTrailingIcon;
 }
 
 class SecondLiquidBottomNav extends StatefulWidget {
@@ -267,6 +378,7 @@ class SecondLiquidBottomNav extends StatefulWidget {
     this.extraActionIcon,
     this.onExtraActionTap,
     this.extraActionSemanticLabel,
+    this.extraActionShowsCloseWhenExpanded = true,
     this.extraButtonSpacing = 12,
     this.extraButtonBottomInset = 0,
 
@@ -281,8 +393,14 @@ class SecondLiquidBottomNav extends StatefulWidget {
     this.expandedContent,
     this.expandedContentHeight,
   }) : assert(items.length > 1, 'Bottom nav should contain at least 2 items.'),
-       assert(extraActionIcon == null || onExtraActionTap != null, 'onExtraActionTap is required when extraActionIcon is set.'),
-       assert(extraActionIcon == null || extraButton == null, 'Use extraActionIcon or extraButton, not both.');
+       assert(
+         extraActionIcon == null || onExtraActionTap != null,
+         'onExtraActionTap is required when extraActionIcon is set.',
+       ),
+       assert(
+         extraActionIcon == null || extraButton == null,
+         'Use extraActionIcon or extraButton, not both.',
+       );
 
   final List<SecondLiquidBottomNavItem> items;
   final int? currentIndex;
@@ -306,6 +424,9 @@ class SecondLiquidBottomNav extends StatefulWidget {
   final IconData? extraActionIcon;
   final VoidCallback? onExtraActionTap;
   final String? extraActionSemanticLabel;
+
+  /// Kengaygan holatda extra action ikonkasi close ikoniga almashishini boshqaradi.
+  final bool extraActionShowsCloseWhenExpanded;
 
   final double extraButtonSpacing;
   final double extraButtonBottomInset;
@@ -369,7 +490,9 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
     final Widget? resolvedExtra = widget.extraActionIcon != null
         ? _SecondLiquidBottomNavExtraIconButton(
             height: widget.height,
-            icon: isExpanded ? Icons.close : widget.extraActionIcon!,
+            icon: isExpanded && widget.extraActionShowsCloseWhenExpanded
+                ? Icons.close
+                : widget.extraActionIcon!,
             onTap: widget.onExtraActionTap!,
             backgroundColor: widget.backgroundColor ?? p.backgroundColor,
             backgroundBlurSigma: widget.backgroundBlurSigma,
@@ -379,7 +502,11 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
           )
         : widget.extraButton;
     final bool hasExtraButton = resolvedExtra != null;
-    final double resolvedIndicatorSigma = widget.indicatorBlurSigma ?? (widget.backgroundBlurSigma > 0 ? widget.backgroundBlurSigma * 0.58 : 0.0);
+    final double resolvedIndicatorSigma =
+        widget.indicatorBlurSigma ??
+        (widget.backgroundBlurSigma > 0
+            ? widget.backgroundBlurSigma * 0.58
+            : 0.0);
     return SafeArea(
       top: false,
       child: Padding(
@@ -417,9 +544,15 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
                     onPointerDown: _onExtraButtonPointerDown,
                     child: SingleMotionBuilder(
                       value: _extraPulseTick.toDouble(),
-                      motion: const CupertinoMotion.smooth(duration: Duration(milliseconds: 440), extraBounce: 0.04),
+                      motion: const CupertinoMotion.smooth(
+                        duration: Duration(milliseconds: 440),
+                        extraBounce: 0.04,
+                      ),
                       builder: (context, animatedTick, child) {
-                        final double pulse = _secondLiquidBottomNavPulseFromProgress(animatedTick);
+                        final double pulse =
+                            _secondLiquidBottomNavPulseFromProgress(
+                              animatedTick,
+                            );
                         return Transform.scale(
                           scale: 1 - (0.018 * pulse),
                           child: SizedBox(
@@ -470,24 +603,31 @@ class _SecondLiquidBottomNavPillWithTabs extends StatefulWidget {
   final double indicatorBlurSigma;
 
   @override
-  State<_SecondLiquidBottomNavPillWithTabs> createState() => _SecondLiquidBottomNavPillWithTabsState();
+  State<_SecondLiquidBottomNavPillWithTabs> createState() =>
+      _SecondLiquidBottomNavPillWithTabsState();
 }
 
-class _SecondLiquidBottomNavPillWithTabsState extends State<_SecondLiquidBottomNavPillWithTabs> {
+class _SecondLiquidBottomNavPillWithTabsState
+    extends State<_SecondLiquidBottomNavPillWithTabs> {
   bool _dragging = false;
   double? _dragPillX;
   int _pillMotionKey = 0;
   double? _releaseFromX;
 
   double _minLeft(double itemWidth) => _secondLiquidBottomNavIndicatorInset;
-  double _maxLeft(double itemWidth) => (widget.itemCount - 1) * itemWidth + _secondLiquidBottomNavIndicatorInset;
+  double _maxLeft(double itemWidth) =>
+      (widget.itemCount - 1) * itemWidth + _secondLiquidBottomNavIndicatorInset;
 
   double _clampPillX(double localDx, double itemWidth, double indicatorWidth) {
-    return (localDx - indicatorWidth / 2).clamp(_minLeft(itemWidth), _maxLeft(itemWidth)).toDouble();
+    return (localDx - indicatorWidth / 2)
+        .clamp(_minLeft(itemWidth), _maxLeft(itemWidth))
+        .toDouble();
   }
 
   int _indexFromPillX(double left, double itemWidth) {
-    return ((left - _secondLiquidBottomNavIndicatorInset) / itemWidth).round().clamp(0, widget.itemCount - 1);
+    return ((left - _secondLiquidBottomNavIndicatorInset) / itemWidth)
+        .round()
+        .clamp(0, widget.itemCount - 1);
   }
 
   @override
@@ -495,16 +635,27 @@ class _SecondLiquidBottomNavPillWithTabsState extends State<_SecondLiquidBottomN
     return LayoutBuilder(
       builder: (context, constraints) {
         final double itemWidth = constraints.maxWidth / widget.itemCount;
-        final double indicatorWidth = itemWidth - (_secondLiquidBottomNavIndicatorInset * 2);
-        final double targetX = (widget.activeIndex * itemWidth) + _secondLiquidBottomNavIndicatorInset;
+        final double indicatorWidth =
+            itemWidth - (_secondLiquidBottomNavIndicatorInset * 2);
+        final double targetX =
+            (widget.activeIndex * itemWidth) +
+            _secondLiquidBottomNavIndicatorInset;
         return SingleMotionBuilder(
           key: ValueKey(_pillMotionKey),
           value: targetX,
           from: _releaseFromX,
-          motion: const CupertinoMotion.snappy(duration: Duration(milliseconds: 400), extraBounce: 0.2, snapToEnd: true),
+          motion: const CupertinoMotion.snappy(
+            duration: Duration(milliseconds: 400),
+            extraBounce: 0.2,
+            snapToEnd: true,
+          ),
           builder: (context, animatedPillX, child) {
-            final double x = _dragging && _dragPillX != null ? _dragPillX! : animatedPillX;
-            final int shownIndex = _dragging && _dragPillX != null ? _indexFromPillX(_dragPillX!, itemWidth) : widget.activeIndex;
+            final double x = _dragging && _dragPillX != null
+                ? _dragPillX!
+                : animatedPillX;
+            final int shownIndex = _dragging && _dragPillX != null
+                ? _indexFromPillX(_dragPillX!, itemWidth)
+                : widget.activeIndex;
 
             return GestureDetector(
               onHorizontalDragStart: (DragStartDetails _) {
@@ -516,7 +667,11 @@ class _SecondLiquidBottomNavPillWithTabsState extends State<_SecondLiquidBottomN
               onHorizontalDragUpdate: (DragUpdateDetails d) {
                 if (!_dragging) return;
                 setState(() {
-                  _dragPillX = _clampPillX(d.localPosition.dx, itemWidth, indicatorWidth);
+                  _dragPillX = _clampPillX(
+                    d.localPosition.dx,
+                    itemWidth,
+                    indicatorWidth,
+                  );
                 });
               },
               onHorizontalDragEnd: (DragEndDetails d) {
@@ -527,7 +682,9 @@ class _SecondLiquidBottomNavPillWithTabsState extends State<_SecondLiquidBottomN
                   });
                   return;
                 }
-                var idx = _dragPillX != null ? _indexFromPillX(_dragPillX!, itemWidth) : widget.activeIndex;
+                var idx = _dragPillX != null
+                    ? _indexFromPillX(_dragPillX!, itemWidth)
+                    : widget.activeIndex;
                 final v = d.velocity.pixelsPerSecond.dx;
                 if (v.abs() > 500) {
                   if (v > 0 && idx < widget.itemCount - 1) {
@@ -640,13 +797,19 @@ class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
   final double? expandedContentHeight;
 
   @override
-  State<_SecondLiquidBottomNavBarContainer> createState() => _SecondLiquidBottomNavBarContainerState();
+  State<_SecondLiquidBottomNavBarContainer> createState() =>
+      _SecondLiquidBottomNavBarContainerState();
 }
 
-class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomNavBarContainer> with SingleTickerProviderStateMixin {
+class _SecondLiquidBottomNavBarContainerState
+    extends State<_SecondLiquidBottomNavBarContainer>
+    with SingleTickerProviderStateMixin {
   static const Duration _expandDuration = Duration(milliseconds: 460);
 
-  late final AnimationController _expandController = AnimationController(vsync: this, duration: _expandDuration);
+  late final AnimationController _expandController = AnimationController(
+    vsync: this,
+    duration: _expandDuration,
+  );
   late final Animation<double> _expandCurve = CurvedAnimation(
     parent: _expandController,
     curve: const Cubic(0.16, 1.06, 0.3, 1),
@@ -657,9 +820,14 @@ class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomN
     curve: const Interval(0.12, 0.82, curve: Cubic(0.16, 1, 0.3, 1)),
     reverseCurve: const Interval(0, 0.46, curve: Curves.easeIn),
   );
-  late final Animation<Offset> _contentSlide = Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero).animate(
-    CurvedAnimation(parent: _expandController, curve: const Interval(0.08, 0.9, curve: Cubic(0.16, 1, 0.3, 1)), reverseCurve: const Cubic(0.4, 0, 0.7, 1)),
-  );
+  late final Animation<Offset> _contentSlide =
+      Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero).animate(
+        CurvedAnimation(
+          parent: _expandController,
+          curve: const Interval(0.08, 0.9, curve: Cubic(0.16, 1, 0.3, 1)),
+          reverseCurve: const Cubic(0.4, 0, 0.7, 1),
+        ),
+      );
 
   @override
   void initState() {
@@ -696,127 +864,176 @@ class _SecondLiquidBottomNavBarContainerState extends State<_SecondLiquidBottomN
     );
   }
 
-  Widget _buildBar(BuildContext context, {required double expandT, Widget? child}) {
-        final bool lightBar = widget.backgroundColor.computeLuminance() > 0.5;
-        final Color surfaceTint = lightBar ? _secondLiquidBottomNavWhiten(widget.backgroundColor, lightBar: true) : _secondLiquidBottomNavDarkSurface(widget.backgroundColor);
-        final Color barShadow = AppColors.shadow.withValues(alpha: lightBar ? 0.14 : 0.42);
-        final bool useBlur = widget.backgroundBlurSigma > 0;
-        final double sigma = widget.backgroundBlurSigma;
-        final double safeExpandedRadius = _secondLiquidBottomNavSafeExpandedRadius(height: widget.height, padding: widget.padding);
-        final double resolvedRadius = lerpDouble(widget.borderRadius, safeExpandedRadius, expandT) ?? widget.borderRadius;
-        final BorderRadius outerRadius = BorderRadius.circular(resolvedRadius);
-        final double edgeW = _secondLiquidBottomNavHairlineWidth(context);
-        final Color edgeColor = _secondLiquidBottomNavEdgeColor(surfaceTint, lightBar: lightBar);
-        final Widget pillTabs = _SecondLiquidBottomNavPillWithTabs(
-          itemCount: widget.items.length,
-          activeIndex: widget.activeIndex,
-          items: widget.items,
-          onIndexChanged: widget.onTap,
-          iconSize: widget.iconSize,
-          selectedColor: widget.selectedColor,
-          unselectedColor: widget.unselectedColor,
-          lightBar: lightBar,
-          indicatorColor: widget.indicatorColor,
-          indicatorBlurSigma: widget.indicatorBlurSigma,
-        );
-        final LiquidGlassSettings glassSettingsLight = LiquidGlassSettings(
-          blur: 30,
-          thickness: (sigma * 0.45).clamp(10.0, 18.0),
-          glassColor: Color.lerp(surfaceTint, Colors.white, 0.55)!.withValues(alpha: 0.42),
-          lightIntensity: .62,
-          refractiveIndex: 1.08,
-          saturation: 0.5,
-          ambientStrength: 0.14,
-        );
-        final LiquidGlassSettings glassSettingsDark = LiquidGlassSettings(
-          blur: (sigma * 0.45).clamp(10.0, 18.0),
-          thickness: 0.2,
-          glassColor: Color.lerp(surfaceTint, Colors.white, 0.51)!.withValues(alpha: 0.2),
-          lightIntensity: 0.42,
-          refractiveIndex: 1,
-          saturation: 0.2,
-          ambientStrength: 0.1,
-        );
-        final Color innerVeilLight = Color.lerp(surfaceTint, Colors.white, 0.65)!.withValues(alpha: 0.36);
-        final Color innerVeilDark = Color.lerp(surfaceTint, const Color(0xFF000000), 0.18)!.withValues(alpha: 0.9);
+  Widget _buildBar(
+    BuildContext context, {
+    required double expandT,
+    Widget? child,
+  }) {
+    final bool lightBar = widget.backgroundColor.computeLuminance() > 0.5;
+    final Color surfaceTint = lightBar
+        ? _secondLiquidBottomNavWhiten(widget.backgroundColor, lightBar: true)
+        : _secondLiquidBottomNavDarkSurface(widget.backgroundColor);
+    final Color barShadow = AppColors.shadow.withValues(
+      alpha: lightBar ? 0.14 : 0.42,
+    );
+    final bool useBlur = widget.backgroundBlurSigma > 0;
+    final double sigma = widget.backgroundBlurSigma;
+    final double safeExpandedRadius = _secondLiquidBottomNavSafeExpandedRadius(
+      height: widget.height,
+      padding: widget.padding,
+    );
+    final double resolvedRadius =
+        lerpDouble(widget.borderRadius, safeExpandedRadius, expandT) ??
+        widget.borderRadius;
+    final BorderRadius outerRadius = BorderRadius.circular(resolvedRadius);
+    final double edgeW = _secondLiquidBottomNavHairlineWidth(context);
+    final Color edgeColor = _secondLiquidBottomNavEdgeColor(
+      surfaceTint,
+      lightBar: lightBar,
+    );
+    final Widget pillTabs = _SecondLiquidBottomNavPillWithTabs(
+      itemCount: widget.items.length,
+      activeIndex: widget.activeIndex,
+      items: widget.items,
+      onIndexChanged: widget.onTap,
+      iconSize: widget.iconSize,
+      selectedColor: widget.selectedColor,
+      unselectedColor: widget.unselectedColor,
+      lightBar: lightBar,
+      indicatorColor: widget.indicatorColor,
+      indicatorBlurSigma: widget.indicatorBlurSigma,
+    );
+    final LiquidGlassSettings glassSettingsLight = LiquidGlassSettings(
+      blur: 30,
+      thickness: (sigma * 0.45).clamp(10.0, 18.0),
+      glassColor: Color.lerp(
+        surfaceTint,
+        Colors.white,
+        0.55,
+      )!.withValues(alpha: 0.42),
+      lightIntensity: .62,
+      refractiveIndex: 1.08,
+      saturation: 0.5,
+      ambientStrength: 0.14,
+    );
+    final LiquidGlassSettings glassSettingsDark = LiquidGlassSettings(
+      blur: (sigma * 0.45).clamp(10.0, 18.0),
+      thickness: 0.2,
+      glassColor: Color.lerp(
+        surfaceTint,
+        Colors.white,
+        0.51,
+      )!.withValues(alpha: 0.2),
+      lightIntensity: 0.42,
+      refractiveIndex: 1,
+      saturation: 0.2,
+      ambientStrength: 0.1,
+    );
+    final Color innerVeilLight = Color.lerp(
+      surfaceTint,
+      Colors.white,
+      0.65,
+    )!.withValues(alpha: 0.36);
+    final Color innerVeilDark = Color.lerp(
+      surfaceTint,
+      const Color(0xFF000000),
+      0.18,
+    )!.withValues(alpha: 0.9);
 
-        final Widget tabRow = SizedBox(
-          height: widget.height,
-          child: Padding(
-            padding: widget.padding,
-            child: pillTabs,
-          ),
-        );
-        final double expandHeight = widget.expandedContentHeight ?? 0;
-        final Widget? expandedSection = widget.expandedContent != null && expandHeight > 0 && (expandT > 0 || _expandController.isAnimating)
-            ? SizedBox(
-                height: expandHeight * expandT,
-                width: double.infinity,
-                child: ClipRect(
-                  child: OverflowBox(
-                    alignment: Alignment.bottomCenter,
-                    minHeight: expandHeight,
-                    maxHeight: expandHeight,
-                    child: FadeTransition(
-                      opacity: _contentOpacity,
-                      child: SlideTransition(
-                        position: _contentSlide,
-                        child: child!,
-                      ),
-                    ),
+    final Widget tabRow = SizedBox(
+      height: widget.height,
+      child: Padding(padding: widget.padding, child: pillTabs),
+    );
+    final double expandHeight = widget.expandedContentHeight ?? 0;
+    final Widget? expandedSection =
+        widget.expandedContent != null &&
+            expandHeight > 0 &&
+            (expandT > 0 || _expandController.isAnimating)
+        ? SizedBox(
+            height: expandHeight * expandT,
+            width: double.infinity,
+            child: ClipRect(
+              child: OverflowBox(
+                alignment: Alignment.bottomCenter,
+                minHeight: expandHeight,
+                maxHeight: expandHeight,
+                child: FadeTransition(
+                  opacity: _contentOpacity,
+                  child: SlideTransition(
+                    position: _contentSlide,
+                    child: child!,
                   ),
                 ),
-              )
-            : null;
-        final Widget columnBody = Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (expandedSection != null) expandedSection,
-            tabRow,
-          ],
-        );
-        final Widget barBody = useBlur
-            ? ColoredBox(color: lightBar ? innerVeilLight : innerVeilDark, child: columnBody)
-            : columnBody;
-        final Widget inner = useBlur
-            ? LiquidGlassLayer(
-                fake: false,
-                useBackdropGroup: true,
-                settings: lightBar ? glassSettingsLight : glassSettingsDark,
-                child: LiquidGlass(
-                  shape: LiquidRoundedSuperellipse(
-                    borderRadius: resolvedRadius,
-                    side: BorderSide(color: edgeColor, width: edgeW),
-                  ),
-                  child: barBody,
-                ),
-              )
-            : DecoratedBox(
-                decoration: BoxDecoration(
-                  color: surfaceTint,
-                  border: Border.all(color: edgeColor, width: edgeW),
-                  borderRadius: outerRadius,
-                ),
-                child: barBody,
-              );
-        final Widget clipped = ClipRRect(borderRadius: BorderRadius.circular(resolvedRadius), child: inner);
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(resolvedRadius),
-            boxShadow: [BoxShadow(color: barShadow, blurRadius: 24, spreadRadius: -8, offset: const Offset(0, 12))],
+              ),
+            ),
+          )
+        : null;
+    final Widget columnBody = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [?expandedSection, tabRow],
+    );
+    final Widget barBody = useBlur
+        ? ColoredBox(
+            color: lightBar ? innerVeilLight : innerVeilDark,
+            child: columnBody,
+          )
+        : columnBody;
+    final Widget inner = useBlur
+        ? LiquidGlassLayer(
+            fake: false,
+            useBackdropGroup: true,
+            settings: lightBar ? glassSettingsLight : glassSettingsDark,
+            child: LiquidGlass(
+              shape: LiquidRoundedSuperellipse(
+                borderRadius: resolvedRadius,
+                side: BorderSide(color: edgeColor, width: edgeW),
+              ),
+              child: barBody,
+            ),
+          )
+        : DecoratedBox(
+            decoration: BoxDecoration(
+              color: surfaceTint,
+              border: Border.all(color: edgeColor, width: edgeW),
+              borderRadius: outerRadius,
+            ),
+            child: barBody,
+          );
+    final Widget clipped = ClipRRect(
+      borderRadius: BorderRadius.circular(resolvedRadius),
+      child: inner,
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(resolvedRadius),
+        boxShadow: [
+          BoxShadow(
+            color: barShadow,
+            blurRadius: 24,
+            spreadRadius: -8,
+            offset: const Offset(0, 12),
           ),
-          child: Material(
-            type: MaterialType.transparency,
-            borderRadius: BorderRadius.circular(resolvedRadius),
-            clipBehavior: Clip.none,
-            child: clipped,
-          ),
-        );
+        ],
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        borderRadius: BorderRadius.circular(resolvedRadius),
+        clipBehavior: Clip.none,
+        child: clipped,
+      ),
+    );
   }
 }
 
 class _SecondLiquidBottomNavTab extends StatelessWidget {
-  const _SecondLiquidBottomNavTab({required this.item, required this.isSelected, required this.onTap, required this.iconSize, required this.selectedColor, required this.unselectedColor});
+  const _SecondLiquidBottomNavTab({
+    required this.item,
+    required this.isSelected,
+    required this.onTap,
+    required this.iconSize,
+    required this.selectedColor,
+    required this.unselectedColor,
+  });
 
   final SecondLiquidBottomNavItem item;
   final bool isSelected;
@@ -833,7 +1050,9 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
     if (item.iconBuilder != null) {
       tabIcon = item.iconBuilder!(context, contentColor, iconSize, isSelected);
     } else {
-      final IconData resolved = isSelected ? (item.activeIcon ?? iconData!) : iconData!;
+      final IconData resolved = isSelected
+          ? (item.activeIcon ?? iconData!)
+          : iconData!;
       tabIcon = Icon(resolved, size: iconSize, color: contentColor);
     }
     final Widget content = Padding(
@@ -849,13 +1068,31 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
             children: [
               tabIcon,
               const SizedBox(height: 2),
-              Text(
-                item.label,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-                style: TextStyle(color: contentColor, fontSize: 9, fontWeight: FontWeight.w500, height: 1),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    item.label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                    style: TextStyle(
+                      color: contentColor,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w500,
+                      height: 1,
+                    ),
+                  ),
+                  if (isSelected && item.selectedLabelTrailingIcon != null) ...[
+                    const SizedBox(width: 1),
+                    Icon(
+                      item.selectedLabelTrailingIcon,
+                      color: contentColor,
+                      size: 10,
+                    ),
+                  ],
+                ],
               ),
             ],
           ),
@@ -882,17 +1119,41 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
 /// Asosiy 4 tab: [MainBottomNavKitIcons] + [MainBottomNavProfileTabIcon].
 /// Brand ranglar uchun: `selectedColor: context.appColors.primary`, `unselectedColor: context.appColors.bottomBarTabUnselected` —
 /// yoki barcha ranglarni o‘tmasdan default [secondLiquidBottomNavThemePalette] ishlatiladi.
-List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(BuildContext context, {required bool isGuestMode}) {
+List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
+  BuildContext context, {
+  required bool isGuestMode,
+  bool isProfileMenuExpanded = false,
+}) {
   final l10n = context.l10n;
   final appColors = context.appColors;
   return [
-    SecondLiquidBottomNavItem(label: l10n.mainTabHome, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.home(color, size, selected)),
-    SecondLiquidBottomNavItem(label: l10n.mainTabCourses, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.courses(color, size, selected)),
-    SecondLiquidBottomNavItem(label: l10n.mainTabLeaderboard, iconBuilder: (_, color, size, selected) => MainBottomNavKitIcons.leaderboard(color, size, selected)),
+    SecondLiquidBottomNavItem(
+      label: l10n.mainTabHome,
+      iconBuilder: (_, color, size, selected) =>
+          MainBottomNavKitIcons.home(color, size, selected),
+    ),
+    SecondLiquidBottomNavItem(
+      label: l10n.storeTitle,
+      iconBuilder: (_, color, size, selected) =>
+          Icon(LucideIcons.store, color: color, size: size),
+    ),
+    SecondLiquidBottomNavItem(
+      label: l10n.mainTabLeaderboard,
+      iconBuilder: (_, color, size, selected) =>
+          MainBottomNavKitIcons.leaderboard(color, size, selected),
+    ),
     SecondLiquidBottomNavItem(
       label: l10n.mainTabProfile,
-      iconBuilder: (_, color, size, selected) =>
-          MainBottomNavProfileTabIcon(isGuestMode: isGuestMode, selected: selected, selectedColor: appColors.primary, unselectedColor: appColors.bottomBarTabUnselected, iconSize: size),
+      selectedLabelTrailingIcon: isProfileMenuExpanded
+          ? Icons.keyboard_arrow_down_rounded
+          : Icons.keyboard_arrow_up_rounded,
+      iconBuilder: (_, color, size, selected) => MainBottomNavProfileTabIcon(
+        isGuestMode: isGuestMode,
+        selected: selected,
+        selectedColor: appColors.primary,
+        unselectedColor: appColors.bottomBarTabUnselected,
+        iconSize: size,
+      ),
     ),
   ];
 }

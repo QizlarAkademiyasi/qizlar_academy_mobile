@@ -5,15 +5,16 @@ import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/app_update/app_update_prompt_coordinator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
-import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_screen.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_action_grid.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/liquid_bottom_nav_second.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/profile_screen.dart';
+import 'package:qizlar_academy_mobile/feature/store/presentation/screens/store_screen.dart';
 
-import '../../../home/presentation/screens/home_screen_main.dart' show HomeScreen;
+import '../../../home/presentation/screens/home_screen_main.dart'
+    show HomeScreen;
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key, required this.isGuestMode});
@@ -24,7 +25,8 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen>, WidgetsBindingObserver {
+class _MainScreenState extends State<MainScreen>
+    with MainScreenMixin<MainScreen>, WidgetsBindingObserver {
   @override
   bool get isGuestMode => widget.isGuestMode;
 
@@ -58,16 +60,18 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
     final pages = widget.isGuestMode
         ? <Widget>[
             _KeepAlivePage(child: HomeScreen(onSwitchMainTab: onTabTap)),
-            const _KeepAlivePage(child: CoursesScreen()),
+            const _KeepAlivePage(child: _GuestSignInRedirectView()),
             const _KeepAlivePage(child: LeaderboardScreen()),
-            const _KeepAlivePage(child: _GuestProfileRedirectView()),
+            const _KeepAlivePage(child: _GuestSignInRedirectView()),
             // _KeepAlivePage(
             //   child: MainMoreTabPage(selectedItemIndex: morePanelSelectedItemIndex, onItemSelected: onMorePanelItemSelected),
             // ),
           ]
         : <Widget>[
             _KeepAlivePage(child: HomeScreen(onSwitchMainTab: onTabTap)),
-            const _KeepAlivePage(child: CoursesScreen()),
+            const _KeepAlivePage(
+              child: StoreScreen(bottomContentInset: 72, showBackButton: false),
+            ),
             const _KeepAlivePage(child: LeaderboardScreen()),
             const _KeepAlivePage(child: ProfileScreen()),
             // _KeepAlivePage(
@@ -81,7 +85,13 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
       body: Stack(
         children: [
           Positioned.fill(
-            child: _MainTabPageViewWithFade(pageController: pageController, selectedIndex: selectedIndex, tabBarFadeNonce: tabBarFadeNonce, onPageChanged: onPageChanged, pages: pages),
+            child: _MainTabPageViewWithFade(
+              pageController: pageController,
+              selectedIndex: selectedIndex,
+              tabBarFadeNonce: tabBarFadeNonce,
+              onPageChanged: onPageChanged,
+              pages: pages,
+            ),
           ),
           // Align(
           //   alignment: Alignment.bottomCenter,
@@ -125,24 +135,44 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
               ),
             ),
           ),
-          Positioned(bottom: 0, left: 0, right: 0, child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image() : UiKitAssets.images.bottomNavLight.image()),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: context.isDarkTheme
+                ? UiKitAssets.images.bottomNavDark.image(
+                    opacity: AlwaysStoppedAnimation(0.5),
+                  )
+                : UiKitAssets.images.bottomNavLight.image(
+                    opacity: AlwaysStoppedAnimation(0.5),
+                  ),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 0),
               child: SecondLiquidBottomNav(
-                items: mainAppSecondLiquidBottomNavItems(context, isGuestMode: isGuestMode),
+                items: mainAppSecondLiquidBottomNavItems(
+                  context,
+                  isGuestMode: isGuestMode,
+                  isProfileMenuExpanded: isExtraMenuExpanded,
+                ),
                 currentIndex: selectedIndex,
                 padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                 onChanged: onTabTap,
                 selectedColor: context.appColors.primary,
                 unselectedColor: context.appColors.bottomBarTabUnselected,
-                extraActionIcon: Icons.add,
-                onExtraActionTap: toggleExtraMenu,
-                extraActionSemanticLabel: context.l10n.mainTabMore,
+                extraActionIcon: LucideIcons.images,
+                onExtraActionTap: onPortfolioTap,
+                extraActionSemanticLabel: 'Portfolio',
+                extraActionShowsCloseWhenExpanded: false,
                 isExpanded: isExtraMenuExpanded,
-                expandedContent: MainExtraActionGrid(onItemTap: onExtraMenuItemTap),
-                expandedContentHeight: MainExtraActionGrid.preferredHeightFor(kMainExtraMenuItems.length),
+                expandedContent: MainExtraActionGrid(
+                  onItemTap: onExtraMenuItemTap,
+                ),
+                expandedContentHeight: MainExtraActionGrid.preferredHeightFor(
+                  kMainExtraMenuItems.length,
+                ),
               ),
             ),
           ),
@@ -164,7 +194,13 @@ class _MainScreenState extends State<MainScreen> with MainScreenMixin<MainScreen
 
 /// [PageView] scroll/swipe — fade yo‘q; pastki bar — fade + `jumpToPage`.
 class _MainTabPageViewWithFade extends StatefulWidget {
-  const _MainTabPageViewWithFade({required this.pageController, required this.selectedIndex, required this.tabBarFadeNonce, required this.onPageChanged, required this.pages});
+  const _MainTabPageViewWithFade({
+    required this.pageController,
+    required this.selectedIndex,
+    required this.tabBarFadeNonce,
+    required this.onPageChanged,
+    required this.pages,
+  });
 
   final PageController pageController;
   final int selectedIndex;
@@ -175,14 +211,22 @@ class _MainTabPageViewWithFade extends StatefulWidget {
   final List<Widget> pages;
 
   @override
-  State<_MainTabPageViewWithFade> createState() => _MainTabPageViewWithFadeState();
+  State<_MainTabPageViewWithFade> createState() =>
+      _MainTabPageViewWithFadeState();
 }
 
-class _MainTabPageViewWithFadeState extends State<_MainTabPageViewWithFade> with SingleTickerProviderStateMixin {
+class _MainTabPageViewWithFadeState extends State<_MainTabPageViewWithFade>
+    with SingleTickerProviderStateMixin {
   static const Duration _halfFade = Duration(milliseconds: 160);
 
-  late final AnimationController _fadeController = AnimationController(vsync: this, duration: _halfFade);
-  late final Animation<double> _opacity = Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut));
+  late final AnimationController _fadeController = AnimationController(
+    vsync: this,
+    duration: _halfFade,
+  );
+  late final Animation<double> _opacity = Tween<double>(
+    begin: 1,
+    end: 0,
+  ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut));
 
   int _fadeToken = 0;
 
@@ -224,7 +268,12 @@ class _MainTabPageViewWithFadeState extends State<_MainTabPageViewWithFade> with
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _opacity,
-      child: PageView(physics: ClampingScrollPhysics(), controller: widget.pageController, onPageChanged: widget.onPageChanged, children: widget.pages),
+      child: PageView(
+        physics: ClampingScrollPhysics(),
+        controller: widget.pageController,
+        onPageChanged: widget.onPageChanged,
+        children: widget.pages,
+      ),
     );
   }
 }
@@ -238,7 +287,8 @@ class _KeepAlivePage extends StatefulWidget {
   State<_KeepAlivePage> createState() => _KeepAlivePageState();
 }
 
-class _KeepAlivePageState extends State<_KeepAlivePage> with AutomaticKeepAliveClientMixin<_KeepAlivePage> {
+class _KeepAlivePageState extends State<_KeepAlivePage>
+    with AutomaticKeepAliveClientMixin<_KeepAlivePage> {
   @override
   bool get wantKeepAlive => true;
 
@@ -249,13 +299,16 @@ class _KeepAlivePageState extends State<_KeepAlivePage> with AutomaticKeepAliveC
   }
 }
 
-class _GuestProfileRedirectView extends StatelessWidget {
-  const _GuestProfileRedirectView();
+class _GuestSignInRedirectView extends StatelessWidget {
+  const _GuestSignInRedirectView();
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: PrimaryButton.elevated(label: context.l10n.guestSignInCta, onPressed: () => context.go(Routes.signIn)),
+      child: PrimaryButton.elevated(
+        label: context.l10n.guestSignInCta,
+        onPressed: () => context.go(Routes.signIn),
+      ),
     );
   }
 }

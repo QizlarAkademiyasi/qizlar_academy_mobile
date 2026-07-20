@@ -20,22 +20,22 @@ class MainExtraMenuItem {
 
 const List<MainExtraMenuItem> kMainExtraMenuItems = [
   MainExtraMenuItem(
-    icon: LucideIcons.store,
+    icon: LucideIcons.graduationCap,
     iconBackground: Color(0xFF3357C9),
-    label: "Do'kon",
-    route: Routes.store,
+    label: 'Kurslar',
+    route: Routes.courses,
+  ),
+  MainExtraMenuItem(
+    icon: LucideIcons.clipboardCheck,
+    iconBackground: Color(0xFF1EA672),
+    label: 'Vazifalar',
+    route: Routes.tasks,
   ),
   MainExtraMenuItem(
     icon: LucideIcons.briefcaseBusiness,
     iconBackground: Color(0xFFFF6B1A),
     label: 'Vakansiyalar',
     route: Routes.vacancies,
-  ),
-  MainExtraMenuItem(
-    icon: LucideIcons.images,
-    iconBackground: Color(0xFF1EA672),
-    label: 'Portfolio',
-    route: Routes.portfolio,
   ),
   MainExtraMenuItem(
     icon: LucideIcons.medal,

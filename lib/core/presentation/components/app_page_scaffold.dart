@@ -12,6 +12,7 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions = const [],
     this.centerTitle = false,
     this.backButton,
+    this.showBackButton = true,
   });
 
   final String title;
@@ -19,6 +20,7 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget> actions;
   final bool centerTitle;
   final Widget? backButton;
+  final bool showBackButton;
 
   static const double toolbarHeight = 64;
 
@@ -34,17 +36,21 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       toolbarHeight: toolbarHeight,
-      leadingWidth: 60,
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 8),
-        child:
-            backButton ??
-            AppBackButton.ghost(
-              onTap: onBackTap,
-              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            ),
-      ),
-      titleSpacing: centerTitle ? 0 : 4,
+      leadingWidth: showBackButton ? 60 : null,
+      leading: showBackButton
+          ? Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child:
+                  backButton ??
+                  AppBackButton.ghost(
+                    onTap: onBackTap,
+                    tooltip: MaterialLocalizations.of(
+                      context,
+                    ).backButtonTooltip,
+                  ),
+            )
+          : null,
+      titleSpacing: centerTitle ? 0 : (showBackButton ? 4 : 20),
       centerTitle: centerTitle,
       title: Text(
         title,
@@ -72,6 +78,7 @@ class AppPageScaffold extends StatelessWidget {
     this.actions = const [],
     this.centerTitle = false,
     this.backButton,
+    this.showBackButton = true,
     this.backgroundColor,
     this.bottomNavigationBar,
     this.floatingActionButton,
@@ -85,6 +92,7 @@ class AppPageScaffold extends StatelessWidget {
   final List<Widget> actions;
   final bool centerTitle;
   final Widget? backButton;
+  final bool showBackButton;
   final Color? backgroundColor;
   final Widget? bottomNavigationBar;
   final Widget? floatingActionButton;
@@ -102,6 +110,7 @@ class AppPageScaffold extends StatelessWidget {
         actions: actions,
         centerTitle: centerTitle,
         backButton: backButton,
+        showBackButton: showBackButton,
       ),
       body: SafeArea(top: false, bottom: safeAreaBottom, child: body),
       bottomNavigationBar: bottomNavigationBar,

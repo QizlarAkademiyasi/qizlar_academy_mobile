@@ -19,6 +19,10 @@ sealed class Routes {
   /// Shaxsiy ma'lumotlar (ro'yxatdan o'tmagan foydalanuvchi uchun)
   static const String register = '/register';
 
+  /// Kurslar katalogi
+  static const String courses = '/courses';
+  static const String coursesName = 'courses';
+
   /// Kurs detallari (id bilan)
   static String courseDetails(String id) => '/courses/$id';
   static String coursePlayer(String id) => '/courses/$id/player';

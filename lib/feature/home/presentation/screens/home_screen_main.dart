@@ -20,7 +20,7 @@ import 'package:flutter/rendering.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.onSwitchMainTab});
 
-  /// Asosiy shell ichidagi tab indeksi (0 — bosh sahifa, 1 — kurslar, 2 — liderbord, 3 — profil).
+  /// Asosiy shell ichidagi tab indeksi (0 — bosh sahifa, 1 — do‘kon, 2 — liderbord, 3 — profil).
   final ValueChanged<int>? onSwitchMainTab;
 
   @override

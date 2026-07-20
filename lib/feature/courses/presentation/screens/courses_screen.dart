@@ -1,5 +1,4 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/bloc/courses_catalog_bloc.dart';
@@ -13,7 +12,7 @@ class CoursesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [CoursesCatalogBloc] [app_routes] dagi [MainScreen] ota-providers orqali beriladi.
+    // [CoursesCatalogBloc] [app_routes] dagi katalog route orqali beriladi.
     return const _CoursesView();
   }
 }
@@ -25,7 +24,8 @@ class _CoursesView extends StatefulWidget {
   State<_CoursesView> createState() => _CoursesViewState();
 }
 
-class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_CoursesView> {
+class _CoursesViewState extends State<_CoursesView>
+    with CoursesScreenMixin<_CoursesView> {
   /// [AnimationLimiter] birinchi frame dan keyin animatsiyani o‘chiradi; skeletondan keyin
   /// ro‘yxat chiqishi uchun limiter yangi [ObjectKey] bilan yaratilishi kerak.
   /// API har safar yangi [overview] instansiyasi qaytargach, qidiruv tugaganda ham stagger ishlaydi.
@@ -46,7 +46,10 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
         child: BlocConsumer<CoursesCatalogBloc, CoursesCatalogState>(
           listener: coursesBlocListener,
           builder: (context, state) {
-            final isInitialLoading = (state.status == CoursesCatalogStatus.loading || state.status == CoursesCatalogStatus.initial) && !state.hasData;
+            final isInitialLoading =
+                (state.status == CoursesCatalogStatus.loading ||
+                    state.status == CoursesCatalogStatus.initial) &&
+                !state.hasData;
 
             // [AnimationLimiter] birinchi frame dan keyin animatsiyani o‘chiradi. Avval skeleton,
             // keyin ro‘yxat chiqsa kartalar animatsiyasiz qoladi — limiter shu kalit bilan
@@ -57,15 +60,20 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
                 color: AppColors.primary,
                 onRefresh: () => onPullRefresh(context),
                 child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
                   slivers: [
                     SliverPadding(
-                      padding: AppPadding.paddingHorizontalLg,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       sliver: SliverToBoxAdapter(child: buildTopBar(context)),
                     ),
                     SliverPersistentHeader(
                       pinned: true,
-                      delegate: _CoursesPinnedSearchDelegate(backgroundColor: context.theme.scaffoldBackgroundColor, child: buildSearchField(context)),
+                      delegate: _CoursesPinnedSearchDelegate(
+                        backgroundColor: context.theme.scaffoldBackgroundColor,
+                        child: buildSearchField(context),
+                      ),
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 14)),
                     ..._coursesBodySlivers(context, state, isInitialLoading),
@@ -79,18 +87,30 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
     );
   }
 
-  List<Widget> _coursesBodySlivers(BuildContext context, CoursesCatalogState state, bool isInitialLoading) {
+  List<Widget> _coursesBodySlivers(
+    BuildContext context,
+    CoursesCatalogState state,
+    bool isInitialLoading,
+  ) {
     if (state.status == CoursesCatalogStatus.failure && !state.hasData) {
       return [
         SliverFillRemaining(
           hasScrollBody: false,
-          child: TgsFailureContent(message: context.l10n.coursesCatalogLoadError, onRetry: () => retry(context)),
+          child: TgsFailureContent(
+            message: context.l10n.coursesCatalogLoadError,
+            onRetry: () => retry(context),
+          ),
         ),
       ];
     }
 
     if (isInitialLoading) {
-      return [const SliverFillRemaining(hasScrollBody: false, child: CoursesListSkeleton())];
+      return [
+        const SliverFillRemaining(
+          hasScrollBody: false,
+          child: CoursesListSkeleton(),
+        ),
+      ];
     }
 
     final overview = state.overview;
@@ -101,7 +121,10 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
           child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 36),
-              child: TgsEmptyContent(message: context.l10n.coursesNoResults, animationSize: 92),
+              child: TgsEmptyContent(
+                message: context.l10n.coursesNoResults,
+                animationSize: 92,
+              ),
             ),
           ),
         ),
@@ -125,7 +148,14 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
                 duration: AppStaggeredListAnimation.duration,
                 delay: AppStaggeredListAnimation.staggerDelay,
                 verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
-                child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [buildInProgressCard(context, lastViewed), const SizedBox(height: 16)]),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    buildInProgressCard(context, lastViewed),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               );
             }
             final courseIndex = hasInProgress ? index - 1 : index;
@@ -135,7 +165,10 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
               duration: AppStaggeredListAnimation.duration,
               delay: AppStaggeredListAnimation.staggerDelay,
               verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
-              child: Padding(padding: const EdgeInsets.only(bottom: 16), child: buildCourseCard(context, courses[courseIndex])),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: buildCourseCard(context, courses[courseIndex]),
+              ),
             );
           }, childCount: itemCount),
         ),
@@ -146,7 +179,10 @@ class _CoursesViewState extends State<_CoursesView> with CoursesScreenMixin<_Cou
 
 /// Kurslar qidiruv maydoni — scroll qilganda yuqorida qotib turadi.
 class _CoursesPinnedSearchDelegate extends SliverPersistentHeaderDelegate {
-  _CoursesPinnedSearchDelegate({required this.backgroundColor, required this.child});
+  _CoursesPinnedSearchDelegate({
+    required this.backgroundColor,
+    required this.child,
+  });
 
   final Color backgroundColor;
   final Widget child;
@@ -161,7 +197,11 @@ class _CoursesPinnedSearchDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => _height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return ColoredBox(
       color: backgroundColor,
       child: SizedBox(
@@ -173,6 +213,7 @@ class _CoursesPinnedSearchDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(covariant _CoursesPinnedSearchDelegate oldDelegate) {
-    return oldDelegate.backgroundColor != backgroundColor || oldDelegate.child != child;
+    return oldDelegate.backgroundColor != backgroundColor ||
+        oldDelegate.child != child;
   }
 }
