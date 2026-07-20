@@ -32,6 +32,16 @@ abstract final class AppShareLinks {
         .toString();
   }
 
+  /// Portfolio postini ulashish:
+  /// `https://www.qizlarakademiyasi.uz/portfolio/{postId}`
+  static String portfolioPostHttpsUrl(String postId) {
+    final id = postId.trim();
+    if (id.isEmpty) return universalLinkBase;
+    return Uri.parse(universalLinkBase)
+        .resolve('/portfolio/${Uri.encodeComponent(id)}')
+        .toString();
+  }
+
   /// App Store 5.1.1(v) — hisobni o‘chirish so‘rovi uchun veb sahifa.
   static const String accountDeletionWebUrl = 'https://qizlarakademiyasi.uz/account-deletion';
 }

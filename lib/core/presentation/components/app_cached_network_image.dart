@@ -16,6 +16,11 @@ class AppCachedNetworkImage extends StatelessWidget {
     this.height,
     this.fit = BoxFit.cover,
     this.alignment = Alignment.center,
+    this.fadeInDuration = const Duration(milliseconds: 280),
+    this.fadeOutDuration = const Duration(milliseconds: 200),
+    this.useOldImageOnUrlChange = false,
+    this.memCacheWidth,
+    this.memCacheHeight,
     this.placeholder,
     this.errorWidget,
     this.fallback = const AppNetworkImageFallbackAvatar(),
@@ -28,6 +33,11 @@ class AppCachedNetworkImage extends StatelessWidget {
   final double? height;
   final BoxFit fit;
   final Alignment alignment;
+  final Duration fadeInDuration;
+  final Duration fadeOutDuration;
+  final bool useOldImageOnUrlChange;
+  final int? memCacheWidth;
+  final int? memCacheHeight;
 
   /// Berilsa, [fallback] o‘rniga ishlatiladi.
   final PlaceholderWidgetBuilder? placeholder;
@@ -41,8 +51,8 @@ class AppCachedNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      fadeInDuration: const Duration(milliseconds: 280),
-      fadeOutDuration: const Duration(milliseconds: 200),
+      fadeInDuration: fadeInDuration,
+      fadeOutDuration: fadeOutDuration,
       imageUrl: imageUrl,
       cacheKey: cacheKey,
       httpHeaders: httpHeaders,
@@ -50,6 +60,9 @@ class AppCachedNetworkImage extends StatelessWidget {
       height: height,
       fit: fit,
       alignment: alignment,
+      useOldImageOnUrlChange: useOldImageOnUrlChange,
+      memCacheWidth: memCacheWidth,
+      memCacheHeight: memCacheHeight,
       placeholder: placeholder ?? (ctx, url) => fallback.buildPlaceholder(ctx, width: width, height: height),
       errorWidget: errorWidget ?? (ctx, url, err) => fallback.buildError(ctx, err, width: width, height: height),
     );

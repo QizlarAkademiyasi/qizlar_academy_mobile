@@ -6,6 +6,7 @@ final class AppDeepLinkParser {
   static final RegExp _coursePath = RegExp(r'^/courses/[^/]+(/player|/review)?$');
   static final RegExp _lessonQuizPath = RegExp(r'^/lesson-quiz/[^/]+$');
   static final RegExp _vacancyDetailPath = RegExp(r'^/vacancies/[^/]+$');
+  static final RegExp _portfolioDetailPath = RegExp(r'^/portfolio/[^/]+$');
 
   static const Set<String> _exactPaths = {
     '/notification',
@@ -74,8 +75,13 @@ final class AppDeepLinkParser {
       if (!uri.hasAuthority) {
         return null;
       }
-      final allowed = AppDeepLinkConfig.resolvedHttpsHosts();
-      if (!allowed.contains(uri.host)) {
+      final staticHosts = <String>{
+        AppDeepLinkConfig.defaultUniversalLinkHost,
+        ...AppDeepLinkConfig.additionalAllowedHosts,
+      };
+      final isStaticHost = staticHosts.contains(uri.host);
+      if (!isStaticHost &&
+          !AppDeepLinkConfig.resolvedHttpsHosts().contains(uri.host)) {
         AppLogger.d('Deep link: host rad etildi: ${uri.host}');
         return null;
       }
@@ -140,6 +146,9 @@ final class AppDeepLinkParser {
       return true;
     }
     if (_vacancyDetailPath.hasMatch(path)) {
+      return true;
+    }
+    if (path != '/portfolio/create' && _portfolioDetailPath.hasMatch(path)) {
       return true;
     }
     return false;

@@ -196,7 +196,7 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
         ? surface.withValues(alpha: lightBar ? 0.52 : 0.82)
         : surface;
     final Color barShadow = AppColors.shadow.withValues(
-      alpha: lightBar ? 0.14 : 0.42,
+      alpha: lightBar ? 0.18 : 0.42,
     );
     final BorderRadius pill = BorderRadius.circular(999);
     final double edgeW = _secondLiquidBottomNavHairlineWidth(context);
@@ -274,9 +274,9 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: barShadow,
-              blurRadius: 20,
-              spreadRadius: -6,
-              offset: const Offset(0, 8),
+              blurRadius: lightBar ? 26 : 20,
+              spreadRadius: lightBar ? -5 : -6,
+              offset: lightBar ? const Offset(0, 9) : const Offset(0, 8),
             ),
           ],
         ),
@@ -874,7 +874,7 @@ class _SecondLiquidBottomNavBarContainerState
         ? _secondLiquidBottomNavWhiten(widget.backgroundColor, lightBar: true)
         : _secondLiquidBottomNavDarkSurface(widget.backgroundColor);
     final Color barShadow = AppColors.shadow.withValues(
-      alpha: lightBar ? 0.14 : 0.42,
+      alpha: lightBar ? 0.18 : 0.42,
     );
     final bool useBlur = widget.backgroundBlurSigma > 0;
     final double sigma = widget.backgroundBlurSigma;
@@ -1009,9 +1009,9 @@ class _SecondLiquidBottomNavBarContainerState
         boxShadow: [
           BoxShadow(
             color: barShadow,
-            blurRadius: 24,
-            spreadRadius: -8,
-            offset: const Offset(0, 12),
+            blurRadius: lightBar ? 30 : 24,
+            spreadRadius: lightBar ? -7 : -8,
+            offset: lightBar ? const Offset(0, 10) : const Offset(0, 12),
           ),
         ],
       ),

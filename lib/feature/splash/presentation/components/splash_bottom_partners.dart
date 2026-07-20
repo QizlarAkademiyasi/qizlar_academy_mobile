@@ -7,7 +7,7 @@ class SplashBottomPartners extends StatelessWidget {
 
   // PNG ichidagi kontent: YIA 183×42 (matn/greb past bo‘yda), Qizlar 404×94 (belgida yirik grafika).
   // Bir xil `height` o‘ngdagi yirik piksellar tufayli muvozanatsiz — balandlik koeff. bilan vizual tenglashtiriladi.
-  static const _yoshlarHeightFactor = 1.2;
+  static const _yoshlarHeightFactor = 0.86;
   static const _qizlarHeightFactor = 0.86;
 
   @override
@@ -23,7 +23,9 @@ class SplashBottomPartners extends StatelessWidget {
         children: [
           Expanded(
             child: Center(
-              child: UiKitAssets.images.yoshlarIshlarAgentligi.image(height: hYoshlar),
+              child: UiKitAssets.images.yoshlarIshlarAgentligi.image(
+                height: hYoshlar,
+              ),
             ),
           ),
           SizedBox(width: w * 0.05),

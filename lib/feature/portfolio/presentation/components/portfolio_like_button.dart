@@ -34,11 +34,16 @@ class PortfolioLikeButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                LucideIcons.heart,
-                size: iconSize,
-                color: effectiveColor,
-                fill: isLiked ? 1 : 0,
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                transitionBuilder: (child, animation) =>
+                    ScaleTransition(scale: animation, child: child),
+                child: Icon(
+                  isLiked ? Icons.favorite : LucideIcons.heart,
+                  key: ValueKey(isLiked),
+                  size: iconSize,
+                  color: effectiveColor,
+                ),
               ),
               if (likesCount != null) ...[
                 const SizedBox(width: 4),

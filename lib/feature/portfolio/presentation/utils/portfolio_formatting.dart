@@ -17,11 +17,11 @@ abstract final class PortfolioFormatting {
     if (diff.inMinutes < 60) return '${diff.inMinutes} daqiqa oldin';
     if (diff.inHours < 24) return '${diff.inHours} soat oldin';
     if (diff.inDays < 7) return '${diff.inDays} kun oldin';
-    return DateFormat('dd MMM. yy', 'uz').format(date);
+    return DateFormat('dd MMM. yyyy', 'uz').format(date);
   }
 
   static String detailDate(DateTime date) =>
-      DateFormat('dd MMM. yy', 'uz').format(date);
+      DateFormat('dd MMM. yyyy', 'uz').format(date);
 
   static String detailTime(DateTime date) =>
       DateFormat('HH:mm', 'uz').format(date);

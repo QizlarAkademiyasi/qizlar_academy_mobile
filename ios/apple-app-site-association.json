@@ -9,6 +9,7 @@
           "/courses/*/*",
           "/vacancies",
           "/vacancies/*",
+          "/portfolio/*",
           "/notification",
           "/my-courses",
           "/my-certificates",

@@ -621,6 +621,28 @@
       }
     }
   },
+  "portfolioShareTooltip": "Share portfolio post",
+  "portfolioShareSubject": "Qizlar Academy — Portfolio",
+  "portfolioShareMessage": "\"{caption}\"\n\nView this portfolio project in Qizlar Academy:\n{url}",
+  "@portfolioShareMessage": {
+    "placeholders": {
+      "caption": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "portfolioShareMessageWithoutCaption": "View this portfolio project in Qizlar Academy:\n{url}",
+  "@portfolioShareMessageWithoutCaption": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "portfolioShareError": "Could not share the post. Please try again.",
   "certificatesSheetInstagramStory": "Instagram Story",
   "profileDeleteAccountTile": "Delete account",
   "profileDeleteAccountTitle": "Delete account?",

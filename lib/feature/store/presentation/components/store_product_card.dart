@@ -46,11 +46,18 @@ class StoreProductCard extends StatelessWidget {
                           color: AppColors.lightOnContainer.withValues(alpha: 0.85),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          product.isLiked ? LucideIcons.heart600 : LucideIcons.heart,
-                          size: 16,
-                          color: product.isLiked ? AppColors.primary : context.appColors.grey,
-                          fill: product.isLiked ? 1 : 0,
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 180),
+                          transitionBuilder: (child, animation) => ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          ),
+                          child: Icon(
+                            product.isLiked ? Icons.favorite : LucideIcons.heart,
+                            key: ValueKey(product.isLiked),
+                            size: 16,
+                            color: product.isLiked ? AppColors.primary : context.appColors.grey,
+                          ),
                         ),
                       ),
                     ),

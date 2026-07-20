@@ -2194,6 +2194,36 @@ abstract class AppLocalizations {
   /// **'Check out \"{title}\": {url}'**
   String courseDetailsShareMessage(String title, String url);
 
+  /// No description provided for @portfolioShareTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share portfolio post'**
+  String get portfolioShareTooltip;
+
+  /// No description provided for @portfolioShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Qizlar Academy — Portfolio'**
+  String get portfolioShareSubject;
+
+  /// No description provided for @portfolioShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{caption}\"\n\nView this portfolio project in Qizlar Academy:\n{url}'**
+  String portfolioShareMessage(String caption, String url);
+
+  /// No description provided for @portfolioShareMessageWithoutCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'View this portfolio project in Qizlar Academy:\n{url}'**
+  String portfolioShareMessageWithoutCaption(String url);
+
+  /// No description provided for @portfolioShareError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share the post. Please try again.'**
+  String get portfolioShareError;
+
   /// No description provided for @certificatesSheetInstagramStory.
   ///
   /// In en, this message translates to:

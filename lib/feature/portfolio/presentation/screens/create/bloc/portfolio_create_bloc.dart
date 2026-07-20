@@ -87,8 +87,8 @@ class PortfolioCreateBloc
           PortfolioCreateMediaInput(
             type: item.type,
             url: uploadedUrl,
-            thumbnail: null,
-            duration: null,
+            thumbnail: uploadedUrl,
+            duration: 1,
             orderIndex: i,
           ),
         );

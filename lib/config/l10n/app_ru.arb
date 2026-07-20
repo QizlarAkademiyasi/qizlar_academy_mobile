@@ -576,6 +576,28 @@
       }
     }
   },
+  "portfolioShareTooltip": "Поделиться публикацией портфолио",
+  "portfolioShareSubject": "Qizlar Akademiyasi — Портфолио",
+  "portfolioShareMessage": "«{caption}»\n\nПосмотрите проект портфолио в Qizlar Akademiyasi:\n{url}",
+  "@portfolioShareMessage": {
+    "placeholders": {
+      "caption": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "portfolioShareMessageWithoutCaption": "Посмотрите проект портфолио в Qizlar Akademiyasi:\n{url}",
+  "@portfolioShareMessageWithoutCaption": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "portfolioShareError": "Не удалось поделиться публикацией. Попробуйте снова.",
   "certificatesSheetInstagramStory": "История Instagram",
   "profileDeleteAccountTile": "Удалить аккаунт",
   "profileDeleteAccountTitle": "Удалить аккаунт?",

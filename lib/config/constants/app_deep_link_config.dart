@@ -25,6 +25,7 @@ import 'package:qizlar_academy_mobile/config/flavor/app_remote_config.dart';
 /// `/lesson-quiz/:lessonId`,
 /// `/notification`, `/my-courses`, `/my-certificates`,
 /// `/vacancies`, `/vacancies/:vacancyId`,
+/// `/portfolio/:postId`,
 /// `/about-us`, `/privacy-policy`,
 /// `/sign-in`, `/register`, `/main`, `/main/guest`, `/main/user`.
 ///

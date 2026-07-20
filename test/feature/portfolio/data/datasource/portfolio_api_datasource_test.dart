@@ -140,6 +140,8 @@ void main() {
         PortfolioCreateMediaInput(
           type: PortfolioMediaType.image,
           url: 'https://cdn.example.com/photo.jpg',
+          thumbnail: 'https://cdn.example.com/thumb.jpg',
+          duration: 30,
           orderIndex: 0,
         ),
       ],
@@ -147,6 +149,18 @@ void main() {
 
     expect(adapter.lastMethod, 'POST');
     expect(adapter.lastPath, '/api/v1/post');
+    expect(adapter.lastData, <String, dynamic>{
+      'caption': 'Kurs ishim tayyor!',
+      'media': <Map<String, dynamic>>[
+        <String, dynamic>{
+          'type': 'IMAGE',
+          'url': 'https://cdn.example.com/photo.jpg',
+          'thumbnail': 'https://cdn.example.com/thumb.jpg',
+          'duration': 30,
+          'orderIndex': 0,
+        },
+      ],
+    });
   });
 
   test('delete post accepts 204 response', () async {
@@ -289,6 +303,7 @@ class _FakeAdapter implements HttpClientAdapter {
   String? lastMethod;
   String? lastPath;
   Map<String, dynamic>? lastQueryParameters;
+  dynamic lastData;
 
   @override
   void close({bool force = false}) {}
@@ -302,6 +317,7 @@ class _FakeAdapter implements HttpClientAdapter {
     lastMethod = options.method;
     lastPath = options.path;
     lastQueryParameters = Map<String, dynamic>.from(options.queryParameters);
+    lastData = options.data;
     return ResponseBody.fromString('', 204);
   }
 }
