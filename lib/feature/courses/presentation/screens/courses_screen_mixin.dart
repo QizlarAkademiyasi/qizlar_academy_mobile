@@ -71,7 +71,7 @@ mixin CoursesScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   Widget buildTopBar(BuildContext context) {
-    return CoursesTopBar(onNotificationTap: () => onNotificationTap(context));
+    return CoursesTopBar(onNotificationTap: () => onNotificationTap(context), onBackTap: () => context.pop());
   }
 
   Widget buildSearchField(BuildContext context) {

@@ -9,7 +9,11 @@ import 'package:qizlar_academy_mobile/feature/tasks/presentation/components/task
 import 'package:qizlar_academy_mobile/feature/tasks/presentation/components/tasks_success_content.dart';
 
 mixin TasksScreenMixin<T extends StatefulWidget> on State<T> {
-  Widget buildBody(BuildContext context, TasksState state) {
+  Widget buildBody(
+    BuildContext context,
+    TasksState state, {
+    double bottomContentInset = 0,
+  }) {
     return switch (state.status) {
       TasksStatus.initial || TasksStatus.loading => const TasksScreenSkeleton(),
       TasksStatus.failure => Center(
@@ -28,6 +32,7 @@ mixin TasksScreenMixin<T extends StatefulWidget> on State<T> {
         otherTasks: state.otherTasks,
         onTaskTap: (task) => onTaskTap(context, task),
         onRefresh: () => onRefresh(context),
+        bottomContentInset: bottomContentInset,
       ),
     };
   }

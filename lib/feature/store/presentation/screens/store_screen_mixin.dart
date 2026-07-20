@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/store/presentation/bloc/store_catalog_bloc.dart';
@@ -42,8 +43,8 @@ mixin StoreScreenMixin<T extends StatefulWidget> on State<T> {
     context.read<StoreCatalogBloc>().add(const StoreCatalogRetryRequested());
   }
 
-  Widget buildStoreTopBar(BuildContext context) {
-    return StoreTopBar(title: 'Market', onBackTap: () => onBackTap(context), onHistoryTap: () => onHistoryTap(context));
+  Widget buildStoreTopBar(BuildContext context, {required bool showBackButton}) {
+    return StoreTopBar(title: context.l10n.storeTitle, onBackTap: showBackButton ? () => onBackTap(context) : null, onHistoryTap: () => onHistoryTap(context));
   }
 
   List<StoreCategoryChip> buildCategoryChips(StoreCatalogState state) {

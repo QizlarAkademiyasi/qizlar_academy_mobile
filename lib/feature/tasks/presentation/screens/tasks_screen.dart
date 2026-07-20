@@ -6,19 +6,35 @@ import 'package:qizlar_academy_mobile/feature/tasks/presentation/bloc/tasks_bloc
 import 'package:qizlar_academy_mobile/feature/tasks/presentation/screens/tasks_screen_mixin.dart';
 
 class TasksScreen extends StatelessWidget {
-  const TasksScreen({super.key});
+  const TasksScreen({
+    super.key,
+    this.showBackButton = true,
+    this.bottomContentInset = 0,
+  });
+
+  final bool showBackButton;
+  final double bottomContentInset;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<TasksBloc>()..add(const TasksStarted()),
-      child: const _TasksView(),
+      child: _TasksView(
+        showBackButton: showBackButton,
+        bottomContentInset: bottomContentInset,
+      ),
     );
   }
 }
 
 class _TasksView extends StatefulWidget {
-  const _TasksView();
+  const _TasksView({
+    required this.showBackButton,
+    required this.bottomContentInset,
+  });
+
+  final bool showBackButton;
+  final double bottomContentInset;
 
   @override
   State<_TasksView> createState() => _TasksViewState();
@@ -30,8 +46,15 @@ class _TasksViewState extends State<_TasksView>
   Widget build(BuildContext context) {
     return AppPageScaffold(
       title: context.l10n.tasksTitle,
-      onBackTap: () => context.pop(),
-      body: BlocBuilder<TasksBloc, TasksState>(builder: buildBody),
+      showBackButton: widget.showBackButton,
+      onBackTap: widget.showBackButton ? () => context.pop() : null,
+      body: BlocBuilder<TasksBloc, TasksState>(
+        builder: (context, state) => buildBody(
+          context,
+          state,
+          bottomContentInset: widget.bottomContentInset,
+        ),
+      ),
     );
   }
 }

@@ -17,6 +17,7 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_submit_review/course_submit_review_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_submit_review/course_submit_review_screen.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/bloc/courses_catalog_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_screen.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/bloc/leaderboard_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen.dart';
@@ -59,10 +60,6 @@ Widget _mainShellWithTabBlocs({required bool isGuestMode}) {
   return MultiBlocProvider(
     providers: [
       BlocProvider(create: (_) => getIt<HomeBloc>()..add(const HomeStarted())),
-      BlocProvider(
-        create: (_) =>
-            getIt<CoursesCatalogBloc>()..add(const CoursesCatalogStarted()),
-      ),
       BlocProvider(
         create: (_) =>
             getIt<LeaderboardBloc>()..add(const LeaderboardStarted()),
@@ -293,6 +290,16 @@ class AppRoute {
           name: 'mainUser',
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, _) => _mainShellWithTabBlocs(isGuestMode: false),
+        ),
+        GoRoute(
+          path: Routes.courses,
+          name: Routes.coursesName,
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (_, _) => BlocProvider(
+            create: (_) =>
+                getIt<CoursesCatalogBloc>()..add(const CoursesCatalogStarted()),
+            child: const CoursesScreen(),
+          ),
         ),
         GoRoute(
           path: '/courses/:id',

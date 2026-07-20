@@ -1277,7 +1277,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileInformationNeighborhood => 'Mahalla';
 
   @override
-  String get storeTitle => 'Market';
+  String get storeTitle => 'Do\'kon';
 
   @override
   String get storeProduct => 'Mahsulot';

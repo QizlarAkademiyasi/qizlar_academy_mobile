@@ -11,6 +11,8 @@ import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_
 
 /// Main shell ekrani uchun tab tanlashi va pastki bar qismini qaytaruvchi mixin.
 mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
+  static const int _profileTabIndex = 3;
+
   bool get isGuestMode;
 
   int get selectedIndex => _selectedIndex;
@@ -38,6 +40,11 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void onTabTap(int index) {
+    if (!isGuestMode && index == _profileTabIndex && _selectedIndex == index) {
+      toggleExtraMenu();
+      return;
+    }
+
     if (_isExtraMenuExpanded) {
       setState(() => _isExtraMenuExpanded = false);
     }
@@ -54,6 +61,11 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
+  void onPortfolioTap() {
+    closeExtraMenu();
+    context.push(Routes.portfolio);
+  }
+
   void onExtraMenuItemTap(MainExtraMenuItem item) {
     closeExtraMenu();
     final route = item.route;
@@ -64,12 +76,12 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> _handleTabTap(int index) async {
     // Gaimon.light();
-    if (_selectedIndex == index) return;
-
-    if (isGuestMode && index == 3) {
+    if (isGuestMode && (index == 1 || index == _profileTabIndex)) {
       context.go(Routes.signIn);
       return;
     }
+
+    if (_selectedIndex == index) return;
 
     setState(() {
       _tabBarFadeNonce++;
@@ -80,26 +92,42 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   void onPageChanged(int index) {
     Gaimon.light();
     if (_selectedIndex != index) {
-      setState(() => _selectedIndex = index);
+      setState(() {
+        _selectedIndex = index;
+        _isExtraMenuExpanded = false;
+      });
     }
   }
 
   Widget buildBottomNavigationBar(BuildContext context) {
     final theme = Theme.of(context);
     final barTheme = theme.bottomNavigationBarTheme;
-    final selectedColor = barTheme.selectedItemColor ?? theme.colorScheme.primary;
-    final unselectedColor = barTheme.unselectedItemColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.64);
+    final selectedColor =
+        barTheme.selectedItemColor ?? theme.colorScheme.primary;
+    final unselectedColor =
+        barTheme.unselectedItemColor ??
+        theme.colorScheme.onSurface.withValues(alpha: 0.64);
 
     return DecoratedBox(
       decoration: BoxDecoration(
         color: context.theme.scaffoldBackgroundColor,
-        boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.4), blurRadius: 10, offset: const Offset(0, 9))],
+        boxShadow: [
+          BoxShadow(
+            color: context.appColors.shadow.withValues(alpha: 0.4),
+            blurRadius: 10,
+            offset: const Offset(0, 9),
+          ),
+        ],
       ),
       child: BottomNavigationBar(
         currentIndex: selectedIndex,
         onTap: onTabTap,
         items: [
-          BottomNavigationBarItem(icon: MainBottomNavKitIcons.home(unselectedColor, 24, false), activeIcon: MainBottomNavKitIcons.home(selectedColor, 24, true), label: context.l10n.mainTabHome),
+          BottomNavigationBarItem(
+            icon: MainBottomNavKitIcons.home(unselectedColor, 24, false),
+            activeIcon: MainBottomNavKitIcons.home(selectedColor, 24, true),
+            label: context.l10n.mainTabHome,
+          ),
           BottomNavigationBarItem(
             icon: MainBottomNavKitIcons.courses(unselectedColor, 24, false),
             activeIcon: MainBottomNavKitIcons.courses(selectedColor, 24, true),
@@ -107,12 +135,26 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
           ),
           BottomNavigationBarItem(
             icon: MainBottomNavKitIcons.leaderboard(unselectedColor, 24, false),
-            activeIcon: MainBottomNavKitIcons.leaderboard(selectedColor, 24, true),
+            activeIcon: MainBottomNavKitIcons.leaderboard(
+              selectedColor,
+              24,
+              true,
+            ),
             label: context.l10n.mainTabLeaderboard,
           ),
           BottomNavigationBarItem(
-            icon: MainBottomNavProfileTabIcon(isGuestMode: isGuestMode, selected: false, selectedColor: selectedColor, unselectedColor: unselectedColor),
-            activeIcon: MainBottomNavProfileTabIcon(isGuestMode: isGuestMode, selected: true, selectedColor: selectedColor, unselectedColor: unselectedColor),
+            icon: MainBottomNavProfileTabIcon(
+              isGuestMode: isGuestMode,
+              selected: false,
+              selectedColor: selectedColor,
+              unselectedColor: unselectedColor,
+            ),
+            activeIcon: MainBottomNavProfileTabIcon(
+              isGuestMode: isGuestMode,
+              selected: true,
+              selectedColor: selectedColor,
+              unselectedColor: unselectedColor,
+            ),
             label: context.l10n.mainTabProfile,
           ),
         ],
@@ -128,7 +170,11 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
       selectedIndex: selectedIndex,
       onDestinationSelected: onTabTap,
       destinations: [
-        NavigationDestination(icon: MainBottomNavKitIcons.home(unselectedColor, 24, false), selectedIcon: MainBottomNavKitIcons.home(selectedColor, 24, true), label: context.l10n.mainTabHome),
+        NavigationDestination(
+          icon: MainBottomNavKitIcons.home(unselectedColor, 24, false),
+          selectedIcon: MainBottomNavKitIcons.home(selectedColor, 24, true),
+          label: context.l10n.mainTabHome,
+        ),
         NavigationDestination(
           icon: MainBottomNavKitIcons.courses(unselectedColor, 24, false),
           selectedIcon: MainBottomNavKitIcons.courses(selectedColor, 24, true),
@@ -136,12 +182,26 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
         ),
         NavigationDestination(
           icon: MainBottomNavKitIcons.leaderboard(unselectedColor, 24, false),
-          selectedIcon: MainBottomNavKitIcons.leaderboard(selectedColor, 24, true),
+          selectedIcon: MainBottomNavKitIcons.leaderboard(
+            selectedColor,
+            24,
+            true,
+          ),
           label: context.l10n.mainTabLeaderboard,
         ),
         NavigationDestination(
-          icon: MainBottomNavProfileTabIcon(isGuestMode: isGuestMode, selected: false, selectedColor: selectedColor, unselectedColor: unselectedColor),
-          selectedIcon: MainBottomNavProfileTabIcon(isGuestMode: isGuestMode, selected: true, selectedColor: selectedColor, unselectedColor: unselectedColor),
+          icon: MainBottomNavProfileTabIcon(
+            isGuestMode: isGuestMode,
+            selected: false,
+            selectedColor: selectedColor,
+            unselectedColor: unselectedColor,
+          ),
+          selectedIcon: MainBottomNavProfileTabIcon(
+            isGuestMode: isGuestMode,
+            selected: true,
+            selectedColor: selectedColor,
+            unselectedColor: unselectedColor,
+          ),
           label: context.l10n.mainTabProfile,
         ),
       ],
@@ -149,10 +209,17 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   Widget buildGlassBottomBarVersionOne(BuildContext context) {
-    return GlassBottomNavigationVersionOne(currentIndex: _selectedIndex, onTap: onTabTap, fake: false);
+    return GlassBottomNavigationVersionOne(
+      currentIndex: _selectedIndex,
+      onTap: onTabTap,
+      fake: false,
+    );
   }
 
   Widget buildGlassBottomBarVersionTwo(BuildContext context) {
-    return GlassBottomNavigationVersionTwo(currentIndex: _selectedIndex, onTap: onTabTap);
+    return GlassBottomNavigationVersionTwo(
+      currentIndex: _selectedIndex,
+      onTap: onTabTap,
+    );
   }
 }
