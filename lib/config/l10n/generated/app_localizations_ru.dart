@@ -1384,4 +1384,41 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get offlineWaiting => 'Ожидание подключения к интернету...';
+
+  @override
+  String get tasksTitle => 'Задания';
+
+  @override
+  String get tasksBalanceLabel => 'БАЛАНС';
+
+  @override
+  String get tasksCoinLabel => 'Монет';
+
+  @override
+  String tasksStreakTitle(int count) {
+    return 'Серия: $count дней';
+  }
+
+  @override
+  String get tasksStreakSubtitle => 'Продолжайте!';
+
+  @override
+  String get tasksTodayTitle => 'Задания на сегодня';
+
+  @override
+  String get tasksOtherTitle => 'Другие задания';
+
+  @override
+  String get tasksEmptyTitle => 'Заданий пока нет';
+
+  @override
+  String get tasksEmptySubtitle => 'Новые задания появятся здесь';
+
+  @override
+  String get tasksLoadError =>
+      'Не удалось загрузить задания. Попробуйте снова.';
+
+  @override
+  String get tasksActionUnavailable =>
+      'Действие для этого задания пока недоступно';
 }

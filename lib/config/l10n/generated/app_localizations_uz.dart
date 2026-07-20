@@ -1380,4 +1380,42 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get offlineWaiting => 'Internet ulanishi kutilmoqda...';
+
+  @override
+  String get tasksTitle => 'Vazifalar';
+
+  @override
+  String get tasksBalanceLabel => 'BALANS';
+
+  @override
+  String get tasksCoinLabel => 'Tanga';
+
+  @override
+  String tasksStreakTitle(int count) {
+    return '$count-Kunlik Olov';
+  }
+
+  @override
+  String get tasksStreakSubtitle => 'Davom eting!';
+
+  @override
+  String get tasksTodayTitle => 'Bugungi vazifalar';
+
+  @override
+  String get tasksOtherTitle => 'Boshqa vazifalar';
+
+  @override
+  String get tasksEmptyTitle => 'Hozircha vazifalar yo‘q';
+
+  @override
+  String get tasksEmptySubtitle =>
+      'Yangi vazifalar qo‘shilganda shu yerda ko‘rinadi';
+
+  @override
+  String get tasksLoadError =>
+      'Vazifalarni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get tasksActionUnavailable =>
+      'Bu vazifa uchun amal hozircha mavjud emas';
 }

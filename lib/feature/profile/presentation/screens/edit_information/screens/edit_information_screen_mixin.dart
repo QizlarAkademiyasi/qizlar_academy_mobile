@@ -50,14 +50,17 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void syncEditInformationFieldsIfNeeded(ProfileUserModel user) {
-    final signature = '${user.userId}|${user.firstName}|${user.lastName}|${user.phoneNumber}|${user.avatarUrl}|${user.badgeId}|${user.occupation}';
+    final signature =
+        '${user.userId}|${user.firstName}|${user.lastName}|${user.phoneNumber}|${user.avatarUrl}|${user.badgeId}|${user.occupation}';
     if (_fieldsSyncedSignature == signature) return;
     _fieldsSyncedSignature = signature;
     _applyingSyncedFields = true;
     try {
       firstNameController.text = user.firstName;
       lastNameController.text = user.lastName;
-      phoneNationalController.text = formatUzbekNationalDigitsForDisplay(extractUzbekNationalDigits(user.phoneNumber));
+      phoneNationalController.text = formatUzbekNationalDigitsForDisplay(
+        extractUzbekNationalDigits(user.phoneNumber),
+      );
       occupationController.text = user.occupation;
     } finally {
       _applyingSyncedFields = false;
@@ -94,7 +97,9 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
     final bloc = context.read<EditInformationBloc>();
     final state = bloc.state;
 
-    if (state.status == EditInformationStatus.loading || state.status == EditInformationStatus.failure || state.user == null) {
+    if (state.status == EditInformationStatus.loading ||
+        state.status == EditInformationStatus.failure ||
+        state.user == null) {
       if (context.mounted) context.pop(false);
       return;
     }
@@ -125,17 +130,26 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> onEditInformationCameraTap(BuildContext context) async {
-    final pickResult = await getIt<ProfilePhotoPicker>().pickProfileAvatarFromGallery(context);
+    final pickResult = await getIt<ProfilePhotoPicker>()
+        .pickProfileAvatarFromGallery(context);
     if (!context.mounted) return;
     switch (pickResult) {
       case ProfilePhotoPickSuccess(:final localFilePath):
-        context.read<EditInformationBloc>().add(EditInformationPhotoUploadRequested(localFilePath));
+        context.read<EditInformationBloc>().add(
+          EditInformationPhotoUploadRequested(localFilePath),
+        );
       case ProfilePhotoPickCanceled():
         return;
       case ProfilePhotoPickPermissionDenied():
-        AppToast.info(context, message: context.l10n.profileInformationPhotoPermissionDenied);
+        AppToast.info(
+          context,
+          message: context.l10n.profileInformationPhotoPermissionDenied,
+        );
       case ProfilePhotoPickFailure():
-        AppToast.error(context, message: context.l10n.profileInformationPhotoPickFailed);
+        AppToast.error(
+          context,
+          message: context.l10n.profileInformationPhotoPickFailed,
+        );
     }
   }
 
@@ -147,10 +161,19 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
       AppToast.error(context, message: l10n.profileInformationNameRequired);
       return;
     }
-    context.read<EditInformationBloc>().add(EditInformationSaveRequested(firstName: first, lastName: last, occupation: occupationController.text.trim()));
+    context.read<EditInformationBloc>().add(
+      EditInformationSaveRequested(
+        firstName: first,
+        lastName: last,
+        occupation: occupationController.text.trim(),
+      ),
+    );
   }
 
-  void editInformationNoticeListener(BuildContext context, EditInformationState state) {
+  void editInformationNoticeListener(
+    BuildContext context,
+    EditInformationState state,
+  ) {
     final bloc = context.read<EditInformationBloc>();
     switch (state.notice) {
       case EditInformationNotice.saveFailed:
@@ -161,11 +184,17 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
         onEditInformationSaveSuccess(context);
         return;
       case EditInformationNotice.nothingToSave:
-        AppToast.info(context, message: context.l10n.profileInformationNoChanges);
+        AppToast.info(
+          context,
+          message: context.l10n.profileInformationNoChanges,
+        );
         bloc.add(const EditInformationNoticeAcknowledged());
         return;
       case EditInformationNotice.photoUploadFailed:
-        AppToast.error(context, message: context.l10n.profileInformationPhotoUploadFailed);
+        AppToast.error(
+          context,
+          message: context.l10n.profileInformationPhotoUploadFailed,
+        );
         bloc.add(const EditInformationNoticeAcknowledged());
         return;
       case EditInformationNotice.none:
@@ -175,11 +204,17 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
 
   void onEditInformationSaveSuccess(BuildContext context) {
     getIt<ProfileAvatarRefreshNotifier>().bumpAvatarCache();
-    AppToast.success(context, message: context.l10n.profileInformationSaveSuccess);
+    AppToast.success(
+      context,
+      message: context.l10n.profileInformationSaveSuccess,
+    );
     context.pop(true);
   }
 
-  Widget buildEditInformationBody(BuildContext context, {required EditInformationState state}) {
+  Widget buildEditInformationBody(
+    BuildContext context, {
+    required EditInformationState state,
+  }) {
     final user = state.user;
     if (user == null) {
       return const SizedBox.shrink();
@@ -208,7 +243,8 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
       selectedBirthday: state.selectedBirthday,
       selectedEducationType: state.selectedEducationType,
     );
-    final canSave = hasPendingPatch && first.isNotEmpty && last.isNotEmpty && !saveBlocked;
+    final canSave =
+        hasPendingPatch && first.isNotEmpty && last.isNotEmpty && !saveBlocked;
 
     return Stack(
       children: [
@@ -222,19 +258,31 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
                 const SizedBox(height: 8),
                 Padding(
                   padding: AppPadding.paddingHorizontalMd,
-                  child: EditInformationAvatar(user: user, localFilePath: state.localAvatarFilePath, isBusy: state.isPhotoUploading, onCameraTap: () => onEditInformationCameraTap(context)),
+                  child: EditInformationAvatar(
+                    user: user,
+                    localFilePath: state.localAvatarFilePath,
+                    isBusy: state.isPhotoUploading,
+                    onCameraTap: () => onEditInformationCameraTap(context),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 if (state.badgeCatalog.isNotEmpty) ...[
                   Padding(
                     padding: AppPadding.paddingHorizontalMd,
-                    child: Text(l10n.profileInformationStatusTitle, style: context.textTheme.bodySmallSemibold.copyWith(color: context.appColors.secondaryGrey)),
+                    child: Text(
+                      l10n.profileInformationStatusTitle,
+                      style: context.textTheme.bodySmallSemibold.copyWith(
+                        color: context.appColors.secondaryGrey,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   EditInformationStatusStrip(
                     badges: state.badgeCatalog,
                     selectedBadgeId: state.selectedBadgeId,
-                    onSelected: (id) => context.read<EditInformationBloc>().add(EditInformationBadgeSelected(id)),
+                    onSelected: (id) => context.read<EditInformationBloc>().add(
+                      EditInformationBadgeSelected(id),
+                    ),
                   ),
                   const SizedBox(height: 28),
                 ],
@@ -252,14 +300,27 @@ mixin EditInformationScreenMixin<T extends StatefulWidget> on State<T> {
             ),
           ),
         ),
-        Align(alignment: Alignment.bottomCenter, child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image() : UiKitAssets.images.bottomNavLight.image()),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: context.isDarkTheme
+              ? UiKitAssets.images.bottomNavDark.image()
+              : UiKitAssets.images.bottomNavLight.image(),
+        ),
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: AppPadding.paddingMd,
             child: Padding(
-              padding: EdgeInsets.only(bottom: bottomInset > 12 ? bottomInset - 12 : 0),
-              child: PrimaryButton.elevated(label: l10n.profileInformationSave, isLoading: state.isSaving, onPressed: canSave ? () => onEditInformationSaveTap(context) : null),
+              padding: EdgeInsets.only(
+                bottom: bottomInset > 12 ? bottomInset - 12 : 0,
+              ),
+              child: PrimaryButton.elevated(
+                label: l10n.profileInformationSave,
+                isLoading: state.isSaving,
+                onPressed: canSave
+                    ? () => onEditInformationSaveTap(context)
+                    : null,
+              ),
             ),
           ),
         ),

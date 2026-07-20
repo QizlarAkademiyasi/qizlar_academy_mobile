@@ -45,6 +45,10 @@ import 'package:qizlar_academy_mobile/feature/daily_coin/data/datasource/daily_c
 import 'package:qizlar_academy_mobile/feature/daily_coin/data/repository/daily_coin_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/daily_coin/domain/repository/daily_coin_repository.dart';
 import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/bloc/daily_coin_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/tasks/data/datasource/tasks_api_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/tasks/data/repository/tasks_repository_impl.dart';
+import 'package:qizlar_academy_mobile/feature/tasks/domain/repository/tasks_repository.dart';
+import 'package:qizlar_academy_mobile/feature/tasks/presentation/bloc/tasks_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/data/datasource/leaderboard_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/data/datasource/leaderboard_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/data/repository/leaderboard_repository_impl.dart';
@@ -474,6 +478,23 @@ Future<void> setupLocator() async {
   );
   getIt.registerFactory<DailyCoinBloc>(
     () => DailyCoinBloc(getIt<DailyCoinRepository>()),
+  );
+
+  getIt.registerLazySingleton<TasksApiDatasource>(
+    () => TasksApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<TasksRemoteDatasource>(
+    () => getIt<TasksApiDatasource>(),
+  );
+  getIt.registerLazySingleton<TasksRepository>(
+    () => TasksRepositoryImpl(remoteDatasource: getIt<TasksRemoteDatasource>()),
+  );
+  getIt.registerFactory<TasksBloc>(
+    () => TasksBloc(
+      getIt<TasksRepository>(),
+      getIt<HomeRepository>(),
+      getIt<DailyCoinRepository>(),
+    ),
   );
 
   getIt.registerLazySingleton<MyActivityApiDatasource>(

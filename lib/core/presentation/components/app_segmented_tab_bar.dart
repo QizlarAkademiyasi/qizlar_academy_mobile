@@ -4,7 +4,13 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 /// Global segmentli tab bar — pill ko‘rinishida, primary indikator.
 /// Leaderboard, filtrlarda va boshqa ekranlarda qayta ishlatish uchun.
 class AppSegmentedTabBar extends StatefulWidget {
-  const AppSegmentedTabBar({super.key, required this.controller, required this.tabLabels, this.onTap, this.animate = true}) : assert(tabLabels.length > 0, 'tabLabels must not be empty');
+  const AppSegmentedTabBar({
+    super.key,
+    required this.controller,
+    required this.tabLabels,
+    this.onTap,
+    this.animate = true,
+  }) : assert(tabLabels.length > 0, 'tabLabels must not be empty');
 
   final TabController controller;
   final List<String> tabLabels;
@@ -65,7 +71,6 @@ class _AppSegmentedTabBarState extends State<AppSegmentedTabBar> {
   @override
   Widget build(BuildContext context) {
     final tabCount = widget.tabLabels.length;
-    final double targetProgress = tabCount <= 1 ? 0 : (_activeIndex / (tabCount - 1)).clamp(0.0, 1.0);
 
     return AppTabletMaxWidth(
       child: Container(
@@ -75,7 +80,13 @@ class _AppSegmentedTabBarState extends State<AppSegmentedTabBar> {
           color: context.appColors.onContainer,
           borderRadius: AppRadius.radius5xl,
           border: Border.all(color: context.appColors.stroke),
-          boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 2))],
+          boxShadow: [
+            BoxShadow(
+              color: context.appColors.shadow.withValues(alpha: 0.05),
+              blurRadius: 2,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -84,34 +95,31 @@ class _AppSegmentedTabBarState extends State<AppSegmentedTabBar> {
 
             return Stack(
               children: [
-                if (widget.animate)
-                  SingleMotionBuilder(
-                    motion: const Motion.bouncySpring(snapToEnd: true, duration: Duration(milliseconds: 380)),
-                    value: targetProgress,
-                    builder: (context, progress, child) {
-                      return Transform.translate(
-                        offset: Offset(maxX * progress, 0),
-                        child: SizedBox(
-                          width: tabWidth,
-                          height: double.infinity,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(borderRadius: AppRadius.radius5xl, color: AppColors.primary),
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                else
-                  Transform.translate(
-                    offset: Offset(maxX * targetProgress, 0),
-                    child: SizedBox(
-                      width: tabWidth,
-                      height: double.infinity,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(borderRadius: AppRadius.radius5xl, color: AppColors.primary),
+                AnimatedBuilder(
+                  animation: widget.controller.animation!,
+                  builder: (context, child) {
+                    final position = widget.animate
+                        ? widget.controller.animation!.value
+                        : _activeIndex.toDouble();
+                    final progress = tabCount <= 1
+                        ? 0.0
+                        : (position / (tabCount - 1)).clamp(0.0, 1.0);
+                    return Transform.translate(
+                      offset: Offset(maxX * progress, 0),
+                      child: child,
+                    );
+                  },
+                  child: SizedBox(
+                    width: tabWidth,
+                    height: double.infinity,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: AppRadius.radius5xl,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
+                ),
                 Row(
                   children: [
                     for (var i = 0; i < tabCount; i++)
@@ -126,17 +134,31 @@ class _AppSegmentedTabBarState extends State<AppSegmentedTabBar> {
                               onTap: () => _onSegmentTap(i),
                               borderRadius: AppRadius.radius5xl,
                               splashFactory: NoSplash.splashFactory,
-                              overlayColor: WidgetStateProperty.all(Colors.transparent),
+                              overlayColor: WidgetStateProperty.all(
+                                Colors.transparent,
+                              ),
                               child: Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
                                   child: Text(
                                     widget.tabLabels[i],
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: (i == _activeIndex ? context.textTheme.bodyMediumSemibold : context.textTheme.bodyMediumRegular).copyWith(
-                                      color: i == _activeIndex ? AppColors.white : context.appColors.grey,
-                                    ),
+                                    style:
+                                        (i == _activeIndex
+                                                ? context
+                                                      .textTheme
+                                                      .bodyMediumSemibold
+                                                : context
+                                                      .textTheme
+                                                      .bodyMediumRegular)
+                                            .copyWith(
+                                              color: i == _activeIndex
+                                                  ? AppColors.white
+                                                  : context.appColors.grey,
+                                            ),
                                   ),
                                 ),
                               ),

@@ -42,6 +42,7 @@ import 'package:qizlar_academy_mobile/feature/store/presentation/screens/history
 import 'package:qizlar_academy_mobile/feature/store/presentation/screens/history_screen/screens/order_detail/store_order_detail_screen.dart';
 import 'package:qizlar_academy_mobile/feature/my_activity/presentation/screens/activity_screen.dart';
 import 'package:qizlar_academy_mobile/feature/referral/presentation/screens/referral_screen.dart';
+import 'package:qizlar_academy_mobile/feature/tasks/presentation/screens/tasks_screen.dart';
 
 part 'path_routes.dart';
 
@@ -207,6 +208,9 @@ class AppRoute {
         if (location == Routes.myActivity && isGuest) {
           return Routes.signIn;
         }
+        if (location == Routes.tasks && isGuest) {
+          return Routes.signIn;
+        }
         if (location == Routes.portfolioCreate && isGuest) {
           return Routes.signIn;
         }
@@ -253,6 +257,7 @@ class AppRoute {
           }
           if (location == Routes.referral) return Routes.register;
           if (location == Routes.myActivity) return Routes.register;
+          if (location == Routes.tasks) return Routes.register;
           if (location == Routes.portfolioCreate) return Routes.register;
           if (RegExp(r'^/portfolio/[^/]+$').hasMatch(state.uri.path)) {
             return Routes.register;
@@ -475,6 +480,12 @@ class AppRoute {
           name: Routes.myActivityName,
           parentNavigatorKey: rootNavigatorKey,
           builder: (_, _) => const ActivityScreen(),
+        ),
+        GoRoute(
+          path: Routes.tasks,
+          name: Routes.tasksName,
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (_, _) => const TasksScreen(),
         ),
         GoRoute(
           path: Routes.portfolio,

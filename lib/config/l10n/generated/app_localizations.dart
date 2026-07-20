@@ -2535,6 +2535,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Waiting for an internet connection...'**
   String get offlineWaiting;
+
+  /// No description provided for @tasksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get tasksTitle;
+
+  /// No description provided for @tasksBalanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'BALANCE'**
+  String get tasksBalanceLabel;
+
+  /// No description provided for @tasksCoinLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Coins'**
+  String get tasksCoinLabel;
+
+  /// No description provided for @tasksStreakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}-Day Streak'**
+  String tasksStreakTitle(int count);
+
+  /// No description provided for @tasksStreakSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it going!'**
+  String get tasksStreakSubtitle;
+
+  /// No description provided for @tasksTodayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s tasks'**
+  String get tasksTodayTitle;
+
+  /// No description provided for @tasksOtherTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Other tasks'**
+  String get tasksOtherTitle;
+
+  /// No description provided for @tasksEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks yet'**
+  String get tasksEmptyTitle;
+
+  /// No description provided for @tasksEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New tasks will appear here'**
+  String get tasksEmptySubtitle;
+
+  /// No description provided for @tasksLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load tasks. Try again.'**
+  String get tasksLoadError;
+
+  /// No description provided for @tasksActionUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This task action is not available yet'**
+  String get tasksActionUnavailable;
 }
 
 class _AppLocalizationsDelegate

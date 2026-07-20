@@ -13,7 +13,10 @@ class MyCoursesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<MyCoursesBloc>()..add(const MyCoursesStarted()), child: const _MyCoursesView());
+    return BlocProvider(
+      create: (_) => getIt<MyCoursesBloc>()..add(const MyCoursesStarted()),
+      child: const _MyCoursesView(),
+    );
   }
 }
 
@@ -24,7 +27,8 @@ class _MyCoursesView extends StatefulWidget {
   State<_MyCoursesView> createState() => _MyCoursesViewState();
 }
 
-class _MyCoursesViewState extends State<_MyCoursesView> with MyCoursesScreenMixin<_MyCoursesView> {
+class _MyCoursesViewState extends State<_MyCoursesView>
+    with MyCoursesScreenMixin<_MyCoursesView> {
   bool _onScrollNotification(ScrollNotification n, BuildContext context) {
     if (n.metrics.axis != Axis.vertical) return false;
     if (n is! ScrollUpdateNotification && n is! OverscrollNotification) {
@@ -40,88 +44,116 @@ class _MyCoursesViewState extends State<_MyCoursesView> with MyCoursesScreenMixi
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: BlocConsumer<MyCoursesBloc, MyCoursesState>(
-          listenWhen: (previous, current) => current.loadMoreFailed && !previous.loadMoreFailed,
-          listener: myCoursesBlocListener,
-          builder: (context, state) {
-            final isInitialLoading = (state.status == MyCoursesStatus.loading || state.status == MyCoursesStatus.initial) && state.courses.isEmpty;
+    return AppPageScaffold(
+      title: context.l10n.myCoursesTitle,
+      onBackTap: () => onBackTap(context),
+      body: BlocConsumer<MyCoursesBloc, MyCoursesState>(
+        listenWhen: (previous, current) =>
+            current.loadMoreFailed && !previous.loadMoreFailed,
+        listener: myCoursesBlocListener,
+        builder: (context, state) {
+          final isInitialLoading =
+              (state.status == MyCoursesStatus.loading ||
+                  state.status == MyCoursesStatus.initial) &&
+              state.courses.isEmpty;
 
-            return Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: buildMyCoursesTopBar(context)),
-                    Expanded(
-                      child: switch (state.status) {
-                        MyCoursesStatus.failure when state.courses.isEmpty => TgsFailureContent(message: context.l10n.myCoursesLoadError, onRetry: () => retryFirstPage(context)),
-                        _ when isInitialLoading => const Padding(padding: EdgeInsets.only(top: 4), child: MyCoursesListSkeleton()),
-                        MyCoursesStatus.success when state.courses.isEmpty => Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
-                            child: TgsEmptyContent(message: context.l10n.myCoursesEmptyTitle, subtitle: context.l10n.myCoursesEmptySubtitle),
-                          ),
-                        ),
-                        _ => NotificationListener<ScrollNotification>(
-                          onNotification: (n) => _onScrollNotification(n, context),
-                          child: AppStaggeredScrollLimiter(
-                            child: CustomScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              slivers: [
-                                SliverPadding(
-                                  padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
-                                  sliver: SliverList(
-                                    delegate: SliverChildBuilderDelegate((context, index) {
-                                      if (index >= state.courses.length) {
-                                        return Skeletonizer.zone(
-                                          child: const Padding(
-                                            padding: EdgeInsets.only(bottom: 16),
-                                            child: MyCourseSkeletonCard(),
-                                          ),
-                                        );
-                                      }
-                                      return AppStaggeredListItem(
-                                        position: index,
-                                        child: buildMyCourseListTile(context, state: state, index: index),
-                                      );
-                                    }, childCount: state.courses.length + (state.isLoadingMore ? 1 : 0)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      },
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: switch (state.status) {
+                  MyCoursesStatus.failure when state.courses.isEmpty =>
+                    TgsFailureContent(
+                      message: context.l10n.myCoursesLoadError,
+                      onRetry: () => retryFirstPage(context),
                     ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 120,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground),
-                          (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.6),
-                          (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.0),
-                        ],
-                        stops: [0, 0.5, 1],
+                  _ when isInitialLoading => const Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: MyCoursesListSkeleton(),
+                  ),
+                  MyCoursesStatus.success when state.courses.isEmpty => Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: TgsEmptyContent(
+                        message: context.l10n.myCoursesEmptyTitle,
+                        subtitle: context.l10n.myCoursesEmptySubtitle,
                       ),
                     ),
                   ),
+                  _ => NotificationListener<ScrollNotification>(
+                    onNotification: (n) => _onScrollNotification(n, context),
+                    child: AppStaggeredScrollLimiter(
+                      child: CustomScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        slivers: [
+                          SliverPadding(
+                            padding: EdgeInsets.fromLTRB(
+                              20,
+                              0,
+                              20,
+                              24 + bottomInset,
+                            ),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  if (index >= state.courses.length) {
+                                    return Skeletonizer.zone(
+                                      child: const Padding(
+                                        padding: EdgeInsets.only(bottom: 16),
+                                        child: MyCourseSkeletonCard(),
+                                      ),
+                                    );
+                                  }
+                                  return AppStaggeredListItem(
+                                    position: index,
+                                    child: buildMyCourseListTile(
+                                      context,
+                                      state: state,
+                                      index: index,
+                                    ),
+                                  );
+                                },
+                                childCount:
+                                    state.courses.length +
+                                    (state.isLoadingMore ? 1 : 0),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                },
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 120,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        (context.isDarkTheme
+                            ? AppColors.darkBackground
+                            : AppColors.lightBackground),
+                        (context.isDarkTheme
+                                ? AppColors.darkBackground
+                                : AppColors.lightBackground)
+                            .withValues(alpha: 0.6),
+                        (context.isDarkTheme
+                                ? AppColors.darkBackground
+                                : AppColors.lightBackground)
+                            .withValues(alpha: 0.0),
+                      ],
+                      stops: [0, 0.5, 1],
+                    ),
+                  ),
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

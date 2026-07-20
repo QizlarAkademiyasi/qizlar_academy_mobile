@@ -24,9 +24,10 @@ class ActivityWeeklyChartCard extends StatelessWidget {
       (m, b) => math.max(m, b.durationMinutes),
     );
 
-    final surface = AppColors.darkOnContainer;
-    final track = AppColors.darkIconSecondary;
-    final fillIdle = AppColors.bigOpacityDark.withValues(alpha: 0.35);
+    final colors = context.appColors;
+    final surface = colors.onContainer;
+    final track = colors.iconSecondary;
+    final fillIdle = colors.grey.withValues(alpha: 0.35);
 
     return Container(
       width: double.infinity,
@@ -34,7 +35,7 @@ class ActivityWeeklyChartCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.darkStroke),
+        border: Border.all(color: colors.stroke),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,13 +43,13 @@ class ActivityWeeklyChartCard extends StatelessWidget {
           Text(
             ActivityMinutesFormat.weeklyRangeLabel(DateTime.now()),
             style: context.textTheme.bodySmallRegular.copyWith(
-              color: AppColors.secondaryGrey,
+              color: colors.secondaryGrey,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             ActivityMinutesFormat.label(l10n, stats.totalDurationMinutes),
-            style: context.textTheme.heading5.copyWith(color: AppColors.white),
+            style: context.textTheme.heading5.copyWith(color: colors.text),
           ),
           const SizedBox(height: 18),
           SizedBox(
@@ -142,7 +143,7 @@ class _WeekBar extends StatelessWidget {
         Text(
           label,
           style: context.textTheme.bodyXSmallRegular.copyWith(
-            color: AppColors.white,
+            color: context.appColors.text,
           ),
         ),
       ],

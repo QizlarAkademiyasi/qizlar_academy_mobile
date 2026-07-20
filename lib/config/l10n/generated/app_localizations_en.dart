@@ -1370,4 +1370,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offlineWaiting => 'Waiting for an internet connection...';
+
+  @override
+  String get tasksTitle => 'Tasks';
+
+  @override
+  String get tasksBalanceLabel => 'BALANCE';
+
+  @override
+  String get tasksCoinLabel => 'Coins';
+
+  @override
+  String tasksStreakTitle(int count) {
+    return '$count-Day Streak';
+  }
+
+  @override
+  String get tasksStreakSubtitle => 'Keep it going!';
+
+  @override
+  String get tasksTodayTitle => 'Today\'s tasks';
+
+  @override
+  String get tasksOtherTitle => 'Other tasks';
+
+  @override
+  String get tasksEmptyTitle => 'No tasks yet';
+
+  @override
+  String get tasksEmptySubtitle => 'New tasks will appear here';
+
+  @override
+  String get tasksLoadError => 'Could not load tasks. Try again.';
+
+  @override
+  String get tasksActionUnavailable => 'This task action is not available yet';
 }

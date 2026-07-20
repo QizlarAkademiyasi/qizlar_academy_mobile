@@ -7,7 +7,6 @@ import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
-import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
 import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/screens/daily_coin_bottom_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_state.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
@@ -109,7 +108,9 @@ class _HomeScreenState extends State<HomeScreen>
       if (!auth.isRegistered || (auth.accessToken ?? '').trim().isEmpty) {
         return;
       }
-      final result = await tryAutopresentDailyCoinSheetFromHomePrefetch(context);
+      final result = await tryAutopresentDailyCoinSheetFromHomePrefetch(
+        context,
+      );
       if (result != null) return;
       await Future<void>.delayed(Duration(milliseconds: 260 + i * 140));
     }
@@ -207,21 +208,8 @@ class _HomeScreenState extends State<HomeScreen>
                                     context,
                                     state.homeStats ?? _skeletonStats,
                                     isLoading: isLoading,
-                                    onCoinsAndGradeTap: () async {
-                                      if (!kDailyCoinFeatureEnabled) return;
-                                      final canOpen =
-                                          await getIt<GuestTapGateService>()
-                                              .allowAction(
-                                                context,
-                                                key: 'home_daily_coin_streak',
-                                                title: context
-                                                    .l10n
-                                                    .guestGateProfileFeatures,
-                                              );
-                                      if (!canOpen) return;
-                                      if (!context.mounted) return;
-                                      await showDailyCoinBottomSheet(context);
-                                    },
+                                    onCoinsAndGradeTap: () =>
+                                        context.push(Routes.tasks),
                                     onRatingTap: () => widget.onSwitchMainTab
                                         ?.call(_mainTabLeaderboard),
                                     onLastLessonTap: () =>

@@ -13,7 +13,11 @@ class MyCertificatesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<MyCertificatesBloc>()..add(const MyCertificatesStarted()), child: const _MyCertificatesView());
+    return BlocProvider(
+      create: (_) =>
+          getIt<MyCertificatesBloc>()..add(const MyCertificatesStarted()),
+      child: const _MyCertificatesView(),
+    );
   }
 }
 
@@ -24,7 +28,8 @@ class _MyCertificatesView extends StatefulWidget {
   State<_MyCertificatesView> createState() => _MyCertificatesViewState();
 }
 
-class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertificatesScreenMixin<_MyCertificatesView> {
+class _MyCertificatesViewState extends State<_MyCertificatesView>
+    with MyCertificatesScreenMixin<_MyCertificatesView> {
   bool _onScrollNotification(ScrollNotification n, BuildContext context) {
     if (n.metrics.axis != Axis.vertical) return false;
     if (n is! ScrollUpdateNotification && n is! OverscrollNotification) {
@@ -40,141 +45,205 @@ class _MyCertificatesViewState extends State<_MyCertificatesView> with MyCertifi
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+    return AppPageScaffold(
+      title: context.l10n.profileMenuCertificates,
+      onBackTap: () => onMyCertificatesBackTap(context),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 8),
-        child: AppMascotFloatingActionButton(size: 64, lottieAssetPath: UiKitAssets.lottie.rabbit.giftCakeRabbit, onPressed: () => onCertificatesCommunityFabTap(context)),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.paddingOf(context).bottom + 8,
+        ),
+        child: AppMascotFloatingActionButton(
+          size: 64,
+          lottieAssetPath: UiKitAssets.lottie.rabbit.giftCakeRabbit,
+          onPressed: () => onCertificatesCommunityFabTap(context),
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      appBar: AppBar(
-        backgroundColor: context.appColors.background,
-        title: Text(context.l10n.profileMenuCertificates, style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
-      ),
-      body: SafeArea(
-        bottom: false,
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: BlocConsumer<MyCertificatesBloc, MyCertificatesState>(
-                    listenWhen: (previous, current) => current.loadMoreFailed && !previous.loadMoreFailed,
-                    listener: myCertificatesBlocListener,
-                    buildWhen: (p, c) =>
-                        p.status != c.status ||
-                        p.items != c.items ||
-                        p.isLoadingMore != c.isLoadingMore,
-                    builder: (context, state) {
-                      final loadingEmpty = (state.status == MyCertificatesStatus.loading || state.status == MyCertificatesStatus.initial) && state.items.isEmpty;
+      body: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: BlocConsumer<MyCertificatesBloc, MyCertificatesState>(
+                  listenWhen: (previous, current) =>
+                      current.loadMoreFailed && !previous.loadMoreFailed,
+                  listener: myCertificatesBlocListener,
+                  buildWhen: (p, c) =>
+                      p.status != c.status ||
+                      p.items != c.items ||
+                      p.isLoadingMore != c.isLoadingMore,
+                  builder: (context, state) {
+                    final loadingEmpty =
+                        (state.status == MyCertificatesStatus.loading ||
+                            state.status == MyCertificatesStatus.initial) &&
+                        state.items.isEmpty;
 
-                      if (state.status == MyCertificatesStatus.failure && state.items.isEmpty) {
-                        return RefreshIndicator(
-                          onRefresh: () => onMyCertificatesPullToRefresh(context),
-                          child: ListView(
-                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                            padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
-                            children: [
-                              TgsFailureContent(message: context.l10n.certificatesLoadError, onRetry: () => context.read<MyCertificatesBloc>().add(const MyCertificatesRetryRequested())),
-                            ],
+                    if (state.status == MyCertificatesStatus.failure &&
+                        state.items.isEmpty) {
+                      return RefreshIndicator(
+                        onRefresh: () => onMyCertificatesPullToRefresh(context),
+                        child: ListView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
                           ),
-                        );
-                      }
+                          padding: EdgeInsets.fromLTRB(
+                            20,
+                            4,
+                            20,
+                            24 + bottomInset,
+                          ),
+                          children: [
+                            TgsFailureContent(
+                              message: context.l10n.certificatesLoadError,
+                              onRetry: () => context
+                                  .read<MyCertificatesBloc>()
+                                  .add(const MyCertificatesRetryRequested()),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
 
-                      if (loadingEmpty) {
-                        return RefreshIndicator(
-                          onRefresh: () => onMyCertificatesPullToRefresh(context),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              return SingleChildScrollView(
-                                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                                padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                                  child: const MyCertificatesListSkeleton(),
+                    if (loadingEmpty) {
+                      return RefreshIndicator(
+                        onRefresh: () => onMyCertificatesPullToRefresh(context),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(
+                                parent: BouncingScrollPhysics(),
+                              ),
+                              padding: EdgeInsets.fromLTRB(
+                                20,
+                                4,
+                                20,
+                                24 + bottomInset,
+                              ),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight,
                                 ),
-                              );
-                            },
-                          ),
-                        );
-                      }
+                                child: const MyCertificatesListSkeleton(),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
 
-                      if (state.status == MyCertificatesStatus.success && state.items.isEmpty) {
-                        return RefreshIndicator(
-                          onRefresh: () => onMyCertificatesPullToRefresh(context),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              return SingleChildScrollView(
-                                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                                  child: Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                                      child: TgsEmptyContent(message: context.l10n.certificatesEmptyTitle, subtitle: context.l10n.certificatesEmptySubtitle),
+                    if (state.status == MyCertificatesStatus.success &&
+                        state.items.isEmpty) {
+                      return RefreshIndicator(
+                        onRefresh: () => onMyCertificatesPullToRefresh(context),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(
+                                parent: BouncingScrollPhysics(),
+                              ),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight,
+                                ),
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                    ),
+                                    child: TgsEmptyContent(
+                                      message:
+                                          context.l10n.certificatesEmptyTitle,
+                                      subtitle: context
+                                          .l10n
+                                          .certificatesEmptySubtitle,
                                     ),
                                   ),
                                 ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: () => onMyCertificatesPullToRefresh(context),
+                      child: NotificationListener<ScrollNotification>(
+                        onNotification: (n) =>
+                            _onScrollNotification(n, context),
+                        child: AppStaggeredScrollLimiter(
+                          child: ListView.separated(
+                            padding: EdgeInsets.fromLTRB(
+                              20,
+                              4,
+                              20,
+                              24 + bottomInset,
+                            ),
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            itemCount:
+                                state.items.length +
+                                (state.isLoadingMore ? 1 : 0),
+                            separatorBuilder: (_, index) {
+                              if (index >= state.items.length - 1 &&
+                                  state.isLoadingMore) {
+                                return const SizedBox.shrink();
+                              }
+                              return const SizedBox(height: 14);
+                            },
+                            itemBuilder: (context, index) {
+                              if (index >= state.items.length) {
+                                return Skeletonizer.zone(
+                                  child: const MyCertificateSkeletonCard(),
+                                );
+                              }
+                              return AppStaggeredListItem(
+                                position: index,
+                                child: buildCertificateCard(
+                                  context,
+                                  state.items[index],
+                                  index,
+                                ),
                               );
                             },
                           ),
-                        );
-                      }
-
-                      return RefreshIndicator(
-                        onRefresh: () => onMyCertificatesPullToRefresh(context),
-                        child: NotificationListener<ScrollNotification>(
-                          onNotification: (n) => _onScrollNotification(n, context),
-                          child: AppStaggeredScrollLimiter(
-                            child: ListView.separated(
-                              padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
-                              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                              itemCount: state.items.length + (state.isLoadingMore ? 1 : 0),
-                              separatorBuilder: (_, index) {
-                                if (index >= state.items.length - 1 && state.isLoadingMore) {
-                                  return const SizedBox.shrink();
-                                }
-                                return const SizedBox(height: 14);
-                              },
-                              itemBuilder: (context, index) {
-                                if (index >= state.items.length) {
-                                  return Skeletonizer.zone(
-                                    child: const MyCertificateSkeletonCard(),
-                                  );
-                                }
-                                return AppStaggeredListItem(position: index, child: buildCertificateCard(context, state.items[index], index));
-                              },
-                            ),
-                          ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              ],
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: 120,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground),
-                      (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.6),
-                      (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.0),
-                    ],
-                    stops: [0, 0.5, 1],
-                  ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 120,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    (context.isDarkTheme
+                        ? AppColors.darkBackground
+                        : AppColors.lightBackground),
+                    (context.isDarkTheme
+                            ? AppColors.darkBackground
+                            : AppColors.lightBackground)
+                        .withValues(alpha: 0.6),
+                    (context.isDarkTheme
+                            ? AppColors.darkBackground
+                            : AppColors.lightBackground)
+                        .withValues(alpha: 0.0),
+                  ],
+                  stops: [0, 0.5, 1],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
