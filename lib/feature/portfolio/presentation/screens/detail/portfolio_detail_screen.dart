@@ -148,9 +148,10 @@ class _PortfolioDetailViewState extends State<_PortfolioDetailView>
                                     onLikeTap: () => onLikeTap(context),
                                     onCommentTap: () =>
                                         onCommentTap(context, post),
-                                    onShareTap: (shareContext) =>
-                                        onShareTap(shareContext, post),
-                                    onDeleteTap: () => onDeleteTap(context),
+                                    onShareTap: () => onShareTap(post),
+                                    onDeleteTap: post.isOwnedByCurrentUser
+                                        ? () => onDeleteTap(context)
+                                        : null,
                                   ),
                                 ),
                               ),
@@ -310,90 +311,18 @@ class _PortfolioDetailViewState extends State<_PortfolioDetailView>
                   ),
                   if (state.status == PortfolioDetailStatus.success &&
                       post != null)
-                    _buildCommentInput(context),
+                    BlocBuilder<PortfolioCommentsBloc, PortfolioCommentsState>(
+                      builder: (context, commentsState) => buildCommentInput(
+                        context,
+                        isSubmitting: commentsState.isSubmitting,
+                      ),
+                    ),
                 ],
               );
             },
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCommentInput(BuildContext context) {
-    return BlocBuilder<PortfolioCommentsBloc, PortfolioCommentsState>(
-      builder: (context, commentsState) {
-        return Container(
-          decoration: BoxDecoration(
-            color: context.theme.scaffoldBackgroundColor,
-            border: Border(
-              top: BorderSide(color: context.appColors.stroke, width: 1),
-            ),
-          ),
-          padding: EdgeInsets.fromLTRB(
-            16,
-            8,
-            16,
-            MediaQuery.paddingOf(context).bottom + 12,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (replyToComment != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '${replyToComment!.author.fullName.isEmpty ? "Foydalanuvchi" : replyToComment!.author.fullName} ga javob',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodySmallRegular.copyWith(
-                            color: context.appColors.secondaryGrey,
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: onCancelReplyTap,
-                        child: const Text('Bekor qilish'),
-                      ),
-                    ],
-                  ),
-                ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: commentController,
-                      minLines: 1,
-                      maxLines: 3,
-                      maxLength: 1000,
-                      decoration: const InputDecoration(
-                        hintText: 'Izoh yozing',
-                        counterText: '',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton.filled(
-                    onPressed: commentsState.isSubmitting
-                        ? null
-                        : () => onCommentSubmit(context),
-                    icon: Icon(
-                      color: context.appColors.onContainer,
-                      commentsState.isSubmitting
-                          ? LucideIcons.loader
-                          : LucideIcons.send,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

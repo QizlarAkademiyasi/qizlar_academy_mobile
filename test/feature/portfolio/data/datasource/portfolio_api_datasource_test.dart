@@ -20,6 +20,7 @@ void main() {
     expect(page.hasMore, isTrue);
     expect(page.items, hasLength(1));
     expect(page.items.first.caption, 'Kurs ishim tayyor!');
+    expect(page.items.first.isOwnedByCurrentUser, isFalse);
   });
 
   test('parses null author photo as empty URL', () {
@@ -68,17 +69,22 @@ void main() {
 
   test('parses my posts pagination', () {
     final page = datasource.parseMyPostsPayload(
-      _myPostsPayload(
-        items: [_postPayload()],
-        pageNumber: 1,
-        pageCount: 3,
-      ),
+      _myPostsPayload(items: [_postPayload()], pageNumber: 1, pageCount: 3),
       fallbackPageSize: 20,
     );
 
     expect(page.items, hasLength(1));
     expect(page.hasMore, isTrue);
     expect(page.nextCursor, 2);
+    expect(page.items.first.isOwnedByCurrentUser, isTrue);
+  });
+
+  test('parses ownership flag from feed post', () {
+    final page = datasource.parseFeedPayload(
+      _feedPayload(items: [_postPayload(isOwner: true)]),
+    );
+
+    expect(page.items.first.isOwnedByCurrentUser, isTrue);
   });
 
   test('parses my posts without pagination meta', () {
@@ -233,6 +239,7 @@ Map<String, dynamic> _myPostsPayload({
 Map<String, dynamic> _postPayload({
   String? authorPhoto,
   List<Map<String, dynamic>>? media,
+  bool? isOwner,
 }) {
   return <String, dynamic>{
     'id': 'post-1',
@@ -249,6 +256,7 @@ Map<String, dynamic> _postPayload({
     },
     'media': media ?? [_mediaPayload()],
     'isLiked': false,
+    'isOwner': ?isOwner,
   };
 }
 

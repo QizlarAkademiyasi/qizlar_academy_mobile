@@ -1,12 +1,12 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
-import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_empty_content.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_failure_content.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/domain/model/portfolio_comment_model.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/portfolio_avatar.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/comments/bloc/portfolio_comments_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/comments/portfolio_comments_sheet_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/utils/portfolio_formatting.dart';
 
 Future<bool?> showPortfolioCommentsSheet(
@@ -30,40 +30,18 @@ class PortfolioCommentsSheet extends StatefulWidget {
   State<PortfolioCommentsSheet> createState() => _PortfolioCommentsSheetState();
 }
 
-class _PortfolioCommentsSheetState extends State<PortfolioCommentsSheet> {
-  late final TextEditingController _controller;
-  PortfolioCommentModel? _replyTo;
-  bool _submitted = false;
-
+class _PortfolioCommentsSheetState extends State<PortfolioCommentsSheet>
+    with PortfolioCommentsSheetMixin<PortfolioCommentsSheet> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    initCommentInput();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    disposeCommentInput();
     super.dispose();
-  }
-
-  bool _onScroll(ScrollNotification notification) {
-    if (notification.metrics.axis != Axis.vertical) return false;
-    if (notification.metrics.pixels >=
-        notification.metrics.maxScrollExtent - 120) {
-      context.read<PortfolioCommentsBloc>().add(
-        const PortfolioCommentsLoadMoreRequested(),
-      );
-    }
-    return false;
-  }
-
-  void _submit(BuildContext context) {
-    final text = _controller.text.trim();
-    if (text.isEmpty) return;
-    context.read<PortfolioCommentsBloc>().add(
-      PortfolioCommentSubmitted(content: text, parentId: _replyTo?.id),
-    );
   }
 
   @override
@@ -79,27 +57,7 @@ class _PortfolioCommentsSheetState extends State<PortfolioCommentsSheet> {
               previous.authRequired != current.authRequired ||
               previous.submitted != current.submitted ||
               previous.message != current.message,
-          listener: (context, state) {
-            if (state.authRequired) {
-              AppToast.info(
-                context,
-                message: 'Izoh yozish uchun tizimga kiring',
-              );
-              context.read<PortfolioCommentsBloc>().add(
-                const PortfolioCommentsAuthRequiredConsumed(),
-              );
-              context.push(Routes.signIn);
-            }
-            if (state.submitted) {
-              _submitted = true;
-              _controller.clear();
-              setState(() => _replyTo = null);
-            }
-            final message = state.message;
-            if (message != null && message.isNotEmpty) {
-              AppToast.error(context, message: message);
-            }
-          },
+          listener: portfolioCommentsBlocListener,
           builder: (context, state) {
             return SizedBox(
               height: MediaQuery.sizeOf(context).height * 0.78,
@@ -116,7 +74,8 @@ class _PortfolioCommentsSheetState extends State<PortfolioCommentsSheet> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () => Navigator.of(context).pop(_submitted),
+                        onPressed: () =>
+                            Navigator.of(context).pop(isCommentSubmitted),
                         icon: const Icon(LucideIcons.x),
                       ),
                     ],
@@ -155,7 +114,7 @@ class _PortfolioCommentsSheetState extends State<PortfolioCommentsSheet> {
                           ),
                         ),
                       _ => NotificationListener<ScrollNotification>(
-                        onNotification: _onScroll,
+                        onNotification: onCommentsScroll,
                         child: ListView.separated(
                           padding: const EdgeInsets.only(bottom: 16),
                           itemCount:
@@ -180,8 +139,7 @@ class _PortfolioCommentsSheetState extends State<PortfolioCommentsSheet> {
                               repliesHasMore:
                                   state.replyHasMoreByCommentId[comment.id] ??
                                   true,
-                              onReplyTap: () =>
-                                  setState(() => _replyTo = comment),
+                              onReplyTap: () => onReplyTap(comment),
                               onRepliesTap: () => context
                                   .read<PortfolioCommentsBloc>()
                                   .add(PortfolioRepliesRequested(comment.id)),
@@ -191,57 +149,7 @@ class _PortfolioCommentsSheetState extends State<PortfolioCommentsSheet> {
                       ),
                     },
                   ),
-                  if (_replyTo != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${_replyTo!.author.fullName} ga javob',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: context.textTheme.bodySmallRegular
-                                  .copyWith(
-                                    color: context.appColors.secondaryGrey,
-                                  ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => setState(() => _replyTo = null),
-                            child: const Text('Bekor qilish'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          minLines: 1,
-                          maxLines: 3,
-                          maxLength: 1000,
-                          decoration: const InputDecoration(
-                            hintText: 'Izoh yozing',
-                            counterText: '',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton.filled(
-                        onPressed: state.isSubmitting
-                            ? null
-                            : () => _submit(context),
-                        icon: Icon(
-                          state.isSubmitting
-                              ? LucideIcons.loader
-                              : LucideIcons.send,
-                        ),
-                      ),
-                    ],
-                  ),
+                  buildCommentInput(context, isSubmitting: state.isSubmitting),
                 ],
               ),
             );

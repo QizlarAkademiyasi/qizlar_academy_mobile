@@ -56,10 +56,7 @@ class PortfolioApiDatasource implements PortfolioDatasource {
         'pageSize': pageSize,
       },
     );
-    return parseMyPostsPayload(
-      response.data,
-      fallbackPageSize: pageSize,
-    );
+    return parseMyPostsPayload(response.data, fallbackPageSize: pageSize);
   }
 
   Future<PortfolioFeedPageModel> _fetchFeed(
@@ -96,7 +93,11 @@ class PortfolioApiDatasource implements PortfolioDatasource {
   }) {
     final envelope = _asMap(payload);
     final data = _asMap(envelope['data']);
-    final items = _asList(data['data']).map(_mapPost).toList(growable: false);
+    final items = _asList(data['data'])
+        .map(
+          (item) => _mapPost(_asMap(item)).copyWith(isOwnedByCurrentUser: true),
+        )
+        .toList(growable: false);
     final meta = _asMap(data['meta']);
     final pagination = _asMap(meta['pagination']);
     if (pagination.isEmpty) {
@@ -264,6 +265,13 @@ class PortfolioApiDatasource implements PortfolioDatasource {
       ),
       media: media,
       isLiked: _parseBool(m['isLiked']),
+      isOwnedByCurrentUser: _parseBool(
+        m['isOwnedByCurrentUser'] ??
+            m['isOwner'] ??
+            m['isMine'] ??
+            m['isOwn'] ??
+            m['isMyPost'],
+      ),
     );
   }
 
