@@ -3,6 +3,7 @@ import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/domain/model/portfolio_comment_model.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/domain/model/portfolio_post_model.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/portfolio_comment_input.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/comments/bloc/portfolio_comments_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/comments/portfolio_comments_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/detail/bloc/portfolio_detail_bloc.dart';
@@ -34,19 +35,46 @@ mixin PortfolioDetailScreenMixin<T extends StatefulWidget> on State<T> {
 
   void onFetchRepliesRequested(BuildContext context, String commentId) {
     context.read<PortfolioCommentsBloc>().add(
-          PortfolioRepliesRequested(commentId),
-        );
+      PortfolioRepliesRequested(commentId),
+    );
   }
 
   void onCommentSubmit(BuildContext context) {
     final text = commentController.text.trim();
     if (text.isEmpty) return;
     context.read<PortfolioCommentsBloc>().add(
-          PortfolioCommentSubmitted(
-            content: text,
-            parentId: replyToComment?.id,
-          ),
-        );
+      PortfolioCommentSubmitted(content: text, parentId: replyToComment?.id),
+    );
+  }
+
+  Widget buildCommentInput(BuildContext context, {required bool isSubmitting}) {
+    final authorName = replyToComment?.author.fullName.trim();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.theme.scaffoldBackgroundColor,
+        border: Border(
+          top: BorderSide(color: context.appColors.stroke, width: 1),
+        ),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        10,
+        16,
+        MediaQuery.paddingOf(context).bottom + 12,
+      ),
+      child: PortfolioCommentInput(
+        controller: commentController,
+        isSubmitting: isSubmitting,
+        onSubmit: () => onCommentSubmit(context),
+        replyToName: replyToComment == null
+            ? null
+            : authorName == null || authorName.isEmpty
+            ? 'Foydalanuvchi'
+            : authorName,
+        onCancelReply: onCancelReplyTap,
+      ),
+    );
   }
 
   void portfolioDetailBlocListener(
@@ -77,8 +105,8 @@ mixin PortfolioDetailScreenMixin<T extends StatefulWidget> on State<T> {
     if (state.authRequired) {
       AppToast.info(context, message: 'Izoh yozish uchun tizimga kiring');
       context.read<PortfolioCommentsBloc>().add(
-            const PortfolioCommentsAuthRequiredConsumed(),
-          );
+        const PortfolioCommentsAuthRequiredConsumed(),
+      );
       context.push(Routes.signIn);
     }
     if (state.submitted) {
@@ -87,8 +115,8 @@ mixin PortfolioDetailScreenMixin<T extends StatefulWidget> on State<T> {
       setState(() => replyToComment = null);
       // We also trigger a reload of details/post to update the comments count!
       context.read<PortfolioDetailBloc>().add(
-            const PortfolioDetailRetryRequested(),
-          );
+        const PortfolioDetailRetryRequested(),
+      );
     }
     final message = state.message;
     if (message != null && message.isNotEmpty) {

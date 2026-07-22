@@ -331,7 +331,7 @@ class SecondLiquidBottomNavItem {
     this.iconBuilder,
     required this.label,
     this.tooltip,
-    this.selectedLabelTrailingIcon,
+    this.labelTrailingIcon,
   }) : assert(
          icon != null || iconBuilder != null,
          'SecondLiquidBottomNavItem requires icon or iconBuilder',
@@ -350,8 +350,8 @@ class SecondLiquidBottomNavItem {
   final String label;
   final String? tooltip;
 
-  /// Tanlangan tab labelidan keyin ko‘rinadigan qayta bosish indikatori.
-  final IconData? selectedLabelTrailingIcon;
+  /// Tab labelidan keyin tanlangan va tanlanmagan holatda ko‘rinadigan indikator.
+  final IconData? labelTrailingIcon;
 }
 
 class SecondLiquidBottomNav extends StatefulWidget {
@@ -1084,13 +1084,9 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
                       height: 1,
                     ),
                   ),
-                  if (isSelected && item.selectedLabelTrailingIcon != null) ...[
+                  if (item.labelTrailingIcon != null) ...[
                     const SizedBox(width: 1),
-                    Icon(
-                      item.selectedLabelTrailingIcon,
-                      color: contentColor,
-                      size: 10,
-                    ),
+                    Icon(item.labelTrailingIcon, color: contentColor, size: 12),
                   ],
                 ],
               ),
@@ -1144,7 +1140,7 @@ List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
     ),
     SecondLiquidBottomNavItem(
       label: l10n.mainTabProfile,
-      selectedLabelTrailingIcon: isProfileMenuExpanded
+      labelTrailingIcon: isProfileMenuExpanded
           ? Icons.keyboard_arrow_down_rounded
           : Icons.keyboard_arrow_up_rounded,
       iconBuilder: (_, color, size, selected) => MainBottomNavProfileTabIcon(

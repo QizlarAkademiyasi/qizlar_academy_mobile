@@ -86,10 +86,7 @@ mixin PortfolioScreenMixin<T extends StatefulWidget> on State<T> {
     context.read<PortfolioBloc>().add(PortfolioDeleteRequested(post.id));
   }
 
-  void onCommentTap(
-    BuildContext context,
-    PortfolioPostModel post,
-  ) {
+  void onCommentTap(BuildContext context, PortfolioPostModel post) {
     onPostTap(context, post);
   }
 
@@ -108,7 +105,9 @@ mixin PortfolioScreenMixin<T extends StatefulWidget> on State<T> {
       onLikeTap: () => onLikeTap(context, post),
       onCommentTap: () => onCommentTap(context, post),
       onShareTap: () => onShareTap(context, post),
-      onDeleteTap: () => onDeleteTap(context, post),
+      onDeleteTap: post.isOwnedByCurrentUser
+          ? () => onDeleteTap(context, post)
+          : null,
     );
   }
 }

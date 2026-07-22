@@ -13,6 +13,7 @@ class PortfolioPostModel extends Equatable {
     required this.author,
     required this.media,
     required this.isLiked,
+    this.isOwnedByCurrentUser = false,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class PortfolioPostModel extends Equatable {
   final PortfolioAuthorModel author;
   final List<PortfolioMediaModel> media;
   final bool isLiked;
+  final bool isOwnedByCurrentUser;
 
   PortfolioPostModel copyWith({
     String? id,
@@ -35,6 +37,7 @@ class PortfolioPostModel extends Equatable {
     PortfolioAuthorModel? author,
     List<PortfolioMediaModel>? media,
     bool? isLiked,
+    bool? isOwnedByCurrentUser,
   }) {
     return PortfolioPostModel(
       id: id ?? this.id,
@@ -46,6 +49,7 @@ class PortfolioPostModel extends Equatable {
       author: author ?? this.author,
       media: media ?? this.media,
       isLiked: isLiked ?? this.isLiked,
+      isOwnedByCurrentUser: isOwnedByCurrentUser ?? this.isOwnedByCurrentUser,
     );
   }
 
@@ -75,5 +79,6 @@ class PortfolioPostModel extends Equatable {
     author,
     media,
     isLiked,
+    isOwnedByCurrentUser,
   ];
 }
