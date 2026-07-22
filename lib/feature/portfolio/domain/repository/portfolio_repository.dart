@@ -61,14 +61,14 @@ class PortfolioCreateMediaInput {
   const PortfolioCreateMediaInput({
     required this.type,
     required this.url,
-    this.thumbnail,
-    this.duration,
+    required this.thumbnail,
+    required this.duration,
     required this.orderIndex,
   });
 
   final PortfolioMediaType type;
   final String url;
-  final String? thumbnail;
-  final int? duration;
+  final String thumbnail;
+  final int duration;
   final int orderIndex;
 }

@@ -7,6 +7,7 @@ import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/comments/bloc/portfolio_comments_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/comments/portfolio_comments_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/detail/bloc/portfolio_detail_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/utils/portfolio_share.dart';
 
 mixin PortfolioDetailScreenMixin<T extends StatefulWidget> on State<T> {
   late final TextEditingController commentController;
@@ -136,12 +137,9 @@ mixin PortfolioDetailScreenMixin<T extends StatefulWidget> on State<T> {
     );
   }
 
-  Future<void> onShareTap(PortfolioPostModel post) async {
+  Future<void> onShareTap(BuildContext context, PortfolioPostModel post) async {
     Gaimon.light();
-    final text = post.caption.trim().isEmpty
-        ? 'Qizlar Akademiyasi portfolio'
-        : post.caption.trim();
-    await SharePlus.instance.share(ShareParams(text: text));
+    await PortfolioShare.share(context, post);
   }
 
   Future<void> onDeleteTap(BuildContext context) async {

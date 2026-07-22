@@ -101,6 +101,11 @@ class _PortfolioCreateViewState extends State<_PortfolioCreateView>
                                     maxLines: 5,
                                     decoration: InputDecoration(
                                       hintText: 'Enter a message',
+                                      isDense: true,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            vertical: 4,
+                                          ),
                                       border: InputBorder.none,
                                       hintStyle: context
                                           .textTheme

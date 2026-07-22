@@ -139,7 +139,9 @@ class _PortfolioViewState extends State<_PortfolioView>
                         PortfolioStatus.success when state.items.isEmpty =>
                           Center(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 32),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                              ),
                               child: PortfolioEmptyContent(
                                 tab: state.tab,
                                 isGuest: state.isGuest,
@@ -154,12 +156,15 @@ class _PortfolioViewState extends State<_PortfolioView>
                               _onScrollNotification(n, context),
                           child: AppStaggeredScrollLimiter(
                             child: CustomScrollView(
+                              // Flutter < 3.41 bilan ham ishlashi uchun eski API saqlanadi.
+                              // ignore: deprecated_member_use
+                              cacheExtent: MediaQuery.sizeOf(context).height,
                               slivers: [
                                 SliverPadding(
                                   padding: EdgeInsets.fromLTRB(
-                                    24,
+                                    16,
                                     4,
-                                    24,
+                                    16,
                                     bottomInset + 112,
                                   ),
                                   sliver: SliverList.separated(
@@ -177,6 +182,9 @@ class _PortfolioViewState extends State<_PortfolioView>
                                         );
                                       }
                                       return AppStaggeredListItem(
+                                        key: ValueKey<String>(
+                                          'portfolio_post_${state.items[index].id}',
+                                        ),
                                         position: index,
                                         child: buildPostCard(
                                           context,
@@ -184,11 +192,8 @@ class _PortfolioViewState extends State<_PortfolioView>
                                         ),
                                       );
                                     },
-                                    separatorBuilder: (_, _) => Divider(
-                                      height: 30,
-                                      thickness: 2,
-                                      color: context.appColors.stroke,
-                                    ),
+                                    separatorBuilder: (_, _) =>
+                                        const SizedBox(height: 12),
                                     itemCount:
                                         state.items.length +
                                         (state.isLoadingMore ? 1 : 0),

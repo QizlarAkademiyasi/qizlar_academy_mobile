@@ -576,6 +576,28 @@
       }
     }
   },
+  "portfolioShareTooltip": "Portfolio postini ulashish",
+  "portfolioShareSubject": "Qizlar Akademiyasi — Portfolio",
+  "portfolioShareMessage": "«{caption}»\n\nPortfolio loyihasini Qizlar Akademiyasida ko‘ring:\n{url}",
+  "@portfolioShareMessage": {
+    "placeholders": {
+      "caption": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "portfolioShareMessageWithoutCaption": "Portfolio loyihasini Qizlar Akademiyasida ko‘ring:\n{url}",
+  "@portfolioShareMessageWithoutCaption": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "portfolioShareError": "Postni ulashib bo‘lmadi. Qayta urinib ko‘ring.",
   "certificatesSheetInstagramStory": "Instagram Story",
   "profileDeleteAccountTile": "Hisobni o‘chirish",
   "profileDeleteAccountTitle": "Hisobni o‘chirasizmi?",

@@ -4,6 +4,7 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 import 'package:qizlar_academy_mobile/feature/portfolio/domain/model/portfolio_post_model.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/bloc/portfolio_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/components/portfolio_post_card.dart';
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/utils/portfolio_share.dart';
 
 mixin PortfolioScreenMixin<T extends StatefulWidget> on State<T> {
   void portfolioBlocListener(BuildContext context, PortfolioState state) {
@@ -92,10 +93,7 @@ mixin PortfolioScreenMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> onShareTap(BuildContext context, PortfolioPostModel post) async {
     Gaimon.light();
-    final text = post.caption.trim().isEmpty
-        ? 'Qizlar Akademiyasi portfolio'
-        : post.caption.trim();
-    await SharePlus.instance.share(ShareParams(text: text));
+    await PortfolioShare.share(context, post);
   }
 
   Widget buildPostCard(BuildContext context, PortfolioPostModel post) {

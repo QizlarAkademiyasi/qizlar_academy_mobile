@@ -34,7 +34,9 @@ class StoreOrderHistorySkeletonCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.appColors.onContainer.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: context.appColors.stroke.withValues(alpha: 0.7)),
+        border: Border.all(
+          color: context.appColors.stroke.withValues(alpha: 0.7),
+        ),
       ),
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
       child: Column(
@@ -54,7 +56,8 @@ class StoreOrderHistorySkeletonCard extends StatelessWidget {
               Bone.icon(size: 12),
               SizedBox(width: 4),
               Expanded(child: Bone.text(words: 3)),
-              Bone.text(words: 2),
+              SizedBox(width: 8),
+              SizedBox(width: 32, child: Bone.text(words: 1)),
             ],
           ),
           SizedBox(height: 8),

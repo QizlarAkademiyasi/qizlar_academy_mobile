@@ -5,5 +5,5 @@
 abstract final class AppLogConfig {
   AppLogConfig._();
 
-  static bool loggingEnabled = false;
+  static bool loggingEnabled = true;
 }

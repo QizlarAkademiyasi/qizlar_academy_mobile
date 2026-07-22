@@ -46,7 +46,7 @@ final class EnvConfig {
     required AppFlavors flavor,
   }) {
     _instance = EnvConfig._(appName: appName, flavor: flavor);
-    AppLogConfig.loggingEnabled = flavor == AppFlavors.prod;
+    AppLogConfig.loggingEnabled = flavor == AppFlavors.dev;
     if (AppLogConfig.loggingEnabled) {
       debugPrint(
         '[EnvConfig] Flavor: ${_instance!.flavor.name.toUpperCase()} | '

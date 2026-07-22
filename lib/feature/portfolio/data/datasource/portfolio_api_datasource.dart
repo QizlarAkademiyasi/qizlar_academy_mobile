@@ -156,7 +156,7 @@ class PortfolioApiDatasource implements PortfolioDatasource {
       UserApis.fileUpload,
       data: formData,
     );
-    return _parseUploadedFilename(response.data);
+    return Apis.resolveUrl(_parseUploadedFilename(response.data));
   }
 
   @override

@@ -1202,6 +1202,26 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get portfolioShareTooltip => 'Portfolio postini ulashish';
+
+  @override
+  String get portfolioShareSubject => 'Qizlar Akademiyasi — Portfolio';
+
+  @override
+  String portfolioShareMessage(String caption, String url) {
+    return '«$caption»\n\nPortfolio loyihasini Qizlar Akademiyasida ko‘ring:\n$url';
+  }
+
+  @override
+  String portfolioShareMessageWithoutCaption(String url) {
+    return 'Portfolio loyihasini Qizlar Akademiyasida ko‘ring:\n$url';
+  }
+
+  @override
+  String get portfolioShareError =>
+      'Postni ulashib bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
   String get certificatesSheetInstagramStory => 'Instagram Story';
 
   @override

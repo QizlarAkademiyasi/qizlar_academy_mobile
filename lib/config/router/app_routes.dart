@@ -211,9 +211,6 @@ class AppRoute {
         if (location == Routes.portfolioCreate && isGuest) {
           return Routes.signIn;
         }
-        if (RegExp(r'^/portfolio/[^/]+$').hasMatch(state.uri.path) && isGuest) {
-          return Routes.signIn;
-        }
         if (state.uri.path.startsWith('/lesson-quiz/') && isGuest) {
           return Routes.signIn;
         }

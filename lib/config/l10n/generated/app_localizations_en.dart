@@ -1192,6 +1192,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get portfolioShareTooltip => 'Share portfolio post';
+
+  @override
+  String get portfolioShareSubject => 'Qizlar Academy — Portfolio';
+
+  @override
+  String portfolioShareMessage(String caption, String url) {
+    return '\"$caption\"\n\nView this portfolio project in Qizlar Academy:\n$url';
+  }
+
+  @override
+  String portfolioShareMessageWithoutCaption(String url) {
+    return 'View this portfolio project in Qizlar Academy:\n$url';
+  }
+
+  @override
+  String get portfolioShareError =>
+      'Could not share the post. Please try again.';
+
+  @override
   String get certificatesSheetInstagramStory => 'Instagram Story';
 
   @override

@@ -135,9 +135,9 @@ class _PortfolioDetailViewState extends State<_PortfolioDetailView>
                             slivers: [
                               SliverPadding(
                                 padding: const EdgeInsets.fromLTRB(
-                                  24,
+                                  16,
                                   8,
-                                  24,
+                                  16,
                                   16,
                                 ),
                                 sliver: SliverToBoxAdapter(
