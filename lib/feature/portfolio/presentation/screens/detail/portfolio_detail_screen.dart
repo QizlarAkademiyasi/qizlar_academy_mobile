@@ -148,7 +148,8 @@ class _PortfolioDetailViewState extends State<_PortfolioDetailView>
                                     onLikeTap: () => onLikeTap(context),
                                     onCommentTap: () =>
                                         onCommentTap(context, post),
-                                    onShareTap: () => onShareTap(post),
+                                    onShareTap: (shareContext) =>
+                                        onShareTap(shareContext, post),
                                     onDeleteTap: post.isOwnedByCurrentUser
                                         ? () => onDeleteTap(context)
                                         : null,

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/liquid_bottom_nav_second.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
@@ -10,10 +11,69 @@ void main() {
     SecondLiquidBottomNavItem(icon: Icons.school_outlined, label: 'Courses'),
   ];
 
-  test('courses replaces store in the expanded menu', () {
-    expect(kMainExtraMenuItems.first.label, 'Kurslar');
-    expect(kMainExtraMenuItems.first.route, Routes.courses);
-    expect(kMainExtraMenuItems.any((item) => item.route == Routes.store), isFalse);
+  test('tab selections and route screens use separate menu lists', () {
+    expect(kMainExtraTabMenuItems.single.label, 'Profil');
+    expect(kMainExtraTabMenuItems.single.tabIndex, kMainProfileTabIndex);
+    expect(kMainExtraRouteMenuItems.first.label, 'Kurslar');
+    expect(kMainExtraRouteMenuItems.first.screenRoute, Routes.courses);
+    expect(
+      kMainExtraRouteMenuItems.any((item) => item.screenRoute == Routes.store),
+      isFalse,
+    );
+    expect(
+      kMainExtraMenuItems.length,
+      kMainExtraTabMenuItems.length +
+          kMainExtraRouteMenuItems.length +
+          kMainExtraActionMenuItems.length,
+    );
+  });
+
+  testWidgets('fourth tab changes from More to Profile with an arrow', (
+    tester,
+  ) async {
+    var profileIsActive = false;
+    var profileMenuIsExpanded = false;
+    late StateSetter setHarnessState;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            setHarnessState = setState;
+            final navItems = mainAppSecondLiquidBottomNavItems(
+              context,
+              isGuestMode: true,
+              isProfileTabActive: profileIsActive,
+              isProfileMenuExpanded: profileMenuIsExpanded,
+            );
+            final fourthItem = navItems[kMainProfileTabIndex];
+            return Column(
+              children: [
+                Text(fourthItem.label),
+                if (fourthItem.labelTrailingIcon != null)
+                  Icon(fourthItem.labelTrailingIcon),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.text('More'), findsOneWidget);
+    expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsNothing);
+    expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsNothing);
+
+    setHarnessState(() => profileIsActive = true);
+    await tester.pump();
+    expect(find.text('Profile'), findsOneWidget);
+    expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsOneWidget);
+
+    setHarnessState(() => profileMenuIsExpanded = true);
+    await tester.pump();
+    expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
   });
 
   testWidgets('tab tap uses no splash and reports the selected index', (
@@ -92,13 +152,15 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('selected tab shows its retap indicator next to the label', (tester) async {
+  testWidgets('selected tab shows its retap indicator next to the label', (
+    tester,
+  ) async {
     const retapItems = <SecondLiquidBottomNavItem>[
       SecondLiquidBottomNavItem(icon: Icons.home_outlined, label: 'Home'),
       SecondLiquidBottomNavItem(
         icon: Icons.person_outline,
         label: 'Profile',
-        selectedLabelTrailingIcon: Icons.keyboard_arrow_up_rounded,
+        labelTrailingIcon: Icons.keyboard_arrow_up_rounded,
       ),
     ];
 

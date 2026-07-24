@@ -102,7 +102,7 @@ mixin PortfolioScreenMixin<T extends StatefulWidget> on State<T> {
       onTap: () => onPostTap(context, post),
       onLikeTap: () => onLikeTap(context, post),
       onCommentTap: () => onCommentTap(context, post),
-      onShareTap: () => onShareTap(context, post),
+      onShareTap: (shareContext) => onShareTap(shareContext, post),
       onDeleteTap: post.isOwnedByCurrentUser
           ? () => onDeleteTap(context, post)
           : null,

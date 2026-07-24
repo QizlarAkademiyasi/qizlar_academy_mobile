@@ -80,6 +80,13 @@ Color _secondLiquidBottomNavEdgeColor(
 
 const double _secondLiquidBottomNavIndicatorInset = 2;
 const double _secondLiquidBottomNavExpandedVisualRadius = 28;
+const double _secondLiquidBottomNavContentRevealStart = 0.22;
+const double _secondLiquidBottomNavContentRevealEnd = 0.88;
+const CupertinoMotion _secondLiquidBottomNavFlowMotion = CupertinoMotion.snappy(
+  duration: Duration(milliseconds: 400),
+  extraBounce: 0.2,
+  snapToEnd: true,
+);
 
 /// Indikator yoyini kengaygan barning tashqi burchagidan xavfsiz masofada saqlaydi.
 /// Radius `height` va `padding`dan hisoblangani uchun custom o'lchamlarda ham kesishmaydi.
@@ -644,11 +651,7 @@ class _SecondLiquidBottomNavPillWithTabsState
           key: ValueKey(_pillMotionKey),
           value: targetX,
           from: _releaseFromX,
-          motion: const CupertinoMotion.snappy(
-            duration: Duration(milliseconds: 400),
-            extraBounce: 0.2,
-            snapToEnd: true,
-          ),
+          motion: _secondLiquidBottomNavFlowMotion,
           builder: (context, animatedPillX, child) {
             final double x = _dragging && _dragPillX != null
                 ? _dragPillX!
@@ -802,63 +805,14 @@ class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
 }
 
 class _SecondLiquidBottomNavBarContainerState
-    extends State<_SecondLiquidBottomNavBarContainer>
-    with SingleTickerProviderStateMixin {
-  static const Duration _expandDuration = Duration(milliseconds: 460);
-
-  late final AnimationController _expandController = AnimationController(
-    vsync: this,
-    duration: _expandDuration,
-  );
-  late final Animation<double> _expandCurve = CurvedAnimation(
-    parent: _expandController,
-    curve: const Cubic(0.16, 1.06, 0.3, 1),
-    reverseCurve: const Cubic(0.4, 0, 0.7, 1),
-  );
-  late final Animation<double> _contentOpacity = CurvedAnimation(
-    parent: _expandController,
-    curve: const Interval(0.12, 0.82, curve: Cubic(0.16, 1, 0.3, 1)),
-    reverseCurve: const Interval(0, 0.46, curve: Curves.easeIn),
-  );
-  late final Animation<Offset> _contentSlide =
-      Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero).animate(
-        CurvedAnimation(
-          parent: _expandController,
-          curve: const Interval(0.08, 0.9, curve: Cubic(0.16, 1, 0.3, 1)),
-          reverseCurve: const Cubic(0.4, 0, 0.7, 1),
-        ),
-      );
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.isExpanded) {
-      _expandController.value = 1;
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant _SecondLiquidBottomNavBarContainer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isExpanded && !oldWidget.isExpanded) {
-      _expandController.forward();
-    } else if (!widget.isExpanded && oldWidget.isExpanded) {
-      _expandController.reverse();
-    }
-  }
-
-  @override
-  void dispose() {
-    _expandController.dispose();
-    super.dispose();
-  }
-
+    extends State<_SecondLiquidBottomNavBarContainer> {
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _expandController,
-      builder: (context, child) {
-        return _buildBar(context, expandT: _expandCurve.value, child: child);
+    return SingleMotionBuilder(
+      value: widget.isExpanded ? 1 : 0,
+      motion: _secondLiquidBottomNavFlowMotion,
+      builder: (context, animatedExpandT, child) {
+        return _buildBar(context, expandT: animatedExpandT, child: child);
       },
       child: widget.expandedContent,
     );
@@ -869,6 +823,20 @@ class _SecondLiquidBottomNavBarContainerState
     required double expandT,
     Widget? child,
   }) {
+    final double settledExpandT = expandT.clamp(0.0, 1.0);
+
+    // Spring overshoot layoutda seziladi, lekin grid balandligini buzmasligi
+    // uchun vertikal bounce 8% bilan cheklanadi.
+    final double layoutExpandT = expandT.clamp(0.0, 1.08);
+
+    // Liquid-glass sirt avval ochiladi, body esa bir necha frame keyin kiradi.
+    // Reverse'da buning aksi bo'lib, body background'dan oldin yo'qoladi.
+    final double contentT = Curves.easeOutCubic.transform(
+      ((settledExpandT - _secondLiquidBottomNavContentRevealStart) /
+              (_secondLiquidBottomNavContentRevealEnd -
+                  _secondLiquidBottomNavContentRevealStart))
+          .clamp(0.0, 1.0),
+    );
     final bool lightBar = widget.backgroundColor.computeLuminance() > 0.5;
     final Color surfaceTint = lightBar
         ? _secondLiquidBottomNavWhiten(widget.backgroundColor, lightBar: true)
@@ -883,7 +851,7 @@ class _SecondLiquidBottomNavBarContainerState
       padding: widget.padding,
     );
     final double resolvedRadius =
-        lerpDouble(widget.borderRadius, safeExpandedRadius, expandT) ??
+        lerpDouble(widget.borderRadius, safeExpandedRadius, settledExpandT) ??
         widget.borderRadius;
     final BorderRadius outerRadius = BorderRadius.circular(resolvedRadius);
     final double edgeW = _secondLiquidBottomNavHairlineWidth(context);
@@ -946,21 +914,19 @@ class _SecondLiquidBottomNavBarContainerState
     );
     final double expandHeight = widget.expandedContentHeight ?? 0;
     final Widget? expandedSection =
-        widget.expandedContent != null &&
-            expandHeight > 0 &&
-            (expandT > 0 || _expandController.isAnimating)
+        widget.expandedContent != null && expandHeight > 0
         ? SizedBox(
-            height: expandHeight * expandT,
+            height: expandHeight * layoutExpandT,
             width: double.infinity,
             child: ClipRect(
               child: OverflowBox(
                 alignment: Alignment.bottomCenter,
                 minHeight: expandHeight,
                 maxHeight: expandHeight,
-                child: FadeTransition(
-                  opacity: _contentOpacity,
-                  child: SlideTransition(
-                    position: _contentSlide,
+                child: Opacity(
+                  opacity: contentT,
+                  child: FractionalTranslation(
+                    translation: Offset(0, 0.12 * (1 - contentT)),
                     child: child!,
                   ),
                 ),
@@ -1112,12 +1078,14 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
   }
 }
 
-/// Asosiy 4 tab: [MainBottomNavKitIcons] + [MainBottomNavProfileTabIcon].
+/// Asosiy 4 tab: dastlab More, profile page tanlanganda esa
+/// [MainBottomNavProfileTabIcon] va menu arrowi ko‘rsatiladi.
 /// Brand ranglar uchun: `selectedColor: context.appColors.primary`, `unselectedColor: context.appColors.bottomBarTabUnselected` —
 /// yoki barcha ranglarni o‘tmasdan default [secondLiquidBottomNavThemePalette] ishlatiladi.
 List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
   BuildContext context, {
   required bool isGuestMode,
+  required bool isProfileTabActive,
   bool isProfileMenuExpanded = false,
 }) {
   final l10n = context.l10n;
@@ -1138,18 +1106,25 @@ List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
       iconBuilder: (_, color, size, selected) =>
           MainBottomNavKitIcons.leaderboard(color, size, selected),
     ),
-    SecondLiquidBottomNavItem(
-      label: l10n.mainTabProfile,
-      labelTrailingIcon: isProfileMenuExpanded
-          ? Icons.keyboard_arrow_down_rounded
-          : Icons.keyboard_arrow_up_rounded,
-      iconBuilder: (_, color, size, selected) => MainBottomNavProfileTabIcon(
-        isGuestMode: isGuestMode,
-        selected: selected,
-        selectedColor: appColors.primary,
-        unselectedColor: appColors.bottomBarTabUnselected,
-        iconSize: size,
+    if (isProfileTabActive)
+      SecondLiquidBottomNavItem(
+        label: l10n.mainTabProfile,
+        labelTrailingIcon: isProfileMenuExpanded
+            ? Icons.keyboard_arrow_down_rounded
+            : Icons.keyboard_arrow_up_rounded,
+        iconBuilder: (_, color, size, selected) => MainBottomNavProfileTabIcon(
+          isGuestMode: isGuestMode,
+          selected: selected,
+          selectedColor: appColors.primary,
+          unselectedColor: appColors.bottomBarTabUnselected,
+          iconSize: size,
+        ),
+      )
+    else
+      SecondLiquidBottomNavItem(
+        label: l10n.mainTabMore,
+        iconBuilder: (_, color, size, selected) =>
+            Icon(LucideIcons.ellipsis, color: color, size: size),
       ),
-    ),
   ];
 }

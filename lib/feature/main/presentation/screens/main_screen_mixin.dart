@@ -11,8 +11,6 @@ import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_
 
 /// Main shell ekrani uchun tab tanlashi va pastki bar qismini qaytaruvchi mixin.
 mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
-  static const int _profileTabIndex = 3;
-
   bool get isGuestMode;
 
   int get selectedIndex => _selectedIndex;
@@ -40,7 +38,18 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void onTabTap(int index) {
-    if (!isGuestMode && index == _profileTabIndex && _selectedIndex == index) {
+    if (index == kMainProfileTabIndex &&
+        _selectedIndex != kMainProfileTabIndex) {
+      toggleExtraMenu();
+      return;
+    }
+
+    if (index == kMainProfileTabIndex && isGuestMode) {
+      context.go(Routes.signIn);
+      return;
+    }
+
+    if (index == kMainProfileTabIndex) {
       toggleExtraMenu();
       return;
     }
@@ -68,15 +77,26 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
 
   void onExtraMenuItemTap(MainExtraMenuItem item) {
     closeExtraMenu();
-    final route = item.route;
-    if (route != null) {
-      context.push(route);
+    switch (item) {
+      case MainExtraTabMenuItem(:final tabIndex):
+        _handleTabTap(tabIndex);
+      case MainExtraRouteMenuItem(:final screenRoute):
+        context.push(screenRoute);
+      case MainExtraActionMenuItem(:final action):
+        _handleExtraMenuAction(action);
     }
   }
 
-  Future<void> _handleTabTap(int index) async {
+  void _handleExtraMenuAction(MainExtraMenuAction action) {
+    switch (action) {
+      case MainExtraMenuAction.joinTeam:
+        break;
+    }
+  }
+
+  void _handleTabTap(int index) {
     // Gaimon.light();
-    if (isGuestMode && (index == 1 || index == _profileTabIndex)) {
+    if (isGuestMode && (index == 1 || index == kMainProfileTabIndex)) {
       context.go(Routes.signIn);
       return;
     }

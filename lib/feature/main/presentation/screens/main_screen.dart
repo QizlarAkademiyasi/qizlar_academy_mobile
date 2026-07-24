@@ -155,9 +155,12 @@ class _MainScreenState extends State<MainScreen>
                 items: mainAppSecondLiquidBottomNavItems(
                   context,
                   isGuestMode: isGuestMode,
+                  isProfileTabActive: selectedIndex == kMainProfileTabIndex,
                   isProfileMenuExpanded: isExtraMenuExpanded,
                 ),
-                currentIndex: selectedIndex,
+                currentIndex: isExtraMenuExpanded
+                    ? kMainProfileTabIndex
+                    : selectedIndex,
                 padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                 onChanged: onTabTap,
                 selectedColor: context.appColors.primary,
