@@ -8,6 +8,7 @@ import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_liquid_stretch.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_profile_tab_icon.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
 
 Color _secondLiquidBottomNavWhiten(Color base, {required bool lightBar}) {
   return Color.lerp(base, const Color(0xFFFFFFFF), lightBar ? 0.38 : 0.72)!;
@@ -87,6 +88,12 @@ const CupertinoMotion _secondLiquidBottomNavFlowMotion = CupertinoMotion.snappy(
   extraBounce: 0.2,
   snapToEnd: true,
 );
+const CupertinoMotion _secondLiquidBottomNavMinimizeMotion =
+    CupertinoMotion.smooth(
+      duration: Duration(milliseconds: 560),
+      extraBounce: 0.18,
+      snapToEnd: true,
+    );
 
 /// Indikator yoyini kengaygan barning tashqi burchagidan xavfsiz masofada saqlaydi.
 /// Radius `height` va `padding`dan hisoblangani uchun custom o'lchamlarda ham kesishmaydi.
@@ -397,6 +404,7 @@ class SecondLiquidBottomNav extends StatefulWidget {
 
     /// Plus bosilganda truba vertikal kengayadi va [expandedContent] ko‘rsatiladi.
     this.isExpanded = false,
+    this.isMinimized = false,
     this.expandedContent,
     this.expandedContentHeight,
   }) : assert(items.length > 1, 'Bottom nav should contain at least 2 items.'),
@@ -447,6 +455,9 @@ class SecondLiquidBottomNav extends StatefulWidget {
   /// Truba kengaygan holat (plus menyu ochiq).
   final bool isExpanded;
 
+  /// Scroll vaqtida label va tashqi bo'shliqlarni ixcham ko'rinishga o'tkazadi.
+  final bool isMinimized;
+
   /// Kengaygan qismda ko‘rsatiladigan kontent (masalan, grid menyu).
   final Widget? expandedContent;
 
@@ -492,18 +503,61 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
 
   @override
   Widget build(BuildContext context) {
-    final p = secondLiquidBottomNavThemePalette(context);
+    final palette = secondLiquidBottomNavThemePalette(context);
     final bool isExpanded = widget.isExpanded && widget.expandedContent != null;
+    final bool shouldMinimize = widget.isMinimized && !isExpanded;
+
+    return SingleMotionBuilder(
+      value: shouldMinimize ? 1 : 0,
+      motion: _secondLiquidBottomNavMinimizeMotion,
+      builder: (context, minimizeT, child) {
+        return _buildNavigation(
+          context,
+          palette: palette,
+          isExpanded: isExpanded,
+          minimizeT: minimizeT,
+        );
+      },
+    );
+  }
+
+  Widget _buildNavigation(
+    BuildContext context, {
+    required SecondLiquidBottomNavThemePalette palette,
+    required bool isExpanded,
+    required double minimizeT,
+  }) {
+    // Layoutdagi kichik overshoot spring bounce'ni ko'rsatadi. Opacity va
+    // content esa valid diapazonda qolishi uchun alohida settle qilinadi.
+    final layoutMinimizeT = minimizeT.clamp(-0.08, 1.1);
+    final settledMinimizeT = minimizeT.clamp(0.0, 1.0);
+    final marginMinimizeT = layoutMinimizeT.clamp(0.0, 1.1);
+    final compactHeight = math.max(48.0, widget.height - 14);
+    final resolvedHeight =
+        lerpDouble(widget.height, compactHeight, layoutMinimizeT) ??
+        widget.height;
+    final compactMargin = EdgeInsets.fromLTRB(
+      widget.margin.left + 28,
+      math.max(0, widget.margin.top - 8),
+      widget.margin.right + 28,
+      math.max(0, widget.margin.bottom - 8),
+    );
+    final resolvedMargin =
+        EdgeInsets.lerp(widget.margin, compactMargin, marginMinimizeT) ??
+        widget.margin;
+    final resolvedExtraSpacing =
+        lerpDouble(widget.extraButtonSpacing, 8, layoutMinimizeT) ??
+        widget.extraButtonSpacing;
     final Widget? resolvedExtra = widget.extraActionIcon != null
         ? _SecondLiquidBottomNavExtraIconButton(
-            height: widget.height,
+            height: resolvedHeight,
             icon: isExpanded && widget.extraActionShowsCloseWhenExpanded
                 ? Icons.close
                 : widget.extraActionIcon!,
             onTap: widget.onExtraActionTap!,
-            backgroundColor: widget.backgroundColor ?? p.backgroundColor,
+            backgroundColor: widget.backgroundColor ?? palette.backgroundColor,
             backgroundBlurSigma: widget.backgroundBlurSigma,
-            iconColor: widget.unselectedColor ?? p.unselectedColor,
+            iconColor: widget.unselectedColor ?? palette.unselectedColor,
             semanticLabel: widget.extraActionSemanticLabel,
             isActive: isExpanded,
           )
@@ -517,32 +571,41 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: widget.margin,
+        padding: resolvedMargin,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
-              child: _SecondLiquidBottomNavBarContainer(
-                height: widget.height,
-                borderRadius: widget.borderRadius,
-                backgroundColor: widget.backgroundColor ?? p.backgroundColor,
-                backgroundBlurSigma: widget.backgroundBlurSigma,
-                indicatorBlurSigma: resolvedIndicatorSigma,
-                padding: widget.padding,
-                items: widget.items,
-                activeIndex: _activeIndex,
-                onTap: _onTap,
-                iconSize: widget.iconSize,
-                selectedColor: widget.selectedColor ?? p.selectedColor,
-                unselectedColor: widget.unselectedColor ?? p.unselectedColor,
-                indicatorColor: widget.indicatorColor ?? p.indicatorColor,
-                isExpanded: isExpanded,
-                expandedContent: widget.expandedContent,
-                expandedContentHeight: widget.expandedContentHeight,
+              child: AppLiquidStretch(
+                stretch: 0.56,
+                resistance: 0.052,
+                interactionScale: 0.988,
+                child: _SecondLiquidBottomNavBarContainer(
+                  height: resolvedHeight,
+                  borderRadius: widget.borderRadius,
+                  backgroundColor:
+                      widget.backgroundColor ?? palette.backgroundColor,
+                  backgroundBlurSigma: widget.backgroundBlurSigma,
+                  indicatorBlurSigma: resolvedIndicatorSigma,
+                  padding: widget.padding,
+                  items: widget.items,
+                  activeIndex: _activeIndex,
+                  onTap: _onTap,
+                  iconSize: widget.iconSize,
+                  selectedColor: widget.selectedColor ?? palette.selectedColor,
+                  unselectedColor:
+                      widget.unselectedColor ?? palette.unselectedColor,
+                  indicatorColor:
+                      widget.indicatorColor ?? palette.indicatorColor,
+                  minimizeT: settledMinimizeT,
+                  isExpanded: isExpanded,
+                  expandedContent: widget.expandedContent,
+                  expandedContentHeight: widget.expandedContentHeight,
+                ),
               ),
             ),
             if (hasExtraButton) ...[
-              SizedBox(width: widget.extraButtonSpacing),
+              SizedBox(width: resolvedExtraSpacing),
               Padding(
                 padding: EdgeInsets.only(bottom: widget.extraButtonBottomInset),
                 child: AppLiquidStretch.compact(
@@ -563,8 +626,8 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
                         return Transform.scale(
                           scale: 1 - (0.018 * pulse),
                           child: SizedBox(
-                            width: widget.height,
-                            height: widget.height,
+                            width: resolvedHeight,
+                            height: resolvedHeight,
                             child: FittedBox(fit: BoxFit.contain, child: child),
                           ),
                         );
@@ -596,6 +659,7 @@ class _SecondLiquidBottomNavPillWithTabs extends StatefulWidget {
     required this.lightBar,
     required this.indicatorColor,
     required this.indicatorBlurSigma,
+    required this.minimizeT,
   });
 
   final int itemCount;
@@ -608,6 +672,7 @@ class _SecondLiquidBottomNavPillWithTabs extends StatefulWidget {
   final bool lightBar;
   final Color indicatorColor;
   final double indicatorBlurSigma;
+  final double minimizeT;
 
   @override
   State<_SecondLiquidBottomNavPillWithTabs> createState() =>
@@ -748,6 +813,7 @@ class _SecondLiquidBottomNavPillWithTabsState
                           iconSize: widget.iconSize,
                           selectedColor: widget.selectedColor,
                           unselectedColor: widget.unselectedColor,
+                          minimizeT: widget.minimizeT,
                         ),
                       );
                     }),
@@ -777,6 +843,7 @@ class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
     required this.selectedColor,
     required this.unselectedColor,
     required this.indicatorColor,
+    required this.minimizeT,
     this.isExpanded = false,
     this.expandedContent,
     this.expandedContentHeight,
@@ -795,6 +862,7 @@ class _SecondLiquidBottomNavBarContainer extends StatefulWidget {
   final Color selectedColor;
   final Color unselectedColor;
   final Color indicatorColor;
+  final double minimizeT;
   final bool isExpanded;
   final Widget? expandedContent;
   final double? expandedContentHeight;
@@ -870,6 +938,7 @@ class _SecondLiquidBottomNavBarContainerState
       lightBar: lightBar,
       indicatorColor: widget.indicatorColor,
       indicatorBlurSigma: widget.indicatorBlurSigma,
+      minimizeT: widget.minimizeT,
     );
     final LiquidGlassSettings glassSettingsLight = LiquidGlassSettings(
       blur: 30,
@@ -999,6 +1068,7 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
     required this.iconSize,
     required this.selectedColor,
     required this.unselectedColor,
+    required this.minimizeT,
   });
 
   final SecondLiquidBottomNavItem item;
@@ -1007,6 +1077,7 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
   final double iconSize;
   final Color selectedColor;
   final Color unselectedColor;
+  final double minimizeT;
 
   @override
   Widget build(BuildContext context) {
@@ -1033,28 +1104,42 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               tabIcon,
-              const SizedBox(height: 2),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    item.label,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: false,
-                    style: TextStyle(
-                      color: contentColor,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w500,
-                      height: 1,
+              ClipRect(
+                child: Align(
+                  heightFactor: 1 - minimizeT,
+                  child: Opacity(
+                    opacity: 1 - minimizeT,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            item.label,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            style: TextStyle(
+                              color: contentColor,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w500,
+                              height: 1,
+                            ),
+                          ),
+                          if (item.labelTrailingIcon != null) ...[
+                            const SizedBox(width: 1),
+                            Icon(
+                              item.labelTrailingIcon,
+                              color: contentColor,
+                              size: 12,
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
-                  if (item.labelTrailingIcon != null) ...[
-                    const SizedBox(width: 1),
-                    Icon(item.labelTrailingIcon, color: contentColor, size: 12),
-                  ],
-                ],
+                ),
               ),
             ],
           ),
@@ -1078,18 +1163,21 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
   }
 }
 
-/// Asosiy 4 tab: dastlab More, profile page tanlanganda esa
-/// [MainBottomNavProfileTabIcon] va menu arrowi ko‘rsatiladi.
+/// Asosiy 4 tab: dastlab More, extra menyudan item tanlangandan keyin esa
+/// oxirgi tanlangan item va menu arrowi ko‘rsatiladi.
 /// Brand ranglar uchun: `selectedColor: context.appColors.primary`, `unselectedColor: context.appColors.bottomBarTabUnselected` —
 /// yoki barcha ranglarni o‘tmasdan default [secondLiquidBottomNavThemePalette] ishlatiladi.
 List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
   BuildContext context, {
   required bool isGuestMode,
-  required bool isProfileTabActive,
+  required MainExtraMenuItem? selectedExtraMenuItem,
   bool isProfileMenuExpanded = false,
 }) {
   final l10n = context.l10n;
   final appColors = context.appColors;
+  final isProfileSelected =
+      selectedExtraMenuItem is MainExtraTabMenuItem &&
+      selectedExtraMenuItem.tabIndex == kMainProfileTabIndex;
   return [
     SecondLiquidBottomNavItem(
       label: l10n.mainTabHome,
@@ -1106,19 +1194,23 @@ List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
       iconBuilder: (_, color, size, selected) =>
           MainBottomNavKitIcons.leaderboard(color, size, selected),
     ),
-    if (isProfileTabActive)
+    if (selectedExtraMenuItem != null)
       SecondLiquidBottomNavItem(
-        label: l10n.mainTabProfile,
+        label: isProfileSelected
+            ? l10n.mainTabProfile
+            : selectedExtraMenuItem.label,
         labelTrailingIcon: isProfileMenuExpanded
             ? Icons.keyboard_arrow_down_rounded
             : Icons.keyboard_arrow_up_rounded,
-        iconBuilder: (_, color, size, selected) => MainBottomNavProfileTabIcon(
-          isGuestMode: isGuestMode,
-          selected: selected,
-          selectedColor: appColors.primary,
-          unselectedColor: appColors.bottomBarTabUnselected,
-          iconSize: size,
-        ),
+        iconBuilder: (_, color, size, selected) => isProfileSelected
+            ? MainBottomNavProfileTabIcon(
+                isGuestMode: isGuestMode,
+                selected: selected,
+                selectedColor: appColors.primary,
+                unselectedColor: appColors.bottomBarTabUnselected,
+                iconSize: size,
+              )
+            : Icon(selectedExtraMenuItem.icon, color: color, size: size),
       )
     else
       SecondLiquidBottomNavItem(

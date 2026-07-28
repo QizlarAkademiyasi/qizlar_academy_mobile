@@ -23,6 +23,13 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   bool get isExtraMenuExpanded => _isExtraMenuExpanded;
   bool _isExtraMenuExpanded = false;
 
+  MainExtraMenuItem? get selectedExtraMenuItem => _selectedExtraMenuItem;
+  MainExtraMenuItem? _selectedExtraMenuItem;
+
+  bool get isBottomNavMinimized => _isBottomNavMinimized;
+  bool _isBottomNavMinimized = false;
+  double _bottomNavScrollDelta = 0;
+
   late final PageController pageController;
 
   @override
@@ -38,6 +45,8 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void onTabTap(int index) {
+    _setBottomNavMinimized(false);
+
     if (index == kMainProfileTabIndex &&
         _selectedIndex != kMainProfileTabIndex) {
       toggleExtraMenu();
@@ -61,7 +70,11 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void toggleExtraMenu() {
-    setState(() => _isExtraMenuExpanded = !_isExtraMenuExpanded);
+    setState(() {
+      _isBottomNavMinimized = false;
+      _bottomNavScrollDelta = 0;
+      _isExtraMenuExpanded = !_isExtraMenuExpanded;
+    });
   }
 
   void closeExtraMenu() {
@@ -76,7 +89,12 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void onExtraMenuItemTap(MainExtraMenuItem item) {
-    closeExtraMenu();
+    setState(() {
+      _isExtraMenuExpanded = false;
+      if (item is! MainExtraActionMenuItem) {
+        _selectedExtraMenuItem = item;
+      }
+    });
     switch (item) {
       case MainExtraTabMenuItem(:final tabIndex):
         _handleTabTap(tabIndex);
@@ -115,8 +133,59 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
       setState(() {
         _selectedIndex = index;
         _isExtraMenuExpanded = false;
+        _isBottomNavMinimized = false;
+        _bottomNavScrollDelta = 0;
+        if (index == kMainProfileTabIndex) {
+          _selectedExtraMenuItem = kMainExtraTabMenuItems.single;
+        }
       });
     }
+  }
+
+  /// Aktiv tab ichidagi vertikal scrollni kuzatib, pastki navigatsiyani
+  /// scroll-down'da ixchamlaydi va scroll-up'da qayta ochadi.
+  bool onMainScrollNotification(ScrollNotification notification) {
+    if (notification.metrics.axis != Axis.vertical) return false;
+
+    if (_isExtraMenuExpanded) {
+      _bottomNavScrollDelta = 0;
+      _setBottomNavMinimized(false);
+      return false;
+    }
+
+    if (notification.metrics.pixels <= 4) {
+      _bottomNavScrollDelta = 0;
+      _setBottomNavMinimized(false);
+      return false;
+    }
+
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0;
+      if (delta == 0) return false;
+
+      if ((_bottomNavScrollDelta > 0 && delta < 0) ||
+          (_bottomNavScrollDelta < 0 && delta > 0)) {
+        _bottomNavScrollDelta = 0;
+      }
+      _bottomNavScrollDelta += delta;
+
+      if (_bottomNavScrollDelta >= 22) {
+        _bottomNavScrollDelta = 0;
+        _setBottomNavMinimized(true);
+      } else if (_bottomNavScrollDelta <= -14) {
+        _bottomNavScrollDelta = 0;
+        _setBottomNavMinimized(false);
+      }
+    } else if (notification is ScrollEndNotification) {
+      _bottomNavScrollDelta = 0;
+    }
+
+    return false;
+  }
+
+  void _setBottomNavMinimized(bool value) {
+    if (_isBottomNavMinimized == value || !mounted) return;
+    setState(() => _isBottomNavMinimized = value);
   }
 
   Widget buildBottomNavigationBar(BuildContext context) {

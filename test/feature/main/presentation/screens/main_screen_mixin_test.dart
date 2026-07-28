@@ -18,6 +18,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('profile-menu-item')));
     await tester.pump();
     expect(find.text('index:3 expanded:false'), findsOneWidget);
+    expect(find.text('remembered:Profil'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('fourth-tab')));
     await tester.pump();
@@ -26,6 +27,29 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('home-tab')));
     await tester.pump();
     expect(find.text('index:0 expanded:false'), findsOneWidget);
+    expect(find.text('remembered:Profil'), findsOneWidget);
+  });
+
+  testWidgets('vertical scroll minimizes and restores the bottom navigation', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: _MainScreenMixinHarness()));
+
+    expect(find.text('minimized:false'), findsOneWidget);
+
+    await tester.drag(
+      find.byKey(const ValueKey('scrollable')),
+      const Offset(0, -80),
+    );
+    await tester.pump();
+    expect(find.text('minimized:true'), findsOneWidget);
+
+    await tester.drag(
+      find.byKey(const ValueKey('scrollable')),
+      const Offset(0, 40),
+    );
+    await tester.pump();
+    expect(find.text('minimized:false'), findsOneWidget);
   });
 }
 
@@ -48,6 +72,8 @@ class _MainScreenMixinHarnessState extends State<_MainScreenMixinHarness>
       body: Column(
         children: [
           Text('index:$selectedIndex expanded:$isExtraMenuExpanded'),
+          Text('minimized:$isBottomNavMinimized'),
+          Text('remembered:${selectedExtraMenuItem?.label ?? 'none'}'),
           TextButton(
             key: const ValueKey('fourth-tab'),
             onPressed: () => onTabTap(kMainProfileTabIndex),
@@ -62,6 +88,15 @@ class _MainScreenMixinHarnessState extends State<_MainScreenMixinHarness>
             key: const ValueKey('home-tab'),
             onPressed: () => onTabTap(0),
             child: const Text('Home'),
+          ),
+          Expanded(
+            child: NotificationListener<ScrollNotification>(
+              onNotification: onMainScrollNotification,
+              child: ListView(
+                key: const ValueKey('scrollable'),
+                children: const [SizedBox(height: 1000)],
+              ),
+            ),
           ),
         ],
       ),

@@ -47,6 +47,8 @@ class _StoreView extends StatefulWidget {
 
 class _StoreViewState extends State<_StoreView>
     with StoreScreenMixin<_StoreView> {
+  static const double _headerHeight = 124;
+
   bool _onScrollNotification(ScrollNotification n, BuildContext context) {
     if (n.metrics.axis != Axis.vertical) return false;
     if (n is! ScrollUpdateNotification && n is! OverscrollNotification) {
@@ -77,52 +79,45 @@ class _StoreViewState extends State<_StoreView>
                     state.status == StoreCatalogStatus.initial) &&
                 state.items.isEmpty;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            return Stack(
               children: [
-                Padding(
-                  padding: AppPadding.paddingHorizontalLg,
-                  child: buildStoreTopBar(
-                    context,
-                    showBackButton: widget.showBackButton,
-                  ),
-                ),
-                StoreCategoryChips(
-                  categories: buildCategoryChips(state),
-                  selectedId: state.selectedCategoryId,
-                  onSelected: (id) => onCategoryChanged(context, id),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
+                Positioned.fill(
                   child: switch (state.status) {
                     StoreCatalogStatus.failure when state.items.isEmpty =>
-                      TgsFailureContent(
-                        message: "Mahsulotlarni yuklashda xatolik",
-                        onRetry: () => retryFirstPage(context),
+                      Padding(
+                        padding: const EdgeInsets.only(top: _headerHeight),
+                        child: TgsFailureContent(
+                          message: "Mahsulotlarni yuklashda xatolik",
+                          onRetry: () => retryFirstPage(context),
+                        ),
                       ),
                     _ when isInitialLoading => const SingleChildScrollView(
+                      padding: EdgeInsets.only(top: _headerHeight),
                       child: StoreProductGridSkeleton(),
                     ),
                     StoreCatalogStatus.success when state.items.isEmpty =>
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                LucideIcons.package2,
-                                size: 48,
-                                color: context.appColors.grey,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                "Hozircha mahsulot yo'q",
-                                style: context.textTheme.bodyLargeSemibold
-                                    .copyWith(color: context.appColors.grey),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: _headerHeight),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  LucideIcons.package2,
+                                  size: 48,
+                                  color: context.appColors.grey,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  "Hozircha mahsulot yo'q",
+                                  style: context.textTheme.bodyLargeSemibold
+                                      .copyWith(color: context.appColors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -135,7 +130,7 @@ class _StoreViewState extends State<_StoreView>
                         child: GridView.builder(
                           padding: EdgeInsets.fromLTRB(
                             12,
-                            0,
+                            _headerHeight,
                             20,
                             24 + bottomInset + widget.bottomContentInset,
                           ),
@@ -173,6 +168,32 @@ class _StoreViewState extends State<_StoreView>
                       ),
                     ),
                   },
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: _headerHeight,
+                  child: AppBlurredHeaderSurface(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: AppPadding.paddingHorizontalLg,
+                          child: buildStoreTopBar(
+                            context,
+                            showBackButton: widget.showBackButton,
+                          ),
+                        ),
+                        StoreCategoryChips(
+                          categories: buildCategoryChips(state),
+                          selectedId: state.selectedCategoryId,
+                          onSelected: (id) => onCategoryChanged(context, id),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             );

@@ -31,7 +31,7 @@ void main() {
   testWidgets('fourth tab changes from More to Profile with an arrow', (
     tester,
   ) async {
-    var profileIsActive = false;
+    MainExtraMenuItem? selectedExtraMenuItem;
     var profileMenuIsExpanded = false;
     late StateSetter setHarnessState;
 
@@ -46,7 +46,7 @@ void main() {
             final navItems = mainAppSecondLiquidBottomNavItems(
               context,
               isGuestMode: true,
-              isProfileTabActive: profileIsActive,
+              selectedExtraMenuItem: selectedExtraMenuItem,
               isProfileMenuExpanded: profileMenuIsExpanded,
             );
             final fourthItem = navItems[kMainProfileTabIndex];
@@ -66,13 +66,22 @@ void main() {
     expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsNothing);
     expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsNothing);
 
-    setHarnessState(() => profileIsActive = true);
+    setHarnessState(
+      () => selectedExtraMenuItem = kMainExtraTabMenuItems.single,
+    );
     await tester.pump();
     expect(find.text('Profile'), findsOneWidget);
     expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsOneWidget);
 
     setHarnessState(() => profileMenuIsExpanded = true);
     await tester.pump();
+    expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
+
+    setHarnessState(
+      () => selectedExtraMenuItem = kMainExtraRouteMenuItems.first,
+    );
+    await tester.pump();
+    expect(find.text('Kurslar'), findsOneWidget);
     expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
   });
 
@@ -98,11 +107,62 @@ void main() {
       find.ancestor(of: find.text('Courses'), matching: find.byType(InkWell)),
     );
     expect(coursesInkWell.splashFactory, same(NoSplash.splashFactory));
+    expect(
+      find.descendant(
+        of: find.byType(SecondLiquidBottomNav),
+        matching: find.byType(LiquidStretch),
+      ),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('Courses'));
     await tester.pump();
 
     expect(selectedIndex, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('minimized mode compacts tabs and restores their labels', (
+    tester,
+  ) async {
+    var minimized = false;
+    late StateSetter setHarnessState;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Center(
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              setHarnessState = setState;
+              return SecondLiquidBottomNav(
+                items: items,
+                margin: EdgeInsets.zero,
+                backgroundBlurSigma: 0,
+                isMinimized: minimized,
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    final fullTabHeight = tester.getSize(find.byType(InkWell).first).height;
+
+    setHarnessState(() => minimized = true);
+    await tester.pumpAndSettle();
+    final compactTabHeight = tester.getSize(find.byType(InkWell).first).height;
+    final labelOpacity = tester.widget<Opacity>(
+      find
+          .ancestor(of: find.text('Home'), matching: find.byType(Opacity))
+          .first,
+    );
+
+    expect(compactTabHeight, lessThan(fullTabHeight));
+    expect(labelOpacity.opacity, 0);
+
+    setHarnessState(() => minimized = false);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(InkWell).first).height, fullTabHeight);
     expect(tester.takeException(), isNull);
   });
 

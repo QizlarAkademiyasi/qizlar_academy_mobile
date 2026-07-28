@@ -13,6 +13,7 @@ class TasksSuccessContent extends StatelessWidget {
     required this.streakCount,
     required this.todayTasks,
     required this.otherTasks,
+    required this.onBalanceTap,
     required this.onTaskTap,
     required this.onRefresh,
     this.bottomContentInset = 0,
@@ -22,6 +23,7 @@ class TasksSuccessContent extends StatelessWidget {
   final int? streakCount;
   final List<TaskItemModel> todayTasks;
   final List<TaskItemModel> otherTasks;
+  final VoidCallback onBalanceTap;
   final ValueChanged<TaskItemModel> onTaskTap;
   final Future<void> Function() onRefresh;
   final double bottomContentInset;
@@ -43,7 +45,11 @@ class TasksSuccessContent extends StatelessWidget {
           24 + bottomInset + bottomContentInset,
         ),
         children: [
-          TasksBalanceCard(balance: balance, streakCount: streakCount),
+          TasksBalanceCard(
+            balance: balance,
+            streakCount: streakCount,
+            onTap: onBalanceTap,
+          ),
           if (isEmpty) ...[
             const SizedBox(height: 80),
             TgsEmptyContent(

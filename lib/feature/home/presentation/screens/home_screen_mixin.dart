@@ -28,7 +28,11 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     });
   }
 
-  Widget buildHeader(BuildContext context, {String userGreetingName = ''}) {
+  Widget buildHeader(
+    BuildContext context, {
+    String userGreetingName = '',
+    double expandedProgress = 1,
+  }) {
     final isAnonymous = getIt<AuthSessionCubit>().state.isAnonymous;
     final l10n = context.l10n;
     final title = isAnonymous
@@ -41,6 +45,10 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     return HomeHeaderComponent(
       title: title,
       subtitle: subtitle,
+      expandedProgress: expandedProgress,
+      tasksTooltip: context.l10n.tasksTitle,
+      notificationTooltip: context.l10n.notificationsTitle,
+      onTasksTap: () => onTasksTap(context),
       onNotificationTap: () => onNotificationTap(context),
     );
   }
@@ -178,6 +186,10 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     if (!canOpen) return;
     if (!context.mounted) return;
     context.push(Routes.notification);
+  }
+
+  void onTasksTap(BuildContext context) {
+    context.push(Routes.tasks);
   }
 
   Widget buildCoursesSection(

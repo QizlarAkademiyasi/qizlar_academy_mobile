@@ -9,13 +9,33 @@ import 'package:qizlar_academy_mobile/feature/home/domain/repository/home_reposi
 import 'package:qizlar_academy_mobile/feature/home/presentation/screens/story/story_screen.dart';
 
 class StoryBarWidget extends StatefulWidget {
-  const StoryBarWidget({super.key, required this.scrollController, required this.isLoading, required this.list, this.appBar, this.onNotificationTap});
+  const StoryBarWidget({
+    super.key,
+    required this.scrollController,
+    required this.isLoading,
+    required this.list,
+    required this.headerBuilder,
+  });
 
   final ScrollController scrollController;
   final bool isLoading;
   final List<StoryModel> list;
-  final Widget? appBar;
-  final VoidCallback? onNotificationTap;
+  final Widget Function(BuildContext context, double expandedProgress)
+  headerBuilder;
+
+  static const double expandedHeight = 162;
+  static const double collapsedHeight = kToolbarHeight + 8;
+  static const double emptyHeight = collapsedHeight;
+  static const double expandedStoriesTop = 70;
+  static const double collapsedStoriesTop = 6;
+  static const double collapseExtent = expandedHeight - collapsedHeight;
+
+  static double layoutExtent({
+    required bool isLoading,
+    required List<StoryModel> stories,
+  }) {
+    return isLoading || stories.isNotEmpty ? expandedHeight : emptyHeight;
+  }
 
   @override
   State<StoryBarWidget> createState() => _StoryBarWidgetState();
@@ -23,7 +43,6 @@ class StoryBarWidget extends StatefulWidget {
 
 class _StoryBarWidgetState extends State<StoryBarWidget> {
   double _progress = 1.0;
-  final double _expandedHeight = 150;
   bool _wasCollapsed = false;
   final Set<String> _viewedIds = {};
 
@@ -32,7 +51,8 @@ class _StoryBarWidgetState extends State<StoryBarWidget> {
     unawaited(getIt<HomeRepository>().postStoryView(storyId));
   }
 
-  bool _isStoryViewedBorder(StoryModel story) => story.isViewed || _viewedIds.contains(story.id);
+  bool _isStoryViewedBorder(StoryModel story) =>
+      story.isViewed || _viewedIds.contains(story.id);
 
   @override
   void initState() {
@@ -41,8 +61,9 @@ class _StoryBarWidgetState extends State<StoryBarWidget> {
   }
 
   void _updateProgress() {
+    if (!widget.scrollController.hasClients) return;
     final offset = widget.scrollController.offset;
-    final value = 1 - (offset / (_expandedHeight - kToolbarHeight * 1.8));
+    final value = 1 - (offset / StoryBarWidget.collapseExtent);
     final nextProgress = value.clamp(0.0, 1.0);
     final isCollapsed = nextProgress < 0.5;
 
@@ -51,9 +72,18 @@ class _StoryBarWidgetState extends State<StoryBarWidget> {
       HapticFeedback.lightImpact();
     }
 
-    setState(() {
-      _progress = nextProgress;
-    });
+    if ((_progress - nextProgress).abs() > 0.001 && mounted) {
+      setState(() => _progress = nextProgress);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant StoryBarWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scrollController == widget.scrollController) return;
+    oldWidget.scrollController.removeListener(_updateProgress);
+    widget.scrollController.addListener(_updateProgress);
+    _updateProgress();
   }
 
   @override
@@ -66,233 +96,233 @@ class _StoryBarWidgetState extends State<StoryBarWidget> {
   Widget build(BuildContext context) {
     final hasStories = widget.list.isNotEmpty;
     final showStories = widget.isLoading || hasStories;
-    final effectiveProgress = showStories ? _progress : 1.0;
+    final rawProgress = showStories ? _progress : 1.0;
+    final effectiveProgress = _smoothStep(rawProgress);
 
     final double avatarOuterSize = 36 + (24 * effectiveProgress);
-    final double avatarInnerSize = avatarOuterSize - 2;
     final double textWidth = 36 + (16 * effectiveProgress);
     final double textFontSize = 8 + (2 * effectiveProgress);
+    final headerHeight = showStories
+        ? StoryBarWidget.collapsedHeight +
+              StoryBarWidget.collapseExtent * rawProgress
+        : StoryBarWidget.emptyHeight;
+    final storiesTop =
+        StoryBarWidget.collapsedStoriesTop +
+        (StoryBarWidget.expandedStoriesTop -
+                StoryBarWidget.collapsedStoriesTop) *
+            effectiveProgress;
 
-    return SliverAppBar(
-      backgroundColor: context.appColors.background,
-      title: Stack(
-        alignment: Alignment.centerRight,
-        children: [
-          IgnorePointer(
-            ignoring: effectiveProgress < 0.95,
-            child: Opacity(
-              opacity: effectiveProgress,
-              child: widget.appBar ?? const Text('Qizlar akademiyasi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+    return SizedBox(
+      height: headerHeight,
+      child: AppBlurredHeaderSurface(
+        child: Stack(
+          clipBehavior: Clip.hardEdge,
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: widget.headerBuilder(context, effectiveProgress),
             ),
-          ),
-          if (widget.onNotificationTap != null)
-            Opacity(
-              opacity: 1 - effectiveProgress,
-              child: IgnorePointer(
-                ignoring: (1 - effectiveProgress) <= 0.01,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Bounce(
-                    tilt: false,
-                    onTap: () {
-                      Gaimon.selection();
-                      widget.onNotificationTap!();
-                    },
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: context.appColors.onContainer,
-                            boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.005), blurRadius: 2, offset: const Offset(0, 1))],
-                            border: Border.all(color: context.appColors.stroke),
-                          ),
-                          child: Icon(LucideIcons.bell, size: 22, color: context.appColors.text),
-                        ),
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primary),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-      centerTitle: false,
-      pinned: true,
-      expandedHeight: showStories ? _expandedHeight : (kToolbarHeight + 8),
-      flexibleSpace: SafeArea(
-        child: Align(
-          alignment: AlignmentDirectional.bottomStart,
-          child: showStories
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    scrollDirection: Axis.horizontal,
-                    child: Builder(
-                      builder: (context) {
-                        final int itemLength = widget.isLoading ? 6 : widget.list.length;
+            if (showStories)
+              Positioned(
+                top: storiesTop,
+                left: 0,
+                right: 120,
+                height: 85,
+                child: SingleChildScrollView(
+                  key: const ValueKey('story-list-viewport'),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  scrollDirection: Axis.horizontal,
+                  physics: effectiveProgress < 0.95
+                      ? const NeverScrollableScrollPhysics()
+                      : const BouncingScrollPhysics(),
+                  child: Builder(
+                    builder: (context) {
+                      final int itemLength = widget.isLoading
+                          ? 6
+                          : widget.list.length;
 
-                        double getX(int index, double p) {
-                          double x = 0;
-                          for (int j = 0; j < index; j++) {
-                            if (j < 2) {
-                              x += 22 + 48 * p; // From 22 (collapsed) to 70 (expanded)
-                            } else {
-                              x += 70 * p; // From 0 (collapsed) to 70 (expanded)
-                            }
+                      double getX(int index, double p) {
+                        double x = 0;
+                        for (int j = 0; j < index; j++) {
+                          if (j < 2) {
+                            x += 22 + 48 * p;
+                          } else {
+                            x += 70 * p;
                           }
-                          return x;
                         }
+                        return x;
+                      }
 
-                        double totalWidth = 0;
-                        if (itemLength > 0) {
-                          totalWidth = getX(itemLength - 1, effectiveProgress) + avatarOuterSize;
-                        }
+                      double totalWidth = 0;
+                      if (itemLength > 0) {
+                        totalWidth =
+                            getX(itemLength - 1, effectiveProgress) +
+                            avatarOuterSize;
+                      }
 
-                        return SizedBox(
-                          width: totalWidth,
-                          height: 85, // Fixed height to prevent jumps
-                          child: Container(
-                            color: context.appColors.background,
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                // UiKitAssets.images.logoRemoved.image(),
-                                ...List.generate(itemLength, (i) {
-                                  // Render in reverse so index 0 is on top
-                                  final index = itemLength - 1 - i;
-                                  final isSkeleton = widget.isLoading;
-                                  final story = widget.list.isNotEmpty ? widget.list[index % widget.list.length] : const StoryModel(id: 'skeleton', name: 'Story', imageUrl: '', thumbnailUrl: '');
+                      return SizedBox(
+                        width: totalWidth,
+                        height: 85,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            ...List.generate(itemLength, (i) {
+                              final index = itemLength - 1 - i;
+                              final isSkeleton = widget.isLoading;
+                              final story = widget.list.isNotEmpty
+                                  ? widget.list[index % widget.list.length]
+                                  : const StoryModel(
+                                      id: 'skeleton',
+                                      name: 'Story',
+                                      imageUrl: '',
+                                      thumbnailUrl: '',
+                                    );
 
-                                  final double x = getX(index, effectiveProgress);
+                              final double x = getX(index, effectiveProgress);
 
-                                  // Items >= 3 should fade out as they collapse
-                                  double opacity = 1.0;
-                                  double scale = 1.0;
-                                  if (index >= 3) {
-                                    opacity = effectiveProgress;
-                                    scale = 0.5 + 0.5 * effectiveProgress;
-                                  }
-
-                                  if (opacity <= 0.01) {
-                                    return const SizedBox.shrink();
-                                  }
-
-                                  return Positioned(
-                                    left: x,
-                                    top: 8,
-                                    child: Opacity(
-                                      opacity: opacity,
-                                      child: Transform.scale(
-                                        scale: scale,
-                                        alignment: Alignment.centerLeft, // Shrink towards left
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          // spacing property in Column might cause issues if not supported in all flutter versions, but since user used it, we keep it or use SizedBox. User used `spacing: 2`
-                                          spacing: 2,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                if (effectiveProgress < 0.95) {
-                                                  widget.scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-                                                } else {
-                                                  if (isSkeleton) return;
-                                                  setState(() => _viewedIds.add(story.id));
-                                                  Navigator.of(context).push(
-                                                    PageRouteBuilder(
-                                                      opaque: false,
-                                                      transitionDuration: const Duration(milliseconds: 300),
-                                                      reverseTransitionDuration: const Duration(milliseconds: 300),
-                                                      pageBuilder: (context, animation, secondaryAnimation) {
-                                                        return FadeTransition(
-                                                          opacity: animation,
-                                                          child: StoryScreen(categories: widget.list, initialIndex: index % widget.list.length, onView: _onStoryViewed),
-                                                        );
-                                                      },
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                              child: Container(
-                                                height: avatarOuterSize,
-                                                width: avatarOuterSize,
-                                                padding: const EdgeInsets.all(2),
-                                                clipBehavior: Clip.antiAlias,
-                                                decoration: BoxDecoration(
-                                                  color: context.appColors.background,
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(color: _isStoryViewedBorder(story) ? AppColors.secondaryGrey : AppColors.primary, width: 1.5),
-                                                ),
-                                                child: Container(
-                                                  height: avatarInnerSize,
-                                                  width: avatarInnerSize,
-                                                  clipBehavior: Clip.antiAlias,
-                                                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                                                  child: Skeletonizer(
-                                                    enabled: isSkeleton,
-                                                    child: Hero(
-                                                      tag: 'story_${story.id}_$index',
-                                                      child: ClipRRect(
-                                                        borderRadius: BorderRadius.circular(50),
-                                                        child: story.thumbnailUrl.trim().isEmpty
-                                                            ? const _StoryThumbnailSkeleton()
-                                                            : AppCachedNetworkImage(
-                                                                imageUrl: story.thumbnailUrl.trim(),
-                                                                fit: BoxFit.cover,
-                                                                placeholder: (context, url) => const _StoryThumbnailSkeleton(),
-                                                                errorWidget: (context, url, error) => const _StoryThumbnailSkeleton(),
-                                                              ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
+                              return Positioned(
+                                left: x,
+                                top: 8,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  spacing: 2,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        if (effectiveProgress < 0.95) {
+                                          widget.scrollController.animateTo(
+                                            0,
+                                            duration: const Duration(
+                                              milliseconds: 300,
                                             ),
-                                            if (effectiveProgress >= 0.5)
-                                              SizedBox(
-                                                width: textWidth,
-                                                child: Skeletonizer(
-                                                  enabled: isSkeleton,
-                                                  child: Text(
-                                                    story.name,
-                                                    style: context.textTheme.bodySmallMedium.copyWith(fontSize: textFontSize, color: context.appColors.text),
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.center,
+                                            curve: Curves.easeOutCubic,
+                                          );
+                                        } else {
+                                          if (isSkeleton) return;
+                                          setState(
+                                            () => _viewedIds.add(story.id),
+                                          );
+                                          Navigator.of(context).push(
+                                            PageRouteBuilder(
+                                              opaque: false,
+                                              transitionDuration:
+                                                  const Duration(
+                                                    milliseconds: 300,
                                                   ),
-                                                ),
-                                              ),
-                                          ],
+                                              reverseTransitionDuration:
+                                                  const Duration(
+                                                    milliseconds: 300,
+                                                  ),
+                                              pageBuilder:
+                                                  (
+                                                    context,
+                                                    animation,
+                                                    secondaryAnimation,
+                                                  ) {
+                                                    return StoryScreen(
+                                                      categories: widget.list,
+                                                      initialIndex:
+                                                          index %
+                                                          widget.list.length,
+                                                      onView: _onStoryViewed,
+                                                    );
+                                                  },
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: Container(
+                                        height: avatarOuterSize,
+                                        width: avatarOuterSize,
+                                        clipBehavior: Clip.antiAlias,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                        ),
+                                        foregroundDecoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: _isStoryViewedBorder(story)
+                                                ? AppColors.secondaryGrey
+                                                : AppColors.primary,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: Skeletonizer(
+                                          enabled: isSkeleton,
+                                          child: Hero(
+                                            tag: 'story_${story.id}_$index',
+                                            child: ClipOval(
+                                              child:
+                                                  story.thumbnailUrl
+                                                      .trim()
+                                                      .isEmpty
+                                                  ? const _StoryThumbnailSkeleton()
+                                                  : AppCachedNetworkImage(
+                                                      imageUrl: story
+                                                          .thumbnailUrl
+                                                          .trim(),
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context, url) =>
+                                                          const _StoryThumbnailSkeleton(),
+                                                      errorWidget:
+                                                          (
+                                                            context,
+                                                            url,
+                                                            error,
+                                                          ) =>
+                                                              const _StoryThumbnailSkeleton(),
+                                                    ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  );
-                                }),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                                    ClipRect(
+                                      child: Align(
+                                        alignment: Alignment.topCenter,
+                                        heightFactor: effectiveProgress,
+                                        child: SizedBox(
+                                          width: textWidth,
+                                          child: Skeletonizer(
+                                            enabled: isSkeleton,
+                                            child: Text(
+                                              story.name,
+                                              style: context
+                                                  .textTheme
+                                                  .bodySmallMedium
+                                                  .copyWith(
+                                                    fontSize: textFontSize,
+                                                    color:
+                                                        context.appColors.text,
+                                                  ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                )
-              : const SizedBox.shrink(),
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
+
+  double _smoothStep(double value) => value * value * (3 - 2 * value);
 }
 
 class _StoryThumbnailSkeleton extends StatelessWidget {
@@ -303,7 +333,10 @@ class _StoryThumbnailSkeleton extends StatelessWidget {
     return Skeletonizer(
       enabled: true,
       child: Container(
-        decoration: BoxDecoration(color: context.appColors.onContainer, shape: BoxShape.circle),
+        decoration: BoxDecoration(
+          color: context.appColors.onContainer,
+          shape: BoxShape.circle,
+        ),
         child: const SizedBox.expand(),
       ),
     );

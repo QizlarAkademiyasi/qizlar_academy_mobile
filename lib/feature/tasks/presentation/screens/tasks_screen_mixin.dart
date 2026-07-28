@@ -2,6 +2,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/screens/daily_coin_bottom_sheet.dart';
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_failure_content.dart';
 import 'package:qizlar_academy_mobile/feature/tasks/domain/model/task_item_model.dart';
 import 'package:qizlar_academy_mobile/feature/tasks/presentation/bloc/tasks_bloc.dart';
@@ -30,6 +31,7 @@ mixin TasksScreenMixin<T extends StatefulWidget> on State<T> {
         streakCount: state.streakCount,
         todayTasks: state.todayTasks,
         otherTasks: state.otherTasks,
+        onBalanceTap: () => onBalanceTap(context),
         onTaskTap: (task) => onTaskTap(context, task),
         onRefresh: () => onRefresh(context),
         bottomContentInset: bottomContentInset,
@@ -45,6 +47,12 @@ mixin TasksScreenMixin<T extends StatefulWidget> on State<T> {
           state.status == TasksStatus.success ||
           state.status == TasksStatus.failure,
     );
+  }
+
+  Future<void> onBalanceTap(BuildContext context) async {
+    await showDailyCoinBottomSheet(context);
+    if (!context.mounted) return;
+    context.read<TasksBloc>().add(const TasksRefreshRequested());
   }
 
   Future<void> onTaskTap(BuildContext context, TaskItemModel task) async {

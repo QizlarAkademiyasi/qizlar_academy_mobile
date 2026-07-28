@@ -85,12 +85,15 @@ class _MainScreenState extends State<MainScreen>
       body: Stack(
         children: [
           Positioned.fill(
-            child: _MainTabPageViewWithFade(
-              pageController: pageController,
-              selectedIndex: selectedIndex,
-              tabBarFadeNonce: tabBarFadeNonce,
-              onPageChanged: onPageChanged,
-              pages: pages,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: onMainScrollNotification,
+              child: _MainTabPageViewWithFade(
+                pageController: pageController,
+                selectedIndex: selectedIndex,
+                tabBarFadeNonce: tabBarFadeNonce,
+                onPageChanged: onPageChanged,
+                pages: pages,
+              ),
             ),
           ),
           // Align(
@@ -155,7 +158,7 @@ class _MainScreenState extends State<MainScreen>
                 items: mainAppSecondLiquidBottomNavItems(
                   context,
                   isGuestMode: isGuestMode,
-                  isProfileTabActive: selectedIndex == kMainProfileTabIndex,
+                  selectedExtraMenuItem: selectedExtraMenuItem,
                   isProfileMenuExpanded: isExtraMenuExpanded,
                 ),
                 currentIndex: isExtraMenuExpanded
@@ -169,6 +172,7 @@ class _MainScreenState extends State<MainScreen>
                 onExtraActionTap: onPortfolioTap,
                 extraActionSemanticLabel: 'Portfolio',
                 extraActionShowsCloseWhenExpanded: false,
+                isMinimized: isBottomNavMinimized,
                 isExpanded: isExtraMenuExpanded,
                 expandedContent: MainExtraActionGrid(
                   onItemTap: onExtraMenuItemTap,

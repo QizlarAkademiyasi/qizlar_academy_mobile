@@ -41,7 +41,6 @@ class DailyCoinStreakRow extends StatelessWidget {
             final number = index + 1;
 
             final greyFill = context.appColors.iconSecondary;
-            final pendingBorder = context.appColors.stroke;
 
             return Padding(
               padding: EdgeInsets.only(right: index == 9 ? 0 : gap),
@@ -53,13 +52,17 @@ class DailyCoinStreakRow extends StatelessWidget {
                       weekday,
                       maxLines: 1,
                       overflow: TextOverflow.clip,
-                      style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.text.withValues(alpha: 0.85)),
+                      style: context.textTheme.bodyXSmallRegular.copyWith(
+                        color: context.appColors.text.withValues(alpha: 0.85),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     DecoratedBox(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: showStar ? greyFill : context.appColors.onContainer,
+                        color: showStar
+                            ? greyFill
+                            : context.appColors.onContainer,
                         // border: Border.all(color: showStar ? AppColors.otherOrange.withValues(alpha: 0.55) : pendingBorder, width: showStar ? 2 : 1),
                         // boxShadow: showStar
                         //     ? [
@@ -76,8 +79,16 @@ class DailyCoinStreakRow extends StatelessWidget {
                         height: 36,
                         child: Center(
                           child: showStar
-                              ? Icon(LucideIcons.circleStar, size: 18, color: AppColors.otherOrange)
-                              : Text('$number', style: context.textTheme.bodySmallBold.copyWith(color: context.appColors.text)),
+                              ? Icon(
+                                  LucideIcons.circleStar,
+                                  size: 18,
+                                  color: AppColors.otherOrange,
+                                )
+                              : Text(
+                                  '$number',
+                                  style: context.textTheme.bodySmallBold
+                                      .copyWith(color: context.appColors.text),
+                                ),
                         ),
                       ),
                     ),

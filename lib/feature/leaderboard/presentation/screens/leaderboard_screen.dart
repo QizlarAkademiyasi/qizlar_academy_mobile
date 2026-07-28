@@ -26,7 +26,10 @@ class _LeaderboardView extends StatefulWidget {
   State<_LeaderboardView> createState() => _LeaderboardViewState();
 }
 
-class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScreenMixin<_LeaderboardView>, SingleTickerProviderStateMixin {
+class _LeaderboardViewState extends State<_LeaderboardView>
+    with
+        LeaderboardScreenMixin<_LeaderboardView>,
+        SingleTickerProviderStateMixin {
   late final TabController _tabController;
   late final PageController _timeframePageController;
   bool _syncingFromBloc = false;
@@ -37,7 +40,9 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _timeframePageController = PageController(initialPage: _tabController.index);
+    _timeframePageController = PageController(
+      initialPage: _tabController.index,
+    );
   }
 
   @override
@@ -62,14 +67,16 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
             });
           }
 
-          if (_timeframePageController.hasClients && _timeframePageController.page?.round() != state.timeframe.index) {
+          if (_timeframePageController.hasClients &&
+              _timeframePageController.page?.round() != state.timeframe.index) {
             _syncingFromBloc = true;
             _timeframePageController.jumpToPage(state.timeframe.index);
             _syncingFromBloc = false;
           }
         },
         builder: (context, state) {
-          if (state.status == LeaderboardStatus.failure && state.courseOptions.isEmpty) {
+          if (state.status == LeaderboardStatus.failure &&
+              state.courseOptions.isEmpty) {
             return AppFailureState(
               message: context.l10n.leaderboardLoadError,
               onRetry: () {
@@ -79,20 +86,33 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
           }
 
           final isLoading = state.status == LeaderboardStatus.loading;
-          final awaitingFirstPayload = state.courseOptions.isEmpty && state.fullList.isEmpty && state.topThree.isEmpty;
+          final awaitingFirstPayload =
+              state.courseOptions.isEmpty &&
+              state.fullList.isEmpty &&
+              state.topThree.isEmpty;
           // initial: PageView + KeepAlive — birinchi buildda event hali
           // qayta ishlanmaguncha status `initial` bo‘lib qoladi; skeleton shu
           // paytda ham ko‘rinishi kerak.
-          final isBootstrapping = awaitingFirstPayload && (state.status == LeaderboardStatus.initial || state.status == LeaderboardStatus.loading);
+          final isBootstrapping =
+              awaitingFirstPayload &&
+              (state.status == LeaderboardStatus.initial ||
+                  state.status == LeaderboardStatus.loading);
 
-          final matched = state.courseOptions.where((c) => c.id == state.selectedCourseId).toList();
+          final matched = state.courseOptions
+              .where((c) => c.id == state.selectedCourseId)
+              .toList();
           final selectedCourse = matched.isEmpty ? null : matched.first;
           final l10n = context.l10n;
           final selectedCourseName = isBootstrapping
               ? l10n.leaderboardSelectCourse
-              : (selectedCourse?.name ?? (state.courseOptions.isNotEmpty ? state.courseOptions.first.name : l10n.leaderboardSelectCourse));
+              : (selectedCourse?.name ??
+                    (state.courseOptions.isNotEmpty
+                        ? state.courseOptions.first.name
+                        : l10n.leaderboardSelectCourse));
 
-          final displayTopThree = state.topThree.isNotEmpty ? state.topThree : state.fullList.take(3).toList();
+          final displayTopThree = state.topThree.isNotEmpty
+              ? state.topThree
+              : state.fullList.take(3).toList();
 
           final bottomInset = MediaQuery.paddingOf(context).bottom;
 
@@ -104,12 +124,17 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TgsEmptyContent(message: context.l10n.leaderboardNoCourses, animationSize: 92),
+                      TgsEmptyContent(
+                        message: context.l10n.leaderboardNoCourses,
+                        animationSize: 92,
+                      ),
                       const SizedBox(height: 14),
                       PrimaryButton.elevated(
                         label: context.l10n.refresh,
                         onPressed: () {
-                          context.read<LeaderboardBloc>().add(const LeaderboardStarted());
+                          context.read<LeaderboardBloc>().add(
+                            const LeaderboardStarted(),
+                          );
                         },
                         expand: false,
                       ),
@@ -127,7 +152,13 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                 SliverPadding(
                   padding: AppPadding.paddingHorizontalLg,
                   sliver: SliverToBoxAdapter(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [buildLeaderboardHeader(context), const SizedBox(height: 20)]),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildLeaderboardHeader(context),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
                 SliverPersistentHeader(
@@ -153,7 +184,13 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                           buildLeaderboardCategoryDropdown(
                             context,
                             selectedCourseName: selectedCourseName,
-                            onTap: isBootstrapping || isLoading ? () {} : () => onCategoryTap(context, options: state.courseOptions, selectedId: state.selectedCourseId),
+                            onTap: isBootstrapping || isLoading
+                                ? () {}
+                                : () => onCategoryTap(
+                                    context,
+                                    options: state.courseOptions,
+                                    selectedId: state.selectedCourseId,
+                                  ),
                           ),
                           const SizedBox(height: 16),
                         ],
@@ -182,20 +219,35 @@ class _LeaderboardViewState extends State<_LeaderboardView> with LeaderboardScre
                   // timeframe o'zgarganda bloc state yangilanadi va PageView animatsiya bilan
                   // yangi data ko'rsatadi.
                   if (isBootstrapping) {
-                    return ListView(padding: EdgeInsets.fromLTRB(20, 0, 20, 0), children: const [LeaderboardTopPerformersSkeleton(), SizedBox(height: 24), LeaderboardFullListSkeleton()]);
+                    return ListView(
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      children: const [
+                        LeaderboardTopPerformersSkeleton(),
+                        SizedBox(height: 24),
+                        LeaderboardFullListSkeleton(),
+                      ],
+                    );
                   }
 
                   if (!isLoading && state.fullList.isEmpty) {
                     return Center(
                       child: Padding(
                         padding: AppPadding.paddingHorizontalLg,
-                        child: TgsEmptyContent(message: context.l10n.leaderboardNoRatingYet, animationSize: 150),
+                        child: TgsEmptyContent(
+                          message: context.l10n.leaderboardNoRatingYet,
+                          animationSize: 150,
+                        ),
                       ),
                     );
                   }
 
                   return ListView(
-                    padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset + 48),
+                    padding: EdgeInsets.fromLTRB(
+                      20,
+                      0,
+                      20,
+                      24 + bottomInset + 48,
+                    ),
                     children: [
                       buildLeaderboardTopPerformers(
                         context,
@@ -239,8 +291,15 @@ class _PinnedFiltersDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(height: height, color: context.theme.scaffoldBackgroundColor, child: child);
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox(
+      height: height,
+      child: AppBlurredHeaderSurface(child: child),
+    );
   }
 
   @override

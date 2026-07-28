@@ -153,102 +153,110 @@ class _HomeScreenState extends State<HomeScreen>
                   },
                   child: NotificationListener<UserScrollNotification>(
                     onNotification: (notification) {
-                      if (notification.direction == ScrollDirection.idle) {
+                      if (notification.direction == ScrollDirection.idle &&
+                          (state.categoriesLoading ||
+                              state.categories.isNotEmpty)) {
                         _scheduleHeaderOverscrollSnap();
                       }
                       return false;
                     },
                     child: AppStaggeredScrollLimiter(
-                      child: CustomScrollView(
-                        controller: _scrollController,
-                        slivers: [
-                          StoryBarWidget(
-                            scrollController: _scrollController,
-                            isLoading: state.categoriesLoading,
-                            list: state.categories,
-                            onNotificationTap: () => onNotificationTap(context),
-                            appBar: buildHeader(
-                              context,
-                              userGreetingName: state.userGreetingName,
-                            ),
-                          ),
-                          if (isFailure) ...[
-                            if (isAnonymous)
-                              SliverToBoxAdapter(
-                                child: _staggeredSection(
-                                  position: 0,
-                                  child: buildGuestCard(context),
+                      child: Stack(
+                        children: [
+                          ListView(
+                            controller: _scrollController,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                height: StoryBarWidget.layoutExtent(
+                                  isLoading: state.categoriesLoading,
+                                  stories: state.categories,
                                 ),
                               ),
-                            SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: AppFailureState(
-                                message: context.l10n.homeLoadErrorMessage,
-                                onRetry: () => context.read<HomeBloc>().add(
-                                  const HomeStarted(),
-                                ),
-                              ),
-                            ),
-                          ] else ...[
-                            if (isAnonymous)
-                              SliverToBoxAdapter(
-                                child: _staggeredSection(
-                                  position: 0,
-                                  child: buildGuestCard(context),
-                                ),
-                              ),
-                            if (!isAnonymous && showRegisteredStatsSection) ...[
-                              const SliverToBoxAdapter(
-                                child: SizedBox(height: 12),
-                              ),
-                              SliverToBoxAdapter(
-                                child: _staggeredSection(
-                                  position: 0,
-                                  child: buildStatsSection(
-                                    context,
-                                    state.homeStats ?? _skeletonStats,
-                                    isLoading: isLoading,
-                                    onCoinsAndGradeTap: () =>
-                                        context.push(Routes.tasks),
-                                    onRatingTap: () => widget.onSwitchMainTab
-                                        ?.call(_mainTabLeaderboard),
-                                    onLastLessonTap: () =>
-                                        context.push(Routes.myCourses),
+                              if (isFailure) ...[
+                                if (isAnonymous)
+                                  _staggeredSection(
+                                    position: 0,
+                                    child: buildGuestCard(context),
+                                  ),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.55,
+                                  child: AppFailureState(
+                                    message: context.l10n.homeLoadErrorMessage,
+                                    onRetry: () => context.read<HomeBloc>().add(
+                                      const HomeStarted(),
+                                    ),
                                   ),
                                 ),
+                              ] else ...[
+                                if (isAnonymous)
+                                  _staggeredSection(
+                                    position: 0,
+                                    child: buildGuestCard(context),
+                                  ),
+                                if (!isAnonymous &&
+                                    showRegisteredStatsSection) ...[
+                                  const SizedBox(height: 12),
+                                  _staggeredSection(
+                                    position: 0,
+                                    child: buildStatsSection(
+                                      context,
+                                      state.homeStats ?? _skeletonStats,
+                                      isLoading: isLoading,
+                                      onCoinsAndGradeTap: () =>
+                                          context.push(Routes.tasks),
+                                      onRatingTap: () => widget.onSwitchMainTab
+                                          ?.call(_mainTabLeaderboard),
+                                      onLastLessonTap: () =>
+                                          context.push(Routes.myCourses),
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 20),
+
+                                _staggeredSection(
+                                  position: staggerIndexBeforeBanners,
+                                  child: buildBannersSection(
+                                    context,
+                                    isLoading
+                                        ? _skeletonBanners
+                                        : state.banners,
+                                    isLoading: isLoading,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                _staggeredSection(
+                                  position: staggerIndexBeforeBanners + 1,
+                                  child: buildCoursesSection(
+                                    context,
+                                    isLoading
+                                        ? _skeletonCourses
+                                        : state.courses,
+                                    isLoading: isLoading,
+                                  ),
+                                ),
+                              ],
+                              SizedBox(
+                                height:
+                                    MediaQuery.paddingOf(context).bottom + 56,
                               ),
                             ],
-                            const SliverToBoxAdapter(
-                              child: SizedBox(height: 20),
-                            ),
-
-                            SliverToBoxAdapter(
-                              child: _staggeredSection(
-                                position: staggerIndexBeforeBanners,
-                                child: buildBannersSection(
-                                  context,
-                                  isLoading ? _skeletonBanners : state.banners,
-                                  isLoading: isLoading,
-                                ),
-                              ),
-                            ),
-                            const SliverToBoxAdapter(
-                              child: SizedBox(height: 20),
-                            ),
-                            SliverToBoxAdapter(
-                              child: _staggeredSection(
-                                position: staggerIndexBeforeBanners + 1,
-                                child: buildCoursesSection(
-                                  context,
-                                  isLoading ? _skeletonCourses : state.courses,
-                                  isLoading: isLoading,
-                                ),
-                              ),
-                            ),
-                          ],
-                          SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: MediaQuery.paddingOf(context).bottom + 56,
+                          ),
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: StoryBarWidget(
+                              scrollController: _scrollController,
+                              isLoading: state.categoriesLoading,
+                              list: state.categories,
+                              headerBuilder: (context, expandedProgress) =>
+                                  buildHeader(
+                                    context,
+                                    userGreetingName: state.userGreetingName,
+                                    expandedProgress: expandedProgress,
+                                  ),
                             ),
                           ),
                         ],
