@@ -136,6 +136,7 @@ class GlassGlowLayerState extends State<GlassGlowLayer>
     required double radius,
     required Color color,
   }) {
+    if (!mounted) return;
     setState(() {
       _baseRadius = radius;
       _baseColor = color;

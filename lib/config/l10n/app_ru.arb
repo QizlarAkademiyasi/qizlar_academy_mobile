@@ -177,6 +177,16 @@
     }
   },
   "dailyCoinStreakSubtitle": "Вы на верном пути",
+  "dailyCoinDayToday": "Сегодня",
+  "dailyCoinDayTomorrow": "Завтра",
+  "dailyCoinDayNumber": "{day, plural, one{{day} день} few{{day} дня} many{{day} дней} other{{day} дня}}",
+  "@dailyCoinDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
   "dailyCoinRewardToday": "+{coins} монет сегодня",
   "@dailyCoinRewardToday": {
     "placeholders": {
@@ -677,5 +687,8 @@
   "tasksEmptyTitle": "Заданий пока нет",
   "tasksEmptySubtitle": "Новые задания появятся здесь",
   "tasksLoadError": "Не удалось загрузить задания. Попробуйте снова.",
-  "tasksActionUnavailable": "Действие для этого задания пока недоступно"
+  "tasksActionUnavailable": "Действие для этого задания пока недоступно",
+  "birthdayStoryLabel": "День рождения",
+  "birthdayStoryCongratulations": "Поздравляем!",
+  "birthdayStoryMessage": "Команда «Qizlar Akademiyasi» от всей души поздравляет вас!"
 }

@@ -28,6 +28,14 @@ void main() {
     await tester.pump();
     expect(find.text('index:0 expanded:false'), findsOneWidget);
     expect(find.text('remembered:Profil'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('fourth-tab')));
+    await tester.pump();
+    expect(find.text('index:3 expanded:false'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('fourth-tab')));
+    await tester.pump();
+    expect(find.text('index:3 expanded:true'), findsOneWidget);
   });
 
   testWidgets('vertical scroll minimizes and restores the bottom navigation', (

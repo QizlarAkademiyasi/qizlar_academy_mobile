@@ -7,18 +7,6 @@
       "namespace": "android_app",
       "package_name": "uz.globalmove.girls_academy",
       "sha256_cert_fingerprints": [
-        "6B:CB:AA:F1:EB:0B:34:42:5E:C3:18:8C:47:C3:07:A6:F3:3F:85:54:1E:7B:56:E9:82:AE:94:F4:68:F9:AE:F7"
-      ]
-    }
-  },
-  {
-    "relation": [
-      "delegate_permission/common.handle_all_urls"
-    ],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "uz.globalmove.girls_academy",
-      "sha256_cert_fingerprints": [
         "6B:CB:AA:F1:EB:0B:34:42:5E:C3:18:8C:47:C3:07:A6:F3:3F:85:54:1E:7B:56:E9:82:AE:94:F4:68:F9:AE:F7",
         "96:8F:09:43:7B:32:8F:3E:A4:C1:A7:29:F6:32:F5:F1:EB:86:93:FE:3B:1D:FA:C6:B1:AD:F3:07:E0:E8:CC:B9"
       ]

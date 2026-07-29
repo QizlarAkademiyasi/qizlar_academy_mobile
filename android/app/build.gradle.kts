@@ -42,10 +42,11 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
-        // App Links host — `android/local.properties` da `deeplink.host=sizning.domen` (ixtiyoriy).
-        // Default host: lib/config/constants/app_deep_link_config.dart → defaultUniversalLinkHost bilan bir xil.
+        // App Links canonical host — `android/local.properties` da
+        // `deeplink.host=sizning.domen` orqali almashtirish mumkin.
+        // `www` varianti manifestda alohida verify qilinadi.
         manifestPlaceholders["deepLinkHost"] =
-            localProperties.getProperty("deeplink.host") ?: "www.qizlarakademiyasi.uz"
+            localProperties.getProperty("deeplink.host") ?: "qizlarakademiyasi.uz"
 
         // Meta App Events (Facebook SDK).
         // - `facebook.appId` — lib/config/constants/facebook_config.dart `_appId` bilan

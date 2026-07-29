@@ -1,6 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/config/enum/user_type.dart';
+import 'package:qizlar_academy_mobile/config/flavor/env_config.dart';
 import 'package:qizlar_academy_mobile/feature/home/data/datasource/home_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
@@ -11,6 +12,14 @@ import 'package:qizlar_academy_mobile/feature/home/domain/model/teacher_model.da
 class HomeApiDatasource implements HomeDatasource {
   const HomeApiDatasource(this._dio);
 
+  static const StoryModel _devBirthdayStory = StoryModel(
+    id: 'dev-birthday-mock',
+    name: '',
+    imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+    thumbnailUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+    type: StoryItemType.birthday,
+  );
+
   final Dio _dio;
 
   Future<List<BannerModel>> getBannersByUserType(UserType userType) async {
@@ -20,13 +29,38 @@ class HomeApiDatasource implements HomeDatasource {
   }
 
   Future<List<StoryModel>> getCategoriesByUserType(UserType userType) async {
-    final response = await _dio.get<dynamic>(userType == UserType.guest ? AnonymousApis.storiesPublic : UserApis.stories);
-    final data = _unwrapDataAsMap(response.data);
+    final response = await _dio.get<dynamic>(
+      userType == UserType.guest
+          ? AnonymousApis.storiesPublic
+          : UserApis.stories,
+      queryParameters: const {'pageNumber': 1, 'pageSize': 10},
+    );
+    final stories = parseStoriesPayload(response.data);
+    if (!EnvConfig.instance.isDev) return stories;
+
+    return [
+      _devBirthdayStory,
+      ...stories.where((story) => story.id != _devBirthdayStory.id),
+    ];
+  }
+
+  List<StoryModel> parseStoriesPayload(dynamic payload) {
+    final data = _unwrapDataAsMap(payload);
     final rawList = _asList(data['data']);
     return rawList
         .map((item) {
           final mediaUrl = Apis.resolveUrl((item['mediaUrl'] ?? '').toString());
-          return StoryModel(id: (item['id'] ?? '').toString(), name: (item['title'] ?? '').toString(), imageUrl: mediaUrl, thumbnailUrl: mediaUrl, isViewed: _parseBool(item['isViewed']));
+          final thumbnail = Apis.resolveUrl(
+            (item['thumbnail'] ?? '').toString(),
+          );
+          return StoryModel(
+            id: (item['id'] ?? '').toString(),
+            name: (item['title'] ?? '').toString(),
+            imageUrl: mediaUrl,
+            thumbnailUrl: thumbnail.isEmpty ? mediaUrl : thumbnail,
+            isViewed: _parseBool(item['isViewed']),
+            type: _parseStoryItemType(item['type']),
+          );
         })
         .toList(growable: false);
   }
@@ -39,7 +73,13 @@ class HomeApiDatasource implements HomeDatasource {
 
   Future<HomeStatsModel> getStatsByUserType(UserType userType) async {
     if (userType == UserType.guest) {
-      return const HomeStatsModel(coins: 0, grade: 0, rating: 0, lastLessonCategory: '', lastLessonProgress: 0);
+      return const HomeStatsModel(
+        coins: 0,
+        grade: 0,
+        rating: 0,
+        lastLessonCategory: '',
+        lastLessonProgress: 0,
+      );
     }
 
     final response = await _dio.get<dynamic>(UserApis.userLastProgress);
@@ -65,7 +105,8 @@ class HomeApiDatasource implements HomeDatasource {
   Future<List<BannerModel>> getBanners() => getBannersByUserType(UserType.user);
 
   @override
-  Future<List<StoryModel>> getCategories() => getCategoriesByUserType(UserType.user);
+  Future<List<StoryModel>> getCategories() =>
+      getCategoriesByUserType(UserType.user);
 
   @override
   Future<List<CourseModel>> getCourses() => getCoursesByUserType(UserType.user);
@@ -74,7 +115,8 @@ class HomeApiDatasource implements HomeDatasource {
   Future<HomeStatsModel> getStats() => getStatsByUserType(UserType.user);
 
   @override
-  Future<List<TeacherModel>> getTeachers() => getTeachersByUserType(UserType.user);
+  Future<List<TeacherModel>> getTeachers() =>
+      getTeachersByUserType(UserType.user);
 
   @override
   Future<void> postStoryView(String storyId) async {
@@ -147,5 +189,11 @@ class HomeApiDatasource implements HomeDatasource {
     }
     if (value is num) return value != 0;
     return false;
+  }
+
+  StoryItemType _parseStoryItemType(dynamic value) {
+    return value?.toString().trim().toLowerCase() == 'birthday'
+        ? StoryItemType.birthday
+        : StoryItemType.story;
   }
 }

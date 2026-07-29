@@ -41,48 +41,55 @@ class _CoursesViewState extends State<_CoursesView>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: BlocConsumer<CoursesCatalogBloc, CoursesCatalogState>(
-          listener: coursesBlocListener,
-          builder: (context, state) {
-            final isInitialLoading =
-                (state.status == CoursesCatalogStatus.loading ||
-                    state.status == CoursesCatalogStatus.initial) &&
-                !state.hasData;
+      body: BlocConsumer<CoursesCatalogBloc, CoursesCatalogState>(
+        listener: coursesBlocListener,
+        builder: (context, state) {
+          final isInitialLoading =
+              (state.status == CoursesCatalogStatus.loading ||
+                  state.status == CoursesCatalogStatus.initial) &&
+              !state.hasData;
 
-            // [AnimationLimiter] birinchi frame dan keyin animatsiyani o‘chiradi. Avval skeleton,
-            // keyin ro‘yxat chiqsa kartalar animatsiyasiz qoladi — limiter shu kalit bilan
-            // muvaffaqiyatli yuklanganda qayta yaratiladi.
-            return AppStaggeredScrollLimiter(
-              key: ValueKey(_coursesStaggerScrollKey(state)),
-              child: RefreshIndicator(
-                color: AppColors.primary,
-                onRefresh: () => onPullRefresh(context),
-                child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics(),
-                  ),
-                  slivers: [
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      sliver: SliverToBoxAdapter(child: buildTopBar(context)),
+          // [AnimationLimiter] birinchi frame dan keyin animatsiyani o‘chiradi. Avval skeleton,
+          // keyin ro‘yxat chiqsa kartalar animatsiyasiz qoladi — limiter shu kalit bilan
+          // muvaffaqiyatli yuklanganda qayta yaratiladi.
+          return AppStaggeredScrollLimiter(
+            key: ValueKey(_coursesStaggerScrollKey(state)),
+            child: RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () => onPullRefresh(context),
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                slivers: [
+                  AppBlurredSliverAppBar(
+                    automaticallyImplyLeading: false,
+                    leadingWidth: 60,
+                    leading: Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: AppBackButton.ghost(onTap: () => context.pop()),
                     ),
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _CoursesPinnedSearchDelegate(
-                        backgroundColor: context.theme.scaffoldBackgroundColor,
-                        child: buildSearchField(context),
+                    title: Text(
+                      context.l10n.coursesAllTitle,
+                      style: context.textTheme.heading6.copyWith(
+                        color: context.appColors.text,
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 14)),
-                    ..._coursesBodySlivers(context, state, isInitialLoading),
-                  ],
-                ),
+                  ),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _CoursesPinnedSearchDelegate(
+                      backgroundColor: context.theme.scaffoldBackgroundColor,
+                      child: buildSearchField(context),
+                    ),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 14)),
+                  ..._coursesBodySlivers(context, state, isInitialLoading),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

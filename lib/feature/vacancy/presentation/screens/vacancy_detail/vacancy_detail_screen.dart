@@ -16,19 +16,19 @@ class VacancyDetailScreen extends StatefulWidget {
   State<VacancyDetailScreen> createState() => _VacancyDetailScreenState();
 }
 
-class _VacancyDetailScreenState extends State<VacancyDetailScreen> with VacancyDetailScreenMixin<VacancyDetailScreen> {
+class _VacancyDetailScreenState extends State<VacancyDetailScreen>
+    with VacancyDetailScreenMixin<VacancyDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<VacancyDetailBloc>()..add(VacancyDetailStarted(widget.vacancyId)),
+      create: (_) =>
+          getIt<VacancyDetailBloc>()
+            ..add(VacancyDetailStarted(widget.vacancyId)),
       child: BlocConsumer<VacancyDetailBloc, VacancyDetailState>(
         listener: vacancyDetailBlocListener,
         builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: context.appColors.background,
-              title: Text(context.l10n.vacancyDetailsTitle, style: context.textTheme.heading6.copyWith(color: context.appColors.text)),
-            ),
+          return AppPageScaffold(
+            title: context.l10n.vacancyDetailsTitle,
             backgroundColor: context.theme.scaffoldBackgroundColor,
             body: Stack(
               children: [
@@ -37,14 +37,21 @@ class _VacancyDetailScreenState extends State<VacancyDetailScreen> with VacancyD
                   children: [
                     Expanded(
                       child: switch (state.status) {
-                        VacancyDetailStatus.initial || VacancyDetailStatus.loading => const Center(child: CircularProgressIndicator()),
+                        VacancyDetailStatus.initial ||
+                        VacancyDetailStatus.loading => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
                         VacancyDetailStatus.failure => Center(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: TgsEmptyContent(message: context.l10n.vacancyDetailLoadError, animationSize: 120),
+                            child: TgsEmptyContent(
+                              message: context.l10n.vacancyDetailLoadError,
+                              animationSize: 120,
+                            ),
                           ),
                         ),
-                        VacancyDetailStatus.success when state.detail != null => VacancyDetailContent(detail: state.detail!),
+                        VacancyDetailStatus.success when state.detail != null =>
+                          VacancyDetailContent(detail: state.detail!),
                         _ => const SizedBox.shrink(),
                       },
                     ),
@@ -52,14 +59,29 @@ class _VacancyDetailScreenState extends State<VacancyDetailScreen> with VacancyD
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover) : UiKitAssets.images.bottomNavLight.image(fit: BoxFit.cover),
+                  child: context.isDarkTheme
+                      ? UiKitAssets.images.bottomNavDark.image(
+                          fit: BoxFit.cover,
+                        )
+                      : UiKitAssets.images.bottomNavLight.image(
+                          fit: BoxFit.cover,
+                        ),
                 ),
-                if (state.status == VacancyDetailStatus.success && state.detail != null)
+                if (state.status == VacancyDetailStatus.success &&
+                    state.detail != null)
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(20, 8, 20, 8 + MediaQuery.paddingOf(context).bottom),
-                      child: PrimaryButton.elevated(label: context.l10n.vacancyApplyCta, onPressed: () => onVacancyDetailApplyTap(context)),
+                      padding: EdgeInsets.fromLTRB(
+                        20,
+                        8,
+                        20,
+                        8 + MediaQuery.paddingOf(context).bottom,
+                      ),
+                      child: PrimaryButton.elevated(
+                        label: context.l10n.vacancyApplyCta,
+                        onPressed: () => onVacancyDetailApplyTap(context),
+                      ),
                     ),
                   ),
               ],

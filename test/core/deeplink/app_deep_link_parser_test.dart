@@ -24,9 +24,16 @@ void main() {
     test('accepts the shared portfolio HTTPS link', () {
       expect(
         parser.parseUriToLocation(
-          Uri.parse(
-            'https://www.qizlarakademiyasi.uz/portfolio/post-123',
-          ),
+          Uri.parse('https://www.qizlarakademiyasi.uz/portfolio/post-123'),
+        ),
+        '/portfolio/post-123',
+      );
+    });
+
+    test('accepts portfolio links from the canonical non-www host', () {
+      expect(
+        parser.parseUriToLocation(
+          Uri.parse('https://qizlarakademiyasi.uz/portfolio/post-123'),
         ),
         '/portfolio/post-123',
       );

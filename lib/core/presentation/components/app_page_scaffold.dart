@@ -8,6 +8,7 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   const AppPageAppBar({
     super.key,
     required this.title,
+    this.titleWidget,
     this.onBackTap,
     this.actions = const [],
     this.centerTitle = false,
@@ -16,6 +17,7 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   final String title;
+  final Widget? titleWidget;
   final VoidCallback? onBackTap;
   final List<Widget> actions;
   final bool centerTitle;
@@ -29,12 +31,8 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
+    return AppBlurredAppBar(
       automaticallyImplyLeading: false,
-      backgroundColor: context.appColors.background,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      scrolledUnderElevation: 0,
       toolbarHeight: toolbarHeight,
       leadingWidth: showBackButton ? 60 : null,
       leading: showBackButton
@@ -52,14 +50,16 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       titleSpacing: centerTitle ? 0 : (showBackButton ? 4 : 20),
       centerTitle: centerTitle,
-      title: Text(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: context.textTheme.heading6.copyWith(
-          color: context.appColors.text,
-        ),
-      ),
+      title:
+          titleWidget ??
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.textTheme.heading6.copyWith(
+              color: context.appColors.text,
+            ),
+          ),
       actions: actions.isEmpty ? null : [...actions, const SizedBox(width: 8)],
     );
   }
@@ -74,6 +74,7 @@ class AppPageScaffold extends StatelessWidget {
     super.key,
     required this.title,
     required this.body,
+    this.titleWidget,
     this.onBackTap,
     this.actions = const [],
     this.centerTitle = false,
@@ -88,6 +89,7 @@ class AppPageScaffold extends StatelessWidget {
 
   final String title;
   final Widget body;
+  final Widget? titleWidget;
   final VoidCallback? onBackTap;
   final List<Widget> actions;
   final bool centerTitle;
@@ -104,15 +106,48 @@ class AppPageScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor ?? context.appColors.background,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      appBar: AppPageAppBar(
-        title: title,
-        onBackTap: onBackTap,
-        actions: actions,
-        centerTitle: centerTitle,
-        backButton: backButton,
-        showBackButton: showBackButton,
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          AppBlurredSliverAppBar(
+            automaticallyImplyLeading: false,
+            toolbarHeight: AppPageAppBar.toolbarHeight,
+            leadingWidth: showBackButton ? 60 : null,
+            leading: showBackButton
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child:
+                        backButton ??
+                        AppBackButton.ghost(
+                          onTap: onBackTap,
+                          tooltip: MaterialLocalizations.of(
+                            context,
+                          ).backButtonTooltip,
+                        ),
+                  )
+                : null,
+            titleSpacing: centerTitle ? 0 : (showBackButton ? 4 : 20),
+            centerTitle: centerTitle,
+            title:
+                titleWidget ??
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.heading6.copyWith(
+                    color: context.appColors.text,
+                  ),
+                ),
+            actions: actions.isEmpty
+                ? null
+                : [...actions, const SizedBox(width: 8)],
+          ),
+        ],
+        body: MediaQuery.removePadding(
+          context: context,
+          removeTop: true,
+          child: SafeArea(top: false, bottom: safeAreaBottom, child: body),
+        ),
       ),
-      body: SafeArea(top: false, bottom: safeAreaBottom, child: body),
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
     );

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
@@ -57,6 +58,11 @@ class _MainScreenState extends State<MainScreen>
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavigationOffset = switch (Theme.of(context).platform) {
+      TargetPlatform.android => const Offset(0, -12),
+      TargetPlatform.iOS => const Offset(0, 18),
+      _ => Offset.zero,
+    };
     final pages = widget.isGuestMode
         ? <Widget>[
             _KeepAlivePage(child: HomeScreen(onSwitchMainTab: onTabTap)),
@@ -79,121 +85,135 @@ class _MainScreenState extends State<MainScreen>
             // ),
           ];
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: onMainScrollNotification,
-              child: _MainTabPageViewWithFade(
-                pageController: pageController,
-                selectedIndex: selectedIndex,
-                tabBarFadeNonce: tabBarFadeNonce,
-                onPageChanged: onPageChanged,
-                pages: pages,
-              ),
-            ),
-          ),
-          // Align(
-          //   alignment: Alignment.bottomCenter,
-          //   child: Container(
-          //     height: MediaQuery.of(context).padding.bottom,
-          //     width: double.infinity,
-          //     decoration: BoxDecoration(
-          //       gradient: LinearGradient(
-          //         begin: Alignment.bottomCenter,
-          //         end: Alignment.topCenter,
-          //         colors: [
-          //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground),
-          //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.6),
-          //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.0),
-          //         ],
-          //         stops: [0, 0.5, 1],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Align(
-          //   alignment: Alignment.bottomCenter,
-          //   child: Container(
-          //     height: 100,
-          //     width: double.infinity,
-          //     decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
-          //   ),
-          // ),
-          Positioned.fill(
-            child: AnimatedOpacity(
-              opacity: isExtraMenuExpanded ? 1 : 0,
-              duration: const Duration(milliseconds: 280),
-              curve: Curves.easeOut,
-              child: IgnorePointer(
-                ignoring: !isExtraMenuExpanded,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: closeExtraMenu,
-                  child: const SizedBox.expand(),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value:
+          (context.isDarkTheme
+                  ? SystemUiOverlayStyle.light
+                  : SystemUiOverlayStyle.dark)
+              .copyWith(statusBarColor: Colors.transparent),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: context.theme.scaffoldBackgroundColor,
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: onMainScrollNotification,
+                child: _MainTabPageViewWithFade(
+                  pageController: pageController,
+                  selectedIndex: selectedIndex,
+                  tabBarFadeNonce: tabBarFadeNonce,
+                  onPageChanged: onPageChanged,
+                  pages: pages,
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: context.isDarkTheme
-                ? UiKitAssets.images.bottomNavDark.image(
-                    opacity: AlwaysStoppedAnimation(0.5),
-                  )
-                : UiKitAssets.images.bottomNavLight.image(
-                    opacity: AlwaysStoppedAnimation(0.5),
+            // Align(
+            //   alignment: Alignment.bottomCenter,
+            //   child: Container(
+            //     height: MediaQuery.of(context).padding.bottom,
+            //     width: double.infinity,
+            //     decoration: BoxDecoration(
+            //       gradient: LinearGradient(
+            //         begin: Alignment.bottomCenter,
+            //         end: Alignment.topCenter,
+            //         colors: [
+            //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground),
+            //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.6),
+            //           (context.isDarkTheme ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.0),
+            //         ],
+            //         stops: [0, 0.5, 1],
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Align(
+            //   alignment: Alignment.bottomCenter,
+            //   child: Container(
+            //     height: 100,
+            //     width: double.infinity,
+            //     decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
+            //   ),
+            // ),
+            Positioned.fill(
+              child: AnimatedOpacity(
+                opacity: isExtraMenuExpanded ? 1 : 0,
+                duration: const Duration(milliseconds: 280),
+                curve: Curves.easeOut,
+                child: IgnorePointer(
+                  ignoring: !isExtraMenuExpanded,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: closeExtraMenu,
+                    child: const SizedBox.expand(),
                   ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 0),
-              child: SecondLiquidBottomNav(
-                items: mainAppSecondLiquidBottomNavItems(
-                  context,
-                  isGuestMode: isGuestMode,
-                  selectedExtraMenuItem: selectedExtraMenuItem,
-                  isProfileMenuExpanded: isExtraMenuExpanded,
-                ),
-                currentIndex: isExtraMenuExpanded
-                    ? kMainProfileTabIndex
-                    : selectedIndex,
-                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                onChanged: onTabTap,
-                selectedColor: context.appColors.primary,
-                unselectedColor: context.appColors.bottomBarTabUnselected,
-                extraActionIcon: LucideIcons.images,
-                onExtraActionTap: onPortfolioTap,
-                extraActionSemanticLabel: 'Portfolio',
-                extraActionShowsCloseWhenExpanded: false,
-                isMinimized: isBottomNavMinimized,
-                isExpanded: isExtraMenuExpanded,
-                expandedContent: MainExtraActionGrid(
-                  onItemTap: onExtraMenuItemTap,
-                ),
-                expandedContentHeight: MainExtraActionGrid.preferredHeightFor(
-                  kMainExtraMenuItems.length,
                 ),
               ),
             ),
-          ),
-          // if (Platform.isIOS)
-          //   Positioned(
-          //     bottom: 0,
-          //     left: 0,
-          //     right: 0,
-          //     child: Container(
-          //       decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
-          //       child: buildGlassBottomBarVersionOne(context),
-          //     ),
-          //   ),
-        ],
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: context.isDarkTheme
+                  ? UiKitAssets.images.bottomNavDark.image(
+                      opacity: AlwaysStoppedAnimation(0.5),
+                    )
+                  : UiKitAssets.images.bottomNavLight.image(
+                      opacity: AlwaysStoppedAnimation(0.5),
+                    ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 0),
+                child: Transform.translate(
+                  offset: bottomNavigationOffset,
+                  child: SecondLiquidBottomNav(
+                    items: mainAppSecondLiquidBottomNavItems(
+                      context,
+                      isGuestMode: isGuestMode,
+                      selectedExtraMenuItem: selectedExtraMenuItem,
+                      isProfileMenuExpanded: isExtraMenuExpanded,
+                    ),
+                    currentIndex: isExtraMenuExpanded
+                        ? kMainProfileTabIndex
+                        : bottomNavigationSelectedIndex,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 2,
+                      vertical: 2,
+                    ),
+                    onChanged: onTabTap,
+                    selectedColor: context.appColors.primary,
+                    unselectedColor: context.appColors.bottomBarTabUnselected,
+                    extraActionIcon: LucideIcons.images,
+                    onExtraActionTap: onPortfolioTap,
+                    extraActionSemanticLabel: 'Portfolio',
+                    extraActionShowsCloseWhenExpanded: false,
+                    isMinimized: isBottomNavMinimized,
+                    isExpanded: isExtraMenuExpanded,
+                    expandedContent: MainExtraActionGrid(
+                      onItemTap: onExtraMenuItemTap,
+                    ),
+                    expandedContentHeight:
+                        MainExtraActionGrid.preferredHeightFor(
+                          kMainExtraMenuItems.length,
+                        ),
+                  ),
+                ),
+              ),
+            ),
+            // if (Platform.isIOS)
+            //   Positioned(
+            //     bottom: 0,
+            //     left: 0,
+            //     right: 0,
+            //     child: Container(
+            //       decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
+            //       child: buildGlassBottomBarVersionOne(context),
+            //     ),
+            //   ),
+          ],
+        ),
       ),
     );
   }

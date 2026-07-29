@@ -8,7 +8,11 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 
 /// Kurs detali hero: fon rasmi, pastga qorayuvchi gradient, shisha orqaga, pastda kategoriya + sarlavha + o‘qituvchi.
 class CourseDetailsSliverHeader extends StatelessWidget {
-  const CourseDetailsSliverHeader({super.key, required this.course, required this.onShareTap});
+  const CourseDetailsSliverHeader({
+    super.key,
+    required this.course,
+    required this.onShareTap,
+  });
 
   final CourseDetailsModel course;
   final VoidCallback onShareTap;
@@ -23,14 +27,19 @@ class CourseDetailsSliverHeader extends StatelessWidget {
       stretch: true,
       elevation: 0,
       automaticallyImplyLeading: false,
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
       expandedHeight: 230,
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.loose,
           children: [
             Positioned.fill(
-              child: AppCachedNetworkImage(imageUrl: course.coverImageUrl, fit: BoxFit.cover, fallback: const AppNetworkImageFallbackCoverTint()),
+              child: AppCachedNetworkImage(
+                imageUrl: course.coverImageUrl,
+                fit: BoxFit.cover,
+                fallback: const AppNetworkImageFallbackCoverTint(),
+              ),
             ),
             Positioned(
               left: 0,
@@ -38,7 +47,14 @@ class CourseDetailsSliverHeader extends StatelessWidget {
               bottom: 0,
               height: 110,
               child: IgnorePointer(
-                child: (context.isDarkTheme ? UiKitAssets.images.bottomNavDark : UiKitAssets.images.bottomNavLight).image(fit: BoxFit.cover, alignment: Alignment.topCenter),
+                child:
+                    (context.isDarkTheme
+                            ? UiKitAssets.images.bottomNavDark
+                            : UiKitAssets.images.bottomNavLight)
+                        .image(
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                        ),
               ),
             ),
             Positioned.fill(
@@ -47,7 +63,11 @@ class CourseDetailsSliverHeader extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [AppColors.black.withValues(alpha: 0.15), AppColors.black.withValues(alpha: 0.25), AppColors.black.withValues(alpha: 0.82)],
+                    colors: [
+                      AppColors.black.withValues(alpha: 0.15),
+                      AppColors.black.withValues(alpha: 0.25),
+                      AppColors.black.withValues(alpha: 0.82),
+                    ],
                     stops: const [0.0, 0.45, 1.0],
                   ),
                 ),
@@ -135,7 +155,10 @@ class CourseDetailsSliverHeader extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               color: AppColors.white.withValues(alpha: 0.3),
@@ -146,7 +169,8 @@ class CourseDetailsSliverHeader extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
-                              style: context.textTheme.bodySmallSemibold.copyWith(color: AppColors.white),
+                              style: context.textTheme.bodySmallSemibold
+                                  .copyWith(color: AppColors.white),
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -155,7 +179,9 @@ class CourseDetailsSliverHeader extends StatelessWidget {
                             maxLines: 2,
                             textAlign: TextAlign.end,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodyMediumMedium.copyWith(color: AppColors.secondaryGrey),
+                            style: context.textTheme.bodyMediumMedium.copyWith(
+                              color: AppColors.secondaryGrey,
+                            ),
                           ),
                         ],
                       ),
@@ -194,7 +220,9 @@ class _CourseDetailsShareGlassButton extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: AppColors.black.withValues(alpha: 0.22),
-                border: Border.all(color: AppColors.white.withValues(alpha: 0.14)),
+                border: Border.all(
+                  color: AppColors.white.withValues(alpha: 0.14),
+                ),
                 shape: BoxShape.circle,
               ),
               child: Icon(LucideIcons.share2, color: AppColors.white, size: 20),

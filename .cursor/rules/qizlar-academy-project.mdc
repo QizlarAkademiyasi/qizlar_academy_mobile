@@ -14,6 +14,8 @@ Loyiha qoidalari **CLAUDE.md** (loyiha ildizi) va **.cursor/skills/qizlar-academ
 - **Enumlar:** ilova bo‘ylab qayta ishlatiladigan enumlar `lib/config/enum/` da (har biri odatda alohida fayl).
 - **Screens:** Page/View/Mixin; mixin — navigatsiya, listener, lifecycle; build ekran/widget da.
 - **Komponentlar:** Yirik UI bloklar `presentation/components/` da alohida widget; ekranda mixin orqali chaqiriladi (§5.1 / §4.1 reference/CLAUDE).
+- **Horizontal ro‘yxatlar:** Story/category/chip/carousel kabi dinamik ro‘yxatlarda barcha itemlar render qilinsin va expanded holatda gorizontal scroll ishlasin. Boshqa header actionlari uchun fixed inset viewportni doimiy kesmasin; safe zone faqat kerakli state’da adaptiv rezerv qilinsin.
+- **Horizontal regression testi:** Viewportdan uzun dataset bilan `maxScrollExtent > 0`, drag’dan keyin position o‘zgarishi, expanded available width va collapsed action safe zone majburiy tekshirilsin.
 - **Bloc:** part event/state; Equatable; repository constructor orqali.
 - **Router/DI:** `config/router/app_routes.dart`, `path_routes.dart`; `config/di/setup_locator.dart` (getIt).
 - **Logging:** barcha loglar `lib/config/logs/` orqali; `AppLogger` dan foydalaning (`logger` package).

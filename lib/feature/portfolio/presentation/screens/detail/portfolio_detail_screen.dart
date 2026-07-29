@@ -67,261 +67,231 @@ class _PortfolioDetailViewState extends State<_PortfolioDetailView>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppPageScaffold(
+      title: 'Portfolio',
+      onBackTap: () => onBackTap(context),
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: MultiBlocListener(
-          listeners: [
-            BlocListener<PortfolioDetailBloc, PortfolioDetailState>(
-              listenWhen: (previous, current) =>
-                  current.authRequired && !previous.authRequired ||
-                  current.deleted && !previous.deleted ||
-                  current.message != null &&
-                      current.message != previous.message,
-              listener: portfolioDetailBlocListener,
-            ),
-            BlocListener<PortfolioCommentsBloc, PortfolioCommentsState>(
-              listenWhen: (previous, current) =>
-                  current.authRequired && !previous.authRequired ||
-                  current.submitted && !previous.submitted ||
-                  current.message != null &&
-                      current.message != previous.message,
-              listener: portfolioCommentsBlocListener,
-            ),
-          ],
-          child: BlocBuilder<PortfolioDetailBloc, PortfolioDetailState>(
-            builder: (context, state) {
-              final post = state.post;
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
-                    child: Row(
-                      children: [
-                        AppBackButton.ghost(onTap: () => onBackTap(context)),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Portfolio',
-                            style: context.textTheme.heading5.copyWith(
-                              color: context.appColors.text,
-                            ),
-                          ),
-                        ),
-                        // if (post != null)
-                        //   IconButton(
-                        //     onPressed: () => onDeleteTap(context),
-                        //     icon: const Icon(LucideIcons.ellipsis),
-                        //   ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: switch (state.status) {
-                      PortfolioDetailStatus.failure => TgsFailureContent(
-                        message: 'Portfolio ochilmadi. Qayta urinib ko\'ring.',
-                        onRetry: () => context.read<PortfolioDetailBloc>().add(
-                          const PortfolioDetailRetryRequested(),
-                        ),
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<PortfolioDetailBloc, PortfolioDetailState>(
+            listenWhen: (previous, current) =>
+                current.authRequired && !previous.authRequired ||
+                current.deleted && !previous.deleted ||
+                current.message != null && current.message != previous.message,
+            listener: portfolioDetailBlocListener,
+          ),
+          BlocListener<PortfolioCommentsBloc, PortfolioCommentsState>(
+            listenWhen: (previous, current) =>
+                current.authRequired && !previous.authRequired ||
+                current.submitted && !previous.submitted ||
+                current.message != null && current.message != previous.message,
+            listener: portfolioCommentsBlocListener,
+          ),
+        ],
+        child: BlocBuilder<PortfolioDetailBloc, PortfolioDetailState>(
+          builder: (context, state) {
+            final post = state.post;
+            return Column(
+              children: [
+                Expanded(
+                  child: switch (state.status) {
+                    PortfolioDetailStatus.failure => TgsFailureContent(
+                      message: 'Portfolio ochilmadi. Qayta urinib ko\'ring.',
+                      onRetry: () => context.read<PortfolioDetailBloc>().add(
+                        const PortfolioDetailRetryRequested(),
                       ),
-                      PortfolioDetailStatus.loading ||
-                      PortfolioDetailStatus.initial =>
-                        const PortfolioListSkeleton(),
-                      PortfolioDetailStatus.success when post != null =>
-                        NotificationListener<ScrollNotification>(
-                          onNotification: _onScrollNotification,
-                          child: CustomScrollView(
-                            slivers: [
-                              SliverPadding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  16,
-                                  8,
-                                  16,
-                                  16,
-                                ),
-                                sliver: SliverToBoxAdapter(
-                                  child: PortfolioPostCard(
-                                    post: post,
-                                    isDetail: true,
-                                    onTap: () {},
-                                    onLikeTap: () => onLikeTap(context),
-                                    onCommentTap: () =>
-                                        onCommentTap(context, post),
-                                    onShareTap: (shareContext) =>
-                                        onShareTap(shareContext, post),
-                                    onDeleteTap: post.isOwnedByCurrentUser
-                                        ? () => onDeleteTap(context)
-                                        : null,
-                                  ),
+                    ),
+                    PortfolioDetailStatus.loading ||
+                    PortfolioDetailStatus.initial =>
+                      const PortfolioListSkeleton(),
+                    PortfolioDetailStatus.success when post != null =>
+                      NotificationListener<ScrollNotification>(
+                        onNotification: _onScrollNotification,
+                        child: CustomScrollView(
+                          slivers: [
+                            SliverPadding(
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                              sliver: SliverToBoxAdapter(
+                                child: PortfolioPostCard(
+                                  post: post,
+                                  isDetail: true,
+                                  onTap: () {},
+                                  onLikeTap: () => onLikeTap(context),
+                                  onCommentTap: () =>
+                                      onCommentTap(context, post),
+                                  onShareTap: (shareContext) =>
+                                      onShareTap(shareContext, post),
+                                  onDeleteTap: post.isOwnedByCurrentUser
+                                      ? () => onDeleteTap(context)
+                                      : null,
                                 ),
                               ),
-                              BlocBuilder<
-                                PortfolioCommentsBloc,
-                                PortfolioCommentsState
-                              >(
-                                builder: (context, commentsState) {
-                                  if (commentsState.items.isEmpty) {
-                                    if (commentsState.status ==
-                                            PortfolioCommentsStatus.loading ||
-                                        commentsState.status ==
-                                            PortfolioCommentsStatus.initial) {
-                                      return SliverToBoxAdapter(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 24,
-                                          ),
-                                          child: Skeletonizer.zone(
-                                            child: Column(
-                                              children: List.generate(
-                                                3,
-                                                (index) => Column(
-                                                  children: [
-                                                    Divider(
-                                                      height: 1,
-                                                      thickness: 1,
-                                                      color: context
-                                                          .appColors
-                                                          .stroke,
-                                                    ),
-                                                    const SizedBox(height: 16),
-                                                    const Row(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Bone.circle(size: 32),
-                                                        SizedBox(width: 10),
-                                                        Expanded(
-                                                          child: Bone.multiText(
-                                                            lines: 2,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 16),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
+                            ),
+                            BlocBuilder<
+                              PortfolioCommentsBloc,
+                              PortfolioCommentsState
+                            >(
+                              builder: (context, commentsState) {
+                                if (commentsState.items.isEmpty) {
+                                  if (commentsState.status ==
+                                          PortfolioCommentsStatus.loading ||
+                                      commentsState.status ==
+                                          PortfolioCommentsStatus.initial) {
                                     return SliverToBoxAdapter(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                          vertical: 32,
                                           horizontal: 24,
                                         ),
-                                        child: Center(
-                                          child: Text(
-                                            'Hali izoh yo\'q',
-                                            style: context
-                                                .textTheme
-                                                .bodyMediumRegular
-                                                .copyWith(
-                                                  color: context
-                                                      .appColors
-                                                      .secondaryGrey,
-                                                ),
+                                        child: Skeletonizer.zone(
+                                          child: Column(
+                                            children: List.generate(
+                                              3,
+                                              (index) => Column(
+                                                children: [
+                                                  Divider(
+                                                    height: 1,
+                                                    thickness: 1,
+                                                    color: context
+                                                        .appColors
+                                                        .stroke,
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                  const Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Bone.circle(size: 32),
+                                                      SizedBox(width: 10),
+                                                      Expanded(
+                                                        child: Bone.multiText(
+                                                          lines: 2,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
                                     );
                                   }
-                                  return SliverPadding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                    ),
-                                    sliver: SliverList(
-                                      delegate: SliverChildBuilderDelegate(
-                                        (context, index) {
-                                          if (index == 0) {
-                                            return Divider(
-                                              height: 1,
-                                              thickness: 1,
-                                              color: context.appColors.stroke,
-                                            );
-                                          }
-                                          final commentIndex = index - 1;
-                                          if (commentIndex >=
-                                              commentsState.items.length) {
-                                            return const Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                vertical: 12,
+                                  return SliverToBoxAdapter(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 32,
+                                        horizontal: 24,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Hali izoh yo\'q',
+                                          style: context
+                                              .textTheme
+                                              .bodyMediumRegular
+                                              .copyWith(
+                                                color: context
+                                                    .appColors
+                                                    .secondaryGrey,
                                               ),
-                                              child: Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
-                                            );
-                                          }
-                                          final comment =
-                                              commentsState.items[commentIndex];
-                                          return Column(
-                                            children: [
-                                              const SizedBox(height: 16),
-                                              PortfolioCommentTile(
-                                                comment: comment,
-                                                replies:
-                                                    commentsState
-                                                        .repliesByCommentId[comment
-                                                        .id] ??
-                                                    const [],
-                                                repliesLoading:
-                                                    commentsState
-                                                        .replyLoadingCommentId ==
-                                                    comment.id,
-                                                repliesHasMore:
-                                                    commentsState
-                                                        .replyHasMoreByCommentId[comment
-                                                        .id] ??
-                                                    true,
-                                                onReplyTap: () =>
-                                                    onReplyCommentTap(comment),
-                                                onRepliesTap: () =>
-                                                    onFetchRepliesRequested(
-                                                      context,
-                                                      comment.id,
-                                                    ),
-                                              ),
-                                              const SizedBox(height: 16),
-                                              Divider(
-                                                height: 1,
-                                                thickness: 1,
-                                                color: context.appColors.stroke,
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                        childCount:
-                                            commentsState.items.length +
-                                            1 +
-                                            (commentsState.hasMore ? 1 : 0),
+                                        ),
                                       ),
                                     ),
                                   );
-                                },
-                              ),
-                            ],
-                          ),
+                                }
+                                return SliverPadding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                  ),
+                                  sliver: SliverList(
+                                    delegate: SliverChildBuilderDelegate(
+                                      (context, index) {
+                                        if (index == 0) {
+                                          return Divider(
+                                            height: 1,
+                                            thickness: 1,
+                                            color: context.appColors.stroke,
+                                          );
+                                        }
+                                        final commentIndex = index - 1;
+                                        if (commentIndex >=
+                                            commentsState.items.length) {
+                                          return const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            child: Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          );
+                                        }
+                                        final comment =
+                                            commentsState.items[commentIndex];
+                                        return Column(
+                                          children: [
+                                            const SizedBox(height: 16),
+                                            PortfolioCommentTile(
+                                              comment: comment,
+                                              replies:
+                                                  commentsState
+                                                      .repliesByCommentId[comment
+                                                      .id] ??
+                                                  const [],
+                                              repliesLoading:
+                                                  commentsState
+                                                      .replyLoadingCommentId ==
+                                                  comment.id,
+                                              repliesHasMore:
+                                                  commentsState
+                                                      .replyHasMoreByCommentId[comment
+                                                      .id] ??
+                                                  true,
+                                              onReplyTap: () =>
+                                                  onReplyCommentTap(comment),
+                                              onRepliesTap: () =>
+                                                  onFetchRepliesRequested(
+                                                    context,
+                                                    comment.id,
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Divider(
+                                              height: 1,
+                                              thickness: 1,
+                                              color: context.appColors.stroke,
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                      childCount:
+                                          commentsState.items.length +
+                                          1 +
+                                          (commentsState.hasMore ? 1 : 0),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                      _ => const SizedBox.shrink(),
-                    },
-                  ),
-                  if (state.status == PortfolioDetailStatus.success &&
-                      post != null)
-                    BlocBuilder<PortfolioCommentsBloc, PortfolioCommentsState>(
-                      builder: (context, commentsState) => buildCommentInput(
-                        context,
-                        isSubmitting: commentsState.isSubmitting,
                       ),
+                    _ => const SizedBox.shrink(),
+                  },
+                ),
+                if (state.status == PortfolioDetailStatus.success &&
+                    post != null)
+                  BlocBuilder<PortfolioCommentsBloc, PortfolioCommentsState>(
+                    builder: (context, commentsState) => buildCommentInput(
+                      context,
+                      isSubmitting: commentsState.isSubmitting,
                     ),
-                ],
-              );
-            },
-          ),
+                  ),
+              ],
+            );
+          },
         ),
       ),
     );

@@ -66,161 +66,140 @@ class _PortfolioViewState extends State<_PortfolioView>
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return Scaffold(
+    final state = context.watch<PortfolioBloc>().state;
+
+    return AppPageScaffold(
+      title: 'Portfolio',
+      onBackTap: () => onBackTap(context),
+      actions: [
+        if (!state.isGuest)
+          IconButton(
+            onPressed: () => onCreateTap(context, state),
+            icon: const Icon(LucideIcons.circlePlus),
+          ),
+      ],
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: BlocConsumer<PortfolioBloc, PortfolioState>(
-          listenWhen: (previous, current) =>
-              current.loadMoreFailed && !previous.loadMoreFailed ||
-              current.authRequired && !previous.authRequired ||
-              current.message != null && current.message != previous.message,
-          listener: (context, state) {
-            portfolioBlocListener(context, state);
-            if (_tabController.index != state.tab.index) {
-              _tabController.animateTo(state.tab.index);
-            }
-          },
-          builder: (context, state) {
-            final isInitialLoading =
-                (state.status == PortfolioStatus.initial ||
-                    state.status == PortfolioStatus.loading) &&
-                state.items.isEmpty;
-            return Stack(
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
-                      child: Row(
-                        children: [
-                          AppBackButton.ghost(onTap: () => onBackTap(context)),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Portfolio',
-                              style: context.textTheme.heading5.copyWith(
-                                color: context.appColors.text,
-                              ),
-                            ),
-                          ),
-                          if (!state.isGuest)
-                            IconButton(
-                              onPressed: () => onCreateTap(context, state),
-                              icon: const Icon(LucideIcons.circlePlus),
-                            ),
-                        ],
-                      ),
+      body: BlocConsumer<PortfolioBloc, PortfolioState>(
+        listenWhen: (previous, current) =>
+            current.loadMoreFailed && !previous.loadMoreFailed ||
+            current.authRequired && !previous.authRequired ||
+            current.message != null && current.message != previous.message,
+        listener: (context, state) {
+          portfolioBlocListener(context, state);
+          if (_tabController.index != state.tab.index) {
+            _tabController.animateTo(state.tab.index);
+          }
+        },
+        builder: (context, state) {
+          final isInitialLoading =
+              (state.status == PortfolioStatus.initial ||
+                  state.status == PortfolioStatus.loading) &&
+              state.items.isEmpty;
+          return Stack(
+            children: [
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: AppSegmentedTabBar(
+                      controller: _tabController,
+                      tabLabels: const ['Barchasi', 'Mening loyihalarim'],
+                      onTap: (index) =>
+                          onTabChanged(context, PortfolioFeedTab.values[index]),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: AppSegmentedTabBar(
-                        controller: _tabController,
-                        tabLabels: const ['Barchasi', 'Mening loyihalarim'],
-                        onTap: (index) => onTabChanged(
-                          context,
-                          PortfolioFeedTab.values[index],
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: switch (state.status) {
+                      PortfolioStatus.failure when state.items.isEmpty =>
+                        TgsFailureContent(
+                          message:
+                              'Portfolio yuklanmadi. Qayta urinib ko\'ring.',
+                          onRetry: () => context.read<PortfolioBloc>().add(
+                            const PortfolioRetryRequested(),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: switch (state.status) {
-                        PortfolioStatus.failure when state.items.isEmpty =>
-                          TgsFailureContent(
-                            message:
-                                'Portfolio yuklanmadi. Qayta urinib ko\'ring.',
-                            onRetry: () => context.read<PortfolioBloc>().add(
-                              const PortfolioRetryRequested(),
+                      _ when isInitialLoading => const PortfolioListSkeleton(),
+                      PortfolioStatus.success when state.items.isEmpty =>
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: PortfolioEmptyContent(
+                              tab: state.tab,
+                              isGuest: state.isGuest,
+                              onCreateTap: state.isGuest
+                                  ? null
+                                  : () => onCreateTap(context, state),
                             ),
                           ),
-                        _ when isInitialLoading =>
-                          const PortfolioListSkeleton(),
-                        PortfolioStatus.success when state.items.isEmpty =>
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                              ),
-                              child: PortfolioEmptyContent(
-                                tab: state.tab,
-                                isGuest: state.isGuest,
-                                onCreateTap: state.isGuest
-                                    ? null
-                                    : () => onCreateTap(context, state),
-                              ),
-                            ),
-                          ),
-                        _ => NotificationListener<ScrollNotification>(
-                          onNotification: (n) =>
-                              _onScrollNotification(n, context),
-                          child: AppStaggeredScrollLimiter(
-                            child: CustomScrollView(
-                              // Flutter < 3.41 bilan ham ishlashi uchun eski API saqlanadi.
-                              // ignore: deprecated_member_use
-                              cacheExtent: MediaQuery.sizeOf(context).height,
-                              slivers: [
-                                SliverPadding(
-                                  padding: EdgeInsets.fromLTRB(
-                                    16,
-                                    4,
-                                    16,
-                                    bottomInset + 112,
-                                  ),
-                                  sliver: SliverList.separated(
-                                    itemBuilder: (context, index) {
-                                      if (index >= state.items.length) {
-                                        return Skeletonizer.zone(
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 20,
-                                            ),
-                                            child: Center(
-                                              child: Bone.text(words: 4),
-                                            ),
+                        ),
+                      _ => NotificationListener<ScrollNotification>(
+                        onNotification: (n) =>
+                            _onScrollNotification(n, context),
+                        child: AppStaggeredScrollLimiter(
+                          child: CustomScrollView(
+                            // Flutter < 3.41 bilan ham ishlashi uchun eski API saqlanadi.
+                            // ignore: deprecated_member_use
+                            cacheExtent: MediaQuery.sizeOf(context).height,
+                            slivers: [
+                              SliverPadding(
+                                padding: EdgeInsets.fromLTRB(
+                                  16,
+                                  4,
+                                  16,
+                                  bottomInset + 112,
+                                ),
+                                sliver: SliverList.separated(
+                                  itemBuilder: (context, index) {
+                                    if (index >= state.items.length) {
+                                      return Skeletonizer.zone(
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 20,
                                           ),
-                                        );
-                                      }
-                                      return AppStaggeredListItem(
-                                        key: ValueKey<String>(
-                                          'portfolio_post_${state.items[index].id}',
-                                        ),
-                                        position: index,
-                                        child: buildPostCard(
-                                          context,
-                                          state.items[index],
+                                          child: Center(
+                                            child: Bone.text(words: 4),
+                                          ),
                                         ),
                                       );
-                                    },
-                                    separatorBuilder: (_, _) =>
-                                        const SizedBox(height: 12),
-                                    itemCount:
-                                        state.items.length +
-                                        (state.isLoadingMore ? 1 : 0),
-                                  ),
+                                    }
+                                    return AppStaggeredListItem(
+                                      key: ValueKey<String>(
+                                        'portfolio_post_${state.items[index].id}',
+                                      ),
+                                      position: index,
+                                      child: buildPostCard(
+                                        context,
+                                        state.items[index],
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(height: 12),
+                                  itemCount:
+                                      state.items.length +
+                                      (state.isLoadingMore ? 1 : 0),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      },
-                    ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: context.isDarkTheme
-                      ? UiKitAssets.images.bottomNavDark.image(
-                          fit: BoxFit.cover,
-                        )
-                      : UiKitAssets.images.bottomNavLight.image(
-                          fit: BoxFit.cover,
-                        ),
-                ),
-              ],
-            );
-          },
-        ),
+                      ),
+                    },
+                  ),
+                ],
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: context.isDarkTheme
+                    ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover)
+                    : UiKitAssets.images.bottomNavLight.image(
+                        fit: BoxFit.cover,
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -30,11 +30,20 @@ class _ProfileView extends StatefulWidget {
   State<_ProfileView> createState() => _ProfileViewState();
 }
 
-class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_ProfileView> {
+class _ProfileViewState extends State<_ProfileView>
+    with ProfileScreenMixin<_ProfileView> {
   ProfileOverviewModel _skeletonOverview(BuildContext context) {
     final l10n = context.l10n;
     return ProfileOverviewModel(
-      user: const ProfileUserModel(firstName: '---', lastName: '-------', fullName: '--- -------', userId: '------', phoneNumber: '+998901234567', avatarUrl: '', badgeId: 0),
+      user: const ProfileUserModel(
+        firstName: '---',
+        lastName: '-------',
+        fullName: '--- -------',
+        userId: '------',
+        phoneNumber: '+998901234567',
+        avatarUrl: '',
+        badgeId: 0,
+      ),
       stats: const [],
       bankFilters: const [],
       achievements: kDefaultProfileAchievementItems,
@@ -42,19 +51,58 @@ class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_Pro
       activeCoursesCount: null,
       rating: null,
       settings: [
-        ProfileMenuItemModel(id: 'settings-1', type: ProfileMenuItemType.profileInfo, title: l10n.profileMenuProfileInfo),
-        ProfileMenuItemModel(id: 'settings-2', type: ProfileMenuItemType.language, title: l10n.profileMenuLanguage, subtitle: '---'),
+        ProfileMenuItemModel(
+          id: 'settings-1',
+          type: ProfileMenuItemType.profileInfo,
+          title: l10n.profileMenuProfileInfo,
+        ),
+        ProfileMenuItemModel(
+          id: 'settings-2',
+          type: ProfileMenuItemType.language,
+          title: l10n.profileMenuLanguage,
+          subtitle: '---',
+        ),
       ],
       general: [
-        ProfileMenuItemModel(id: 'general-1', type: ProfileMenuItemType.shareApp, title: l10n.profileMenuShareApp, subtitle: l10n.profileShareAppSubtitle),
-        ProfileMenuItemModel(id: 'general-2', type: ProfileMenuItemType.aboutApp, title: l10n.profileMenuAbout),
-        ProfileMenuItemModel(id: 'general-3', type: ProfileMenuItemType.helpCenter, title: l10n.profileMenuHelp, subtitle: '---'),
-        ProfileMenuItemModel(id: 'general-4', type: ProfileMenuItemType.privacyPolicy, title: l10n.profileMenuPrivacy),
+        ProfileMenuItemModel(
+          id: 'general-1',
+          type: ProfileMenuItemType.shareApp,
+          title: l10n.profileMenuShareApp,
+          subtitle: l10n.profileShareAppSubtitle,
+        ),
+        ProfileMenuItemModel(
+          id: 'general-2',
+          type: ProfileMenuItemType.aboutApp,
+          title: l10n.profileMenuAbout,
+        ),
+        ProfileMenuItemModel(
+          id: 'general-3',
+          type: ProfileMenuItemType.helpCenter,
+          title: l10n.profileMenuHelp,
+          subtitle: '---',
+        ),
+        ProfileMenuItemModel(
+          id: 'general-4',
+          type: ProfileMenuItemType.privacyPolicy,
+          title: l10n.profileMenuPrivacy,
+        ),
       ],
       languageOptions: [
-        ProfileLanguageOptionModel(code: 'uz', title: l10n.languageUzbek, flagEmoji: '🇺🇿'),
-        ProfileLanguageOptionModel(code: 'ru', title: l10n.languageRussian, flagEmoji: '🇷🇺'),
-        ProfileLanguageOptionModel(code: 'en', title: l10n.languageEnglish, flagEmoji: '🇬🇧'),
+        ProfileLanguageOptionModel(
+          code: 'uz',
+          title: l10n.languageUzbek,
+          flagEmoji: '🇺🇿',
+        ),
+        ProfileLanguageOptionModel(
+          code: 'ru',
+          title: l10n.languageRussian,
+          flagEmoji: '🇷🇺',
+        ),
+        ProfileLanguageOptionModel(
+          code: 'en',
+          title: l10n.languageEnglish,
+          flagEmoji: '🇬🇧',
+        ),
       ],
       selectedLanguageCode: 'uz',
       notificationsEnabled: false,
@@ -70,13 +118,19 @@ class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_Pro
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: profileBlocListener,
         builder: (context, state) {
-          final isInitialLoading = (state.status == ProfileStatus.loading || state.status == ProfileStatus.initial) && state.overview == null;
+          final isInitialLoading =
+              (state.status == ProfileStatus.loading ||
+                  state.status == ProfileStatus.initial) &&
+              state.overview == null;
 
           if (state.requiresRegistration) {
             return const SizedBox.shrink();
           }
           if (state.overview == null && !isInitialLoading) {
-            return AppFailureState(message: l10n.profileOverviewLoadError, onRetry: () => retry(context));
+            return AppFailureState(
+              message: l10n.profileOverviewLoadError,
+              onRetry: () => retry(context),
+            );
           }
           final overview = state.overview ?? _skeletonOverview(context);
 
@@ -84,71 +138,112 @@ class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_Pro
           return ListenableBuilder(
             listenable: getIt<ProfileAvatarRefreshNotifier>(),
             builder: (context, _) {
-              final avatarGen = getIt<ProfileAvatarRefreshNotifier>().generation;
-              return SafeArea(
-                bottom: false,
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _ProfilePinnedHeaderDelegate(
-                        overview: overview,
-                        enabledSkeleton: isInitialLoading,
-                        avatarImageGeneration: avatarGen,
-                        onBadgeTap: isInitialLoading ? null : () => onProfileBadgePressed(context, overview: overview),
-                        expandedHeader: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: buildProfileHeader(context, overview: overview, avatarImageGeneration: avatarGen, loading: isInitialLoading),
+              final avatarGen =
+                  getIt<ProfileAvatarRefreshNotifier>().generation;
+              final topInset = MediaQuery.paddingOf(context).top;
+              return CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _ProfilePinnedHeaderDelegate(
+                      overview: overview,
+                      enabledSkeleton: isInitialLoading,
+                      avatarImageGeneration: avatarGen,
+                      topInset: topInset,
+                      onBadgeTap: isInitialLoading
+                          ? null
+                          : () => onProfileBadgePressed(
+                              context,
+                              overview: overview,
+                            ),
+                      expandedHeader: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: buildProfileHeader(
+                          context,
+                          overview: overview,
+                          avatarImageGeneration: avatarGen,
+                          loading: isInitialLoading,
                         ),
                       ),
                     ),
-                    SliverPadding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset + 56),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate([
-                          Skeletonizer.zone(
-                            enabled: isInitialLoading,
-                            child: IgnorePointer(
-                              ignoring: isInitialLoading,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                                    child: buildProfileStats(context, overview: overview, loading: isInitialLoading),
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset + 56),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        Skeletonizer.zone(
+                          enabled: isInitialLoading,
+                          child: IgnorePointer(
+                            ignoring: isInitialLoading,
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
                                   ),
-                                  const SizedBox(height: 18),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                                    child: buildAchievementsSection(context, overview: overview),
+                                  child: buildProfileStats(
+                                    context,
+                                    overview: overview,
+                                    loading: isInitialLoading,
                                   ),
-                                  const SizedBox(height: 12),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                                    child: buildSettingsSection(context, overview: overview),
+                                ),
+                                const SizedBox(height: 18),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
                                   ),
-                                  const SizedBox(height: 12),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                                    child: buildGeneralSection(context, overview: overview),
+                                  child: buildAchievementsSection(
+                                    context,
+                                    overview: overview,
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(height: 12),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                  ),
+                                  child: buildSettingsSection(
+                                    context,
+                                    overview: overview,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                  ),
+                                  child: buildGeneralSection(
+                                    context,
+                                    overview: overview,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Padding(padding: const EdgeInsets.symmetric(horizontal: 24), child: buildDeleteAccountSection(context)),
-                          const SizedBox(height: 10),
-                          Padding(padding: const EdgeInsets.symmetric(horizontal: 24), child: buildLogoutSection(context)),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: ProfileAppVersionText(style: context.textTheme.bodySmallRegular.copyWith(color: context.appColors.secondaryGrey)),
+                        ),
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: buildDeleteAccountSection(context),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: buildLogoutSection(context),
+                        ),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: ProfileAppVersionText(
+                            style: context.textTheme.bodySmallRegular.copyWith(
+                              color: context.appColors.secondaryGrey,
+                            ),
                           ),
-                        ]),
-                      ),
+                        ),
+                      ]),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           );
@@ -159,11 +254,19 @@ class _ProfileViewState extends State<_ProfileView> with ProfileScreenMixin<_Pro
 }
 
 class _ProfilePinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
-  _ProfilePinnedHeaderDelegate({required this.overview, required this.enabledSkeleton, required this.avatarImageGeneration, required this.onBadgeTap, required this.expandedHeader});
+  _ProfilePinnedHeaderDelegate({
+    required this.overview,
+    required this.enabledSkeleton,
+    required this.avatarImageGeneration,
+    required this.topInset,
+    required this.onBadgeTap,
+    required this.expandedHeader,
+  });
 
   final ProfileOverviewModel overview;
   final bool enabledSkeleton;
   final int avatarImageGeneration;
+  final double topInset;
   final VoidCallback? onBadgeTap;
   final Widget expandedHeader;
 
@@ -171,20 +274,23 @@ class _ProfilePinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
   static const double _minHeight = 85;
 
   @override
-  double get minExtent => _minHeight;
+  double get minExtent => topInset + _minHeight;
 
   @override
-  double get maxExtent => _maxHeight;
+  double get maxExtent => topInset + _maxHeight;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     final progress = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
     final expandedFactor = (1 - progress).clamp(0.0, 1.0);
 
-    return ColoredBox(
-      color: Color.lerp(context.theme.scaffoldBackgroundColor, context.theme.scaffoldBackgroundColor, progress) ?? context.theme.scaffoldBackgroundColor,
+    return AppBlurredHeaderSurface(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+        padding: EdgeInsets.fromLTRB(16, topInset + 8, 16, 10),
         child: Stack(
           children: [
             Opacity(
@@ -197,7 +303,10 @@ class _ProfilePinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
                     heightFactor: expandedFactor,
                     child: SingleChildScrollView(
                       physics: const NeverScrollableScrollPhysics(),
-                      child: Skeletonizer.zone(enabled: enabledSkeleton, child: expandedHeader),
+                      child: Skeletonizer.zone(
+                        enabled: enabledSkeleton,
+                        child: expandedHeader,
+                      ),
                     ),
                   ),
                 ),
@@ -209,7 +318,12 @@ class _ProfilePinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
                 ignoring: progress < 0.4,
                 child: Align(
                   alignment: Alignment.center,
-                  child: _CompactPinnedHeader(overview: overview, enabledSkeleton: enabledSkeleton, avatarImageGeneration: avatarImageGeneration, onBadgeTap: onBadgeTap),
+                  child: _CompactPinnedHeader(
+                    overview: overview,
+                    enabledSkeleton: enabledSkeleton,
+                    avatarImageGeneration: avatarImageGeneration,
+                    onBadgeTap: onBadgeTap,
+                  ),
                 ),
               ),
             ),
@@ -224,13 +338,19 @@ class _ProfilePinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
     return oldDelegate.overview != overview ||
         oldDelegate.enabledSkeleton != enabledSkeleton ||
         oldDelegate.avatarImageGeneration != avatarImageGeneration ||
+        oldDelegate.topInset != topInset ||
         oldDelegate.onBadgeTap != onBadgeTap ||
         oldDelegate.expandedHeader != expandedHeader;
   }
 }
 
 class _CompactPinnedHeader extends StatelessWidget {
-  const _CompactPinnedHeader({required this.overview, required this.enabledSkeleton, required this.avatarImageGeneration, this.onBadgeTap});
+  const _CompactPinnedHeader({
+    required this.overview,
+    required this.enabledSkeleton,
+    required this.avatarImageGeneration,
+    this.onBadgeTap,
+  });
 
   final ProfileOverviewModel overview;
   final bool enabledSkeleton;
@@ -257,7 +377,10 @@ class _CompactPinnedHeader extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: context.appColors.primary, width: 2),
+                  border: Border.all(
+                    color: context.appColors.primary,
+                    width: 2,
+                  ),
                 ),
                 child: Center(child: Bone.circle(size: 40)),
               ),
@@ -266,7 +389,11 @@ class _CompactPinnedHeader extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Bone.text(words: 3, fontSize: 14), const SizedBox(height: 4), Bone.text(words: 2, fontSize: 12)],
+                  children: [
+                    Bone.text(words: 3, fontSize: 14),
+                    const SizedBox(height: 4),
+                    Bone.text(words: 2, fontSize: 12),
+                  ],
                 ),
               ),
             ],
@@ -278,7 +405,9 @@ class _CompactPinnedHeader extends StatelessWidget {
     final rawAvatar = overview.user.avatarUrl.trim();
     var resolvedAvatar = rawAvatar.isEmpty ? '' : Apis.resolveUrl(rawAvatar);
     if (resolvedAvatar.isNotEmpty && avatarImageGeneration != 0) {
-      resolvedAvatar = resolvedAvatar.contains('?') ? '$resolvedAvatar&v=$avatarImageGeneration' : '$resolvedAvatar?v=$avatarImageGeneration';
+      resolvedAvatar = resolvedAvatar.contains('?')
+          ? '$resolvedAvatar&v=$avatarImageGeneration'
+          : '$resolvedAvatar?v=$avatarImageGeneration';
     }
     final hasAvatar = resolvedAvatar.isNotEmpty;
 
@@ -297,7 +426,11 @@ class _CompactPinnedHeader extends StatelessWidget {
             borderWidth: 2,
             heroId: 'profile_pinned_compact_${overview.user.userId}',
             resolvedNetworkUrl: hasAvatar ? resolvedAvatar : '',
-            placeholder: Icon(LucideIcons.user, color: context.appColors.grey, size: 24),
+            placeholder: Icon(
+              LucideIcons.user,
+              color: context.appColors.grey,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -307,7 +440,9 @@ class _CompactPinnedHeader extends StatelessWidget {
               children: [
                 ProfileFullNameWithBadge(
                   user: overview.user,
-                  nameStyle: context.textTheme.bodyMediumSemibold.copyWith(color: context.appColors.text),
+                  nameStyle: context.textTheme.bodyMediumSemibold.copyWith(
+                    color: context.appColors.text,
+                  ),
                   badgeSize: 24,
                   badgeGap: 6,
                   maxLines: 1,
@@ -320,7 +455,9 @@ class _CompactPinnedHeader extends StatelessWidget {
                   profilePhoneSubtitleLine(overview.user.phoneNumber),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey),
+                  style: context.textTheme.bodyXSmallRegular.copyWith(
+                    color: context.appColors.secondaryGrey,
+                  ),
                 ),
               ],
             ),

@@ -1,29 +1,29 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
+import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 
-/// 10 kunlik musobaqa qadamlari: [streakCount] gacha yulduz, keyin raqamlar (sikl 1→10 tangalar).
+/// 7 kunlik streak qadamlari: [streakCount] gacha yulduz, keyin raqamlar.
 class DailyCoinStreakRow extends StatelessWidget {
   const DailyCoinStreakRow({super.key, required this.streakCount});
 
-  /// `1..10` — backend [DailyStreakModel.streakCount].
+  /// Backend qiymati UI uchun `0..7` oralig‘iga cheklanadi.
   final int streakCount;
 
-  static String _weekdayShort(BuildContext context, DateTime day) {
-    final localeTag = Localizations.localeOf(context).toLanguageTag();
-    final fmt = DateFormat('EEE', localeTag);
-    var s = fmt.format(day);
-    if (s.endsWith('.')) {
-      s = s.substring(0, s.length - 1);
+  static String _dayLabel(BuildContext context, int dayNumber) {
+    switch (dayNumber) {
+      case 1:
+        return context.l10n.dailyCoinDayToday;
+      case 2:
+        return context.l10n.dailyCoinDayTomorrow;
+      default:
+        return context.l10n.dailyCoinDayNumber(dayNumber);
     }
-    return s;
   }
 
   @override
   Widget build(BuildContext context) {
-    final today = DateTime.now();
-    final start = today.subtract(const Duration(days: 9));
-    final effectiveStreak = streakCount.clamp(0, 10);
+    final effectiveStreak = streakCount.clamp(0, 7);
 
     const cellOuter = 40.0;
     const gap = 6.0;
@@ -34,22 +34,21 @@ class DailyCoinStreakRow extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         child: Row(
-          children: List.generate(10, (index) {
-            final day = start.add(Duration(days: index));
-            final weekday = _weekdayShort(context, day);
+          children: List.generate(7, (index) {
             final showStar = index < effectiveStreak;
             final number = index + 1;
+            final dayLabel = _dayLabel(context, number);
 
             final greyFill = context.appColors.iconSecondary;
 
             return Padding(
-              padding: EdgeInsets.only(right: index == 9 ? 0 : gap),
+              padding: EdgeInsets.only(right: index == 6 ? 0 : gap),
               child: SizedBox(
                 width: cellOuter,
                 child: Column(
                   children: [
                     Text(
-                      weekday,
+                      dayLabel,
                       maxLines: 1,
                       overflow: TextOverflow.clip,
                       style: context.textTheme.bodyXSmallRegular.copyWith(

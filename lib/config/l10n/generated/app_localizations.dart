@@ -1018,6 +1018,24 @@ abstract class AppLocalizations {
   /// **'You are on the right track'**
   String get dailyCoinStreakSubtitle;
 
+  /// No description provided for @dailyCoinDayToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get dailyCoinDayToday;
+
+  /// No description provided for @dailyCoinDayTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get dailyCoinDayTomorrow;
+
+  /// No description provided for @dailyCoinDayNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day}'**
+  String dailyCoinDayNumber(int day);
+
   /// No description provided for @dailyCoinRewardToday.
   ///
   /// In en, this message translates to:
@@ -2631,6 +2649,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This task action is not available yet'**
   String get tasksActionUnavailable;
+
+  /// No description provided for @birthdayStoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get birthdayStoryLabel;
+
+  /// No description provided for @birthdayStoryCongratulations.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations!'**
+  String get birthdayStoryCongratulations;
+
+  /// No description provided for @birthdayStoryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The Qizlar Akademiyasi team wishes you a very happy birthday!'**
+  String get birthdayStoryMessage;
 }
 
 class _AppLocalizationsDelegate

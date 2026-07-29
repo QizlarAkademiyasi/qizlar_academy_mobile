@@ -24,10 +24,10 @@ class HomeHeaderComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = expandedProgress.clamp(0.0, 1.0);
-    final verticalPadding = 8 + (8 * progress);
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: verticalPadding),
+      height: kToolbarHeight + 8,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       color: Colors.transparent,
       child: Row(
         children: [

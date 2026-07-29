@@ -13,7 +13,10 @@ class VacanciesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<VacancyBloc>()..add(const VacancyStarted()), child: const _VacanciesView());
+    return BlocProvider(
+      create: (_) => getIt<VacancyBloc>()..add(const VacancyStarted()),
+      child: const _VacanciesView(),
+    );
   }
 }
 
@@ -24,7 +27,8 @@ class _VacanciesView extends StatefulWidget {
   State<_VacanciesView> createState() => _VacanciesViewState();
 }
 
-class _VacanciesViewState extends State<_VacanciesView> with VacanciesScreenMixin<_VacanciesView> {
+class _VacanciesViewState extends State<_VacanciesView>
+    with VacanciesScreenMixin<_VacanciesView> {
   bool _onScrollNotification(ScrollNotification n, BuildContext context) {
     if (n.metrics.axis != Axis.vertical) return false;
     if (n is! ScrollUpdateNotification && n is! OverscrollNotification) {
@@ -40,72 +44,105 @@ class _VacanciesViewState extends State<_VacanciesView> with VacanciesScreenMixi
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return Scaffold(
+    return AppPageScaffold(
+      title: context.l10n.vacanciesTitle,
+      onBackTap: () => onVacanciesBackTap(context),
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: BlocConsumer<VacancyBloc, VacancyState>(
-          listenWhen: (previous, current) => current.loadMoreFailed && !previous.loadMoreFailed,
-          listener: vacancyBlocListener,
-          builder: (context, state) {
-            final isInitialLoading = (state.status == VacancyStatus.loading || state.status == VacancyStatus.initial) && state.items.isEmpty;
+      body: BlocConsumer<VacancyBloc, VacancyState>(
+        listenWhen: (previous, current) =>
+            current.loadMoreFailed && !previous.loadMoreFailed,
+        listener: vacancyBlocListener,
+        builder: (context, state) {
+          final isInitialLoading =
+              (state.status == VacancyStatus.loading ||
+                  state.status == VacancyStatus.initial) &&
+              state.items.isEmpty;
 
-            return Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: buildVacanciesTopBar(context)),
-                    Expanded(
-                      child: switch (state.status) {
-                        VacancyStatus.failure when state.items.isEmpty => TgsFailureContent(message: context.l10n.vacanciesLoadError, onRetry: () => retryVacanciesFirstPage(context)),
-                        _ when isInitialLoading => const Padding(padding: EdgeInsets.only(top: 4), child: VacanciesListSkeleton()),
-                        VacancyStatus.success when state.items.isEmpty => Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
-                            child: TgsEmptyContent(message: context.l10n.vacanciesEmptyTitle, subtitle: context.l10n.vacanciesEmptySubtitle),
+          return Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: switch (state.status) {
+                      VacancyStatus.failure when state.items.isEmpty =>
+                        TgsFailureContent(
+                          message: context.l10n.vacanciesLoadError,
+                          onRetry: () => retryVacanciesFirstPage(context),
+                        ),
+                      _ when isInitialLoading => const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: VacanciesListSkeleton(),
+                      ),
+                      VacancyStatus.success when state.items.isEmpty => Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          child: TgsEmptyContent(
+                            message: context.l10n.vacanciesEmptyTitle,
+                            subtitle: context.l10n.vacanciesEmptySubtitle,
                           ),
                         ),
-                        _ => NotificationListener<ScrollNotification>(
-                          onNotification: (n) => _onScrollNotification(n, context),
-                          child: AppStaggeredScrollLimiter(
-                            child: CustomScrollView(
-                              slivers: [
-                                SliverPadding(
-                                  padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + bottomInset),
-                                  sliver: SliverList(
-                                    delegate: SliverChildBuilderDelegate((context, index) {
+                      ),
+                      _ => NotificationListener<ScrollNotification>(
+                        onNotification: (n) =>
+                            _onScrollNotification(n, context),
+                        child: AppStaggeredScrollLimiter(
+                          child: CustomScrollView(
+                            slivers: [
+                              SliverPadding(
+                                padding: EdgeInsets.fromLTRB(
+                                  20,
+                                  0,
+                                  20,
+                                  24 + bottomInset,
+                                ),
+                                sliver: SliverList(
+                                  delegate: SliverChildBuilderDelegate(
+                                    (context, index) {
                                       if (index >= state.items.length) {
                                         return Skeletonizer.zone(
                                           child: const Padding(
-                                            padding: EdgeInsets.only(bottom: 16),
+                                            padding: EdgeInsets.only(
+                                              bottom: 16,
+                                            ),
                                             child: VacancySkeletonCard(),
                                           ),
                                         );
                                       }
                                       return AppStaggeredListItem(
                                         position: index,
-                                        child: buildVacancyListItem(context, state: state, index: index),
+                                        child: buildVacancyListItem(
+                                          context,
+                                          state: state,
+                                          index: index,
+                                        ),
                                       );
-                                    }, childCount: state.items.length + (state.isLoadingMore ? 1 : 0)),
+                                    },
+                                    childCount:
+                                        state.items.length +
+                                        (state.isLoadingMore ? 1 : 0),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      },
-                    ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: context.isDarkTheme ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover) : UiKitAssets.images.bottomNavLight.image(fit: BoxFit.cover),
-                ),
-              ],
-            );
-          },
-        ),
+                      ),
+                    },
+                  ),
+                ],
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: context.isDarkTheme
+                    ? UiKitAssets.images.bottomNavDark.image(fit: BoxFit.cover)
+                    : UiKitAssets.images.bottomNavLight.image(
+                        fit: BoxFit.cover,
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

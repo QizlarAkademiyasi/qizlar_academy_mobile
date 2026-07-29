@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/sign_in_screen.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_args.dart';
@@ -385,13 +386,13 @@ class AppRoute {
           builder: (context, state) {
             final extra = state.extra;
             if (extra is! CoursesSearchArgs) {
-              return Scaffold(
-                appBar: AppBar(
-                  leading: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => context.pop(),
-                  ),
+              return AppPageScaffold(
+                title: '',
+                backButton: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => context.pop(),
                 ),
+                body: const SizedBox.expand(),
               );
             }
             return BlocProvider.value(

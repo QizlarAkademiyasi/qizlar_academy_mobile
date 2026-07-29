@@ -517,6 +517,17 @@ class AppLocalizationsUz extends AppLocalizations {
   String get dailyCoinStreakSubtitle => 'To‘g‘ri yo‘ldasiz';
 
   @override
+  String get dailyCoinDayToday => 'Bugun';
+
+  @override
+  String get dailyCoinDayTomorrow => 'Ertaga';
+
+  @override
+  String dailyCoinDayNumber(int day) {
+    return '$day kun';
+  }
+
+  @override
   String dailyCoinRewardToday(int coins) {
     return 'Bugun +$coins tanga';
   }
@@ -1438,4 +1449,14 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get tasksActionUnavailable =>
       'Bu vazifa uchun amal hozircha mavjud emas';
+
+  @override
+  String get birthdayStoryLabel => 'Tug‘ilgan kun';
+
+  @override
+  String get birthdayStoryCongratulations => 'Tabriklaymiz!';
+
+  @override
+  String get birthdayStoryMessage =>
+      '“Qizlar Akademiyasi” jamoasi sizni chin qalbdan tabriklaydi!';
 }

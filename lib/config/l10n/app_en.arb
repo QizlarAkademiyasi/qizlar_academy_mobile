@@ -215,6 +215,16 @@
     }
   },
   "dailyCoinStreakSubtitle": "You are on the right track",
+  "dailyCoinDayToday": "Today",
+  "dailyCoinDayTomorrow": "Tomorrow",
+  "dailyCoinDayNumber": "Day {day}",
+  "@dailyCoinDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
   "dailyCoinRewardToday": "+{coins} coins today",
   "@dailyCoinRewardToday": {
     "placeholders": {
@@ -722,5 +732,8 @@
   "tasksEmptyTitle": "No tasks yet",
   "tasksEmptySubtitle": "New tasks will appear here",
   "tasksLoadError": "Could not load tasks. Try again.",
-  "tasksActionUnavailable": "This task action is not available yet"
+  "tasksActionUnavailable": "This task action is not available yet",
+  "birthdayStoryLabel": "Birthday",
+  "birthdayStoryCongratulations": "Congratulations!",
+  "birthdayStoryMessage": "The Qizlar Akademiyasi team wishes you a very happy birthday!"
 }

@@ -533,21 +533,29 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
     final settledMinimizeT = minimizeT.clamp(0.0, 1.0);
     final marginMinimizeT = layoutMinimizeT.clamp(0.0, 1.1);
     final compactHeight = math.max(48.0, widget.height - 14);
-    final resolvedHeight =
+    final rawHeight =
         lerpDouble(widget.height, compactHeight, layoutMinimizeT) ??
         widget.height;
+    final resolvedHeight = math.max(0.0, rawHeight);
     final compactMargin = EdgeInsets.fromLTRB(
       widget.margin.left + 28,
       math.max(0, widget.margin.top - 8),
       widget.margin.right + 28,
       math.max(0, widget.margin.bottom - 8),
     );
-    final resolvedMargin =
+    final rawResolvedMargin =
         EdgeInsets.lerp(widget.margin, compactMargin, marginMinimizeT) ??
         widget.margin;
-    final resolvedExtraSpacing =
+    final resolvedMargin = EdgeInsets.fromLTRB(
+      math.max(0.0, rawResolvedMargin.left),
+      math.max(0.0, rawResolvedMargin.top),
+      math.max(0.0, rawResolvedMargin.right),
+      math.max(0.0, rawResolvedMargin.bottom),
+    );
+    final rawExtraSpacing =
         lerpDouble(widget.extraButtonSpacing, 8, layoutMinimizeT) ??
         widget.extraButtonSpacing;
+    final resolvedExtraSpacing = math.max(0.0, rawExtraSpacing);
     final Widget? resolvedExtra = widget.extraActionIcon != null
         ? _SecondLiquidBottomNavExtraIconButton(
             height: resolvedHeight,

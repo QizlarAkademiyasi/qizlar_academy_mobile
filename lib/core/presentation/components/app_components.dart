@@ -15,6 +15,7 @@ export 'package:qizlar_academy_mobile/core/presentation/components/app_tablet_ma
 export 'package:qizlar_academy_mobile/core/presentation/components/app_dropdown_field.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_spinner_date_picker_field.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_bottom_sheet.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_blurred_app_bar.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_blurred_header_surface.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_failure_state.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_cached_network_image.dart';

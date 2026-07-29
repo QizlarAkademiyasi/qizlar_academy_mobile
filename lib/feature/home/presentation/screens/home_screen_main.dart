@@ -142,10 +142,12 @@ class _HomeScreenState extends State<HomeScreen>
                 isLoading || lastLessonTitle.isNotEmpty;
             final staggerIndexBeforeBanners =
                 isAnonymous || showRegisteredStatsSection ? 1 : 0;
+            final topPadding = MediaQuery.paddingOf(context).top;
 
             return Scaffold(
               backgroundColor: context.theme.scaffoldBackgroundColor,
               body: SafeArea(
+                top: false,
                 bottom: false,
                 child: RefreshIndicator(
                   onRefresh: () async {
@@ -165,12 +167,14 @@ class _HomeScreenState extends State<HomeScreen>
                         children: [
                           ListView(
                             controller: _scrollController,
+                            padding: EdgeInsets.zero,
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: [
                               SizedBox(
                                 height: StoryBarWidget.layoutExtent(
                                   isLoading: state.categoriesLoading,
                                   stories: state.categories,
+                                  topPadding: topPadding,
                                 ),
                               ),
                               if (isFailure) ...[
@@ -251,6 +255,7 @@ class _HomeScreenState extends State<HomeScreen>
                               scrollController: _scrollController,
                               isLoading: state.categoriesLoading,
                               list: state.categories,
+                              topPadding: topPadding,
                               headerBuilder: (context, expandedProgress) =>
                                   buildHeader(
                                     context,

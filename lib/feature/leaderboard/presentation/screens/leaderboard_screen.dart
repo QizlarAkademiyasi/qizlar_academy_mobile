@@ -145,131 +145,140 @@ class _LeaderboardViewState extends State<_LeaderboardView>
             }
           }
 
-          return SafeArea(
-            bottom: false,
-            child: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverPadding(
-                  padding: AppPadding.paddingHorizontalLg,
-                  sliver: SliverToBoxAdapter(
+          return NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              AppBlurredSliverAppBar(
+                automaticallyImplyLeading: false,
+                titleSpacing: 20,
+                title: Text(
+                  context.l10n.leaderboardTitle,
+                  style: context.textTheme.heading6.copyWith(
+                    color: context.appColors.text,
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                sliver: SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      context.l10n.leaderboardSubtitle,
+                      style: context.textTheme.bodyMediumRegular.copyWith(
+                        color: context.appColors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _PinnedFiltersDelegate(
+                  height: _pinnedFiltersHeight,
+                  child: Padding(
+                    padding: AppPadding.paddingHorizontalLg,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        buildLeaderboardHeader(context),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _PinnedFiltersDelegate(
-                    height: _pinnedFiltersHeight,
-                    child: Padding(
-                      padding: AppPadding.paddingHorizontalLg,
-                      child: Column(
-                        children: [
-                          buildLeaderboardTabs(
-                            context,
-                            tabController: _tabController,
-                            onChanged: (index) {
-                              if (_syncingFromPage) return;
-                              onTimeframeChanged(index);
-                              _syncingFromBloc = true;
-                              _timeframePageController.jumpToPage(index.index);
-                              _syncingFromBloc = false;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          buildLeaderboardCategoryDropdown(
-                            context,
-                            selectedCourseName: selectedCourseName,
-                            onTap: isBootstrapping || isLoading
-                                ? () {}
-                                : () => onCategoryTap(
-                                    context,
-                                    options: state.courseOptions,
-                                    selectedId: state.selectedCourseId,
-                                  ),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              body: PageView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                controller: _timeframePageController,
-                itemCount: 3,
-                onPageChanged: (index) {
-                  if (_syncingFromBloc) return;
-                  _syncingFromPage = true;
-                  onTimeframeChanged(LeaderboardTimeframe.values[index]);
-                  if (_tabController.index != index) {
-                    _tabController.animateTo(index);
-                  }
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _syncingFromPage = false;
-                  });
-                },
-                itemBuilder: (context, pageIndex) {
-                  // UX: hozirgi timeframe'dan boshqa sahifalarda ham bir xil layout ko'rinadi;
-                  // timeframe o'zgarganda bloc state yangilanadi va PageView animatsiya bilan
-                  // yangi data ko'rsatadi.
-                  if (isBootstrapping) {
-                    return ListView(
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      children: const [
-                        LeaderboardTopPerformersSkeleton(),
-                        SizedBox(height: 24),
-                        LeaderboardFullListSkeleton(),
-                      ],
-                    );
-                  }
-
-                  if (!isLoading && state.fullList.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: AppPadding.paddingHorizontalLg,
-                        child: TgsEmptyContent(
-                          message: context.l10n.leaderboardNoRatingYet,
-                          animationSize: 150,
+                        buildLeaderboardTabs(
+                          context,
+                          tabController: _tabController,
+                          onChanged: (index) {
+                            if (_syncingFromPage) return;
+                            onTimeframeChanged(index);
+                            _syncingFromBloc = true;
+                            _timeframePageController.jumpToPage(index.index);
+                            _syncingFromBloc = false;
+                          },
                         ),
-                      ),
-                    );
-                  }
-
-                  return ListView(
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      0,
-                      20,
-                      24 + bottomInset + 48,
+                        const SizedBox(height: 16),
+                        buildLeaderboardCategoryDropdown(
+                          context,
+                          selectedCourseName: selectedCourseName,
+                          onTap: isBootstrapping || isLoading
+                              ? () {}
+                              : () => onCategoryTap(
+                                  context,
+                                  options: state.courseOptions,
+                                  selectedId: state.selectedCourseId,
+                                ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
-                    children: [
-                      buildLeaderboardTopPerformers(
-                        context,
-                        topThree: displayTopThree,
-                        onUserTap: (user) {
-                          if (isLoading) return;
-                          onLeaderboardUserTap(context, user);
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      buildLeaderboardFullList(
-                        context,
-                        fullList: state.fullList,
-                        onUserTap: (user) {
-                          if (isLoading) return;
-                          onLeaderboardUserTap(context, user);
-                        },
-                      ),
+                  ),
+                ),
+              ),
+            ],
+            body: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: _timeframePageController,
+              itemCount: 3,
+              onPageChanged: (index) {
+                if (_syncingFromBloc) return;
+                _syncingFromPage = true;
+                onTimeframeChanged(LeaderboardTimeframe.values[index]);
+                if (_tabController.index != index) {
+                  _tabController.animateTo(index);
+                }
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _syncingFromPage = false;
+                });
+              },
+              itemBuilder: (context, pageIndex) {
+                // UX: hozirgi timeframe'dan boshqa sahifalarda ham bir xil layout ko'rinadi;
+                // timeframe o'zgarganda bloc state yangilanadi va PageView animatsiya bilan
+                // yangi data ko'rsatadi.
+                if (isBootstrapping) {
+                  return ListView(
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    children: const [
+                      LeaderboardTopPerformersSkeleton(),
+                      SizedBox(height: 24),
+                      LeaderboardFullListSkeleton(),
                     ],
                   );
-                },
-              ),
+                }
+
+                if (!isLoading && state.fullList.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: AppPadding.paddingHorizontalLg,
+                      child: TgsEmptyContent(
+                        message: context.l10n.leaderboardNoRatingYet,
+                        animationSize: 150,
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    0,
+                    20,
+                    24 + bottomInset + 48,
+                  ),
+                  children: [
+                    buildLeaderboardTopPerformers(
+                      context,
+                      topThree: displayTopThree,
+                      onUserTap: (user) {
+                        if (isLoading) return;
+                        onLeaderboardUserTap(context, user);
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    buildLeaderboardFullList(
+                      context,
+                      fullList: state.fullList,
+                      onUserTap: (user) {
+                        if (isLoading) return;
+                        onLeaderboardUserTap(context, user);
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           );
         },

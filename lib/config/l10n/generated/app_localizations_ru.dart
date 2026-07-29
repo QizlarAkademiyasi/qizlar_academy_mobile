@@ -523,6 +523,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dailyCoinStreakSubtitle => 'Вы на верном пути';
 
   @override
+  String get dailyCoinDayToday => 'Сегодня';
+
+  @override
+  String get dailyCoinDayTomorrow => 'Завтра';
+
+  @override
+  String dailyCoinDayNumber(int day) {
+    String _temp0 = intl.Intl.pluralLogic(
+      day,
+      locale: localeName,
+      other: '$day дня',
+      many: '$day дней',
+      few: '$day дня',
+      one: '$day день',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String dailyCoinRewardToday(int coins) {
     return '+$coins монет сегодня';
   }
@@ -1441,4 +1460,14 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get tasksActionUnavailable =>
       'Действие для этого задания пока недоступно';
+
+  @override
+  String get birthdayStoryLabel => 'День рождения';
+
+  @override
+  String get birthdayStoryCongratulations => 'Поздравляем!';
+
+  @override
+  String get birthdayStoryMessage =>
+      'Команда «Qizlar Akademiyasi» от всей души поздравляет вас!';
 }

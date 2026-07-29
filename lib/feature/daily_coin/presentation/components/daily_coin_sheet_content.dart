@@ -22,8 +22,12 @@ class DailyCoinSheetContent extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TgsFailureContent(
-                  message: state.message == 'claim_failed' ? l10n.dailyCoinClaimError : l10n.dailyCoinLoadError,
-                  onRetry: () => context.read<DailyCoinBloc>().add(const DailyCoinRefreshed()),
+                  message: state.message == 'claim_failed'
+                      ? l10n.dailyCoinClaimError
+                      : l10n.dailyCoinLoadError,
+                  onRetry: () => context.read<DailyCoinBloc>().add(
+                    const DailyCoinRefreshed(),
+                  ),
                 ),
               ],
             ),
@@ -31,7 +35,7 @@ class DailyCoinSheetContent extends StatelessWidget {
         }
 
         final count = streak?.streakCount ?? 0;
-        final displayCount = count.clamp(1, 10);
+        final displayCount = count.clamp(1, 7);
 
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -39,26 +43,42 @@ class DailyCoinSheetContent extends StatelessWidget {
             Container(
               width: 64,
               height: 64,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: context.appColors.iconSecondary.withValues(alpha: 0.35)),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: context.appColors.iconSecondary.withValues(alpha: 0.35),
+              ),
               child: Center(
                 child: Container(
                   width: 74,
                   height: 74,
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: context.appColors.onContainer.withValues(alpha: 0.35)),
-                  child: Icon(LucideIcons.circleStar, size: 38, color: AppColors.otherOrange),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: context.appColors.onContainer.withValues(
+                      alpha: 0.35,
+                    ),
+                  ),
+                  child: Icon(
+                    LucideIcons.circleStar,
+                    size: 38,
+                    color: AppColors.otherOrange,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 20),
             Text(
               l10n.dailyCoinStreakTitle(displayCount),
-              style: context.textTheme.heading6.copyWith(color: context.appColors.text),
+              style: context.textTheme.heading6.copyWith(
+                color: context.appColors.text,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               l10n.dailyCoinStreakSubtitle,
-              style: context.textTheme.bodyMediumRegular.copyWith(color: context.appColors.text.withValues(alpha: 0.82)),
+              style: context.textTheme.bodyMediumRegular.copyWith(
+                color: context.appColors.text.withValues(alpha: 0.82),
+              ),
               textAlign: TextAlign.center,
             ),
             // if (streak?.isClaimed != true && streak != null) ...[
@@ -77,15 +97,18 @@ class DailyCoinSheetContent extends StatelessWidget {
               )
             else ...[
               DailyCoinStreakRow(streakCount: displayCount),
-              const SizedBox(height: 8),
-              PrimaryButton.elevated(
-                applyTabletMaxWidth: false,
-                shape: AppPrimaryButtonShape.roundedRectangle,
-                label: streak?.isClaimed == true ? l10n.dailyCoinClaimedButton : l10n.dailyCoinClaimButton,
-                isEnabled: streak?.isClaimed != true,
-                isLoading: state.status == DailyCoinStatus.claiming,
-                onPressed: streak?.isClaimed == true ? null : () => context.read<DailyCoinBloc>().add(const DailyCoinClaimPressed()),
-              ),
+              if (streak?.isClaimed != true) ...[
+                const SizedBox(height: 8),
+                PrimaryButton.elevated(
+                  applyTabletMaxWidth: false,
+                  shape: AppPrimaryButtonShape.roundedRectangle,
+                  label: l10n.dailyCoinClaimButton,
+                  isLoading: state.status == DailyCoinStatus.claiming,
+                  onPressed: () => context.read<DailyCoinBloc>().add(
+                    const DailyCoinClaimPressed(),
+                  ),
+                ),
+              ],
             ],
           ],
         );

@@ -11,7 +11,11 @@ import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/cours
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/lesson_quiz_screen_mixin.dart';
 
 class LessonQuizScreen extends StatelessWidget {
-  const LessonQuizScreen({super.key, required this.lessonId, this.launchContext});
+  const LessonQuizScreen({
+    super.key,
+    required this.lessonId,
+    this.launchContext,
+  });
 
   final String lessonId;
   final LessonQuizLaunchContext? launchContext;
@@ -28,7 +32,9 @@ class LessonQuizScreen extends StatelessWidget {
     return LessonQuizLaunchScope(
       launch: launchContext,
       child: BlocProvider(
-        create: (_) => LessonQuizBloc(getIt<LessonQuizRepository>(), lessonId: id)..add(const LessonQuizStarted()),
+        create: (_) =>
+            LessonQuizBloc(getIt<LessonQuizRepository>(), lessonId: id)
+              ..add(const LessonQuizStarted()),
         child: const LessonQuizView(),
       ),
     );
@@ -42,7 +48,8 @@ class LessonQuizView extends StatefulWidget {
   State<LessonQuizView> createState() => _LessonQuizViewState();
 }
 
-class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMixin<LessonQuizView> {
+class _LessonQuizViewState extends State<LessonQuizView>
+    with LessonQuizScreenMixin<LessonQuizView> {
   LessonQuizState? _quizPrevState;
   late final PageController _quizPageController;
 
@@ -59,7 +66,10 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
   }
 
   void _syncQuizPageView(LessonQuizState prev, LessonQuizState next) {
-    if (next.questions.isEmpty || next.status == LessonQuizUiStatus.previewResult) return;
+    if (next.questions.isEmpty ||
+        next.status == LessonQuizUiStatus.previewResult) {
+      return;
+    }
     if (prev.currentIndex == next.currentIndex) return;
     final i = next.currentIndex;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,7 +78,11 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
       if (i < 0 || i >= next.questions.length) return;
       final cur = _quizPageController.page?.round() ?? 0;
       if (cur != i) {
-        _quizPageController.animateToPage(i, duration: const Duration(milliseconds: 280), curve: Curves.easeOutCubic);
+        _quizPageController.animateToPage(
+          i,
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutCubic,
+        );
       }
     });
   }
@@ -95,33 +109,30 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
         },
         builder: (context, state) {
           if (state.questions.isEmpty) {
-            return Scaffold(
-              backgroundColor: context.theme.scaffoldBackgroundColor,
-              appBar: AppBar(title: Text(context.l10n.lessonQuizTitle)),
+            return AppPageScaffold(
+              title: context.l10n.lessonQuizTitle,
               body: const Center(child: CircularProgressIndicator()),
             );
           }
 
           if (state.status == LessonQuizUiStatus.previewResult) {
-            return Scaffold(
-              backgroundColor: context.theme.scaffoldBackgroundColor,
-              appBar: AppBar(title: Text(context.l10n.lessonQuizTitle)),
+            return AppPageScaffold(
+              title: context.l10n.lessonQuizTitle,
               body: const Center(child: CircularProgressIndicator()),
             );
           }
 
           if (state.status == LessonQuizUiStatus.loading) {
-            return Scaffold(
-              backgroundColor: context.theme.scaffoldBackgroundColor,
-              appBar: AppBar(title: Text(context.l10n.lessonQuizTitle)),
+            return AppPageScaffold(
+              title: context.l10n.lessonQuizTitle,
               body: const Center(child: CircularProgressIndicator()),
             );
           }
 
           final q = state.currentQuestion;
           if (q == null) {
-            return Scaffold(
-              appBar: AppBar(title: Text(context.l10n.lessonQuizTitle)),
+            return AppPageScaffold(
+              title: context.l10n.lessonQuizTitle,
               body: const Center(child: CircularProgressIndicator()),
             );
           }
@@ -132,38 +143,65 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
           final revealed = state.isCurrentRevealed;
           final selected = state.selectedByQuizId[q.id] ?? {};
           final isMulti = q.type == LessonQuizQuestionType.multipleChoice;
-          final doneRatio = total == 0 ? 0.0 : (idx + (revealed ? 1 : 0)) / total;
+          final doneRatio = total == 0
+              ? 0.0
+              : (idx + (revealed ? 1 : 0)) / total;
           final pct = (doneRatio * 100).clamp(0, 100).round();
-          final primaryEnabled = isMulti && !busy && state.status == LessonQuizUiStatus.ready && !revealed && selected.isNotEmpty;
+          final primaryEnabled =
+              isMulti &&
+              !busy &&
+              state.status == LessonQuizUiStatus.ready &&
+              !revealed &&
+              selected.isNotEmpty;
           final bottomInset = 16 + MediaQuery.paddingOf(context).bottom;
           final listBottomPad = isMulti ? 100.0 : 24.0;
 
-          return Scaffold(
+          return AppPageScaffold(
+            title: '',
             backgroundColor: context.theme.scaffoldBackgroundColor,
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(context.l10n.lessonQuizTitle, style: context.textTheme.bodyLargeBold),
-              leading: IconButton(icon: const Icon(LucideIcons.x), onPressed: _confirmPop),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.12), borderRadius: AppRadius.radius5xl),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(LucideIcons.clock, size: 16, color: AppColors.primary),
-                          const SizedBox(width: 6),
-                          Text(formattedQuizCountdown() ?? '--:--', style: context.textTheme.bodySmallSemibold.copyWith(color: AppColors.primary)),
-                        ],
-                      ),
+            centerTitle: true,
+            titleWidget: Text(
+              context.l10n.lessonQuizTitle,
+              style: context.textTheme.bodyLargeBold,
+            ),
+            backButton: IconButton(
+              icon: const Icon(LucideIcons.x),
+              onPressed: _confirmPop,
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      borderRadius: AppRadius.radius5xl,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          LucideIcons.clock,
+                          size: 16,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          formattedQuizCountdown() ?? '--:--',
+                          style: context.textTheme.bodySmallSemibold.copyWith(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -179,20 +217,44 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(context.l10n.lessonQuizQuestionLabel, style: context.textTheme.bodyXSmallBold.copyWith(color: AppColors.primary, letterSpacing: 0.6)),
+                                Text(
+                                  context.l10n.lessonQuizQuestionLabel,
+                                  style: context.textTheme.bodyXSmallBold
+                                      .copyWith(
+                                        color: AppColors.primary,
+                                        letterSpacing: 0.6,
+                                      ),
+                                ),
                                 const SizedBox(height: 4),
-                                Text(context.l10n.lessonQuizQuestionProgress(idx + 1, total), style: context.textTheme.bodyLargeBold.copyWith(color: context.appColors.text)),
+                                Text(
+                                  context.l10n.lessonQuizQuestionProgress(
+                                    idx + 1,
+                                    total,
+                                  ),
+                                  style: context.textTheme.bodyLargeBold
+                                      .copyWith(color: context.appColors.text),
+                                ),
                               ],
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Text(context.l10n.lessonQuizPercentComplete(pct), style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.grey)),
+                          Text(
+                            context.l10n.lessonQuizPercentComplete(pct),
+                            style: context.textTheme.bodyXSmallRegular.copyWith(
+                              color: context.appColors.grey,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 10),
                       ClipRRect(
                         borderRadius: AppRadius.radius5xl,
-                        child: LinearProgressIndicator(value: doneRatio.clamp(0.0, 1.0), minHeight: 8, backgroundColor: context.appColors.stroke, color: AppColors.primary),
+                        child: LinearProgressIndicator(
+                          value: doneRatio.clamp(0.0, 1.0),
+                          minHeight: 8,
+                          backgroundColor: context.appColors.stroke,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ],
                   ),
@@ -205,9 +267,12 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                     itemBuilder: (context, pageIndex) {
                       final question = state.questions[pageIndex];
                       final isActive = pageIndex == idx;
-                      final qRevealed = state.revealedByQuizId.containsKey(question.id);
+                      final qRevealed = state.revealedByQuizId.containsKey(
+                        question.id,
+                      );
                       final qCorrect = state.revealedByQuizId[question.id];
-                      final qSelected = state.selectedByQuizId[question.id] ?? {};
+                      final qSelected =
+                          state.selectedByQuizId[question.id] ?? {};
                       final imageUrl = _quizQuestionImageUrl(question);
                       final optionEnabled = isActive && !busy && !qRevealed;
 
@@ -219,8 +284,18 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                             decoration: BoxDecoration(
                               color: context.appColors.onContainer,
                               borderRadius: AppRadius.radius2xl,
-                              border: Border.all(color: context.appColors.stroke),
-                              boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 4))],
+                              border: Border.all(
+                                color: context.appColors.stroke,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: context.appColors.shadow.withValues(
+                                    alpha: 0.06,
+                                  ),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,15 +303,34 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                                 Row(
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(color: AppColors.primary, borderRadius: AppRadius.radius5xl),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary,
+                                        borderRadius: AppRadius.radius5xl,
+                                      ),
                                       child: Text(
-                                        question.type == LessonQuizQuestionType.multipleChoice ? context.l10n.lessonQuizTypeMultiple : context.l10n.lessonQuizTypeSingle,
-                                        style: context.textTheme.bodyXSmallBold.copyWith(color: AppColors.white),
+                                        question.type ==
+                                                LessonQuizQuestionType
+                                                    .multipleChoice
+                                            ? context
+                                                  .l10n
+                                                  .lessonQuizTypeMultiple
+                                            : context.l10n.lessonQuizTypeSingle,
+                                        style: context.textTheme.bodyXSmallBold
+                                            .copyWith(color: AppColors.white),
                                       ),
                                     ),
                                     const Spacer(),
-                                    Icon(LucideIcons.lightbulb, size: 20, color: context.appColors.grey.withValues(alpha: 0.45)),
+                                    Icon(
+                                      LucideIcons.lightbulb,
+                                      size: 20,
+                                      color: context.appColors.grey.withValues(
+                                        alpha: 0.45,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 if (imageUrl != null) ...[
@@ -245,12 +339,22 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                                     borderRadius: AppRadius.radiusXl,
                                     child: AspectRatio(
                                       aspectRatio: 16 / 9,
-                                      child: AppCachedNetworkImage(imageUrl: imageUrl, fit: BoxFit.cover),
+                                      child: AppCachedNetworkImage(
+                                        imageUrl: imageUrl,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                 ],
                                 const SizedBox(height: 12),
-                                Text(question.question, style: context.textTheme.bodyMediumBold.copyWith(color: context.appColors.text, height: 1.4)),
+                                Text(
+                                  question.question,
+                                  style: context.textTheme.bodyMediumBold
+                                      .copyWith(
+                                        color: context.appColors.text,
+                                        height: 1.4,
+                                      ),
+                                ),
                               ],
                             ),
                           ),
@@ -275,8 +379,11 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                                 enabled: optionEnabled,
                                 onTap: () {
                                   final bloc = context.read<LessonQuizBloc>();
-                                  if (question.type == LessonQuizQuestionType.singleChoice) {
-                                    bloc.add(LessonQuizSingleOptionChosen(opt.id));
+                                  if (question.type ==
+                                      LessonQuizQuestionType.singleChoice) {
+                                    bloc.add(
+                                      LessonQuizSingleOptionChosen(opt.id),
+                                    );
                                   } else {
                                     bloc.add(LessonQuizOptionToggled(opt.id));
                                   }
@@ -294,7 +401,11 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                     padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset),
                     child: PrimaryButton.elevated(
                       label: context.l10n.lessonQuizMark,
-                      onPressed: primaryEnabled ? () => context.read<LessonQuizBloc>().add(const LessonQuizPrimaryPressed()) : null,
+                      onPressed: primaryEnabled
+                          ? () => context.read<LessonQuizBloc>().add(
+                              const LessonQuizPrimaryPressed(),
+                            )
+                          : null,
                       isLoading: busy,
                       expand: true,
                       applyTabletMaxWidth: false,
@@ -302,7 +413,9 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                       shape: AppPrimaryButtonShape.roundedRectangle,
                       borderRadius: AppRadius.radius3xl,
                       backgroundColor: AppColors.primary,
-                      textStyle: context.textTheme.bodyLargeBold.copyWith(color: AppColors.white),
+                      textStyle: context.textTheme.bodyLargeBold.copyWith(
+                        color: AppColors.white,
+                      ),
                     ),
                   )
                 else if (isMulti && revealed)
@@ -313,7 +426,14 @@ class _LessonQuizViewState extends State<LessonQuizView> with LessonQuizScreenMi
                     child: const SizedBox(
                       height: 54,
                       child: Center(
-                        child: SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.primary)),
+                        child: SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: AppColors.primary,
+                          ),
+                        ),
                       ),
                     ),
                   )

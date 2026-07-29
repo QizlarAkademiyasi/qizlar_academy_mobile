@@ -22,11 +22,21 @@ Widget _dailyCoinSheetPage(BuildContext context) {
   return BlocProvider(
     create: (_) => getIt<DailyCoinBloc>()..add(const DailyCoinStarted()),
     child: BlocListener<DailyCoinBloc, DailyCoinState>(
-      listenWhen: (previous, current) =>
-          current.status == DailyCoinStatus.failure &&
-          current.message == 'claim_failed' &&
-          current.streak != null,
+      listenWhen: (previous, current) {
+        final claimSucceeded =
+            previous.status == DailyCoinStatus.claiming &&
+            current.status == DailyCoinStatus.success;
+        final claimFailed =
+            current.status == DailyCoinStatus.failure &&
+            current.message == 'claim_failed' &&
+            current.streak != null;
+        return claimSucceeded || claimFailed;
+      },
       listener: (context, state) {
+        if (state.status == DailyCoinStatus.success) {
+          Navigator.of(context).pop();
+          return;
+        }
         AppToast.error(context, message: context.l10n.dailyCoinClaimError);
       },
       child: AppBottomSheetContainer(
@@ -39,7 +49,7 @@ Widget _dailyCoinSheetPage(BuildContext context) {
             Colors.transparent,
           ],
         ),
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+        // padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
         child: const DailyCoinSheetContent(),
       ),
     ),
@@ -47,10 +57,7 @@ Widget _dailyCoinSheetPage(BuildContext context) {
 }
 
 Future<void> _openDailyCoinBottomSheet(BuildContext context) {
-  return showAppBottomSheet<void>(
-    context,
-    child: _dailyCoinSheetPage(context),
-  );
+  return showAppBottomSheet<void>(context, child: _dailyCoinSheetPage(context));
 }
 
 /// Qo‘lda ochish (Tangalar bloki): kun uchun «bir marta» auto-sheet bilan ziddiyat yo‘q.
@@ -65,7 +72,9 @@ Future<void> showDailyCoinBottomSheet(BuildContext context) async {
 ///
 /// Qaytishi: `null` — snapshot yo‘q, birozdan keyin qayta urinish mumkin;
 /// `true` — sheet muvaffaqiyatli ochildi; `false` — ochilmadi (olingan, boshqa kun, allaqachon ochilgan).
-Future<bool?> tryAutopresentDailyCoinSheetFromHomePrefetch(BuildContext context) async {
+Future<bool?> tryAutopresentDailyCoinSheetFromHomePrefetch(
+  BuildContext context,
+) async {
   if (!kDailyCoinFeatureEnabled) return false;
   final prefs = getIt<SharedPreferences>();
   final today = DailyCoinCalendarDay.todayLocal();

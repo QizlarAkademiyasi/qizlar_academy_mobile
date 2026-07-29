@@ -63,11 +63,14 @@ class _StoreViewState extends State<_StoreView>
 
   @override
   Widget build(BuildContext context) {
+    final topInset = MediaQuery.paddingOf(context).top;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final headerExtent = topInset + _headerHeight;
 
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
       body: SafeArea(
+        top: false,
         bottom: false,
         child: BlocConsumer<StoreCatalogBloc, StoreCatalogState>(
           listenWhen: (previous, current) =>
@@ -85,19 +88,19 @@ class _StoreViewState extends State<_StoreView>
                   child: switch (state.status) {
                     StoreCatalogStatus.failure when state.items.isEmpty =>
                       Padding(
-                        padding: const EdgeInsets.only(top: _headerHeight),
+                        padding: EdgeInsets.only(top: headerExtent),
                         child: TgsFailureContent(
                           message: "Mahsulotlarni yuklashda xatolik",
                           onRetry: () => retryFirstPage(context),
                         ),
                       ),
-                    _ when isInitialLoading => const SingleChildScrollView(
-                      padding: EdgeInsets.only(top: _headerHeight),
-                      child: StoreProductGridSkeleton(),
+                    _ when isInitialLoading => SingleChildScrollView(
+                      padding: EdgeInsets.only(top: headerExtent),
+                      child: const StoreProductGridSkeleton(),
                     ),
                     StoreCatalogStatus.success when state.items.isEmpty =>
                       Padding(
-                        padding: const EdgeInsets.only(top: _headerHeight),
+                        padding: EdgeInsets.only(top: headerExtent),
                         child: Center(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -130,7 +133,7 @@ class _StoreViewState extends State<_StoreView>
                         child: GridView.builder(
                           padding: EdgeInsets.fromLTRB(
                             12,
-                            _headerHeight,
+                            headerExtent,
                             20,
                             24 + bottomInset + widget.bottomContentInset,
                           ),
@@ -173,25 +176,28 @@ class _StoreViewState extends State<_StoreView>
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: _headerHeight,
+                  height: headerExtent,
                   child: AppBlurredHeaderSurface(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Padding(
-                          padding: AppPadding.paddingHorizontalLg,
-                          child: buildStoreTopBar(
-                            context,
-                            showBackButton: widget.showBackButton,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: topInset),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: AppPadding.paddingHorizontalLg,
+                            child: buildStoreTopBar(
+                              context,
+                              showBackButton: widget.showBackButton,
+                            ),
                           ),
-                        ),
-                        StoreCategoryChips(
-                          categories: buildCategoryChips(state),
-                          selectedId: state.selectedCategoryId,
-                          onSelected: (id) => onCategoryChanged(context, id),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
+                          StoreCategoryChips(
+                            categories: buildCategoryChips(state),
+                            selectedId: state.selectedCategoryId,
+                            onSelected: (id) => onCategoryChanged(context, id),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
                     ),
                   ),
                 ),

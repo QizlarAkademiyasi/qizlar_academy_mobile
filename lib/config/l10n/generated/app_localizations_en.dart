@@ -519,6 +519,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyCoinStreakSubtitle => 'You are on the right track';
 
   @override
+  String get dailyCoinDayToday => 'Today';
+
+  @override
+  String get dailyCoinDayTomorrow => 'Tomorrow';
+
+  @override
+  String dailyCoinDayNumber(int day) {
+    return 'Day $day';
+  }
+
+  @override
   String dailyCoinRewardToday(int coins) {
     return '+$coins coins today';
   }
@@ -1425,4 +1436,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tasksActionUnavailable => 'This task action is not available yet';
+
+  @override
+  String get birthdayStoryLabel => 'Birthday';
+
+  @override
+  String get birthdayStoryCongratulations => 'Congratulations!';
+
+  @override
+  String get birthdayStoryMessage =>
+      'The Qizlar Akademiyasi team wishes you a very happy birthday!';
 }

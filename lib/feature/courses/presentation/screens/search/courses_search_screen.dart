@@ -33,60 +33,69 @@ class CoursesSearchView extends StatefulWidget {
   State<CoursesSearchView> createState() => _CoursesSearchViewState();
 }
 
-class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearchScreenMixin {
+class _CoursesSearchViewState extends State<CoursesSearchView>
+    with CoursesSearchScreenMixin {
   Object _searchStaggerScrollKey(CoursesCatalogState state) {
     final o = state.overview;
     if (o == null) {
-      return ValueKey<String>('courses_search_${state.status.name}_${state.query}');
+      return ValueKey<String>(
+        'courses_search_${state.status.name}_${state.query}',
+      );
     }
     return ObjectKey(o);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppPageScaffold(
+      title: '',
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: context.theme.scaffoldBackgroundColor,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        automaticallyImplyLeading: false,
-        titleSpacing: 16,
-        title: buildSearchHeroField(context, forAppBar: true),
-        actions: [
-          AppBackButton(onTap: () => onSearchDismiss(context), icon: Icons.close_rounded, tooltip: context.l10n.courseCompleteClose),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: SafeArea(
-        top: false,
-        child: BlocConsumer<CoursesCatalogBloc, CoursesCatalogState>(
-          listener: coursesSearchBlocListener,
-          builder: (context, state) {
-            final isInitialLoading = (state.status == CoursesCatalogStatus.loading || state.status == CoursesCatalogStatus.initial) && !state.hasData;
+      showBackButton: false,
+      titleWidget: buildSearchHeroField(context, forAppBar: true),
+      actions: [
+        AppBackButton(
+          onTap: () => onSearchDismiss(context),
+          icon: Icons.close_rounded,
+          tooltip: context.l10n.courseCompleteClose,
+        ),
+        const SizedBox(width: 8),
+      ],
+      body: BlocConsumer<CoursesCatalogBloc, CoursesCatalogState>(
+        listener: coursesSearchBlocListener,
+        builder: (context, state) {
+          final isInitialLoading =
+              (state.status == CoursesCatalogStatus.loading ||
+                  state.status == CoursesCatalogStatus.initial) &&
+              !state.hasData;
 
-            return AppStaggeredScrollLimiter(
-              key: ValueKey(_searchStaggerScrollKey(state)),
-              child: RefreshIndicator(
-                color: AppColors.primary,
-                onRefresh: () => onSearchPullRefresh(context),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                    slivers: [..._searchBodySlivers(context, state, isInitialLoading)],
+          return AppStaggeredScrollLimiter(
+            key: ValueKey(_searchStaggerScrollKey(state)),
+            child: RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () => onSearchPullRefresh(context),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
                   ),
+                  slivers: [
+                    ..._searchBodySlivers(context, state, isInitialLoading),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  List<Widget> _searchBodySlivers(BuildContext context, CoursesCatalogState state, bool isInitialLoading) {
+  List<Widget> _searchBodySlivers(
+    BuildContext context,
+    CoursesCatalogState state,
+    bool isInitialLoading,
+  ) {
     final queryTrimmed = searchController.text.trim();
     if (queryTrimmed.isEmpty) {
       return [
@@ -95,7 +104,10 @@ class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearc
           child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 36),
-              child: TgsEmptyContent(message: context.l10n.coursesSearchIdleHint, animationSize: 92),
+              child: TgsEmptyContent(
+                message: context.l10n.coursesSearchIdleHint,
+                animationSize: 92,
+              ),
             ),
           ),
         ),
@@ -106,13 +118,21 @@ class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearc
       return [
         SliverFillRemaining(
           hasScrollBody: false,
-          child: TgsFailureContent(message: context.l10n.coursesCatalogLoadError, onRetry: () => onSearchRetry(context)),
+          child: TgsFailureContent(
+            message: context.l10n.coursesCatalogLoadError,
+            onRetry: () => onSearchRetry(context),
+          ),
         ),
       ];
     }
 
     if (isInitialLoading) {
-      return [const SliverFillRemaining(hasScrollBody: false, child: CoursesListSkeleton())];
+      return [
+        const SliverFillRemaining(
+          hasScrollBody: false,
+          child: CoursesListSkeleton(),
+        ),
+      ];
     }
 
     final overview = state.overview;
@@ -123,7 +143,10 @@ class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearc
           child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 36),
-              child: TgsEmptyContent(message: context.l10n.coursesNoResults, animationSize: 92),
+              child: TgsEmptyContent(
+                message: context.l10n.coursesNoResults,
+                animationSize: 92,
+              ),
             ),
           ),
         ),
@@ -147,7 +170,14 @@ class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearc
                 duration: AppStaggeredListAnimation.duration,
                 delay: AppStaggeredListAnimation.staggerDelay,
                 verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
-                child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [buildSearchInProgressCard(context, lastViewed), const SizedBox(height: 16)]),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    buildSearchInProgressCard(context, lastViewed),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               );
             }
             final courseIndex = hasInProgress ? index - 1 : index;
@@ -157,7 +187,10 @@ class _CoursesSearchViewState extends State<CoursesSearchView> with CoursesSearc
               duration: AppStaggeredListAnimation.duration,
               delay: AppStaggeredListAnimation.staggerDelay,
               verticalOffset: AppStaggeredListAnimation.verticalSlideOffset,
-              child: Padding(padding: const EdgeInsets.only(bottom: 16), child: buildSearchCourseCard(context, courses[courseIndex])),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: buildSearchCourseCard(context, courses[courseIndex]),
+              ),
             );
           }, childCount: itemCount),
         ),

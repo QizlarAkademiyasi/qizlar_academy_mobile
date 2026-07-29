@@ -61,4 +61,43 @@ void main() {
 
     expect(notificationTapCount, 1);
   });
+
+  testWidgets('keeps compact equal spacing around expanded actions', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      AppThemeProvider(
+        builder: (context) => MaterialApp(
+          theme: AppOptions.lightThemeData(context),
+          home: const Scaffold(
+            body: Align(
+              alignment: Alignment.topCenter,
+              child: HomeHeaderComponent(
+                title: 'Abubakr',
+                subtitle: 'Xush kelibsiz!',
+                tasksTooltip: 'Vazifalar',
+                notificationTooltip: 'Bildirishnoma',
+                onTasksTap: _noop,
+                onNotificationTap: _noop,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final tasksRect = tester.getRect(
+      find.byKey(const ValueKey('home-tasks-button')),
+    );
+    final notificationRect = tester.getRect(
+      find.byKey(const ValueKey('home-notification-button')),
+    );
+
+    expect(tasksRect.top, 8);
+    expect(collapsedHeaderHeight - tasksRect.bottom, 8);
+    expect(notificationRect.top, 8);
+    expect(collapsedHeaderHeight - notificationRect.bottom, 8);
+  });
 }
+
+void _noop() {}

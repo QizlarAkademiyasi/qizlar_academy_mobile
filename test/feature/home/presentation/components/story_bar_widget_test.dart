@@ -13,14 +13,44 @@ void main() {
 
     expect(find.byType(SliverAppBar), findsNothing);
     expect(find.byType(BackdropFilter), findsOneWidget);
+    expect(tester.getTopLeft(find.byType(BackdropFilter)).dy, 0);
+    expect(
+      tester.getSize(find.byType(BackdropFilter)).height,
+      _topPadding + StoryBarWidget.expandedHeight,
+    );
     expect(
       tester.getSize(find.byKey(const ValueKey('story-bar'))).height,
-      StoryBarWidget.expandedHeight,
+      _topPadding + StoryBarWidget.expandedHeight,
     );
     expect(
       tester.getTopLeft(find.byKey(const ValueKey('story-list-viewport'))).dy,
-      StoryBarWidget.expandedStoriesTop,
+      _topPadding + StoryBarWidget.expandedStoriesTop,
     );
+    expect(
+      tester.getTopLeft(find.byKey(const ValueKey('first-content'))).dy,
+      _topPadding + StoryBarWidget.expandedHeight,
+    );
+    expect(
+      tester.getRect(find.byKey(const ValueKey('story-list-viewport'))).right,
+      tester.getSize(find.byType(_StoryBarHarness)).width,
+    );
+
+    final storyScrollable = find.descendant(
+      of: find.byKey(const ValueKey('story-list-viewport')),
+      matching: find.byType(Scrollable),
+    );
+    final scrollPosition = tester
+        .state<ScrollableState>(storyScrollable)
+        .position;
+    expect(scrollPosition.maxScrollExtent, greaterThan(0));
+
+    await tester.drag(
+      find.byKey(const ValueKey('story-list-viewport')),
+      const Offset(-400, 0),
+    );
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(scrollPosition.pixels, greaterThan(0));
 
     final state = tester.state<_StoryBarHarnessState>(
       find.byType(_StoryBarHarness),
@@ -31,7 +61,9 @@ void main() {
     expect(
       tester.getSize(find.byKey(const ValueKey('story-bar'))).height,
       closeTo(
-        StoryBarWidget.collapsedHeight + StoryBarWidget.collapseExtent / 2,
+        _topPadding +
+            StoryBarWidget.collapsedHeight +
+            StoryBarWidget.collapseExtent / 2,
         0.01,
       ),
     );
@@ -41,13 +73,22 @@ void main() {
 
     expect(
       tester.getSize(find.byKey(const ValueKey('story-bar'))).height,
-      StoryBarWidget.collapsedHeight,
+      _topPadding + StoryBarWidget.collapsedHeight,
+    );
+    expect(
+      tester.getTopLeft(find.byKey(const ValueKey('first-content'))).dy,
+      _topPadding + StoryBarWidget.collapsedHeight,
+    );
+    expect(
+      tester.getRect(find.byKey(const ValueKey('story-list-viewport'))).right,
+      tester.getSize(find.byType(_StoryBarHarness)).width -
+          StoryBarWidget.collapsedActionsWidth,
     );
     expect(
       tester
           .getRect(find.byKey(const ValueKey('persistent-notification')))
           .bottom,
-      lessThanOrEqualTo(StoryBarWidget.collapsedHeight),
+      lessThanOrEqualTo(_topPadding + StoryBarWidget.collapsedHeight),
     );
     expect(
       tester
@@ -66,7 +107,10 @@ class _TestApp extends StatelessWidget {
     return AppThemeProvider(
       builder: (context) => MaterialApp(
         theme: AppOptions.lightThemeData(context),
-        home: const Scaffold(body: _StoryBarHarness()),
+        home: const MediaQuery(
+          data: MediaQueryData(padding: EdgeInsets.only(top: _topPadding)),
+          child: Scaffold(body: _StoryBarHarness()),
+        ),
       ),
     );
   }
@@ -88,9 +132,10 @@ class _StoryBarHarnessState extends State<_StoryBarHarness> {
       children: [
         ListView(
           controller: scrollController,
+          padding: EdgeInsets.zero,
           children: const [
-            SizedBox(height: StoryBarWidget.expandedHeight),
-            SizedBox(height: 1200),
+            SizedBox(height: _topPadding + StoryBarWidget.expandedHeight),
+            SizedBox(key: ValueKey('first-content'), height: 1200),
           ],
         ),
         StoryBarWidget(
@@ -98,6 +143,7 @@ class _StoryBarHarnessState extends State<_StoryBarHarness> {
           scrollController: scrollController,
           isLoading: false,
           list: _stories,
+          topPadding: _topPadding,
           headerBuilder: (context, expandedProgress) => SizedBox(
             height: kToolbarHeight,
             child: Stack(
@@ -130,9 +176,39 @@ class _StoryBarHarnessState extends State<_StoryBarHarness> {
   }
 }
 
+const _topPadding = 24.0;
+
 const _stories = [
   StoryModel(id: 'story-1', name: 'Birinchi', imageUrl: '', thumbnailUrl: ''),
   StoryModel(id: 'story-2', name: 'Ikkinchi', imageUrl: '', thumbnailUrl: ''),
   StoryModel(id: 'story-3', name: 'Uchinchi', imageUrl: '', thumbnailUrl: ''),
   StoryModel(id: 'story-4', name: 'To‘rtinchi', imageUrl: '', thumbnailUrl: ''),
+  StoryModel(id: 'story-5', name: 'Beshinchi', imageUrl: '', thumbnailUrl: ''),
+  StoryModel(id: 'story-6', name: 'Oltinchi', imageUrl: '', thumbnailUrl: ''),
+  StoryModel(id: 'story-7', name: 'Yettinchi', imageUrl: '', thumbnailUrl: ''),
+  StoryModel(
+    id: 'story-8',
+    name: 'Sakkizinchi',
+    imageUrl: '',
+    thumbnailUrl: '',
+  ),
+  StoryModel(
+    id: 'story-9',
+    name: 'To‘qqizinchi',
+    imageUrl: '',
+    thumbnailUrl: '',
+  ),
+  StoryModel(id: 'story-10', name: 'O‘ninchi', imageUrl: '', thumbnailUrl: ''),
+  StoryModel(
+    id: 'story-11',
+    name: 'O‘n birinchi',
+    imageUrl: '',
+    thumbnailUrl: '',
+  ),
+  StoryModel(
+    id: 'story-12',
+    name: 'O‘n ikkinchi',
+    imageUrl: '',
+    thumbnailUrl: '',
+  ),
 ];

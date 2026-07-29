@@ -1,5 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 
+enum StoryItemType { story, birthday }
+
 class StoryModel extends Equatable {
   const StoryModel({
     required this.id,
@@ -7,6 +9,7 @@ class StoryModel extends Equatable {
     required this.imageUrl,
     required this.thumbnailUrl,
     this.isViewed = false,
+    this.type = StoryItemType.story,
   });
 
   final String id;
@@ -14,7 +17,11 @@ class StoryModel extends Equatable {
   final String imageUrl;
   final String thumbnailUrl;
   final bool isViewed;
+  final StoryItemType type;
+
+  bool get isBirthday => type == StoryItemType.birthday;
+  bool get canTrackView => type == StoryItemType.story;
 
   @override
-  List<Object?> get props => [id, name, imageUrl, thumbnailUrl, isViewed];
+  List<Object?> get props => [id, name, imageUrl, thumbnailUrl, isViewed, type];
 }

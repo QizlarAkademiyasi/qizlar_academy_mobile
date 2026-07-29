@@ -31,6 +31,22 @@ This skill applies **only** to the qizlar_academy_mobile project. Follow it toge
 - **Global toast:** SnackBar o‘rniga `core/presentation/components/app_toast.dart` dagi `AppToast` ishlatiladi (`success`, `error`, `warning`, `info`), va toast ichida `.tgs` animatsiyalar ishlatiladi.
 - **Error UX + logging:** API/exception xatoliklarida userga backend xabari yoki stack trace ko‘rsatilmaydi. UI’da faqat umumiy, xavfsiz matn beriladi (masalan: `Ulanishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.`). Texnik tafsilotlar esa faqat `AppLogger` orqali loglanadi.
 
+## Responsive horizontal collections (mandatory)
+
+Story, category, chip, carousel va boshqa dinamik horizontal ro‘yxatlar quyidagi talablarni bajarishi shart:
+
+- Backenddan kelgan elementlar sonini viewport kengligiga qarab kesmang va faqat ekranga sig‘adigan itemlarni render qilmang. Explicit product limiti bo‘lmasa, barcha itemlar mavjud bo‘lishi va gorizontal scroll orqali ochilishi kerak.
+- `Row` yoki fixed-width wrapper sabab overflow/clipping hosil qilmang. Oddiy holatda `ListView.builder(scrollDirection: Axis.horizontal)`; custom overlap/animation zarur bo‘lsa `SingleChildScrollView` va barcha item, spacing hamda paddingni qamrab oladigan content extent ishlating.
+- Boshqa header actionlari uchun qo‘yilgan fixed `left`/`right` inset expanded holatdagi ro‘yxat viewportini doimiy toraytirmasin. Action-zone faqat kerakli state’da rezerv qilinsin; transition bo‘lsa inset layout progress bo‘yicha adaptiv/interpolatsiya qilinsin.
+- Expanded/interaktiv holatda horizontal scroll physics faol bo‘lsin. Collapse animatsiyasi paytida gesture conflict sabab vaqtincha o‘chirilsa, expanded holatga qaytganda scroll qayta yoqilishi shart.
+- O‘zgarish mavjud collapse animation, header action hit-area, navigation, story view tracking va skeleton holatlarini buzmasligi kerak.
+- Har bir shunday fix/refactor uchun widget regression testi yozing. Test viewportdan uzun dataset bilan kamida quyidagilarni tekshirsin:
+  - `maxScrollExtent > 0`;
+  - horizontal drag’dan keyin scroll position o‘zgaradi;
+  - expanded holatda viewport available width’dan foydalanadi;
+  - collapsed holatda actionlar uchun kerakli safe zone saqlanadi.
+- Imkon qadar narrow va standard viewportlarda tekshiring; test dataset kamida ekranga sig‘maydigan darajada uzun bo‘lsin.
+
 ## Store release builds (Play / App Store)
 
 **Maqsad:** store’ga chiqariladigan artefaktlarni [Dart obfuscation](https://docs.flutter.dev/deployment/obfuscate) bilan yig‘ish — tahlil vositalarida paket/sinf nomlari kamroq ochiq ko‘rinadi. Loyiha `android/app/build.gradle.kts` da release uchun **R8** (`isMinifyEnabled`, `isShrinkResources`, `proguard-rules.pro`) allaqachon yoqilgan.

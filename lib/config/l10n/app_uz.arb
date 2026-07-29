@@ -177,6 +177,16 @@
     }
   },
   "dailyCoinStreakSubtitle": "To‘g‘ri yo‘ldasiz",
+  "dailyCoinDayToday": "Bugun",
+  "dailyCoinDayTomorrow": "Ertaga",
+  "dailyCoinDayNumber": "{day} kun",
+  "@dailyCoinDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
   "dailyCoinRewardToday": "Bugun +{coins} tanga",
   "@dailyCoinRewardToday": {
     "placeholders": {
@@ -677,5 +687,8 @@
   "tasksEmptyTitle": "Hozircha vazifalar yo‘q",
   "tasksEmptySubtitle": "Yangi vazifalar qo‘shilganda shu yerda ko‘rinadi",
   "tasksLoadError": "Vazifalarni yuklab bo‘lmadi. Qayta urinib ko‘ring.",
-  "tasksActionUnavailable": "Bu vazifa uchun amal hozircha mavjud emas"
+  "tasksActionUnavailable": "Bu vazifa uchun amal hozircha mavjud emas",
+  "birthdayStoryLabel": "Tug‘ilgan kun",
+  "birthdayStoryCongratulations": "Tabriklaymiz!",
+  "birthdayStoryMessage": "“Qizlar Akademiyasi” jamoasi sizni chin qalbdan tabriklaydi!"
 }

@@ -16,6 +16,9 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   int get selectedIndex => _selectedIndex;
   int _selectedIndex = 0;
 
+  int get bottomNavigationSelectedIndex => _bottomNavigationSelectedIndex;
+  int _bottomNavigationSelectedIndex = 0;
+
   /// Pastki bar orqali tab almashganda oshadi — [MainScreen] fade faqat shu bilan ishlaydi.
   int get tabBarFadeNonce => _tabBarFadeNonce;
   int _tabBarFadeNonce = 0;
@@ -47,18 +50,29 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   void onTabTap(int index) {
     _setBottomNavMinimized(false);
 
-    if (index == kMainProfileTabIndex &&
-        _selectedIndex != kMainProfileTabIndex) {
-      toggleExtraMenu();
-      return;
-    }
-
-    if (index == kMainProfileTabIndex && isGuestMode) {
-      context.go(Routes.signIn);
-      return;
-    }
-
     if (index == kMainProfileTabIndex) {
+      if (_bottomNavigationSelectedIndex != kMainProfileTabIndex) {
+        switch (_selectedExtraMenuItem) {
+          case MainExtraTabMenuItem(:final tabIndex):
+            _handleTabTap(tabIndex);
+          case MainExtraRouteMenuItem(:final screenRoute):
+            setState(
+              () => _bottomNavigationSelectedIndex = kMainProfileTabIndex,
+            );
+            context.push(screenRoute);
+          case MainExtraActionMenuItem():
+            toggleExtraMenu();
+          case null:
+            toggleExtraMenu();
+        }
+        return;
+      }
+
+      if (isGuestMode) {
+        context.go(Routes.signIn);
+        return;
+      }
+
       toggleExtraMenu();
       return;
     }
@@ -93,6 +107,7 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
       _isExtraMenuExpanded = false;
       if (item is! MainExtraActionMenuItem) {
         _selectedExtraMenuItem = item;
+        _bottomNavigationSelectedIndex = kMainProfileTabIndex;
       }
     });
     switch (item) {
@@ -119,19 +134,25 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
       return;
     }
 
-    if (_selectedIndex == index) return;
+    if (_selectedIndex == index && _bottomNavigationSelectedIndex == index) {
+      return;
+    }
 
     setState(() {
-      _tabBarFadeNonce++;
-      _selectedIndex = index;
+      _bottomNavigationSelectedIndex = index;
+      if (_selectedIndex != index) {
+        _tabBarFadeNonce++;
+        _selectedIndex = index;
+      }
     });
   }
 
   void onPageChanged(int index) {
     Gaimon.light();
-    if (_selectedIndex != index) {
+    if (_selectedIndex != index || _bottomNavigationSelectedIndex != index) {
       setState(() {
         _selectedIndex = index;
+        _bottomNavigationSelectedIndex = index;
         _isExtraMenuExpanded = false;
         _isBottomNavMinimized = false;
         _bottomNavScrollDelta = 0;
@@ -209,7 +230,7 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
         ],
       ),
       child: BottomNavigationBar(
-        currentIndex: selectedIndex,
+        currentIndex: bottomNavigationSelectedIndex,
         onTap: onTabTap,
         items: [
           BottomNavigationBarItem(
@@ -256,7 +277,7 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
     final unselectedColor = AppColors.white.withValues(alpha: 0.65);
 
     return NavigationBar(
-      selectedIndex: selectedIndex,
+      selectedIndex: bottomNavigationSelectedIndex,
       onDestinationSelected: onTabTap,
       destinations: [
         NavigationDestination(
@@ -299,7 +320,7 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
 
   Widget buildGlassBottomBarVersionOne(BuildContext context) {
     return GlassBottomNavigationVersionOne(
-      currentIndex: _selectedIndex,
+      currentIndex: _bottomNavigationSelectedIndex,
       onTap: onTabTap,
       fake: false,
     );
@@ -307,7 +328,7 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
 
   Widget buildGlassBottomBarVersionTwo(BuildContext context) {
     return GlassBottomNavigationVersionTwo(
-      currentIndex: _selectedIndex,
+      currentIndex: _bottomNavigationSelectedIndex,
       onTap: onTabTap,
     );
   }
