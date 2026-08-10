@@ -1,0 +1,15 @@
+---
+description: API URL manbalarini himoya qiluvchi majburiy Firebase Remote Config qoidasi
+alwaysApply: true
+---
+
+# API URL — majburiy qoida
+
+- Prod API domeni faqat Firebase Remote Config `baseUrl` keyidan olinadi.
+- Dev API domeni faqat Firebase Remote Config `devUrl` keyidan olinadi.
+- Aktiv flavor uchun faqat bitta tegishli key o‘qiladi.
+- Hardcoded API base URL, `dart-define` URL default, legacy/alternativ key, disk-cache fallback yoki boshqa URL manbasi qo‘shilmaydi.
+- Remote Config `fetchAndActivate()` Dio clientlar yaratilishidan oldin bajariladi.
+- `Apis.baseUrl` va Dio API clientlari `AppRemoteConfig.instance.domain`dan foydalanadi.
+
+Bu shartlardan biriga ta’sir qiladigan kod, test, build config, Firebase key mapping yoki hujjatni o‘zgartirishdan oldin AI aniq reja va ta’sir qiladigan fayllarni aytib, foydalanuvchidan alohida tasdiq so‘rashi majburiy. Refactor, cleanup, migration, bug fix yoki umumiy topshiriq tasdiq hisoblanmaydi. Tasdiq kelmaguncha hech qanday fayl o‘zgartirilmaydi. Read-only tekshiruv uchun tasdiq talab qilinmaydi.

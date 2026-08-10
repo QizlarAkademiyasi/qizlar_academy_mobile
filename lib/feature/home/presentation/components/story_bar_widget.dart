@@ -260,38 +260,43 @@ class _StoryBarWidgetState extends State<StoryBarWidget> {
                                           foregroundDecoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
+                                              width: 2,
                                               color: _isStoryViewedBorder(story)
                                                   ? AppColors.secondaryGrey
                                                   : AppColors.primary,
-                                              width: 1.5,
                                             ),
                                           ),
                                           child: Skeletonizer(
                                             enabled: isSkeleton,
                                             child: Hero(
                                               tag: 'story_${story.id}_$index',
-                                              child: ClipOval(
-                                                child:
-                                                    story.thumbnailUrl
-                                                        .trim()
-                                                        .isEmpty
-                                                    ? const _StoryThumbnailSkeleton()
-                                                    : AppCachedNetworkImage(
-                                                        imageUrl: story
-                                                            .thumbnailUrl
-                                                            .trim(),
-                                                        fit: BoxFit.cover,
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                const _StoryThumbnailSkeleton(),
-                                                        errorWidget:
-                                                            (
-                                                              context,
-                                                              url,
-                                                              error,
-                                                            ) =>
-                                                                const _StoryThumbnailSkeleton(),
-                                                      ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  4,
+                                                ),
+                                                child: ClipOval(
+                                                  child:
+                                                      story.thumbnailUrl
+                                                          .trim()
+                                                          .isEmpty
+                                                      ? const _StoryThumbnailSkeleton()
+                                                      : AppCachedNetworkImage(
+                                                          imageUrl: story
+                                                              .thumbnailUrl
+                                                              .trim(),
+                                                          fit: BoxFit.cover,
+                                                          placeholder:
+                                                              (context, url) =>
+                                                                  const _StoryThumbnailSkeleton(),
+                                                          errorWidget:
+                                                              (
+                                                                context,
+                                                                url,
+                                                                error,
+                                                              ) =>
+                                                                  const _StoryThumbnailSkeleton(),
+                                                        ),
+                                                ),
                                               ),
                                             ),
                                           ),

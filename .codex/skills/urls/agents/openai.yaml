@@ -1,0 +1,4 @@
+interface:
+  display_name: "URLs Policy"
+  short_description: "Protect Firebase API URL configuration"
+  default_prompt: "Use $urls to verify or safely handle API URL configuration."

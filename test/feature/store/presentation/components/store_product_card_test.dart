@@ -24,6 +24,21 @@ void main() {
     expect(find.byIcon(LucideIcons.heart), findsOneWidget);
     expect(find.byIcon(Icons.favorite), findsNothing);
   });
+
+  testWidgets('clips the missing-image placeholder to the card border radius', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_testApp(isLiked: false));
+
+    final media = tester.widget<Container>(
+      find.byKey(const ValueKey('store-product-media')),
+    );
+    final decoration = media.decoration! as BoxDecoration;
+
+    expect(media.clipBehavior, Clip.antiAlias);
+    expect(decoration.borderRadius, BorderRadius.circular(16));
+    expect(find.byIcon(LucideIcons.image), findsOneWidget);
+  });
 }
 
 Widget _testApp({required bool isLiked}) {

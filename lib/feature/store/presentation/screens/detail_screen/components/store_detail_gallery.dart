@@ -51,7 +51,7 @@ class _StoreDetailGalleryState extends State<StoreDetailGallery> {
                 onPageChanged: (i) => setState(() => _currentPage = i),
                 itemBuilder: (_, i) => Container(
                   decoration: BoxDecoration(color: AppColors.lightScaffold),
-                  child: AppCachedNetworkImage(imageUrl: widget.media[i].url, fit: BoxFit.cover, fallback: const AppNetworkImageFallbackCourse()),
+                  child: AppCachedNetworkImage(imageUrl: widget.media[i].url, fit: BoxFit.contain, fallback: const AppNetworkImageFallbackCourse()),
                 ),
               ),
             ),
@@ -81,7 +81,7 @@ class _StoreDetailGalleryState extends State<StoreDetailGallery> {
               controller: _controller,
               itemCount: widget.media.length,
               onPageChanged: (i) => setState(() => _currentPage = i),
-              itemBuilder: (_, i) => AppCachedNetworkImage(imageUrl: widget.media[i].url, fit: BoxFit.cover, fallback: const AppNetworkImageFallbackCourse()),
+              itemBuilder: (_, i) => AppCachedNetworkImage(imageUrl: widget.media[i].url, fit: BoxFit.contain, fallback: const AppNetworkImageFallbackCourse()),
             ),
           ),
         ),

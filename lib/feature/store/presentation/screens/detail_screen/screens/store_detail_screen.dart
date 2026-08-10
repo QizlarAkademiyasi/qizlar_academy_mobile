@@ -77,7 +77,10 @@ class _StoreDetailViewState extends State<_StoreDetailView>
     final resolvedSelectedValues = resolveSelectedAttributeValues(state);
     final imageSize = MediaQuery.sizeOf(context).width - 40;
     final topInset = MediaQuery.paddingOf(context).top;
-    final expandedHeight = kToolbarHeight + imageSize + 16;
+    const galleryTopGap = 12.0;
+    const galleryBottomGap = 12.0;
+    final expandedHeight =
+        kToolbarHeight + imageSize + galleryTopGap + galleryBottomGap;
 
     return CustomScrollView(
       slivers: [
@@ -100,11 +103,11 @@ class _StoreDetailViewState extends State<_StoreDetailView>
               FlexibleSpaceBar(
                 background: _CollapsingAppBarGallery(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
+                    padding: EdgeInsets.fromLTRB(
                       20,
-                      kToolbarHeight + 4,
+                      topInset + kToolbarHeight + galleryTopGap,
                       20,
-                      12,
+                      galleryBottomGap,
                     ),
                     child: SizedBox.square(
                       dimension: imageSize,

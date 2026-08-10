@@ -133,7 +133,7 @@ Future<void> setupLocator() async {
   getIt.registerSingleton<NetworkStatusService>(
     NetworkStatusService()..start(),
   );
-  await AppRemoteConfig.initialize(prefs);
+  await AppRemoteConfig.initialize();
   getIt.registerSingleton<SettingsDataSource>(SettingsDataSourceImpl(prefs));
   getIt.registerSingleton<AuthLocalDatasource>(AuthLocalDatasourceImpl(prefs));
   final authRemoteDio = Dio(

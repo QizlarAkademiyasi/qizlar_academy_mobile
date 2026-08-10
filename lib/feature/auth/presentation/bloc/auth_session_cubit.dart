@@ -22,6 +22,10 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
   /// (router redirect, splash, verification, app_bootstrap) bo‘g‘ib qo‘yadi.
   Future<void>? _profileGateInFlight;
 
+  /// Bir nechta API so'rovi bir vaqtda 401 qaytarganda refresh token faqat bir
+  /// marta ishlatiladi. Qolgan so'rovlar shu Future natijasini kutadi.
+  Future<String?>? _refreshInFlight;
+
   Future<void> loadSession() async {
     final model = await _repository.readSession();
     emit(state.fromModel(model));
@@ -39,7 +43,9 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     return _repository.sendOtpToPhoneNumber(phone: phone);
   }
 
-  Future<AuthOtpBotResponse> requestTelegramBotOtpForPhone({required String phone}) {
+  Future<AuthOtpBotResponse> requestTelegramBotOtpForPhone({
+    required String phone,
+  }) {
     return _repository.sendOtpViaTelegramBot(phone: phone);
   }
 
@@ -90,7 +96,11 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     try {
       await getIt<ReferralUseService>().applyPendingIfPossible();
     } catch (error, stackTrace) {
-      AppLogger.w('Referral auto-apply after auth failed', error: error, stackTrace: stackTrace);
+      AppLogger.w(
+        'Referral auto-apply after auth failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -102,7 +112,20 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     emit(state.fromModel(const AuthSessionModel(userType: UserType.guest)));
   }
 
-  Future<String?> refreshAccessToken() async {
+  Future<String?> refreshAccessToken() {
+    final inFlight = _refreshInFlight;
+    if (inFlight != null) return inFlight;
+
+    final future = _performAccessTokenRefresh();
+    _refreshInFlight = future;
+    return future.whenComplete(() {
+      if (identical(_refreshInFlight, future)) {
+        _refreshInFlight = null;
+      }
+    });
+  }
+
+  Future<String?> _performAccessTokenRefresh() async {
     final refreshToken = state.refreshToken;
     if ((refreshToken ?? '').isEmpty) return null;
     try {

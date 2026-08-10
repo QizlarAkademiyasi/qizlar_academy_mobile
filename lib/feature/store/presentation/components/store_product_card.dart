@@ -4,7 +4,12 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 import 'package:qizlar_academy_mobile/feature/store/domain/model/store_product_item_model.dart';
 
 class StoreProductCard extends StatelessWidget {
-  const StoreProductCard({super.key, required this.product, required this.onTap, required this.onLikeTap});
+  const StoreProductCard({
+    super.key,
+    required this.product,
+    required this.onTap,
+    required this.onLikeTap,
+  });
 
   final StoreProductItemModel product;
   final VoidCallback onTap;
@@ -25,12 +30,23 @@ class StoreProductCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Container(
-                    decoration: BoxDecoration(color: AppColors.lightScaffold, borderRadius: BorderRadius.circular(16)),
+                    key: const ValueKey('store-product-media'),
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: AppColors.lightScaffold,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: mediaUrls.isNotEmpty
                         ? _ImageCarousel(urls: mediaUrls)
-                        : Container(
+                        : ColoredBox(
                             color: context.appColors.stroke,
-                            child: Center(child: Icon(LucideIcons.image, size: 32, color: context.appColors.grey)),
+                            child: Center(
+                              child: Icon(
+                                LucideIcons.image,
+                                size: 32,
+                                color: context.appColors.grey,
+                              ),
+                            ),
                           ),
                   ),
                   Positioned(
@@ -42,21 +58,33 @@ class StoreProductCard extends StatelessWidget {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          boxShadow: [BoxShadow(color: context.appColors.shadow.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 1))],
-                          color: AppColors.lightOnContainer.withValues(alpha: 0.85),
+                          boxShadow: [
+                            BoxShadow(
+                              color: context.appColors.shadow.withValues(
+                                alpha: 0.1,
+                              ),
+                              blurRadius: 10,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                          color: AppColors.lightOnContainer.withValues(
+                            alpha: 0.85,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 180),
-                          transitionBuilder: (child, animation) => ScaleTransition(
-                            scale: animation,
-                            child: child,
-                          ),
+                          transitionBuilder: (child, animation) =>
+                              ScaleTransition(scale: animation, child: child),
                           child: Icon(
-                            product.isLiked ? Icons.favorite : LucideIcons.heart,
+                            product.isLiked
+                                ? Icons.favorite
+                                : LucideIcons.heart,
                             key: ValueKey(product.isLiked),
                             size: 16,
-                            color: product.isLiked ? AppColors.primary : context.appColors.grey,
+                            color: product.isLiked
+                                ? AppColors.primary
+                                : context.appColors.grey,
                           ),
                         ),
                       ),
@@ -65,22 +93,44 @@ class StoreProductCard extends StatelessWidget {
                 ],
               ),
             ),
-            if (mediaUrls.length > 1) ...[const SizedBox(height: 6), _PageIndicator(count: mediaUrls.length, pageNotifier: ValueNotifier(0))],
+            if (mediaUrls.length > 1) ...[
+              const SizedBox(height: 6),
+              _PageIndicator(
+                count: mediaUrls.length,
+                pageNotifier: ValueNotifier(0),
+              ),
+            ],
             const SizedBox(height: 8),
             Text(
               product.title,
-              style: context.textTheme.bodyMediumBold.copyWith(color: context.appColors.text),
+              style: context.textTheme.bodyMediumBold.copyWith(
+                color: context.appColors.text,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 2),
             Row(
               children: [
-                Icon(LucideIcons.circleStar, size: 14, color: AppColors.primary),
+                Icon(
+                  LucideIcons.circleStar,
+                  size: 14,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(width: 4),
-                Text('${CoinCompactFormat.short(product.basePrice)} Tanga', style: context.textTheme.bodySmallSemibold.copyWith(color: AppColors.primary)),
+                Text(
+                  '${CoinCompactFormat.short(product.basePrice)} Tanga',
+                  style: context.textTheme.bodySmallSemibold.copyWith(
+                    color: AppColors.primary,
+                  ),
+                ),
                 const Spacer(),
-                Text('${product.totalStock} ta', style: context.textTheme.bodySmallMedium.copyWith(color: context.appColors.grey)),
+                Text(
+                  '${product.totalStock} ta',
+                  style: context.textTheme.bodySmallMedium.copyWith(
+                    color: context.appColors.grey,
+                  ),
+                ),
               ],
             ),
           ],
@@ -117,7 +167,11 @@ class _ImageCarouselState extends State<_ImageCarousel> {
           controller: _controller,
           itemCount: widget.urls.length,
           onPageChanged: (i) => setState(() => _current = i),
-          itemBuilder: (_, i) => AppCachedNetworkImage(imageUrl: widget.urls[i], fit: BoxFit.contain, fallback: const AppNetworkImageFallbackCourse()),
+          itemBuilder: (_, i) => AppCachedNetworkImage(
+            imageUrl: widget.urls[i],
+            fit: BoxFit.contain,
+            fallback: const AppNetworkImageFallbackCourse(),
+          ),
         ),
         if (widget.urls.length > 1)
           Positioned(
@@ -131,7 +185,12 @@ class _ImageCarouselState extends State<_ImageCarousel> {
                   width: i == _current ? 8 : 6,
                   height: i == _current ? 8 : 6,
                   margin: const EdgeInsets.symmetric(horizontal: 2),
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: i == _current ? AppColors.white : AppColors.white.withValues(alpha: 0.5)),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: i == _current
+                        ? AppColors.white
+                        : AppColors.white.withValues(alpha: 0.5),
+                  ),
                 );
               }),
             ),
@@ -159,7 +218,12 @@ class _PageIndicator extends StatelessWidget {
               width: i == page ? 7 : 5,
               height: i == page ? 7 : 5,
               margin: const EdgeInsets.symmetric(horizontal: 2),
-              decoration: BoxDecoration(shape: BoxShape.circle, color: i == page ? context.appColors.text : context.appColors.stroke),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: i == page
+                    ? context.appColors.text
+                    : context.appColors.stroke,
+              ),
             );
           }),
         );

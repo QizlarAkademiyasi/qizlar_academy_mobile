@@ -49,8 +49,6 @@ export 'package:flutter_html/flutter_html.dart' hide Marker, Normalize;
 export 'package:flutter_markdown/flutter_markdown.dart';
 export 'markdown/pink_bar_markdown_builders.dart';
 export 'package:image_picker/image_picker.dart';
-export 'package:adaptive_media_picker/adaptive_media_picker.dart'
-    hide ImageSource;
 export 'package:url_launcher/url_launcher.dart';
 export 'package:share_plus/share_plus.dart';
 export 'package:appinio_social_share/appinio_social_share.dart';

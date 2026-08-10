@@ -1,0 +1,4 @@
+"NSUserTrackingUsageDescription" = "Reklama samaradorligini o‘lchash va sizga mos reklamalarni ko‘rsatish uchun qurilma identifikatoridan foydalanishga ruxsat bering.";
+"NSPhotoLibraryUsageDescription" = "Qizlar Academy profil yoki portfolio uchun rasm tanlaganingizdagina fotokutubxonaga murojaat qiladi.";
+"NSPhotoLibraryAddUsageDescription" = "Qizlar Academy rasmni saqlash yoki eksport qilishni tanlaganingizdagina fotokutubxonaga yozadi.";
+"NSMicrophoneUsageDescription" = "Qizlar Academy mikrofonni faqat yozib olish imkoniyati mavjud bo‘lgan funksiyada ovozli media yozishni o‘zingiz tanlaganingizda ishlatadi.";

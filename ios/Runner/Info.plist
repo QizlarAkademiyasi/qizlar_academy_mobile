@@ -75,7 +75,7 @@
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Reklama samaradorligini o'lchash va sizga mos reklamalarni ko'rsatish uchun qurilma identifikatoridan foydalanishga ruxsat bering.</string>
+	<string>Allow access to the device identifier to measure advertising effectiveness and show more relevant ads.</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
 	<key>FlutterDeepLinkingEnabled</key>
@@ -93,40 +93,31 @@
 	<string>Qizlar Academy saves to your Photo Library only when you choose to save an image—for example, if you save a certificate image or another export to Photos from the share sheet.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Qizlar Academy reads your Photo Library only when you pick a profile photo—for example, in Edit profile, when you choose Photo from gallery, we let you select one picture to upload as your avatar.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera access required</string>
-	<key>NSContactsUsageDescription</key>
-	<string>Contacts access required</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone access required</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Need location when in use</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Always and when in use!</string>
-	<key>NSLocationUsageDescription</key>
-	<string>Older devices need location.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Can I have location always?</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Calendars</string>
-	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>Calendar full access</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Speech recognition required</string>
-	<key>NSMotionUsageDescription</key>
-	<string>Motion detection access required</string>
-	<key>NSRemindersUsageDescription</key>
-	<string>Reminders access required</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Bluetooth always access required</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bluetooth peripheral access required</string>
-	<key>NSSiriUsageDescription</key>
-	<string>Access to Siri Kit is required</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Music!</string>
+	<string>Qizlar Academy uses the microphone only when you choose to record media with audio in a feature that supports recording.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneConfigurationName</key>
+					<string>flutter</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

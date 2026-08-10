@@ -1,93 +1,42 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/service/profile_photo_pick_result.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/service/profile_photo_picker.dart';
 
-/// [permission_handler](https://pub.dev/packages/permission_handler) bilan oldindan ruxsat,
-/// keyin [adaptive_media_picker](https://pub.dev/packages/adaptive_media_picker).
+/// Android'da broad media permission so'ramaydigan system Photo Picker'dan
+/// foydalanadi. Android 13+ da [ImagePicker] buni avtomatik qo'llaydi.
 class ProfileAdaptivePhotoPicker implements ProfilePhotoPicker {
-  ProfileAdaptivePhotoPicker({AdaptiveMediaPicker? picker})
-      : _picker = picker ?? AdaptiveMediaPicker();
+  ProfileAdaptivePhotoPicker({ImagePicker? picker})
+    : _picker = picker ?? ImagePicker();
 
-  final AdaptiveMediaPicker _picker;
+  final ImagePicker _picker;
 
   @override
   Future<ProfilePhotoPickResult> pickProfileAvatarFromGallery(
     BuildContext context,
   ) async {
-    final themeBrightness = Theme.of(context).brightness;
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    final preflight = await _precheckPhotosLibraryPermission();
-    if (preflight != null) {
-      return preflight;
-    }
-    if (!context.mounted) {
-      return const ProfilePhotoPickCanceled();
-    }
-
-    final result = await _picker.pickImage(
-      context: context,
-      options: PickOptions(
+    try {
+      final result = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 85,
         maxWidth: 2048,
-        wantToCrop: false,
-        themeBrightness: themeBrightness,
-        primaryColor: primaryColor,
-      ),
-    );
+      );
 
-    final path = result.item?.path;
-    if (path != null && path.isNotEmpty) {
+      final path = result?.path;
+      if (path == null) {
+        return const ProfilePhotoPickCanceled();
+      }
+      if (path.isEmpty) {
+        return const ProfilePhotoPickFailure(debugMessage: 'empty_path');
+      }
       return ProfilePhotoPickSuccess(path);
+    } catch (error, stackTrace) {
+      AppLogger.e(
+        'ProfileAdaptivePhotoPicker: system picker failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      return ProfilePhotoPickFailure(debugMessage: error.toString());
     }
-
-    if (result.error == PickError.canceled ||
-        result.error == PickError.cropCanceled) {
-      return const ProfilePhotoPickCanceled();
-    }
-
-    if (result.permissionResolution.permanentlyDenied) {
-      return const ProfilePhotoPickPermissionDenied();
-    }
-
-    if (result.error == PickError.io || result.error == PickError.unknown) {
-      return ProfilePhotoPickFailure(debugMessage: result.error?.name);
-    }
-
-    return const ProfilePhotoPickCanceled();
-  }
-
-  /// Web: brauzer o‘zi so‘raydi. Mobile: [Permission.photos] ([permission_handler](https://pub.dev/packages/permission_handler)).
-  Future<ProfilePhotoPickResult?> _precheckPhotosLibraryPermission() async {
-    if (kIsWeb) {
-      return null;
-    }
-
-    var status = await Permission.photos.status;
-    if (status.isGranted || status.isLimited) {
-      return null;
-    }
-
-    if (status.isRestricted) {
-      return const ProfilePhotoPickFailure(debugMessage: 'restricted');
-    }
-
-    if (status.isPermanentlyDenied) {
-      return const ProfilePhotoPickPermissionDenied();
-    }
-
-    status = await Permission.photos.request();
-    if (status.isGranted || status.isLimited) {
-      return null;
-    }
-    if (status.isPermanentlyDenied) {
-      return const ProfilePhotoPickPermissionDenied();
-    }
-    if (status.isRestricted) {
-      return const ProfilePhotoPickFailure(debugMessage: 'restricted');
-    }
-    return const ProfilePhotoPickCanceled();
   }
 }

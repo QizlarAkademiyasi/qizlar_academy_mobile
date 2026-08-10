@@ -48,6 +48,7 @@ class _StoreView extends StatefulWidget {
 class _StoreViewState extends State<_StoreView>
     with StoreScreenMixin<_StoreView> {
   static const double _headerHeight = 124;
+  static const double _headerContentGap = 12;
 
   bool _onScrollNotification(ScrollNotification n, BuildContext context) {
     if (n.metrics.axis != Axis.vertical) return false;
@@ -66,6 +67,7 @@ class _StoreViewState extends State<_StoreView>
     final topInset = MediaQuery.paddingOf(context).top;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final headerExtent = topInset + _headerHeight;
+    final contentTopExtent = headerExtent + _headerContentGap;
 
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
@@ -88,19 +90,19 @@ class _StoreViewState extends State<_StoreView>
                   child: switch (state.status) {
                     StoreCatalogStatus.failure when state.items.isEmpty =>
                       Padding(
-                        padding: EdgeInsets.only(top: headerExtent),
+                        padding: EdgeInsets.only(top: contentTopExtent),
                         child: TgsFailureContent(
                           message: "Mahsulotlarni yuklashda xatolik",
                           onRetry: () => retryFirstPage(context),
                         ),
                       ),
                     _ when isInitialLoading => SingleChildScrollView(
-                      padding: EdgeInsets.only(top: headerExtent),
+                      padding: EdgeInsets.only(top: contentTopExtent),
                       child: const StoreProductGridSkeleton(),
                     ),
                     StoreCatalogStatus.success when state.items.isEmpty =>
                       Padding(
-                        padding: EdgeInsets.only(top: headerExtent),
+                        padding: EdgeInsets.only(top: contentTopExtent),
                         child: Center(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -133,7 +135,7 @@ class _StoreViewState extends State<_StoreView>
                         child: GridView.builder(
                           padding: EdgeInsets.fromLTRB(
                             12,
-                            headerExtent,
+                            contentTopExtent,
                             20,
                             24 + bottomInset + widget.bottomContentInset,
                           ),

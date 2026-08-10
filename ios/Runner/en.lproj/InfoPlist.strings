@@ -1,0 +1,4 @@
+"NSUserTrackingUsageDescription" = "Allow access to the device identifier to measure advertising effectiveness and show more relevant ads.";
+"NSPhotoLibraryUsageDescription" = "Qizlar Academy accesses your photo library only when you choose images for your profile or portfolio.";
+"NSPhotoLibraryAddUsageDescription" = "Qizlar Academy saves an image to your photo library only when you choose to save or export it.";
+"NSMicrophoneUsageDescription" = "Qizlar Academy uses the microphone only when you choose to record media with audio in a feature that supports recording.";

@@ -1,7 +1,4 @@
 enum StorageKey {
-  /// So‘nggi muvaffaqiyatli Remote Config dan olingan API domeni (tarmoq yo‘qida qayta ishlatiladi).
-  remoteConfigLastResolvedDomain,
-
   accessToken,
   refreshToken,
   userType,
