@@ -3,21 +3,17 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/text_styles.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/story_avatar_ring_painter.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/story_bar_widget.dart';
 
 void main() {
-  testWidgets('collapses with custom geometry without a SliverAppBar', (
+  testWidgets('ports Telegram threshold, wave, state, and collapsed stack', (
     tester,
   ) async {
     await tester.pumpWidget(const _TestApp());
 
     expect(find.byType(SliverAppBar), findsNothing);
     expect(find.byType(BackdropFilter), findsOneWidget);
-    expect(tester.getTopLeft(find.byType(BackdropFilter)).dy, 0);
-    expect(
-      tester.getSize(find.byType(BackdropFilter)).height,
-      _topPadding + StoryBarWidget.expandedHeight,
-    );
     expect(
       tester.getSize(find.byKey(const ValueKey('story-bar'))).height,
       _topPadding + StoryBarWidget.expandedHeight,
@@ -34,43 +30,61 @@ void main() {
       tester.getRect(find.byKey(const ValueKey('story-list-viewport'))).right,
       tester.getSize(find.byType(_StoryBarHarness)).width,
     );
+    expect(find.byKey(const ValueKey('story-state-expanded')), findsOneWidget);
+    expect(
+      _avatarDiameter(tester, 'story-avatar-image-0'),
+      StoryBarWidget.expandedAvatarSize,
+    );
 
     final storyScrollable = find.descendant(
       of: find.byKey(const ValueKey('story-list-viewport')),
       matching: find.byType(Scrollable),
     );
-    final scrollPosition = tester
+    final storyPosition = tester
         .state<ScrollableState>(storyScrollable)
         .position;
-    expect(scrollPosition.maxScrollExtent, greaterThan(0));
+    expect(storyPosition.maxScrollExtent, greaterThan(0));
 
     await tester.drag(
       find.byKey(const ValueKey('story-list-viewport')),
       const Offset(-400, 0),
     );
     await tester.pump(const Duration(milliseconds: 500));
-
-    expect(scrollPosition.pixels, greaterThan(0));
+    expect(storyPosition.pixels, greaterThan(0));
 
     final state = tester.state<_StoryBarHarnessState>(
       find.byType(_StoryBarHarness),
     );
-    state.scrollController.jumpTo(StoryBarWidget.collapseExtent / 2);
+    state.scrollController.jumpTo(
+      StoryBarWidget.collapseExtent * (StoryBarWidget.collapseThreshold - 0.01),
+    );
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.byKey(const ValueKey('story-state-expanded')), findsOneWidget);
+
+    state.scrollController.jumpTo(
+      StoryBarWidget.collapseExtent * (StoryBarWidget.collapseThreshold + 0.02),
+    );
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 180));
 
     expect(
-      tester.getSize(find.byKey(const ValueKey('story-bar'))).height,
-      closeTo(
-        _topPadding +
-            StoryBarWidget.collapsedHeight +
-            StoryBarWidget.collapseExtent / 2,
-        0.01,
-      ),
+      find.byKey(const ValueKey('story-state-transition')),
+      findsOneWidget,
     );
+    final firstSize = _avatarDiameter(tester, 'collapsed-story-avatar-image-0');
+    final secondSize = _avatarDiameter(
+      tester,
+      'collapsed-story-avatar-image-1',
+    );
+    final thirdSize = _avatarDiameter(tester, 'collapsed-story-avatar-image-2');
+    expect(firstSize, lessThan(secondSize));
+    expect(secondSize, lessThan(thirdSize));
 
     state.scrollController.jumpTo(StoryBarWidget.collapseExtent);
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1100));
 
+    expect(find.byKey(const ValueKey('story-state-collapsed')), findsOneWidget);
     expect(
       tester.getSize(find.byKey(const ValueKey('story-bar'))).height,
       _topPadding + StoryBarWidget.collapsedHeight,
@@ -85,10 +99,50 @@ void main() {
           StoryBarWidget.collapsedActionsWidth,
     );
     expect(
+      _avatarDiameter(tester, 'collapsed-story-avatar-image-0'),
+      closeTo(StoryBarWidget.collapsedAvatarSize, 0.01),
+    );
+    expect(
       tester
-          .getRect(find.byKey(const ValueKey('persistent-notification')))
-          .bottom,
-      lessThanOrEqualTo(_topPadding + StoryBarWidget.collapsedHeight),
+              .getTopLeft(find.byKey(const ValueKey('collapsed-story-item-1')))
+              .dx -
+          tester
+              .getTopLeft(find.byKey(const ValueKey('collapsed-story-item-0')))
+              .dx,
+      closeTo(StoryBarWidget.collapsedStoryStep - 0.5, 0.01),
+    );
+    expect(
+      tester
+              .getTopLeft(find.byKey(const ValueKey('collapsed-story-item-2')))
+              .dx -
+          tester
+              .getTopLeft(find.byKey(const ValueKey('collapsed-story-item-1')))
+              .dx,
+      closeTo(StoryBarWidget.collapsedStoryStep, 0.01),
+    );
+    for (var index = 0; index < _stories.length; index++) {
+      expect(
+        tester
+            .widget<Opacity>(find.byKey(ValueKey('story-item-$index')))
+            .opacity,
+        0,
+      );
+    }
+    for (var index = 0; index < 3; index++) {
+      expect(
+        tester
+            .widget<Opacity>(
+              find.byKey(ValueKey('collapsed-story-item-$index')),
+            )
+            .opacity,
+        1,
+      );
+    }
+    expect(
+      tester
+          .widget<Align>(find.byKey(const ValueKey('collapsed-story-label-0')))
+          .heightFactor,
+      0,
     );
     expect(
       tester
@@ -96,7 +150,78 @@ void main() {
           .opacity,
       0,
     );
+
+    final secondAvatar = find.byKey(const ValueKey('collapsed-story-avatar-1'));
+    final ringPaint = tester.widget<CustomPaint>(
+      find
+          .descendant(of: secondAvatar, matching: find.byType(CustomPaint))
+          .first,
+    );
+    final painter = ringPaint.painter! as StoryAvatarRingPainter;
+    expect(painter.exclusions, isNotEmpty);
+
+    state.scrollController.jumpTo(0);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1100));
+    expect(find.byKey(const ValueKey('story-state-expanded')), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.byKey(const ValueKey('story-item-5'))).dx -
+          tester.getTopLeft(find.byKey(const ValueKey('story-item-4'))).dx,
+      StoryBarWidget.expandedStoryStep,
+    );
   });
+
+  testWidgets('keeps long stories scrollable and reserves collapsed actions', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const _TestApp());
+
+    final viewport = find.byKey(const ValueKey('story-list-viewport'));
+    expect(tester.getSize(viewport).width, 320);
+
+    final storyScrollable = find.descendant(
+      of: viewport,
+      matching: find.byType(Scrollable),
+    );
+    final storyPosition = tester
+        .state<ScrollableState>(storyScrollable)
+        .position;
+    expect(storyPosition.maxScrollExtent, greaterThan(0));
+
+    await tester.drag(viewport, const Offset(-180, 0));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(storyPosition.pixels, greaterThan(0));
+
+    final state = tester.state<_StoryBarHarnessState>(
+      find.byType(_StoryBarHarness),
+    );
+    state.scrollController.jumpTo(StoryBarWidget.collapseExtent);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1100));
+
+    expect(
+      tester.getSize(viewport).width,
+      320 - StoryBarWidget.collapsedActionsWidth,
+    );
+    for (var index = 3; index < _stories.length; index++) {
+      expect(
+        tester
+            .widget<Opacity>(find.byKey(ValueKey('story-item-$index')))
+            .opacity,
+        0,
+      );
+    }
+  });
+}
+
+double _avatarDiameter(WidgetTester tester, String key) {
+  return tester.getSize(find.byKey(ValueKey(key))).width -
+      StoryAvatarRingPainter.ringInset * 2;
 }
 
 class _TestApp extends StatelessWidget {

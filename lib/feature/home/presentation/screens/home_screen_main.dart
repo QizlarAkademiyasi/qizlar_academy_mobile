@@ -70,8 +70,9 @@ class _HomeScreenState extends State<HomeScreen>
     return AppStaggeredListItem(position: position, child: child);
   }
 
-  static const double _headerSnapThresholdLow = 0.8 * kToolbarHeight;
-  static const double _headerSnapThresholdHigh = 1.8 * kToolbarHeight;
+  static const double _headerSnapThresholdLow =
+      StoryBarWidget.collapseExtent * StoryBarWidget.collapseThreshold;
+  static const double _headerSnapThresholdHigh = StoryBarWidget.collapseExtent;
 
   /// [UserScrollNotification] + sinxron [animateTo] ba’zan pointerDown bilan
   /// ziddiyatda `Scrollable` `_hold` assertini keltirib chiqaradi. Snapni keyingi
