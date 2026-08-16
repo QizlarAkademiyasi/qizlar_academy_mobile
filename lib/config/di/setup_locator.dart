@@ -28,6 +28,11 @@ import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/com
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/create/bloc/portfolio_create_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/detail/bloc/portfolio_detail_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/data/datasource/ai_chat_api_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/data/datasource/ai_chat_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/data/repository/ai_chat_repository_impl.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/domain/repository/ai_chat_repository.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/bloc/ai_chat_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/repository/courses_catalog_repository_impl.dart';
@@ -227,6 +232,19 @@ Future<void> setupLocator() async {
       getIt<AuthSessionCubit>(),
       getIt<HomeStartupCache>(),
     ),
+  );
+
+  getIt.registerLazySingleton<AiChatApiDatasource>(
+    () => AiChatApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<AiChatDatasource>(
+    () => getIt<AiChatApiDatasource>(),
+  );
+  getIt.registerLazySingleton<AiChatRepository>(
+    () => AiChatRepositoryImpl(getIt<AiChatDatasource>()),
+  );
+  getIt.registerFactory<AiChatBloc>(
+    () => AiChatBloc(getIt<AiChatRepository>()),
   );
 
   getIt.registerLazySingleton<CoursesCatalogApiDatasource>(

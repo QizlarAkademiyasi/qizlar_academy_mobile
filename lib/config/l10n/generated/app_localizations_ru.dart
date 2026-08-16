@@ -1470,4 +1470,42 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get birthdayStoryMessage =>
       'Команда «Qizlar Akademiyasi» от всей души поздравляет вас!';
+
+  @override
+  String get aiChatTitle => 'Чат с AI';
+
+  @override
+  String get aiChatClose => 'Закрыть чат';
+
+  @override
+  String get aiChatGreeting => 'Здравствуйте';
+
+  @override
+  String get aiChatGreetingSubtitle =>
+      'Задайте вопрос или выберите быструю подсказку. Я также порекомендую подходящие курсы.';
+
+  @override
+  String get aiChatQuickQuestions => 'Быстрые вопросы';
+
+  @override
+  String get aiChatInputHint => 'Задать вопрос AI';
+
+  @override
+  String get aiChatSend => 'Отправить';
+
+  @override
+  String get aiChatSending => 'Отправка…';
+
+  @override
+  String get aiChatTyping => 'AI печатает…';
+
+  @override
+  String get aiChatRetrySend => 'Отправить снова';
+
+  @override
+  String get aiChatLoadError => 'Не удалось загрузить чат. Попробуйте снова.';
+
+  @override
+  String get aiChatSendError =>
+      'Сообщение не отправлено. Проверьте подключение и попробуйте снова.';
 }

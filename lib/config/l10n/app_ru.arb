@@ -690,5 +690,17 @@
   "tasksActionUnavailable": "Действие для этого задания пока недоступно",
   "birthdayStoryLabel": "День рождения",
   "birthdayStoryCongratulations": "Поздравляем!",
-  "birthdayStoryMessage": "Команда «Qizlar Akademiyasi» от всей души поздравляет вас!"
+  "birthdayStoryMessage": "Команда «Qizlar Akademiyasi» от всей души поздравляет вас!",
+  "aiChatTitle": "Чат с AI",
+  "aiChatClose": "Закрыть чат",
+  "aiChatGreeting": "Здравствуйте",
+  "aiChatGreetingSubtitle": "Задайте вопрос или выберите быструю подсказку. Я также порекомендую подходящие курсы.",
+  "aiChatQuickQuestions": "Быстрые вопросы",
+  "aiChatInputHint": "Задать вопрос AI",
+  "aiChatSend": "Отправить",
+  "aiChatSending": "Отправка…",
+  "aiChatTyping": "AI печатает…",
+  "aiChatRetrySend": "Отправить снова",
+  "aiChatLoadError": "Не удалось загрузить чат. Попробуйте снова.",
+  "aiChatSendError": "Сообщение не отправлено. Проверьте подключение и попробуйте снова."
 }

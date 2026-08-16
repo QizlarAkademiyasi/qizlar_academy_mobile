@@ -12,6 +12,10 @@ sealed class Routes {
   static const String mainGuest = '/main/guest';
   static const String mainUser = '/main/user';
 
+  /// Shaxsiy AI yordamchi chat ekrani.
+  static const String aiChat = '/ai-chat';
+  static const String aiChatName = 'aiChat';
+
   /// Sign in
   static const String signIn = '/sign-in';
   static const String verification = '/verification';

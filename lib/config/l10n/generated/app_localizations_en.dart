@@ -1446,4 +1446,42 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get birthdayStoryMessage =>
       'The Qizlar Akademiyasi team wishes you a very happy birthday!';
+
+  @override
+  String get aiChatTitle => 'Chat with AI';
+
+  @override
+  String get aiChatClose => 'Close chat';
+
+  @override
+  String get aiChatGreeting => 'Hello';
+
+  @override
+  String get aiChatGreetingSubtitle =>
+      'Ask a question or choose a quick prompt. I can also recommend courses that fit you.';
+
+  @override
+  String get aiChatQuickQuestions => 'Quick questions';
+
+  @override
+  String get aiChatInputHint => 'Ask AI a question';
+
+  @override
+  String get aiChatSend => 'Send';
+
+  @override
+  String get aiChatSending => 'Sending…';
+
+  @override
+  String get aiChatTyping => 'AI is typing…';
+
+  @override
+  String get aiChatRetrySend => 'Send again';
+
+  @override
+  String get aiChatLoadError => 'Could not load the chat. Please try again.';
+
+  @override
+  String get aiChatSendError =>
+      'Message was not sent. Check your connection and try again.';
 }

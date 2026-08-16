@@ -735,5 +735,17 @@
   "tasksActionUnavailable": "This task action is not available yet",
   "birthdayStoryLabel": "Birthday",
   "birthdayStoryCongratulations": "Congratulations!",
-  "birthdayStoryMessage": "The Qizlar Akademiyasi team wishes you a very happy birthday!"
+  "birthdayStoryMessage": "The Qizlar Akademiyasi team wishes you a very happy birthday!",
+  "aiChatTitle": "Chat with AI",
+  "aiChatClose": "Close chat",
+  "aiChatGreeting": "Hello",
+  "aiChatGreetingSubtitle": "Ask a question or choose a quick prompt. I can also recommend courses that fit you.",
+  "aiChatQuickQuestions": "Quick questions",
+  "aiChatInputHint": "Ask AI a question",
+  "aiChatSend": "Send",
+  "aiChatSending": "Sending…",
+  "aiChatTyping": "AI is typing…",
+  "aiChatRetrySend": "Send again",
+  "aiChatLoadError": "Could not load the chat. Please try again.",
+  "aiChatSendError": "Message was not sent. Check your connection and try again."
 }

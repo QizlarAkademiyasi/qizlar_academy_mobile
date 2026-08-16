@@ -9,6 +9,7 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_action_grid.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_ai_chat_floating_pill.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/liquid_bottom_nav_second.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/profile_screen.dart';
@@ -161,6 +162,12 @@ class _MainScreenState extends State<MainScreen>
                   : UiKitAssets.images.bottomNavLight.image(
                       opacity: AlwaysStoppedAnimation(0.5),
                     ),
+            ),
+            MainAiChatFloatingPillOverlay(
+              isBottomNavMinimized: isBottomNavMinimized,
+              isExtraMenuExpanded: isExtraMenuExpanded,
+              bottomNavigationOffset: bottomNavigationOffset,
+              onTap: openAiChat,
             ),
             Align(
               alignment: Alignment.bottomCenter,

@@ -102,6 +102,11 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
     context.push(Routes.portfolio);
   }
 
+  void openAiChat() {
+    closeExtraMenu();
+    context.push(Routes.aiChat);
+  }
+
   void onExtraMenuItemTap(MainExtraMenuItem item) {
     setState(() {
       _isExtraMenuExpanded = false;

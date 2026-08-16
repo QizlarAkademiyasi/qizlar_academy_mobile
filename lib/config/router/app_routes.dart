@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
+import 'package:qizlar_academy_mobile/config/router/app_route_transitions.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/sign_in_screen.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_args.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_screen.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/register/pages/register_screen.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/screens/ai_chat_screen.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_details_screen.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_args.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_detail/presentation/screens/course_lesson_player_screen.dart';
@@ -172,6 +174,9 @@ class AppRoute {
         if (location == Routes.notification && isGuest) {
           return Routes.signIn;
         }
+        if (location == Routes.aiChat && isGuest) {
+          return Routes.signIn;
+        }
         if (location == Routes.myCourses && isGuest) {
           return Routes.signIn;
         }
@@ -234,6 +239,7 @@ class AppRoute {
           }
           if (location == Routes.lessonQuizResult) return Routes.register;
           if (location == Routes.notification) return Routes.register;
+          if (location == Routes.aiChat) return Routes.register;
           if (location == Routes.myCourses) return Routes.register;
           if (location == Routes.coursesSearch) return Routes.register;
           if (location == Routes.myCertificates) return Routes.register;
@@ -288,6 +294,15 @@ class AppRoute {
           name: 'mainUser',
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, _) => _mainShellWithTabBlocs(isGuestMode: false),
+        ),
+        GoRoute(
+          path: Routes.aiChat,
+          name: Routes.aiChatName,
+          parentNavigatorKey: rootNavigatorKey,
+          pageBuilder: (_, state) => buildBottomUpRoutePage(
+            key: state.pageKey,
+            child: const AiChatScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.courses,

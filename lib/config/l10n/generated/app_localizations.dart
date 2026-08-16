@@ -2667,6 +2667,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The Qizlar Akademiyasi team wishes you a very happy birthday!'**
   String get birthdayStoryMessage;
+
+  /// No description provided for @aiChatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with AI'**
+  String get aiChatTitle;
+
+  /// No description provided for @aiChatClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close chat'**
+  String get aiChatClose;
+
+  /// No description provided for @aiChatGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello'**
+  String get aiChatGreeting;
+
+  /// No description provided for @aiChatGreetingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a question or choose a quick prompt. I can also recommend courses that fit you.'**
+  String get aiChatGreetingSubtitle;
+
+  /// No description provided for @aiChatQuickQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick questions'**
+  String get aiChatQuickQuestions;
+
+  /// No description provided for @aiChatInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask AI a question'**
+  String get aiChatInputHint;
+
+  /// No description provided for @aiChatSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get aiChatSend;
+
+  /// No description provided for @aiChatSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get aiChatSending;
+
+  /// No description provided for @aiChatTyping.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is typing…'**
+  String get aiChatTyping;
+
+  /// No description provided for @aiChatRetrySend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send again'**
+  String get aiChatRetrySend;
+
+  /// No description provided for @aiChatLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the chat. Please try again.'**
+  String get aiChatLoadError;
+
+  /// No description provided for @aiChatSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'Message was not sent. Check your connection and try again.'**
+  String get aiChatSendError;
 }
 
 class _AppLocalizationsDelegate

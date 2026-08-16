@@ -1459,4 +1459,43 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get birthdayStoryMessage =>
       '“Qizlar Akademiyasi” jamoasi sizni chin qalbdan tabriklaydi!';
+
+  @override
+  String get aiChatTitle => 'AI bilan chat';
+
+  @override
+  String get aiChatClose => 'Chatni yopish';
+
+  @override
+  String get aiChatGreeting => 'Assalomu alaykum';
+
+  @override
+  String get aiChatGreetingSubtitle =>
+      'Savolingizni yozing yoki tezkor savollardan birini tanlang. Sizga mos kurslarni ham tavsiya qilaman.';
+
+  @override
+  String get aiChatQuickQuestions => 'Tezkor savollar';
+
+  @override
+  String get aiChatInputHint => 'AI ga savol berish';
+
+  @override
+  String get aiChatSend => 'Yuborish';
+
+  @override
+  String get aiChatSending => 'Yuborilmoqda…';
+
+  @override
+  String get aiChatTyping => 'AI javob yozmoqda…';
+
+  @override
+  String get aiChatRetrySend => 'Qayta yuborish';
+
+  @override
+  String get aiChatLoadError =>
+      'Chatni yuklab bo‘lmadi. Iltimos, qayta urinib ko‘ring.';
+
+  @override
+  String get aiChatSendError =>
+      'Xabar yuborilmadi. Internetni tekshirib, qayta urinib ko‘ring.';
 }

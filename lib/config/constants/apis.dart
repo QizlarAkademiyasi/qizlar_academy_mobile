@@ -96,6 +96,9 @@ sealed class UserApis {
 
   static const String activityStreakClaim = '/api/v1/activity/streak/claim';
 
+  static const String aiChatBootstrap = '/api/v1/ai-chat/bootstrap';
+  static const String aiChatMessages = '/api/v1/ai-chat/messages';
+
   /// Push FCM: serverda `/profile/notifications/subscribe` yo‘q; mavjud marshrutlar `notifications` ostida.
   static const String notificationSubscribe = '/api/v1/notification/subscribe';
   static const String notificationUnsubscribe =

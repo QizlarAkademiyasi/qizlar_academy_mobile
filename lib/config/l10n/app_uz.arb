@@ -690,5 +690,17 @@
   "tasksActionUnavailable": "Bu vazifa uchun amal hozircha mavjud emas",
   "birthdayStoryLabel": "Tug‘ilgan kun",
   "birthdayStoryCongratulations": "Tabriklaymiz!",
-  "birthdayStoryMessage": "“Qizlar Akademiyasi” jamoasi sizni chin qalbdan tabriklaydi!"
+  "birthdayStoryMessage": "“Qizlar Akademiyasi” jamoasi sizni chin qalbdan tabriklaydi!",
+  "aiChatTitle": "AI bilan chat",
+  "aiChatClose": "Chatni yopish",
+  "aiChatGreeting": "Assalomu alaykum",
+  "aiChatGreetingSubtitle": "Savolingizni yozing yoki tezkor savollardan birini tanlang. Sizga mos kurslarni ham tavsiya qilaman.",
+  "aiChatQuickQuestions": "Tezkor savollar",
+  "aiChatInputHint": "AI ga savol berish",
+  "aiChatSend": "Yuborish",
+  "aiChatSending": "Yuborilmoqda…",
+  "aiChatTyping": "AI javob yozmoqda…",
+  "aiChatRetrySend": "Qayta yuborish",
+  "aiChatLoadError": "Chatni yuklab bo‘lmadi. Iltimos, qayta urinib ko‘ring.",
+  "aiChatSendError": "Xabar yuborilmadi. Internetni tekshirib, qayta urinib ko‘ring."
 }
