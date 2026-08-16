@@ -31,7 +31,7 @@ void main() {
     expect(stories, hasLength(1));
     expect(stories.single.type, StoryItemType.birthday);
     expect(stories.single.isBirthday, isTrue);
-    expect(stories.single.canTrackView, isFalse);
+    expect(stories.single.canTrackView, isTrue);
     expect(
       stories.single.thumbnailUrl,
       'https://cdn.example.com/profile-thumb.webp',

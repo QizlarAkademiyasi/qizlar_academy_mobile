@@ -20,7 +20,8 @@ class StoryModel extends Equatable {
   final StoryItemType type;
 
   bool get isBirthday => type == StoryItemType.birthday;
-  bool get canTrackView => type == StoryItemType.story;
+  bool get canTrackView =>
+      type == StoryItemType.story || type == StoryItemType.birthday;
 
   @override
   List<Object?> get props => [id, name, imageUrl, thumbnailUrl, isViewed, type];

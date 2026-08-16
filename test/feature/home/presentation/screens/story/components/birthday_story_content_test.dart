@@ -95,7 +95,7 @@ void main() {
     expect(animatedScale, greaterThan(initialScale));
   });
 
-  testWidgets('birthday story does not emit a view event', (tester) async {
+  testWidgets('birthday story emits a view event when opened', (tester) async {
     final viewedIds = <String>[];
 
     await tester.pumpWidget(
@@ -127,7 +127,7 @@ void main() {
       find.byKey(const ValueKey('birthday-story-content')),
       findsOneWidget,
     );
-    expect(viewedIds, isEmpty);
+    expect(viewedIds, ['birthday-user-id']);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
