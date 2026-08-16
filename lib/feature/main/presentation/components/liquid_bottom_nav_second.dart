@@ -79,6 +79,29 @@ Color _secondLiquidBottomNavEdgeColor(
   )!;
 }
 
+LiquidGlassSettings _secondLiquidBottomNavGlassSettings({
+  required Color surfaceTint,
+  required bool lightBar,
+  required double blurSigma,
+  bool isActive = false,
+}) {
+  final Color tint = lightBar
+      ? Color.lerp(surfaceTint, AppColors.white, 0.7)!
+      : Color.lerp(surfaceTint, const Color(0xFF48484A), 0.2)!;
+  return LiquidGlassSettings(
+    blur: blurSigma.clamp(14.0, 30.0),
+    thickness: (lightBar ? 14.0 : 10.0) + (isActive ? 1.5 : 0),
+    glassColor: tint.withValues(
+      alpha: lightBar ? (isActive ? 0.44 : 0.36) : (isActive ? 0.46 : 0.38),
+    ),
+    lightIntensity: lightBar ? 0.68 : 0.48,
+    ambientStrength: lightBar ? 0.15 : 0.11,
+    refractiveIndex: lightBar ? 1.09 : 1.07,
+    saturation: lightBar ? 0.92 : 0.82,
+    chromaticAberration: 0.006,
+  );
+}
+
 const double _secondLiquidBottomNavIndicatorInset = 2;
 const double _secondLiquidBottomNavExpandedVisualRadius = 28;
 const double _secondLiquidBottomNavContentRevealStart = 0.22;
@@ -202,13 +225,9 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool lightBar = backgroundColor.computeLuminance() > 0.5;
     final bool useBlur = backgroundBlurSigma > 0;
-    final double sigma = backgroundBlurSigma;
     final Color surface = lightBar
         ? _secondLiquidBottomNavWhiten(backgroundColor, lightBar: true)
         : _secondLiquidBottomNavDarkSurface(backgroundColor);
-    final Color fillColor = useBlur
-        ? surface.withValues(alpha: lightBar ? 0.52 : 0.82)
-        : surface;
     final Color barShadow = AppColors.shadow.withValues(
       alpha: lightBar ? 0.18 : 0.42,
     );
@@ -218,67 +237,76 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
       surface,
       lightBar: lightBar,
     );
-    final inner = DecoratedBox(
-      decoration: BoxDecoration(
-        color: fillColor,
-        border: Border.all(color: edgeColor, width: edgeW),
-        borderRadius: pill,
-      ),
-      child: SizedBox(
-        width: height,
-        height: height,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: pill,
-            onTap: onTap,
-            splashFactory: NoSplash.splashFactory,
-            overlayColor: WidgetStateProperty.all(Colors.transparent),
-            child: Center(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 420),
-                reverseDuration: const Duration(milliseconds: 360),
-                switchInCurve: const Cubic(0.16, 1, 0.3, 1),
-                switchOutCurve: const Cubic(0.4, 0, 0.7, 1),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return RotationTransition(
-                    turns: Tween<double>(
-                      begin: 0.18,
-                      end: 0,
-                    ).animate(animation),
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: ScaleTransition(
-                        scale: Tween<double>(
-                          begin: 0.86,
-                          end: 1,
-                        ).animate(animation),
-                        child: child,
-                      ),
+    final inner = SizedBox(
+      width: height,
+      height: height,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: pill,
+          onTap: onTap,
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          child: Center(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 420),
+              reverseDuration: const Duration(milliseconds: 360),
+              switchInCurve: const Cubic(0.16, 1, 0.3, 1),
+              switchOutCurve: const Cubic(0.4, 0, 0.7, 1),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return RotationTransition(
+                  turns: Tween<double>(begin: 0.18, end: 0).animate(animation),
+                  child: FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: Tween<double>(
+                        begin: 0.86,
+                        end: 1,
+                      ).animate(animation),
+                      child: child,
                     ),
-                  );
-                },
-                child: Icon(
-                  icon,
-                  key: ValueKey<int>(icon.codePoint),
-                  color: iconColor,
-                  size: height * 0.44,
-                ),
+                  ),
+                );
+              },
+              child: Icon(
+                icon,
+                key: ValueKey<int>(icon.codePoint),
+                color: iconColor,
+                size: height * 0.44,
               ),
             ),
           ),
         ),
       ),
     );
-    final Widget clipped = useBlur
-        ? ClipRRect(
-            borderRadius: pill,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+    final Widget glassSurface = useBlur
+        ? LiquidGlass.withOwnLayer(
+            key: const ValueKey('second-bottom-nav-extra-liquid-glass'),
+            settings: _secondLiquidBottomNavGlassSettings(
+              surfaceTint: surface,
+              lightBar: lightBar,
+              blurSigma: backgroundBlurSigma,
+              isActive: isActive,
+            ),
+            shape: LiquidRoundedSuperellipse(
+              borderRadius: height / 2,
+              side: BorderSide(color: edgeColor, width: edgeW),
+            ),
+            child: ColoredBox(
+              color: (lightBar ? AppColors.white : AppColors.black).withValues(
+                alpha: lightBar ? 0.06 : 0.14,
+              ),
               child: inner,
             ),
           )
-        : inner;
+        : DecoratedBox(
+            decoration: BoxDecoration(
+              color: surface,
+              border: Border.all(color: edgeColor, width: edgeW),
+              borderRadius: pill,
+            ),
+            child: inner,
+          );
     final Widget button = Semantics(
       button: true,
       label: semanticLabel ?? 'Menu',
@@ -294,7 +322,7 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
             ),
           ],
         ),
-        child: clipped,
+        child: ClipRRect(borderRadius: pill, child: glassSurface),
       ),
     );
     return button;
@@ -446,7 +474,7 @@ class SecondLiquidBottomNav extends StatefulWidget {
   final double extraButtonSpacing;
   final double extraButtonBottomInset;
 
-  /// Blur kuchlari (sigma). `0` bo‘lsa `BackdropFilter` qo‘llanmaydi.
+  /// Blur kuchlari (sigma). `0` bo‘lsa Liquid Glass o‘rniga qattiq sirt ishlatiladi.
   final double backgroundBlurSigma;
 
   /// Tanlovdagi pill blur (sigma). [indicatorBlurSigma] orqali alohida sozlash mumkin.
@@ -948,42 +976,13 @@ class _SecondLiquidBottomNavBarContainerState
       indicatorBlurSigma: widget.indicatorBlurSigma,
       minimizeT: widget.minimizeT,
     );
-    final LiquidGlassSettings glassSettingsLight = LiquidGlassSettings(
-      blur: 30,
-      thickness: (sigma * 0.45).clamp(10.0, 18.0),
-      glassColor: Color.lerp(
-        surfaceTint,
-        Colors.white,
-        0.55,
-      )!.withValues(alpha: 0.42),
-      lightIntensity: .62,
-      refractiveIndex: 1.08,
-      saturation: 0.5,
-      ambientStrength: 0.14,
-    );
-    final LiquidGlassSettings glassSettingsDark = LiquidGlassSettings(
-      blur: (sigma * 0.45).clamp(10.0, 18.0),
-      thickness: 0.2,
-      glassColor: Color.lerp(
-        surfaceTint,
-        Colors.white,
-        0.51,
-      )!.withValues(alpha: 0.2),
-      lightIntensity: 0.42,
-      refractiveIndex: 1,
-      saturation: 0.2,
-      ambientStrength: 0.1,
-    );
-    final Color innerVeilLight = Color.lerp(
-      surfaceTint,
-      Colors.white,
-      0.65,
-    )!.withValues(alpha: 0.36);
-    final Color innerVeilDark = Color.lerp(
-      surfaceTint,
-      const Color(0xFF000000),
-      0.18,
-    )!.withValues(alpha: 0.9);
+    final LiquidGlassSettings glassSettings =
+        _secondLiquidBottomNavGlassSettings(
+          surfaceTint: surfaceTint,
+          lightBar: lightBar,
+          blurSigma: sigma,
+          isActive: widget.isExpanded,
+        );
 
     final Widget tabRow = SizedBox(
       height: widget.height,
@@ -1017,22 +1016,21 @@ class _SecondLiquidBottomNavBarContainerState
     );
     final Widget barBody = useBlur
         ? ColoredBox(
-            color: lightBar ? innerVeilLight : innerVeilDark,
+            color: (lightBar ? AppColors.white : AppColors.black).withValues(
+              alpha: lightBar ? 0.06 : 0.14,
+            ),
             child: columnBody,
           )
         : columnBody;
     final Widget inner = useBlur
-        ? LiquidGlassLayer(
-            fake: false,
-            useBackdropGroup: true,
-            settings: lightBar ? glassSettingsLight : glassSettingsDark,
-            child: LiquidGlass(
-              shape: LiquidRoundedSuperellipse(
-                borderRadius: resolvedRadius,
-                side: BorderSide(color: edgeColor, width: edgeW),
-              ),
-              child: barBody,
+        ? LiquidGlass.withOwnLayer(
+            key: const ValueKey('second-bottom-nav-liquid-glass'),
+            settings: glassSettings,
+            shape: LiquidRoundedSuperellipse(
+              borderRadius: resolvedRadius,
+              side: BorderSide(color: edgeColor, width: edgeW),
             ),
+            child: barBody,
           )
         : DecoratedBox(
             decoration: BoxDecoration(

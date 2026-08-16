@@ -119,6 +119,41 @@ void main() {
     await tester.pump();
 
     expect(selectedIndex, 1);
+    expect(
+      find.byKey(const ValueKey('second-bottom-nav-liquid-glass')),
+      findsNothing,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('nav and extra action use matching liquid glass surfaces', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.bottomCenter,
+            child: SecondLiquidBottomNav(
+              items: items,
+              margin: EdgeInsets.zero,
+              extraActionIcon: Icons.add,
+              onExtraActionTap: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      find.byKey(const ValueKey('second-bottom-nav-liquid-glass')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('second-bottom-nav-extra-liquid-glass')),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 
