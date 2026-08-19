@@ -3,40 +3,22 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/text_styles.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
-import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_quick_reply_model.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/components/ai_chat_composer.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/components/ai_chat_welcome_content.dart';
 
 void main() {
-  testWidgets('all quick replies stay available on a narrow viewport', (
+  testWidgets('welcome greeting stays visible on a narrow viewport', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(320, 700);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final replies = List.generate(
-      8,
-      (index) => AiChatQuickReplyModel(
-        id: 'reply-$index',
-        label: 'Savol raqami $index',
-        prompt: 'Prompt $index',
-      ),
-    );
 
-    await tester.pumpWidget(
-      _testApp(
-        child: AiChatWelcomeContent(
-          quickReplies: replies,
-          onQuickReplyTap: (_) {},
-        ),
-      ),
-    );
+    await tester.pumpWidget(_testApp(child: const AiChatWelcomeContent()));
     await tester.pump();
 
-    for (final reply in replies) {
-      expect(find.text(reply.label), findsOneWidget);
-    }
+    expect(find.textContaining('Assalomu alaykum'), findsOneWidget);
     expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

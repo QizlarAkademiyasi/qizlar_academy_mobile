@@ -23,22 +23,25 @@ final class EnvConfig {
 
   /// Android `--flavor` → [appFlavor]; iOS/flavor yo‘q build → release=prod, debug=dev.
   static AppFlavors resolveFlavor() {
-    const fromDefine = String.fromEnvironment('FLAVOR', defaultValue: 'prod');
-    switch (fromDefine.trim().toLowerCase()) {
+    return flavorFrom(
+      appFlavorValue: appFlavor,
+      releaseMode: kReleaseMode,
+    );
+  }
+
+  @visibleForTesting
+  static AppFlavors flavorFrom({
+    required String? appFlavorValue,
+    required bool releaseMode,
+  }) {
+    switch (appFlavorValue?.trim().toLowerCase()) {
       case 'prod':
         return AppFlavors.prod;
       case 'dev':
         return AppFlavors.dev;
     }
 
-    switch (appFlavor?.trim().toLowerCase()) {
-      case 'prod':
-        return AppFlavors.prod;
-      case 'dev':
-        return AppFlavors.dev;
-    }
-
-    return kReleaseMode ? AppFlavors.prod : AppFlavors.dev;
+    return releaseMode ? AppFlavors.prod : AppFlavors.dev;
   }
 
   static void initialize({

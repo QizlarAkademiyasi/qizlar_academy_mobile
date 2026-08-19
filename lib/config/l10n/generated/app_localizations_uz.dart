@@ -1471,10 +1471,27 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get aiChatGreetingSubtitle =>
-      'Savolingizni yozing yoki tezkor savollardan birini tanlang. Sizga mos kurslarni ham tavsiya qilaman.';
+      'Kurslar haqida savolingizni yozing. Sizga mos kurslarni tavsiya qilaman.';
 
   @override
   String get aiChatQuickQuestions => 'Tezkor savollar';
+
+  @override
+  String get aiChatNewConversation => 'Yangi suhbat';
+
+  @override
+  String get aiChatHistory => 'Suhbatlar';
+
+  @override
+  String get aiChatUntitledConversation => 'Nomsiz suhbat';
+
+  @override
+  String get aiChatConversationsEmpty =>
+      'Hali suhbatlar yo‘q. Yangi suhbat boshlang.';
+
+  @override
+  String get aiChatConversationsLoadError =>
+      'Suhbatlar ro‘yxatini yuklab bo‘lmadi. Iltimos, qayta urinib ko‘ring.';
 
   @override
   String get aiChatInputHint => 'AI ga savol berish';

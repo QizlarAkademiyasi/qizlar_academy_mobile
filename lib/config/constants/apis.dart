@@ -98,6 +98,9 @@ sealed class UserApis {
 
   static const String aiChatBootstrap = '/api/v1/ai-chat/bootstrap';
   static const String aiChatMessages = '/api/v1/ai-chat/messages';
+  static const String aiChatConversations = '/api/v1/ai-chat/conversations';
+  static String aiChatConversationMessages(String conversationId) =>
+      '/api/v1/ai-chat/conversations/$conversationId/messages';
 
   /// Push FCM: serverda `/profile/notifications/subscribe` yo‘q; mavjud marshrutlar `notifications` ostida.
   static const String notificationSubscribe = '/api/v1/notification/subscribe';

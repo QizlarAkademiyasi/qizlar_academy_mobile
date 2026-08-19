@@ -2689,7 +2689,7 @@ abstract class AppLocalizations {
   /// No description provided for @aiChatGreetingSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Ask a question or choose a quick prompt. I can also recommend courses that fit you.'**
+  /// **'Ask a question about courses. I can recommend the ones that fit you.'**
   String get aiChatGreetingSubtitle;
 
   /// No description provided for @aiChatQuickQuestions.
@@ -2697,6 +2697,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick questions'**
   String get aiChatQuickQuestions;
+
+  /// No description provided for @aiChatNewConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'New chat'**
+  String get aiChatNewConversation;
+
+  /// No description provided for @aiChatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get aiChatHistory;
+
+  /// No description provided for @aiChatUntitledConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled chat'**
+  String get aiChatUntitledConversation;
+
+  /// No description provided for @aiChatConversationsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats yet. Start a new conversation.'**
+  String get aiChatConversationsEmpty;
+
+  /// No description provided for @aiChatConversationsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load chats. Please try again.'**
+  String get aiChatConversationsLoadError;
 
   /// No description provided for @aiChatInputHint.
   ///

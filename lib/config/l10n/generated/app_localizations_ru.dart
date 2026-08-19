@@ -1482,10 +1482,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get aiChatGreetingSubtitle =>
-      'Задайте вопрос или выберите быструю подсказку. Я также порекомендую подходящие курсы.';
+      'Задайте вопрос о курсах. Я подберу те, которые вам подойдут.';
 
   @override
   String get aiChatQuickQuestions => 'Быстрые вопросы';
+
+  @override
+  String get aiChatNewConversation => 'Новый чат';
+
+  @override
+  String get aiChatHistory => 'Чаты';
+
+  @override
+  String get aiChatUntitledConversation => 'Чат без названия';
+
+  @override
+  String get aiChatConversationsEmpty =>
+      'Пока нет чатов. Начните новый разговор.';
+
+  @override
+  String get aiChatConversationsLoadError =>
+      'Не удалось загрузить список чатов. Попробуйте снова.';
 
   @override
   String get aiChatInputHint => 'Задать вопрос AI';

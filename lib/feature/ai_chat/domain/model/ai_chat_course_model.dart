@@ -7,8 +7,10 @@ class AiChatCourseModel extends Equatable {
     required this.mentorName,
     required this.imageUrl,
     this.rating,
-    this.durationSeconds,
-    this.reason,
+    this.totalRatings,
+    this.durationMinutes,
+    this.lessonCount,
+    this.studentCount,
   });
 
   final String id;
@@ -16,8 +18,10 @@ class AiChatCourseModel extends Equatable {
   final String mentorName;
   final String imageUrl;
   final double? rating;
-  final int? durationSeconds;
-  final String? reason;
+  final int? totalRatings;
+  final int? durationMinutes;
+  final int? lessonCount;
+  final int? studentCount;
 
   @override
   List<Object?> get props => [
@@ -26,7 +30,9 @@ class AiChatCourseModel extends Equatable {
     mentorName,
     imageUrl,
     rating,
-    durationSeconds,
-    reason,
+    totalRatings,
+    durationMinutes,
+    lessonCount,
+    studentCount,
   ];
 }

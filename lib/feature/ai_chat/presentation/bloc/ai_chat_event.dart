@@ -11,32 +11,50 @@ final class AiChatStarted extends AiChatEvent {
   const AiChatStarted();
 }
 
-final class AiChatMessageSubmitted extends AiChatEvent {
-  const AiChatMessageSubmitted({
-    required this.message,
-    required this.locale,
-    required this.timezone,
-  });
+final class AiChatConversationsRequested extends AiChatEvent {
+  const AiChatConversationsRequested();
+}
 
-  final String message;
-  final String locale;
-  final String timezone;
+final class AiChatConversationsLoadMoreRequested extends AiChatEvent {
+  const AiChatConversationsLoadMoreRequested();
+}
+
+final class AiChatConversationSelected extends AiChatEvent {
+  const AiChatConversationSelected({required this.conversationId});
+
+  final String conversationId;
 
   @override
-  List<Object?> get props => [message, locale, timezone];
+  List<Object?> get props => [conversationId];
+}
+
+final class AiChatMessageSubmitted extends AiChatEvent {
+  const AiChatMessageSubmitted({required this.message});
+
+  final String message;
+
+  @override
+  List<Object?> get props => [message];
 }
 
 final class AiChatFailedMessageRetried extends AiChatEvent {
-  const AiChatFailedMessageRetried({
-    required this.messageId,
-    required this.locale,
-    required this.timezone,
-  });
+  const AiChatFailedMessageRetried({required this.messageId});
 
   final String messageId;
-  final String locale;
-  final String timezone;
 
   @override
-  List<Object?> get props => [messageId, locale, timezone];
+  List<Object?> get props => [messageId];
+}
+
+final class AiChatNewConversationRequested extends AiChatEvent {
+  const AiChatNewConversationRequested();
+}
+
+final class AiChatMessageRevealSettled extends AiChatEvent {
+  const AiChatMessageRevealSettled({required this.messageId});
+
+  final String messageId;
+
+  @override
+  List<Object?> get props => [messageId];
 }

@@ -12,7 +12,9 @@ class AiChatMessageModel extends Equatable {
     required this.content,
     required this.createdAt,
     this.courses = const [],
+    this.recommendedCourseIds = const [],
     this.delivery = AiChatMessageDelivery.sent,
+    this.animateReveal = false,
   });
 
   final String id;
@@ -20,19 +22,37 @@ class AiChatMessageModel extends Equatable {
   final String content;
   final DateTime createdAt;
   final List<AiChatCourseModel> courses;
+  final List<String> recommendedCourseIds;
   final AiChatMessageDelivery delivery;
+  final bool animateReveal;
 
-  AiChatMessageModel copyWith({String? id, AiChatMessageDelivery? delivery}) {
+  AiChatMessageModel copyWith({
+    String? id,
+    AiChatMessageDelivery? delivery,
+    bool? animateReveal,
+    List<AiChatCourseModel>? courses,
+  }) {
     return AiChatMessageModel(
       id: id ?? this.id,
       role: role,
       content: content,
       createdAt: createdAt,
-      courses: courses,
+      courses: courses ?? this.courses,
+      recommendedCourseIds: recommendedCourseIds,
       delivery: delivery ?? this.delivery,
+      animateReveal: animateReveal ?? this.animateReveal,
     );
   }
 
   @override
-  List<Object?> get props => [id, role, content, createdAt, courses, delivery];
+  List<Object?> get props => [
+    id,
+    role,
+    content,
+    createdAt,
+    courses,
+    recommendedCourseIds,
+    delivery,
+    animateReveal,
+  ];
 }

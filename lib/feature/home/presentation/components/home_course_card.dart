@@ -5,13 +5,26 @@ import 'package:qizlar_academy_mobile/core/presentation/components/app_component
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 
 class HomeCourseCard extends StatelessWidget {
-  const HomeCourseCard({super.key, required this.course, this.onTap, this.isLoading = false});
+  const HomeCourseCard({
+    super.key,
+    required this.course,
+    this.onTap,
+    this.isLoading = false,
+    this.rating,
+    this.reviewsCount,
+    this.margin = const EdgeInsets.only(bottom: 12),
+  });
 
   final CourseModel course;
 
   /// Bosilganda kurs detallariga o‘tish (masalan context.push).
   final VoidCallback? onTap;
   final bool isLoading;
+
+  /// Berilsa Home’dagi student count o‘rniga reyting qatori chiqadi (AI chat).
+  final double? rating;
+  final int? reviewsCount;
+  final EdgeInsetsGeometry margin;
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +37,18 @@ class HomeCourseCard extends StatelessWidget {
           onTap?.call();
         },
         child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: margin,
           decoration: BoxDecoration(
             color: context.appColors.onContainer,
             border: Border.all(color: context.appColors.stroke),
             borderRadius: AppRadius.radius3xl,
-            boxShadow: [BoxShadow(color: AppColors.shadow.withValues(alpha: 0.05), blurRadius: 2, offset: const Offset(0, 2))],
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow.withValues(alpha: 0.05),
+                blurRadius: 2,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -37,13 +56,19 @@ class HomeCourseCard extends StatelessWidget {
                 padding: AppPadding.paddingMd,
                 child: Skeletonizer(
                   enabled: isLoading,
-                  child: ClipRRect(borderRadius: AppRadius.radiusXl, child: _homeCourseThumbnail()),
+                  child: ClipRRect(
+                    borderRadius: AppRadius.radiusXl,
+                    child: _homeCourseThumbnail(),
+                  ),
                 ),
               ),
 
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 4,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -51,7 +76,9 @@ class HomeCourseCard extends StatelessWidget {
                         enabled: isLoading,
                         child: Text(
                           course.title,
-                          style: context.textTheme.bodyLargeBold.copyWith(color: context.appColors.text),
+                          style: context.textTheme.bodyLargeBold.copyWith(
+                            color: context.appColors.text,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -59,24 +86,64 @@ class HomeCourseCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Skeletonizer(
                         enabled: isLoading,
-                        child: Text(course.author, style: context.textTheme.bodySmallRegular.copyWith(color: AppColors.secondaryGrey)),
+                        child: Text(
+                          course.author,
+                          style: context.textTheme.bodySmallRegular.copyWith(
+                            color: AppColors.secondaryGrey,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(LucideIcons.clock, size: 13, color: AppColors.secondaryGrey),
+                          if (rating != null) ...[
+                            const Icon(
+                              LucideIcons.star,
+                              size: 13,
+                              color: AppColors.secondaryGrey,
+                            ),
+                            const SizedBox(width: 4),
+                            Skeletonizer(
+                              enabled: isLoading,
+                              child: Text(
+                                _ratingLabel(rating!),
+                                style: context.textTheme.bodySmallRegular
+                                    .copyWith(color: AppColors.secondaryGrey),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                          ],
+                          const Icon(
+                            LucideIcons.clock,
+                            size: 13,
+                            color: AppColors.secondaryGrey,
+                          ),
                           const SizedBox(width: 4),
                           Skeletonizer(
                             enabled: isLoading,
-                            child: Text(_durationText(l10n, course.durationSeconds), style: context.textTheme.bodySmallRegular.copyWith(color: AppColors.secondaryGrey)),
+                            child: Text(
+                              _durationText(l10n, course.durationSeconds),
+                              style: context.textTheme.bodySmallRegular
+                                  .copyWith(color: AppColors.secondaryGrey),
+                            ),
                           ),
-                          const SizedBox(width: 12),
-                          const Icon(LucideIcons.users, size: 13, color: AppColors.secondaryGrey),
-                          const SizedBox(width: 4),
-                          Skeletonizer(
-                            enabled: isLoading,
-                            child: Text(_formatStudents(course.studentCount), style: context.textTheme.bodySmallRegular.copyWith(color: AppColors.secondaryGrey)),
-                          ),
+                          if (rating == null) ...[
+                            const SizedBox(width: 12),
+                            const Icon(
+                              LucideIcons.users,
+                              size: 13,
+                              color: AppColors.secondaryGrey,
+                            ),
+                            const SizedBox(width: 4),
+                            Skeletonizer(
+                              enabled: isLoading,
+                              child: Text(
+                                _formatStudents(course.studentCount),
+                                style: context.textTheme.bodySmallRegular
+                                    .copyWith(color: AppColors.secondaryGrey),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ],
@@ -97,7 +164,11 @@ class HomeCourseCard extends StatelessWidget {
             width: 90,
             height: 90,
             color: AppColors.primary.withValues(alpha: 0.1),
-            child: const Icon(LucideIcons.bookOpen, color: AppColors.primary, size: 32),
+            child: const Icon(
+              LucideIcons.bookOpen,
+              color: AppColors.primary,
+              size: 32,
+            ),
           )
         : AppCachedNetworkImage(
             imageUrl: course.imageUrl.trim(),
@@ -105,12 +176,20 @@ class HomeCourseCard extends StatelessWidget {
             height: 90,
             fit: BoxFit.cover,
             alignment: Alignment.centerRight,
-            fallback: const AppNetworkImageFallbackCourse(iconSize: 32, tintAlpha: 0.1),
+            fallback: const AppNetworkImageFallbackCourse(
+              iconSize: 32,
+              tintAlpha: 0.1,
+            ),
           );
     return image;
   }
 
-  String _formatStudents(int count) {
+  static String _ratingLabel(double rating) {
+    final value = rating.toStringAsFixed(1);
+    return '$value ';
+  }
+
+  static String _formatStudents(int count) {
     if (count >= 1000) {
       return '${(count / 1000).toStringAsFixed(1)}k';
     }

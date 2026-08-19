@@ -12,6 +12,7 @@ class AiChatComposer extends StatelessWidget {
     required this.isEnabled,
     required this.isSending,
     required this.onSend,
+    this.inputKey,
   });
 
   final TextEditingController controller;
@@ -19,11 +20,12 @@ class AiChatComposer extends StatelessWidget {
   final bool isEnabled;
   final bool isSending;
   final VoidCallback onSend;
+  final GlobalKey? inputKey;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       child: AiChatGlassSurface(
         radius: 31,
         padding: const EdgeInsets.fromLTRB(18, 6, 7, 6),
@@ -31,29 +33,32 @@ class AiChatComposer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
-              child: TextField(
+              child: KeyedSubtree(
                 key: const ValueKey('ai-chat-input'),
-                controller: controller,
-                focusNode: focusNode,
-                enabled: isEnabled,
-                minLines: 1,
-                maxLines: 4,
-                maxLength: 1000,
-                textCapitalization: TextCapitalization.sentences,
-                keyboardType: TextInputType.multiline,
-                textInputAction: TextInputAction.newline,
-                style: context.textTheme.bodyLargeRegular.copyWith(
-                  color: context.appColors.text,
-                ),
-                decoration: InputDecoration(
-                  hintText: context.l10n.aiChatInputHint,
-                  hintStyle: context.textTheme.bodyLargeRegular.copyWith(
-                    color: context.appColors.secondaryGrey,
+                child: TextField(
+                  key: inputKey,
+                  controller: controller,
+                  focusNode: focusNode,
+                  enabled: isEnabled,
+                  minLines: 1,
+                  maxLines: 4,
+                  maxLength: 1000,
+                  textCapitalization: TextCapitalization.sentences,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  style: context.textTheme.bodyLargeRegular.copyWith(
+                    color: context.appColors.text,
                   ),
-                  counterText: '',
-                  border: InputBorder.none,
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
+                  decoration: InputDecoration(
+                    hintText: context.l10n.aiChatInputHint,
+                    hintStyle: context.textTheme.bodyLargeRegular.copyWith(
+                      color: context.appColors.secondaryGrey,
+                    ),
+                    counterText: '',
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 11),
+                  ),
                 ),
               ),
             ),

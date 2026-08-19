@@ -1,4 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class AiChatLoadingSkeleton extends StatelessWidget {
   const AiChatLoadingSkeleton({super.key});
@@ -17,13 +18,13 @@ class AiChatLoadingSkeleton extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(width: 130, height: 48, child: Bone.button()),
+                Bone(width: 130, height: 48, borderRadius: AppRadius.radiusXl),
                 const SizedBox(width: 10),
-                SizedBox(width: 130, height: 48, child: Bone.button()),
+                Bone(width: 130, height: 48, borderRadius: AppRadius.radiusXl),
               ],
             ),
             const SizedBox(height: 10),
-            SizedBox(width: 150, height: 48, child: Bone.button()),
+            Bone(width: 150, height: 48, borderRadius: AppRadius.radiusXl),
           ],
         ),
       ),

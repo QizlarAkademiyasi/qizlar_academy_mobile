@@ -3,18 +3,9 @@ import 'package:qizlar_academy_kit/gen/assets.gen.dart';
 import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
-import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_quick_reply_model.dart';
-import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/components/ai_chat_glass_surface.dart';
 
 class AiChatWelcomeContent extends StatelessWidget {
-  const AiChatWelcomeContent({
-    super.key,
-    required this.quickReplies,
-    required this.onQuickReplyTap,
-  });
-
-  final List<AiChatQuickReplyModel> quickReplies;
-  final ValueChanged<AiChatQuickReplyModel> onQuickReplyTap;
+  const AiChatWelcomeContent({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,33 +50,6 @@ class AiChatWelcomeContent extends StatelessWidget {
                     height: 1.45,
                   ),
                 ),
-                if (quickReplies.isNotEmpty) ...[
-                  const SizedBox(height: 34),
-                  Semantics(
-                    label: context.l10n.aiChatQuickQuestions,
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: [
-                        for (final item in quickReplies)
-                          AiChatGlassSurface(
-                            radius: 24,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 13,
-                            ),
-                            onTap: () => onQuickReplyTap(item),
-                            child: Text(
-                              item.label,
-                              style: context.textTheme.bodyMediumSemibold
-                                  .copyWith(color: context.appColors.text),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ),

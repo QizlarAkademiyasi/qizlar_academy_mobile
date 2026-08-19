@@ -1458,10 +1458,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiChatGreetingSubtitle =>
-      'Ask a question or choose a quick prompt. I can also recommend courses that fit you.';
+      'Ask a question about courses. I can recommend the ones that fit you.';
 
   @override
   String get aiChatQuickQuestions => 'Quick questions';
+
+  @override
+  String get aiChatNewConversation => 'New chat';
+
+  @override
+  String get aiChatHistory => 'Chats';
+
+  @override
+  String get aiChatUntitledConversation => 'Untitled chat';
+
+  @override
+  String get aiChatConversationsEmpty =>
+      'No chats yet. Start a new conversation.';
+
+  @override
+  String get aiChatConversationsLoadError =>
+      'Could not load chats. Please try again.';
 
   @override
   String get aiChatInputHint => 'Ask AI a question';
