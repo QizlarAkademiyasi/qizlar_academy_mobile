@@ -202,11 +202,54 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.l10n.homePopularCourses,
-            style: context.textTheme.heading6.copyWith(
-              color: context.appColors.text,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                context.l10n.homePopularCourses,
+                style: context.textTheme.heading6.copyWith(
+                  color: context.appColors.text,
+                ),
+              ),
+              AppLiquidStretch(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: context.appColors.primary.withValues(alpha: 0.38),
+                      width: 2,
+                    ),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () => context.push(Routes.courses),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            context.l10n.storeAllCategories,
+                            style: context.textTheme.bodySmallSemibold.copyWith(
+                              color: context.appColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 3),
+                          Icon(
+                            LucideIcons.chevronRight,
+                            size: 14,
+                            color: context.appColors.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: AppGap.gapSm),
           ...courses.map(

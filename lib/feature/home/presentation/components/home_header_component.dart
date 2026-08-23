@@ -27,7 +27,7 @@ class HomeHeaderComponent extends StatelessWidget {
 
     return Container(
       height: kToolbarHeight + 8,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       color: Colors.transparent,
       child: Row(
         children: [

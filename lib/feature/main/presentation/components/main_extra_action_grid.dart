@@ -1,7 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
-import 'package:qizlar_academy_mobile/feature/main/presentation/components/liquid_bottom_nav_second.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
 
 /// Plus-menyu: 3 ustunli grid — icon + label (ClickUp uslubidagi kengaygan pastki nav).
@@ -35,7 +34,6 @@ class MainExtraActionGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tileBg = secondLiquidBottomNavTileSurface(context);
     final rows = rowCountFor(items.length);
 
     return SizedBox(
@@ -55,7 +53,7 @@ class MainExtraActionGrid extends StatelessWidget {
                   for (var col = 0; col < crossAxisCount; col++) ...[
                     if (col > 0) const SizedBox(width: spacing),
                     Expanded(
-                      child: _cellForIndex(context, row * crossAxisCount + col, tileBg),
+                      child: _cellForIndex(context, row * crossAxisCount + col),
                     ),
                   ],
                 ],
@@ -67,20 +65,19 @@ class MainExtraActionGrid extends StatelessWidget {
     );
   }
 
-  Widget _cellForIndex(BuildContext context, int index, Color tileBg) {
+  Widget _cellForIndex(BuildContext context, int index) {
     if (index >= items.length) {
       return SizedBox(height: rowHeightFor());
     }
     final item = items[index];
-    return _MainExtraActionGridTile(item: item, tileBackground: tileBg, onTap: () => onItemTap(item));
+    return _MainExtraActionGridTile(item: item, onTap: () => onItemTap(item));
   }
 }
 
 class _MainExtraActionGridTile extends StatelessWidget {
-  const _MainExtraActionGridTile({required this.item, required this.tileBackground, required this.onTap});
+  const _MainExtraActionGridTile({required this.item, required this.onTap});
 
   final MainExtraMenuItem item;
-  final Color tileBackground;
   final VoidCallback onTap;
 
   @override
@@ -103,19 +100,11 @@ class _MainExtraActionGridTile extends StatelessWidget {
                 width: MainExtraActionGrid.tileSize,
                 height: MainExtraActionGrid.tileSize,
                 decoration: BoxDecoration(
-                  color: tileBackground,
+                  color: item.iconBackground,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: item.iconBackground,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(item.icon, color: AppColors.white, size: 18),
-                  ),
+                  child: Icon(item.icon, color: AppColors.white, size: 24),
                 ),
               ),
               const SizedBox(height: MainExtraActionGrid.labelGap),

@@ -76,12 +76,13 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
     final glassSettings =
         widget.glassSettings ??
         LiquidGlassSettings(
-          refractiveIndex: 1.18,
-          thickness: 10,
-          blur: 10,
-          saturation: 1,
-          lightIntensity: isDark ? .5 : .9,
-          ambientStrength: isDark ? .15 : .4,
+          refractiveIndex: isDark ? 1.25 : 1.18,
+          thickness: isDark ? 22 : 14,
+          blur: 32,
+          saturation: isDark ? 1.20 : 1.0,
+          lightIntensity: isDark ? .85 : .9,
+          ambientStrength: isDark ? .24 : .4,
+          chromaticAberration: isDark ? 0.025 : 0.01,
           lightAngle: math.pi / 3,
           glassColor: appColors.bottomBarGlass,
         );

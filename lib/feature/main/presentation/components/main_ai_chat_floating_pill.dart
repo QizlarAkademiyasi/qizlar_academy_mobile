@@ -119,36 +119,42 @@ class _MainAiChatFloatingPill extends StatelessWidget {
               height: MainAiChatFloatingPillOverlay.pillHeight,
               child: LiquidGlass.withOwnLayer(
                 settings: LiquidGlassSettings(
-                  blur: 18,
-                  thickness: isDark ? 7 : 12,
+                  blur: 32,
+                  thickness: isDark ? 16 : 18,
                   glassColor:
-                      (isDark ? const Color(0xFF252225) : AppColors.white)
-                          .withValues(alpha: isDark ? 0.46 : 0.68),
-                  lightIntensity: isDark ? 0.42 : 0.6,
-                  ambientStrength: 0.12,
-                  refractiveIndex: 1.07,
-                  saturation: 0.88,
+                      (isDark ? AppColors.white.withValues(alpha: 0.14) : AppColors.white.withValues(alpha: 0.68)),
+                  lightIntensity: isDark ? 0.82 : 0.72,
+                  ambientStrength: 0.22,
+                  refractiveIndex: isDark ? 1.25 : 1.15,
+                  saturation: 1.20,
+                  chromaticAberration: 0.024,
                 ),
                 shape: LiquidRoundedSuperellipse(
                   borderRadius: 30,
                   side: BorderSide(color: borderColor, width: 0.8),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const _AiSparkleMark(),
-                      const SizedBox(width: 8),
-                      Text(
-                        label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.bodyMediumSemibold.copyWith(
-                          color: context.appColors.text,
+                child: ColoredBox(
+                  color: (isDark ? AppColors.darkOnContainer : AppColors.white)
+                      .withValues(alpha: isDark ? 0.75 : 0.68),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 16, 0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const _AiSparkleMark(),
+                        const SizedBox(width: 8),
+                        Text(
+                          label,
+                          maxLines: 1,
+                          style: TextStyle(
+                            color: isDark ? AppColors.white : AppColors.textDark,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.1,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

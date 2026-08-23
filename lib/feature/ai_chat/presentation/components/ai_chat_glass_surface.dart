@@ -23,23 +23,28 @@ class AiChatGlassSurface extends StatelessWidget {
     final edge = (isDark ? AppColors.white : AppColors.textDark).withValues(
       alpha: isDark ? 0.22 : 0.12,
     );
-    final tint = (isDark ? const Color(0xFF2B2529) : AppColors.white)
-        .withValues(alpha: isDark ? 0.40 : 0.62);
+    final tint = (isDark ? AppColors.white.withValues(alpha: 0.14) : AppColors.white.withValues(alpha: 0.62));
     final glass = LiquidGlass.withOwnLayer(
       settings: LiquidGlassSettings(
-        blur: 16,
-        thickness: isDark ? 6 : 12,
+        blur: 30,
+        thickness: isDark ? 16 : 18,
         glassColor: tint,
-        lightIntensity: isDark ? 0.38 : 0.58,
-        ambientStrength: 0.12,
-        refractiveIndex: 1.06,
-        saturation: 0.84,
+        lightIntensity: isDark ? 0.78 : 0.68,
+        ambientStrength: 0.20,
+        refractiveIndex: isDark ? 1.22 : 1.14,
+        saturation: 1.18,
+        chromaticAberration: 0.020,
       ),
       shape: LiquidRoundedSuperellipse(
         borderRadius: radius,
         side: BorderSide(color: edge, width: 0.8),
       ),
-      child: Padding(padding: padding, child: child),
+      child: ColoredBox(
+        color: (isDark ? AppColors.darkOnContainer : AppColors.white).withValues(
+          alpha: isDark ? 0.75 : 0.62,
+        ),
+        child: Padding(padding: padding, child: child),
+      ),
     );
     if (onTap == null) return glass;
     return Semantics(

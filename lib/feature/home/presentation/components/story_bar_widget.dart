@@ -30,7 +30,7 @@ class StoryBarWidget extends StatefulWidget {
   headerBuilder;
   final double topPadding;
 
-  static const double expandedHeight = 162;
+  static const double expandedHeight = 144;
   static const double collapsedHeight = kToolbarHeight + 8;
   static const double emptyHeight = collapsedHeight;
   static const double expandedStoriesTop = 70;
@@ -63,7 +63,7 @@ class _StoryBarWidgetState extends State<StoryBarWidget>
   static const _easeOutQuint = Cubic(0.23, 1, 0.32, 1);
   static const _collapseSpring = _TelegramOvershootCurve(0.95);
   static const _expandSpring = _TelegramOvershootCurve(0.9);
-  static const _storyPadding = 24.0;
+  static const _storyPadding = 20.0;
   static const _ringInset = StoryAvatarRingPainter.ringInset;
 
   late final AnimationController _collapseFactorController;

@@ -216,7 +216,7 @@ class _AiChatViewState extends State<_AiChatView>
         children: [
           Column(
             children: [
-              SafeArea(bottom: false, child: buildHeader(context, state)),
+              buildHeader(context, state),
               Expanded(child: buildBody(context, state)),
               SafeArea(
                 top: false,

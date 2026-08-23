@@ -202,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   ),
                                 if (!isAnonymous &&
                                     showRegisteredStatsSection) ...[
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 4),
                                   _staggeredSection(
                                     position: 0,
                                     child: buildStatsSection(

@@ -71,10 +71,12 @@ abstract class AppColors {
   // ─── Bottom bar (Liquid Glass) — Light / Dark ──────────────────────────────
 
   /// Light: shisha bar fon tint (glassColor).
-  static final Color lightBottomBarGlass = lightOnContainer.withValues(alpha: 0.65);
+  static final Color lightBottomBarGlass = lightOnContainer.withValues(
+    alpha: 0.65,
+  );
 
   /// Dark: shisha bar fon tint (glassColor).
-  static final Color darkBottomBarGlass = const Color.fromARGB(255, 87, 87, 87).withValues(alpha: 0.65);
+  static final Color darkBottomBarGlass = white.withValues(alpha: 0.15);
 
   /// Light: indikator pill (fallback) — neytral, shisha ustida yumshoq soyada.
   static final Color lightBottomBarIndicator = textDark.withValues(alpha: 0.10);
@@ -83,10 +85,17 @@ abstract class AppColors {
   static final Color darkBottomBarIndicator = white.withValues(alpha: 0.18);
 
   /// Light: LiquidGlass indikator `glassColor` (sutli kulrang shisha).
-  static final Color lightBottomBarIndicatorGlass = const Color(0xFFE8EAED).withValues(alpha: 0.72);
+  static final Color lightBottomBarIndicatorGlass = const Color(
+    0xFFE8EAED,
+  ).withValues(alpha: 0.72);
 
   /// Dark: LiquidGlass indikator `glassColor`.
-  static final Color darkBottomBarIndicatorGlass = const Color(0xFFD1D5DB).withValues(alpha: 0.22);
+  static final Color darkBottomBarIndicatorGlass = const Color.fromARGB(
+    255,
+    206,
+    206,
+    206,
+  ).withValues(alpha: 0.6);
 
   /// Light: tanlanmagan tab icon/label.
   static const Color lightBottomBarTabUnselected = secondaryGrey;

@@ -14,9 +14,9 @@ Color _secondLiquidBottomNavWhiten(Color base, {required bool lightBar}) {
   return Color.lerp(base, const Color(0xFFFFFFFF), lightBar ? 0.38 : 0.72)!;
 }
 
-/// Dark truba: biroz yoritilgan qora/kulrang sirt (oq emas).
+/// Dark truba: AppColors.darkOnContainer va yengil qora tusli sirt rangi.
 Color _secondLiquidBottomNavDarkSurface(Color base) {
-  return Color.lerp(base, const Color(0xFF3A3A3C), 0.28)!;
+  return Color.lerp(AppColors.darkOnContainer, AppColors.black, 0.8)!;
 }
 
 /// Kengaygan grid va tashqi komponentlar uchun truba sirt rangi.
@@ -49,8 +49,8 @@ Color secondLiquidBottomNavTileSurface(
       0.5;
   return Color.lerp(
     surface,
-    lightBar ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-    lightBar ? 0.05 : 0.1,
+    lightBar ? const Color(0xFF000000) : AppColors.white,
+    lightBar ? 0.05 : 0.04,
   )!;
 }
 
@@ -85,20 +85,22 @@ LiquidGlassSettings _secondLiquidBottomNavGlassSettings({
   required double blurSigma,
   bool isActive = false,
 }) {
-  final Color tint = lightBar
-      ? Color.lerp(surfaceTint, AppColors.white, 0.7)!
-      : Color.lerp(surfaceTint, const Color(0xFF48484A), 0.2)!;
   return LiquidGlassSettings(
-    blur: blurSigma.clamp(14.0, 30.0),
-    thickness: (lightBar ? 14.0 : 10.0) + (isActive ? 1.5 : 0),
-    glassColor: tint.withValues(
-      alpha: lightBar ? (isActive ? 0.44 : 0.36) : (isActive ? 0.46 : 0.38),
-    ),
-    lightIntensity: lightBar ? 0.68 : 0.48,
-    ambientStrength: lightBar ? 0.15 : 0.11,
-    refractiveIndex: lightBar ? 1.09 : 1.07,
-    saturation: lightBar ? 0.92 : 0.82,
-    chromaticAberration: 0.006,
+    blur: (blurSigma * 1.5).clamp(24.0, 45.0),
+    thickness: (lightBar ? 16.0 : 22.0) + (isActive ? 4.0 : 0),
+    glassColor: lightBar
+        ? Color.lerp(
+            surfaceTint,
+            AppColors.white,
+            0.7,
+          )!.withValues(alpha: isActive ? 0.44 : 0.36)
+        : const Color(0x30FFFFFF),
+    lightIntensity: lightBar ? 0.72 : 0.85,
+    ambientStrength: lightBar ? 0.18 : 0.24,
+    refractiveIndex: lightBar ? 1.12 : 1.25,
+    saturation: lightBar ? 0.96 : 1.20,
+    chromaticAberration: 0.025,
+    lightAngle: math.pi / 5.9,
   );
 }
 
@@ -293,9 +295,8 @@ class _SecondLiquidBottomNavExtraIconButton extends StatelessWidget {
               side: BorderSide(color: edgeColor, width: edgeW),
             ),
             child: ColoredBox(
-              color: (lightBar ? AppColors.white : AppColors.black).withValues(
-                alpha: lightBar ? 0.06 : 0.14,
-              ),
+              color: (lightBar ? AppColors.white : AppColors.darkOnContainer)
+                  .withValues(alpha: lightBar ? 0.06 : 0.75),
               child: inner,
             ),
           )
@@ -352,7 +353,7 @@ SecondLiquidBottomNavThemePalette secondLiquidBottomNavThemePalette(
 ) {
   if (Theme.of(context).brightness == Brightness.dark) {
     return SecondLiquidBottomNavThemePalette(
-      backgroundColor: const Color(0xEE1C1C1E),
+      backgroundColor: AppColors.darkOnContainer,
       selectedColor: const Color(0xFFF2F2F7),
       unselectedColor: const Color(0x99EBEBF5),
       indicatorColor: const Color(0xFF636366),
@@ -1016,9 +1017,8 @@ class _SecondLiquidBottomNavBarContainerState
     );
     final Widget barBody = useBlur
         ? ColoredBox(
-            color: (lightBar ? AppColors.white : AppColors.black).withValues(
-              alpha: lightBar ? 0.06 : 0.14,
-            ),
+            color: (lightBar ? AppColors.white : AppColors.darkOnContainer)
+                .withValues(alpha: lightBar ? 0.06 : 0.75),
             child: columnBody,
           )
         : columnBody;
