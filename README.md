@@ -29,10 +29,13 @@ Keyin har bir buyruqqa `--dart-define-from-file=build.json` qo‘shiladi:
 flutter run --flavor dev --dart-define-from-file=build.json
 ```
 
-Faylsiz build qilsangiz ilova default qiymatlarga tushadi — Watchdog
-`ws://localhost:8080` ga ulanmoqchi bo‘lib, jimgina qayta urinaveradi va
-serverga hech narsa yubormaydi. Xato xabari chiqmaydi, shuning uchun buni
-sezish qiyin.
+Watchdog qiymatlari koddagi default’lardan ham keladi
+([watchdog_bootstrap.dart](lib/core/watchdog/watchdog_bootstrap.dart)), shuning
+uchun oddiy `flutter run` ham serverga ulanadi. `build.json` ularni **ustidan
+yozadi** — lokal serverga yoki boshqa muhitga yo‘naltirish shu orqali qilinadi.
+
+Noto‘g‘ri qiymat berilsa cloud o‘chadi va konsolda sabab yoziladi; ilova lokal
+rejimda ishlayveradi.
 
 Batafsil: [docs/watchdog.md](docs/watchdog.md).
 

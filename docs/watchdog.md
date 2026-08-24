@@ -27,11 +27,12 @@ va dashboard’da bitta qurilmani ochsangiz boshqa qurilmalar trafigi ko‘rinma
 
 ## Ilova serverga qanday ulanadi
 
-**O‘zidan o‘zi ulanmaydi.** Server manzili va kaliti — compile-time
-konstantalar: build paytida binary ichiga yoziladi
+Server manzili va kaliti — compile-time konstantalar: build paytida binary
+ichiga yoziladi
 ([lib/core/watchdog/watchdog_bootstrap.dart](../lib/core/watchdog/watchdog_bootstrap.dart)).
 
-Ikkala qiymat `build.json` orqali beriladi:
+Default qiymatlar **deploy qilingan serverga** qaratilgan, ya‘ni oddiy
+`flutter run` ham ishlaydi. `build.json` esa ularni ustidan yozadi:
 
 ```json
 {
@@ -52,6 +53,7 @@ manzil yo‘lsiz bo‘lishi shart:
 | `wss://watchdog.domen.uz` | `wss://watchdog.domen.uz/ws/app` — to‘g‘ri |
 | `wss://watchdog.domen.uz/watchdog` | `wss://watchdog.domen.uz/watchdog/ws/app` — ulanmaydi |
 | `ws://localhost:8080` | Faqat emulyatorda. Real telefonda `localhost` — telefonning o‘zi |
+| `` (bo‘sh) yoki noto‘g‘ri | Cloud o‘chadi, konsolda sabab yoziladi |
 
 HTTPS orqasidagi serverga `wss://`, TLS’siz lokal serverga `ws://`.
 
@@ -79,9 +81,15 @@ loyihalar → qurilmalar xaritasi → qurilmani bosing.
 
 Tartib bilan tekshiring:
 
-1. **`build.json` ishlatildimi?** `--dart-define-from-file=build.json` siz
-   qilingan build default qiymatga — `ws://localhost:8080` ga — ulanmoqchi
-   bo‘ladi va cheksiz qayta urinadi. Xato xabari chiqmaydi.
+1. **Konsolda shu satr bormi?**
+
+   ```
+   [Watchdog] Cloud disabled: WATCHDOG_SERVER_URL="…" must be an origin like
+   wss://host (no path) and WATCHDOG_CLIENT_API_KEY must be a real key.
+   ```
+
+   Bo‘lsa — `build.json` dagi (yoki koddagi) qiymat noto‘g‘ri. Bo‘lmasa,
+   ulanish urinilgan: `[Watchdog Cloud] Connected to …` ni qidiring.
 2. **URL’da yo‘l bormi?** Yuqoridagi jadvalga qarang.
 3. **Kalitlar mos kelyaptimi?** Serverda `.env`, ilovada `build.json`.
 4. **Reverse proxy WebSocket’ni o‘tkazyaptimi?** nginx/Caddy `/ws/app` va

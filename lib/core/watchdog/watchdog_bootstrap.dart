@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart' show debugPrint;
+
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart'
     show PackageInfo, SharedPreferences;
 import 'package:watchdog/watchdog.dart';
@@ -7,17 +9,65 @@ import 'package:watchdog/watchdog.dart';
 /// Base URL of the watchdog-nest server — **without** a path. The package
 /// appends `/ws/app` itself (see `WatchdogCloudClient._connect`), so passing
 /// `wss://host/watchdog` here would produce `wss://host/watchdog/ws/app`.
+///
+/// Defaults to the deployed server so a plain `flutter run` reports without any
+/// extra flags. `--dart-define-from-file=build.json` still overrides it, which
+/// is how you point a build at a local server or a different environment.
+///
+/// Never give this a `localhost` fallback: that is a valid URL, so it passes
+/// every check and the app then dials a port on the phone itself forever.
 const String kWatchdogServerUrl = String.fromEnvironment(
   'WATCHDOG_SERVER_URL',
-  defaultValue: 'ws://localhost:8080',
+  defaultValue: 'wss://loggermen.roziboyevdev.uz',
 );
 
+/// Must match `WATCHDOG_CLIENT_API_KEY` in the server's `.env`.
+///
+/// Baked in deliberately. It is not a secret in any meaningful sense — every
+/// installed binary carries it and it can be read straight out of one — it only
+/// keeps unrelated traffic off the ingest endpoint. Rotating it on the server
+/// breaks every already-installed app until a new release ships.
 const String kWatchdogClientApiKey = String.fromEnvironment(
   'WATCHDOG_CLIENT_API_KEY',
-  defaultValue: 'change-client-key',
+  defaultValue: 'f0e44ef9c41ee0bdc943c9a0cc4b959de60a50299f45bfa1',
 );
 
+/// SharedPreferences key the generated device id is stored under — the id
+/// itself is created on first launch by [_generateDeviceId] and reused from
+/// then on, which is what keeps one device to one dashboard session.
 const String _deviceIdPrefsKey = 'watchdog_device_id';
+
+/// True when [key] looks like a real key rather than an unedited placeholder.
+///
+/// `build.example.json` ships a `<...>` marker and the server's own template
+/// uses `change-client-key`. Both are non-empty, so an emptiness check alone
+/// lets them through — and the server then rejects every reconnect forever.
+bool isValidWatchdogClientKey(String key) {
+  final trimmed = key.trim();
+  if (trimmed.isEmpty) return false;
+  if (trimmed.startsWith('<') || trimmed.endsWith('>')) return false;
+  return !trimmed.startsWith('change-');
+}
+
+
+/// True when [url] is something `WatchdogCloudClient` can actually dial.
+///
+/// Without this a bad `--dart-define` (an empty string, a pasted Dart VM
+/// service URL, a plain host with no scheme) is only discovered as an endless
+/// "Connection refused" retry loop against an address nobody intended.
+bool isValidWatchdogServerUrl(String url) {
+  final trimmed = url.trim();
+  if (trimmed.isEmpty) return false;
+  final uri = Uri.tryParse(trimmed);
+  if (uri == null) return false;
+  if (uri.scheme != 'ws' && uri.scheme != 'wss') return false;
+  if (uri.host.isEmpty) return false;
+  // The package appends "/ws/app" itself; a path here produces
+  // ".../whatever/ws/app" and silently never connects.
+  if (uri.path.isNotEmpty && uri.path != '/') return false;
+  return true;
+}
+
 
 /// Starts Watchdog in local + cloud mirror mode.
 ///
@@ -32,16 +82,30 @@ Future<void> initializeWatchdog({
   String apiKey = kWatchdogClientApiKey,
   String appName = 'qizlar-academy',
 }) async {
+  // A bad define would otherwise show up only as an endless reconnect loop in
+  // the console; better to run local-only and say why.
+  final cloudReady =
+      isValidWatchdogServerUrl(serverUrl) && isValidWatchdogClientKey(apiKey);
+  if (!cloudReady) {
+    debugPrint(
+      '[Watchdog] Cloud disabled: WATCHDOG_SERVER_URL="$serverUrl" must be an '
+      'origin like wss://host (no path) and WATCHDOG_CLIENT_API_KEY must be a '
+      'real key. Build with --dart-define-from-file=build.json.',
+    );
+  }
+
   try {
     await Watchdog.start(
       config: WatchdogConfig(
         enabled: true,
         global: false,
-        cloud: WatchdogCloudConfig(
-          serverUrl: serverUrl,
-          apiKey: apiKey,
-          appName: appName,
-        ),
+        cloud: cloudReady
+            ? WatchdogCloudConfig(
+                serverUrl: serverUrl,
+                apiKey: apiKey,
+                appName: appName,
+              )
+            : null,
         device: await _resolveDevice(appName),
       ),
     );
