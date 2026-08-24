@@ -4,6 +4,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/enum/user_type.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
+import 'package:qizlar_academy_mobile/core/watchdog/watchdog_bootstrap.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_otp_bot_response.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/data/personal_info_gate_checker.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/model/auth_session_model.dart';
@@ -169,6 +170,14 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     try {
       final overview = await getIt<ProfileRepository>().getProfileOverview();
       final needs = overview.user.firstName.trim().isEmpty;
+      updateWatchdogUser(
+        username: overview.user.fullName.trim().isEmpty
+            ? null
+            : overview.user.fullName,
+        phoneNumber: overview.user.phoneNumber.trim().isEmpty
+            ? null
+            : overview.user.phoneNumber,
+      );
       emit(
         state.copyWith(
           profileGateResolved: true,

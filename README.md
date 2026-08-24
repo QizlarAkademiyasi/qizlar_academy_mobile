@@ -2,6 +2,40 @@
 
 Flutter ilovasi (Android’da `dev` / `prod` flavor’lar).
 
+## Build konfiguratsiyasi (`build.json`)
+
+Build paytida binary ichiga yoziladigan qiymatlar (`--dart-define`) bitta
+faylda turadi. **Har qanday build shu fayl orqali qilinadi.**
+
+Birinchi marta:
+
+```bash
+cp build.example.json build.json
+```
+
+`build.json` — `.gitignore` da (ichida Watchdog client kaliti bor, repoga
+tushmasin). Shablon `build.example.json` esa repoda saqlanadi — yangi kalit
+qo‘shsangiz, ikkalasiga ham qo‘shing.
+
+| Kalit | Nima |
+|---|---|
+| `WATCHDOG_SERVER_URL` | Watchdog server manzili, **origin** ko‘rinishida (`wss://watchdog.domen.uz`). Yo‘l qo‘shmang — paket `/ws/app` ni o‘zi qo‘shadi |
+| `WATCHDOG_CLIENT_API_KEY` | Serverdagi `.env` faylidagi `WATCHDOG_CLIENT_API_KEY` bilan bir xil |
+| `GOOGLE_SIGN_IN_WEB_CLIENT_ID` | Firebase **Web** OAuth client ID. Bo‘sh qoldirilsa koddagi fallback ishlatiladi |
+
+Keyin har bir buyruqqa `--dart-define-from-file=build.json` qo‘shiladi:
+
+```bash
+flutter run --flavor dev --dart-define-from-file=build.json
+```
+
+Faylsiz build qilsangiz ilova default qiymatlarga tushadi — Watchdog
+`ws://localhost:8080` ga ulanmoqchi bo‘lib, jimgina qayta urinaveradi va
+serverga hech narsa yubormaydi. Xato xabari chiqmaydi, shuning uchun buni
+sezish qiyin.
+
+Batafsil: [docs/watchdog.md](docs/watchdog.md).
+
 ## Release build (obfuscation va debug symbol’lar)
 
 Store yoki mijozga beriladigan **release** artefaktlarni Dart obfuscation bilan yig‘ish tavsiya etiladi. Symbol fayllarni `debug-symbols/` papkasida saqlang (papka `.gitignore`da — repoga commit qilmang).
@@ -9,15 +43,21 @@ Store yoki mijozga beriladigan **release** artefaktlarni Dart obfuscation bilan 
 **Prod** (odatiy store build):
 
 ```bash
-flutter build apk --release --flavor prod --obfuscate --split-debug-info=./debug-symbols
+flutter build apk --release --flavor prod \
+  --dart-define-from-file=build.json \
+  --obfuscate --split-debug-info=./debug-symbols
 ```
 
 ```bash
-flutter build appbundle --release --flavor prod --obfuscate --split-debug-info=./debug-symbols
+flutter build appbundle --release --flavor prod \
+  --dart-define-from-file=build.json \
+  --obfuscate --split-debug-info=./debug-symbols
 ```
 
 ```bash
-flutter build ipa --release --obfuscate --split-debug-info=./debug-symbols
+flutter build ipa --release \
+  --dart-define-from-file=build.json \
+  --obfuscate --split-debug-info=./debug-symbols
 ```
 
 iOS tomonda hozircha alohida Xcode flavor’lar yo‘q — `ipa` uchun `--flavor` kerak emas. Android **APK/App Bundle** uchun `prod` / `dev` flavor ishlating.
@@ -26,6 +66,21 @@ iOS tomonda hozircha alohida Xcode flavor’lar yo‘q — `ipa` uchun `--flavor
 - **iOS**: Runner target — Release/Profile uchun **strip** va **dead code stripping** (binary’da ortiqcha simvollar kamayadi). Crash tahlili uchun **dSYM**ni saqlang.
 
 Batafsil: [docs/dependency-visibility.md](docs/dependency-visibility.md).
+
+### Shorebird
+
+Flutter argumentlari `--` dan keyin uzatiladi:
+
+```bash
+shorebird release android --flavor prod -- --dart-define-from-file=build.json
+```
+
+```bash
+shorebird patch android --flavor prod -- --dart-define-from-file=build.json
+```
+
+Patch va release **bir xil** `build.json` bilan qilinishi shart — aks holda
+patch boshqa serverga qarab ketadi.
 
 ## Getting Started
 

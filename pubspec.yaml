@@ -36,6 +36,10 @@ dependencies:
   qizlar_academy_kit:
     path: packages/qizlar_academy_kit
 
+  # Remote debugging: streams network/log/route/instance events to
+  # watchdog-nest. Enabled in every build (see lib/core/watchdog/).
+  watchdog: ^0.6.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

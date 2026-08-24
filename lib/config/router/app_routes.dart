@@ -4,6 +4,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/router/app_route_transitions.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/core/watchdog/watchdog_integrations.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/sign_in_screen.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_args.dart';
@@ -96,6 +97,7 @@ class AppRoute {
     return GoRouter(
       debugLogDiagnostics: false,
       navigatorKey: rootNavigatorKey,
+      observers: watchdogRouterObservers(),
       initialLocation: initialLocation,
       refreshListenable: _RouterRefreshNotifier(authSessionCubit.stream),
       redirect: (context, state) {

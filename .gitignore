@@ -47,6 +47,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Build-time konfiguratsiya (--dart-define-from-file). Ichida Watchdog client
+# API kaliti bor — repoga tushmasin. Shablon: build.example.json
+/build.json
+
 # AI Coding Tools
 # .claude
 # .cursor

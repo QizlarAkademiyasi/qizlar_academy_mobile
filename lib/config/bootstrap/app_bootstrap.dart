@@ -9,6 +9,7 @@ import 'package:qizlar_academy_mobile/core/analytics/meta_analytics_service.dart
 import 'package:qizlar_academy_mobile/core/deeplink/app_deep_link_coordinator.dart';
 import 'package:qizlar_academy_mobile/core/push/fcm_background_handler.dart';
 import 'package:qizlar_academy_mobile/core/push/push_messaging_service.dart';
+import 'package:qizlar_academy_mobile/core/watchdog/watchdog_bootstrap.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:google_sign_in/google_sign_in.dart' as gsi;
@@ -26,6 +27,9 @@ abstract final class AppBootstrap {
     _muteVerboseInAppWebViewLogs();
 
     final telemetry = _StartupTelemetry();
+    // DI dan oldin: `Watchdog.dioInterceptor` va route observer runtime tayyor
+    // bo‘lgandan keyin olinishi kerak, aks holda no-op fallback qaytadi.
+    await _initWatchdog(telemetry);
     // PDF / Google / Meta SDK’lar birinchi freym uchun shart emas — native splash
     // `runApp` gacha bloklanmasin. Birinchi freymdan keyin parallel yuklanadi.
     await _initLocator(telemetry);
@@ -69,6 +73,12 @@ abstract final class AppBootstrap {
       AppLogger.e('pdfrxFlutterInitialize failed', error: e, stackTrace: st);
     }
     t.phase('pdfrxFlutterInitialize', sw);
+  }
+
+  static Future<void> _initWatchdog(_StartupTelemetry t) async {
+    final sw = Stopwatch()..start();
+    await initializeWatchdog();
+    t.phase('initializeWatchdog', sw);
   }
 
   static Future<void> _initLocator(_StartupTelemetry t) async {

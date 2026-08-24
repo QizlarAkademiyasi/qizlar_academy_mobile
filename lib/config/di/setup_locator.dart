@@ -8,6 +8,7 @@ import 'package:qizlar_academy_mobile/core/network/api_client.dart';
 import 'package:qizlar_academy_mobile/core/network/app_network_logger_interceptor.dart';
 import 'package:qizlar_academy_mobile/core/network/insecure_ssl_override.dart';
 import 'package:qizlar_academy_mobile/core/network/network_status_service.dart';
+import 'package:qizlar_academy_mobile/core/watchdog/watchdog_integrations.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/datasource/auth_local_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/datasource/auth_remote_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/repository/auth_repository_impl.dart';
@@ -152,6 +153,7 @@ Future<void> setupLocator() async {
   );
   applyInsecureSslOverride(authRemoteDio);
   authRemoteDio.interceptors.add(AppNetworkLoggerInterceptor());
+  attachWatchdogToDio(authRemoteDio);
   getIt.registerSingleton<AuthRemoteDatasource>(
     AuthRemoteDatasourceImpl(authRemoteDio),
   );
@@ -538,4 +540,7 @@ Future<void> setupLocator() async {
   getIt.registerFactory<MyActivityBloc>(
     () => MyActivityBloc(getIt<MyActivityRepository>()),
   );
+
+  // Oxirida: ro‘yxatdan o‘tgan bog‘liqliklarni Watchdog Instances tabiga beradi.
+  trackWatchdogGetIt(getIt);
 }
