@@ -106,12 +106,12 @@ class HomeCourseCard extends StatelessWidget {
                             Skeletonizer(
                               enabled: isLoading,
                               child: Text(
-                                _ratingLabel(rating!),
+                                _ratingLabel(rating!, reviewsCount),
                                 style: context.textTheme.bodySmallRegular
                                     .copyWith(color: AppColors.secondaryGrey),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 8),
                           ],
                           const Icon(
                             LucideIcons.clock,
@@ -119,16 +119,20 @@ class HomeCourseCard extends StatelessWidget {
                             color: AppColors.secondaryGrey,
                           ),
                           const SizedBox(width: 4),
-                          Skeletonizer(
-                            enabled: isLoading,
-                            child: Text(
-                              _durationText(l10n, course.durationSeconds),
-                              style: context.textTheme.bodySmallRegular
-                                  .copyWith(color: AppColors.secondaryGrey),
+                          Expanded(
+                            child: Skeletonizer(
+                              enabled: isLoading,
+                              child: Text(
+                                _durationText(l10n, course.durationSeconds),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.textTheme.bodySmallRegular
+                                    .copyWith(color: AppColors.secondaryGrey),
+                              ),
                             ),
                           ),
                           if (rating == null) ...[
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 8),
                             const Icon(
                               LucideIcons.users,
                               size: 13,
@@ -184,9 +188,10 @@ class HomeCourseCard extends StatelessWidget {
     return image;
   }
 
-  static String _ratingLabel(double rating) {
+  static String _ratingLabel(double rating, int? reviewsCount) {
     final value = rating.toStringAsFixed(1);
-    return '$value ';
+    if (reviewsCount == null || reviewsCount <= 0) return value;
+    return '$value ($reviewsCount)';
   }
 
   static String _formatStudents(int count) {

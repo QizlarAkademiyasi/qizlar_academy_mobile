@@ -43,7 +43,7 @@ class AiChatSendFlight {
     final completer = Completer<void>();
     _running = completer;
 
-    _entry = OverlayEntry(
+    final entry = OverlayEntry(
       builder: (context) {
         return IgnorePointer(
           child: SizedBox.expand(
@@ -85,21 +85,24 @@ class AiChatSendFlight {
         );
       },
     );
-    overlay.insert(_entry!);
+    _entry = entry;
+    overlay.insert(entry);
     try {
       await controller.forward();
     } on TickerCanceled {
       // Flight was cancelled by a newer send or dispose.
     } finally {
-      _removeEntry();
-      if (!identical(_controller, controller)) {
-        return;
+      if (identical(_entry, entry)) {
+        entry.remove();
+        _entry = null;
       }
-      controller.dispose();
-      _controller = null;
-      if (!completer.isCompleted) completer.complete();
-      if (identical(_running, completer)) {
-        _running = null;
+      if (identical(_controller, controller)) {
+        controller.dispose();
+        _controller = null;
+        if (!completer.isCompleted) completer.complete();
+        if (identical(_running, completer)) {
+          _running = null;
+        }
       }
     }
   }

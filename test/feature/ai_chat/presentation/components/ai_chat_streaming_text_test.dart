@@ -3,8 +3,10 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/text_styles.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_course_model.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_message_model.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/components/ai_chat_message_bubble.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/components/ai_chat_markdown_body.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/components/ai_chat_streaming_text.dart';
 
 void main() {
@@ -73,6 +75,20 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('assistant links do not use text decoration', (tester) async {
+    await tester.pumpWidget(
+      _testApp(
+        child: const AiChatMarkdownBody(
+          data: '[Qizlar Akademiyasi](https://qizlaracademy.uz)',
+          style: TextStyle(fontSize: 16, color: Colors.black),
+        ),
+      ),
+    );
+
+    final markdown = tester.widget<MarkdownBody>(find.byType(MarkdownBody));
+    expect(markdown.styleSheet?.a?.decoration, TextDecoration.none);
+  });
+
   testWidgets('history assistant bubble shows full text immediately', (
     tester,
   ) async {
@@ -93,6 +109,50 @@ void main() {
     await tester.pump();
 
     expect(find.text('Tarixiy javob', findRichText: true), findsOneWidget);
+  });
+
+  testWidgets('course results animate only after the reply is fully revealed', (
+    tester,
+  ) async {
+    const text = 'Sizga mos kurs topdim';
+    await tester.pumpWidget(
+      _testApp(
+        child: AiChatMessageBubble(
+          message: AiChatMessageModel(
+            id: 'animated-with-course',
+            role: AiChatMessageRole.assistant,
+            content: text,
+            createdAt: DateTime(2026, 8, 20),
+            animateReveal: true,
+            courses: const [
+              AiChatCourseModel(
+                id: 'course-1',
+                title: 'Grafik dizayn',
+                mentorName: 'Madina Karimova',
+                imageUrl: '',
+              ),
+            ],
+          ),
+          onCourseTap: (_) {},
+          onRetry: () {},
+        ),
+      ),
+    );
+
+    expect(find.byKey(const ValueKey('ai-chat-course-reveal-0')), findsNothing);
+
+    await tester.pump(
+      AiChatStreamingText.durationFor(
+        AiChatStreamingText.tokenize(text).length,
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 16));
+
+    final reveal = find.byKey(const ValueKey('ai-chat-course-reveal-0'));
+    expect(reveal, findsOneWidget);
+    final initialOpacity = tester.widget<Opacity>(reveal).opacity;
+    await tester.pump(const Duration(milliseconds: 220));
+    expect(tester.widget<Opacity>(reveal).opacity, greaterThan(initialOpacity));
   });
 
   testWidgets('assistant bubble does not replay after remount when settled', (

@@ -40,7 +40,7 @@ class _AiChatViewState extends State<_AiChatView>
             : const Color(0xFFFFE3EF),
       ),
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: dark
             ? const Color(0xFF3C0C25)
             : const Color(0xFFE8357D),
@@ -218,12 +218,7 @@ class _AiChatViewState extends State<_AiChatView>
             children: [
               buildHeader(context, state),
               Expanded(child: buildBody(context, state)),
-              SafeArea(
-                top: false,
-                bottom: MediaQuery.viewInsetsOf(context).bottom <= 0,
-                child: buildComposer(context, state),
-              ),
-              SizedBox(height: MediaQuery.viewInsetsOf(context).bottom),
+              SafeArea(top: false, child: buildComposer(context, state)),
             ],
           ),
           if (drawerProgress > 0)

@@ -6,6 +6,7 @@ import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_conve
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_course_model.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_message_model.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/repository/ai_chat_repository.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/domain/service/ai_chat_app_session.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/bloc/ai_chat_bloc.dart';
 
 void main() {
@@ -25,6 +26,46 @@ void main() {
     expect(ready.messages, isEmpty);
     expect(ready.conversations, hasLength(1));
   });
+
+  test(
+    'starts fresh once per app process and restores on later opens',
+    () async {
+      final repository = _FakeAiChatRepository(
+        bootstrapResult: AiChatBootstrapModel(
+          conversationId: 'previous-conversation',
+          title: 'Oldingi suhbat',
+          messages: [
+            AiChatMessageModel(
+              id: 'old-message',
+              role: AiChatMessageRole.assistant,
+              content: 'Oldingi javob',
+              createdAt: DateTime(2026, 8, 20),
+            ),
+          ],
+        ),
+      );
+      final appSession = AiChatAppSession();
+      final firstBloc = AiChatBloc(repository, appSession: appSession);
+      addTearDown(firstBloc.close);
+      firstBloc.add(const AiChatStarted());
+      final fresh = await firstBloc.stream.firstWhere(
+        (state) => state.status == AiChatStatus.ready,
+      );
+
+      expect(fresh.conversationId, isNull);
+      expect(fresh.messages, isEmpty);
+
+      final secondBloc = AiChatBloc(repository, appSession: appSession);
+      addTearDown(secondBloc.close);
+      secondBloc.add(const AiChatStarted());
+      final restored = await secondBloc.stream.firstWhere(
+        (state) => state.status == AiChatStatus.ready,
+      );
+
+      expect(restored.conversationId, 'previous-conversation');
+      expect(restored.messages.single.content, 'Oldingi javob');
+    },
+  );
 
   test(
     'optimistically adds user message then appends assistant response',
@@ -174,6 +215,14 @@ void main() {
 }
 
 class _FakeAiChatRepository implements AiChatRepository {
+  _FakeAiChatRepository({
+    this.bootstrapResult = const AiChatBootstrapModel(
+      conversationId: null,
+      messages: [],
+    ),
+  });
+
+  final AiChatBootstrapModel bootstrapResult;
   bool failSend = false;
   int getConversationMessagesCount = 0;
   String? lastClientMessageId;
@@ -181,7 +230,7 @@ class _FakeAiChatRepository implements AiChatRepository {
 
   @override
   Future<AiChatBootstrapModel> bootstrap() async {
-    return const AiChatBootstrapModel(conversationId: null, messages: []);
+    return bootstrapResult;
   }
 
   @override

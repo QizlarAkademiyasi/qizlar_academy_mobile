@@ -200,6 +200,7 @@ mixin AiChatScreenMixin<T extends StatefulWidget>
       textStyle: context.textTheme.bodyLargeMedium.copyWith(
         color: AppColors.white,
         height: 1.35,
+        decoration: TextDecoration.none,
       ),
       bubbleColor: context.appColors.primary,
     );
@@ -285,7 +286,7 @@ mixin AiChatScreenMixin<T extends StatefulWidget>
       AiChatStatus.ready => AiChatMessageList(
         controller: messagesScrollController,
         messages: state.messages,
-        isSending: state.isSending,
+        isSending: state.isSending && _flyingMessageId == null,
         flyingMessageId: _flyingMessageId,
         flightTargetKey: flightTargetKey,
         onCourseTap: openCourse,
@@ -293,8 +294,13 @@ mixin AiChatScreenMixin<T extends StatefulWidget>
         settledRevealIds: _settledRevealIds,
         onRevealSettled: settleMessageReveal,
         onStreamingTick: followStreamingReply,
+        onUserScrollStarted: dismissKeyboardForScroll,
       ),
     };
+  }
+
+  void dismissKeyboardForScroll() {
+    if (messageFocusNode.hasFocus) messageFocusNode.unfocus();
   }
 
   Widget buildComposer(BuildContext context, AiChatState state) {

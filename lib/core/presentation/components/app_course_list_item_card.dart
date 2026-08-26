@@ -102,20 +102,28 @@ class AppCourseListItemCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 26),
                       Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(LucideIcons.star, size: 14, color: Color(0xFFF6C344)),
                           const SizedBox(width: 4),
-                          Text(
-                            l10n.myCoursesRatingReviewsLine(rating.toStringAsFixed(1), _formatReviewsCount(reviewsCount)),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey),
+                          Flexible(
+                            child: Text(
+                              l10n.myCoursesRatingReviewsLine(rating.toStringAsFixed(1), _formatReviewsCount(reviewsCount)),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey),
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Icon(LucideIcons.clock3, size: 14, color: context.appColors.secondaryGrey),
                           const SizedBox(width: 4),
-                          Text(durationText, style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey)),
+                          Flexible(
+                            child: Text(
+                              durationText,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.textTheme.bodyXSmallRegular.copyWith(color: context.appColors.secondaryGrey),
+                            ),
+                          ),
                         ],
                       ),
                     ],

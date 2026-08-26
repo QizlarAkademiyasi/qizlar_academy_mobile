@@ -6,7 +6,9 @@ import 'package:qizlar_academy_mobile/config/flavor/env_config.dart';
 void main() {
   if (!EnvConfig.isInitialized) {
     final flavor = EnvConfig.resolveFlavor();
-    final appName = flavor == AppFlavors.dev ? 'Qizlar Akademiyasi (Dev)' : 'Qizlar Akademiyasi';
+    final appName = flavor == AppFlavors.dev
+        ? 'Qizlar Akademiyasi (Dev)'
+        : 'Qizlar Akademiyasi';
     EnvConfig.initialize(appName: appName, flavor: flavor);
   }
 

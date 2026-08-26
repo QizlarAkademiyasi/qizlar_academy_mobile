@@ -106,6 +106,72 @@ void main() {
     expect(find.text('69 soat 50 daqiqa'), findsOneWidget);
   });
 
+  testWidgets('typing status enters with animation while AI responds', (
+    tester,
+  ) async {
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      _testApp(
+        child: AiChatMessageList(
+          controller: controller,
+          messages: [_user('sending', 'Kurs tavsiya qil')],
+          isSending: true,
+          onCourseTap: (_) {},
+          onRetry: (_) {},
+        ),
+      ),
+    );
+
+    expect(
+      find.byKey(const ValueKey('ai-chat-typing-indicator')),
+      findsOneWidget,
+    );
+    final initial = tester.widget<FadeTransition>(
+      find.byKey(const ValueKey('ai-chat-typing-indicator')),
+    );
+    expect(initial.opacity.value, 0);
+
+    await tester.pump(const Duration(milliseconds: 160));
+    expect(initial.opacity.value, greaterThan(0));
+    expect(find.text('AI javob yozmoqda…'), findsOneWidget);
+  });
+
+  testWidgets('user scroll requests one-shot keyboard dismissal', (
+    tester,
+  ) async {
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    var dismissRequests = 0;
+    await tester.pumpWidget(
+      _testApp(
+        child: SizedBox(
+          height: 280,
+          child: AiChatMessageList(
+            controller: controller,
+            messages: List.generate(
+              18,
+              (index) => _user('$index', 'Uzun chat xabari $index'),
+            ),
+            isSending: false,
+            onCourseTap: (_) {},
+            onRetry: (_) {},
+            onUserScrollStarted: () => dismissRequests += 1,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    await tester.drag(
+      find.byKey(const ValueKey('ai-chat-message-list')),
+      const Offset(0, 120),
+    );
+    await tester.pump();
+
+    expect(dismissRequests, 1);
+  });
+
   testWidgets('send flight overlay appears then settles', (tester) async {
     await tester.pumpWidget(_testApp(child: const _SendFlightHarness()));
     await tester.tap(find.byKey(const ValueKey('fly')));

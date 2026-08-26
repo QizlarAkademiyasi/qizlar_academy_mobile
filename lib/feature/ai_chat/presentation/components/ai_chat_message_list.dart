@@ -20,6 +20,7 @@ class AiChatMessageList extends StatelessWidget {
     this.settledRevealIds,
     this.onRevealSettled,
     this.onStreamingTick,
+    this.onUserScrollStarted,
   });
 
   final ScrollController controller;
@@ -32,6 +33,7 @@ class AiChatMessageList extends StatelessWidget {
   final Set<String>? settledRevealIds;
   final ValueChanged<String>? onRevealSettled;
   final VoidCallback? onStreamingTick;
+  final VoidCallback? onUserScrollStarted;
 
   @override
   Widget build(BuildContext context) {
@@ -39,92 +41,143 @@ class AiChatMessageList extends StatelessWidget {
         isSending &&
         messages.isNotEmpty &&
         messages.last.role == AiChatMessageRole.user;
-    return ListView.builder(
-      key: const ValueKey('ai-chat-message-list'),
-      controller: controller,
-      reverse: true,
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      padding: const EdgeInsets.fromLTRB(
-        AiChatBubbleMetrics.listInset,
-        AiChatBubbleMetrics.listTopPadding,
-        AiChatBubbleMetrics.listInset,
-        AiChatBubbleMetrics.listBottomPadding,
-      ),
-      cacheExtent: 1200,
-      itemCount: messages.length + (showTyping ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (showTyping && index == 0) {
-          return const Padding(
-            padding: EdgeInsets.only(top: AiChatBubbleMetrics.groupSpacing),
-            child: _TypingIndicator(),
+    return NotificationListener<ScrollStartNotification>(
+      onNotification: (notification) {
+        if (notification.dragDetails != null) onUserScrollStarted?.call();
+        return false;
+      },
+      child: ListView.builder(
+        key: const ValueKey('ai-chat-message-list'),
+        controller: controller,
+        reverse: true,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+        padding: const EdgeInsets.fromLTRB(
+          AiChatBubbleMetrics.listInset,
+          AiChatBubbleMetrics.listTopPadding,
+          AiChatBubbleMetrics.listInset,
+          AiChatBubbleMetrics.listBottomPadding,
+        ),
+        scrollCacheExtent: const ScrollCacheExtent.pixels(700),
+        itemCount: messages.length + (showTyping ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (showTyping && index == 0) {
+            return const Padding(
+              padding: EdgeInsets.only(top: AiChatBubbleMetrics.groupSpacing),
+              child: _TypingIndicator(),
+            );
+          }
+          final chronologicalIndex =
+              messages.length - 1 - (showTyping ? index - 1 : index);
+          final message = messages[chronologicalIndex];
+          final group = AiChatBubbleMetrics.groupingAt(
+            messages,
+            chronologicalIndex,
           );
-        }
-        final chronologicalIndex =
-            messages.length - 1 - (showTyping ? index - 1 : index);
-        final message = messages[chronologicalIndex];
-        final group = AiChatBubbleMetrics.groupingAt(
-          messages,
-          chronologicalIndex,
-        );
-        return RepaintBoundary(
-          child: Padding(
-            padding: EdgeInsets.only(top: group.spacingBefore),
-            child: _KeepAliveMessage(
-              key: ValueKey(message.id),
-              child: AiChatMessageBubble(
-                message: message,
-                isGroupStart: group.isGroupStart,
-                isGroupEnd: group.isGroupEnd,
-                hideDuringFlight: message.id == flyingMessageId,
-                flightTargetKey: message.id == flyingMessageId
-                    ? flightTargetKey
-                    : null,
-                onCourseTap: onCourseTap,
-                onRetry: () => onRetry(message.id),
-                settledRevealIds: settledRevealIds,
-                onRevealSettled: onRevealSettled,
-                onStreamingTick: onStreamingTick,
+          return RepaintBoundary(
+            child: Padding(
+              padding: EdgeInsets.only(top: group.spacingBefore),
+              child: _KeepAliveMessage(
+                key: ValueKey(message.id),
+                child: AiChatMessageBubble(
+                  message: message,
+                  isGroupStart: group.isGroupStart,
+                  isGroupEnd: group.isGroupEnd,
+                  hideDuringFlight: message.id == flyingMessageId,
+                  flightTargetKey: message.id == flyingMessageId
+                      ? flightTargetKey
+                      : null,
+                  onCourseTap: onCourseTap,
+                  onRetry: () => onRetry(message.id),
+                  settledRevealIds: settledRevealIds,
+                  onRevealSettled: onRevealSettled,
+                  onStreamingTick: onStreamingTick,
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
 
-class _TypingIndicator extends StatelessWidget {
+class _TypingIndicator extends StatefulWidget {
   const _TypingIndicator();
 
   @override
+  State<_TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<_TypingIndicator>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Semantics(
-        label: context.l10n.aiChatTyping,
-        liveRegion: true,
-        child: AiChatGlassSurface(
-          radius: AiChatBubbleMetrics.corner,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 30,
-                height: 18,
-                child: Lottie.asset(
-                  UiKitAssets.lottie.typing,
-                  fit: BoxFit.contain,
+    final animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+    return FadeTransition(
+      key: const ValueKey('ai-chat-typing-indicator'),
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(-0.08, 0.18),
+          end: Offset.zero,
+        ).animate(animation),
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.96, end: 1).animate(animation),
+          alignment: Alignment.bottomLeft,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Semantics(
+              label: context.l10n.aiChatTyping,
+              liveRegion: true,
+              child: AiChatGlassSurface(
+                radius: AiChatBubbleMetrics.corner,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 30,
+                      height: 18,
+                      child: Lottie.asset(
+                        UiKitAssets.lottie.typing,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      context.l10n.aiChatTyping,
+                      style: context.textTheme.bodySmallMedium.copyWith(
+                        color: context.appColors.secondaryGrey,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                context.l10n.aiChatTyping,
-                style: context.textTheme.bodySmallMedium.copyWith(
-                  color: context.appColors.secondaryGrey,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

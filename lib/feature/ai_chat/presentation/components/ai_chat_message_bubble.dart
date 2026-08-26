@@ -68,11 +68,14 @@ class AiChatMessageBubble extends StatelessWidget {
                       isGroupEnd: isGroupEnd,
                     ),
                   ),
-                  child: Text(
-                    message.content,
-                    style: context.textTheme.bodyLargeMedium.copyWith(
-                      color: AppColors.white,
-                      height: 1.35,
+                  child: SelectionArea(
+                    child: Text(
+                      message.content,
+                      style: context.textTheme.bodyLargeMedium.copyWith(
+                        color: AppColors.white,
+                        height: 1.35,
+                        decoration: TextDecoration.none,
+                      ),
                     ),
                   ),
                 )
@@ -89,15 +92,7 @@ class AiChatMessageBubble extends StatelessWidget {
                   onCourseTap: onCourseTap,
                   onStreamingTick: onStreamingTick,
                 ),
-              if (message.delivery == AiChatMessageDelivery.sending) ...[
-                const SizedBox(height: 5),
-                Text(
-                  context.l10n.aiChatSending,
-                  style: context.textTheme.bodyXSmallRegular.copyWith(
-                    color: context.appColors.secondaryGrey,
-                  ),
-                ),
-              ],
+
               if (message.delivery == AiChatMessageDelivery.failed) ...[
                 const SizedBox(height: 6),
                 TextButton.icon(
@@ -191,6 +186,7 @@ class _AssistantReplyState extends State<_AssistantReply>
                 style: context.textTheme.bodyLargeMedium.copyWith(
                   color: context.appColors.text,
                   height: 1.35,
+                  decoration: TextDecoration.none,
                 ),
                 caretColor: context.appColors.primary,
                 onTick: widget.onStreamingTick,
@@ -200,13 +196,11 @@ class _AssistantReplyState extends State<_AssistantReply>
           ),
         if (_showCourses && widget.courses.isNotEmpty) ...[
           if (widget.text.isNotEmpty) const SizedBox(height: 10),
-          for (var index = 0; index < widget.courses.length; index++) ...[
-            if (index > 0) const SizedBox(height: 10),
-            AiChatCourseCard(
-              course: widget.courses[index],
-              onTap: () => widget.onCourseTap(widget.courses[index].id),
-            ),
-          ],
+          _AnimatedCourseResults(
+            courses: widget.courses,
+            animate: _playAnimate,
+            onCourseTap: widget.onCourseTap,
+          ),
         ],
       ],
     );
@@ -217,5 +211,80 @@ class _AssistantReplyState extends State<_AssistantReply>
     if (!mounted || _showCourses) return;
     setState(() => _showCourses = true);
     widget.onStreamingTick?.call();
+  }
+}
+
+class _AnimatedCourseResults extends StatefulWidget {
+  const _AnimatedCourseResults({
+    required this.courses,
+    required this.animate,
+    required this.onCourseTap,
+  });
+
+  final List<AiChatCourseModel> courses;
+  final bool animate;
+  final ValueChanged<String> onCourseTap;
+
+  @override
+  State<_AnimatedCourseResults> createState() => _AnimatedCourseResultsState();
+}
+
+class _AnimatedCourseResultsState extends State<_AnimatedCourseResults>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 420 + (widget.courses.length * 70)),
+      value: widget.animate ? 0 : 1,
+    );
+    if (widget.animate) _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < widget.courses.length; index++) ...[
+          if (index > 0) const SizedBox(height: 10),
+          AnimatedBuilder(
+            animation: _controller,
+            child: AiChatCourseCard(
+              course: widget.courses[index],
+              onTap: () => widget.onCourseTap(widget.courses[index].id),
+            ),
+            builder: (context, child) {
+              final start = (index * 0.1).clamp(0.0, 0.55).toDouble();
+              final progress = CurvedAnimation(
+                parent: _controller,
+                curve: Interval(start, 1, curve: Curves.easeOutCubic),
+              ).value;
+              return Opacity(
+                key: ValueKey('ai-chat-course-reveal-$index'),
+                opacity: progress,
+                child: Transform.translate(
+                  offset: Offset(0, 14 * (1 - progress)),
+                  child: Transform.scale(
+                    scale: 0.97 + (0.03 * progress),
+                    alignment: Alignment.topCenter,
+                    child: child,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ],
+    );
   }
 }

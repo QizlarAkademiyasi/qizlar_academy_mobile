@@ -3,12 +3,16 @@ import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_conversation_model.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/model/ai_chat_message_model.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/repository/ai_chat_repository.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/domain/service/ai_chat_app_session.dart';
 
 part 'ai_chat_event.dart';
 part 'ai_chat_state.dart';
 
 class AiChatBloc extends Bloc<AiChatEvent, AiChatState> {
-  AiChatBloc(this._repository) : super(const AiChatState()) {
+  AiChatBloc(this._repository, {AiChatAppSession? appSession})
+    : _startsFreshOnBootstrap = (appSession ?? AiChatAppSession())
+          .takeShouldStartFresh(),
+      super(const AiChatState()) {
     on<AiChatStarted>(_onStarted);
     on<AiChatConversationsRequested>(_onConversationsRequested);
     on<AiChatConversationsLoadMoreRequested>(_onConversationsLoadMoreRequested);
@@ -22,6 +26,7 @@ class AiChatBloc extends Bloc<AiChatEvent, AiChatState> {
   static const int _conversationsPageSize = 20;
 
   final AiChatRepository _repository;
+  final bool _startsFreshOnBootstrap;
   int _clientMessageCounter = 0;
 
   Future<void> _onStarted(
@@ -31,14 +36,15 @@ class AiChatBloc extends Bloc<AiChatEvent, AiChatState> {
     emit(state.copyWith(status: AiChatStatus.loading, clearLoadError: true));
     try {
       final result = await _repository.bootstrap();
+      final startsFresh = _startsFreshOnBootstrap;
       emit(
         state.copyWith(
           status: AiChatStatus.ready,
-          conversationId: result.conversationId,
-          conversationTitle: result.title,
-          messages: result.messages,
+          conversationId: startsFresh ? null : result.conversationId,
+          conversationTitle: startsFresh ? null : result.title,
+          messages: startsFresh ? const [] : result.messages,
           conversationLoadFailed: false,
-          clearConversation: result.conversationId == null,
+          clearConversation: startsFresh || result.conversationId == null,
           clearLoadError: true,
         ),
       );

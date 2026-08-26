@@ -35,6 +35,7 @@ import 'package:qizlar_academy_mobile/feature/ai_chat/data/repository/ai_chat_co
 import 'package:qizlar_academy_mobile/feature/ai_chat/data/repository/ai_chat_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/repository/ai_chat_course_resolver.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/domain/repository/ai_chat_repository.dart';
+import 'package:qizlar_academy_mobile/feature/ai_chat/domain/service/ai_chat_app_session.dart';
 import 'package:qizlar_academy_mobile/feature/ai_chat/presentation/bloc/ai_chat_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/courses/data/datasource/courses_catalog_datasource.dart';
@@ -257,8 +258,12 @@ Future<void> setupLocator() async {
       getIt<AiChatCourseResolver>(),
     ),
   );
+  getIt.registerLazySingleton<AiChatAppSession>(AiChatAppSession.new);
   getIt.registerFactory<AiChatBloc>(
-    () => AiChatBloc(getIt<AiChatRepository>()),
+    () => AiChatBloc(
+      getIt<AiChatRepository>(),
+      appSession: getIt<AiChatAppSession>(),
+    ),
   );
 
   getIt.registerLazySingleton<CoursesCatalogApiDatasource>(
