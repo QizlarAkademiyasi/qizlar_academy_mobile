@@ -1,10 +1,12 @@
 import 'dart:math';
+import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show debugPrint;
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart'
     show PackageInfo, SharedPreferences;
 import 'package:watchdog/watchdog.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 /// Base URL of the watchdog-nest server — **without** a path. The package
 /// appends `/ws/app` itself (see `WatchdogCloudClient._connect`), so passing
@@ -98,7 +100,9 @@ Future<void> initializeWatchdog({
     await Watchdog.start(
       config: WatchdogConfig(
         enabled: true,
-        global: false,
+        // Cloud-only mode: do not expose the package's local localhost DevTools
+        // server in release builds or on a user's LAN.
+        global: true,
         cloud: cloudReady
             ? WatchdogCloudConfig(
                 serverUrl: serverUrl,
@@ -137,6 +141,10 @@ void updateWatchdogUser({String? username, String? phoneNumber, String? email}) 
 Future<WatchdogDevice> _resolveDevice(String appName) async {
   String? deviceId;
   String? appVersion;
+  String? deviceName;
+  String? model;
+  String? platform;
+  String? osVersion;
 
   try {
     final prefs = await SharedPreferences.getInstance();
@@ -157,8 +165,31 @@ Future<WatchdogDevice> _resolveDevice(String appName) async {
     // Version is optional metadata.
   }
 
+  try {
+    final deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      final info = await deviceInfo.androidInfo;
+      deviceName = info.name;
+      model = info.model;
+      platform = 'android';
+      osVersion = info.version.release;
+    } else if (Platform.isIOS) {
+      final info = await deviceInfo.iosInfo;
+      deviceName = info.name;
+      model = info.utsname.machine;
+      platform = 'ios';
+      osVersion = info.systemVersion;
+    }
+  } catch (_) {
+    // Device metadata is optional; the stable id and cloud stream still work.
+  }
+
   return WatchdogDevice(
     deviceId: deviceId,
+    deviceName: deviceName,
+    model: model,
+    platform: platform,
+    osVersion: osVersion,
     appName: appName,
     appVersion: appVersion,
   );

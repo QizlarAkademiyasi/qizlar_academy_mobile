@@ -39,6 +39,7 @@ dependencies:
   # Remote debugging: streams network/log/route/instance events to
   # watchdog-nest. Enabled in every build (see lib/core/watchdog/).
   watchdog: ^0.6.3
+  device_info_plus: ^11.3.3
 
 dev_dependencies:
   flutter_test:

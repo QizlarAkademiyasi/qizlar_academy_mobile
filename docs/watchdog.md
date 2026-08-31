@@ -123,10 +123,9 @@ yoqilgan. Ya‘ni relizdan keyin **har bir foydalanuvchining** so‘rovlari,
 response body’lari va loglari serverga oqadi. Hajm, xarajat va maxfiylik
 jihatidan buni bilib turing.
 
-**Telefondagi lokal server.** `global: false` bo‘lgani uchun paket qurilmada
-`0.0.0.0:8888` da DevTools serverini ochadi — release’da ham. Bir Wi-Fi’dagi
-istalgan odam o‘sha foydalanuvchi trafigini o‘qiy oladi. Production uchun
-`global: true` (faqat cloud) xavfsizroq:
+**Telefondagi lokal server.** Production’da `global: true` ishlatiladi, shuning
+uchun paket qurilmada localhost DevTools serverini ochmaydi. Barcha event’lar
+faqat cloud dashboard’ga yuboriladi:
 
 ```dart
 // lib/core/watchdog/watchdog_bootstrap.dart

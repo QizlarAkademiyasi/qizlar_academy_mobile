@@ -1,5 +1,5 @@
 {
-  "WATCHDOG_SERVER_URL": "wss://loggermen.roziboyevdev.uz",
-  "WATCHDOG_CLIENT_API_KEY": "<serverdagi .env dagi WATCHDOG_CLIENT_API_KEY>",
+  "WATCHDOG_SERVER_URL": "wss://log-api.roziboyevdev.uz",
+  "WATCHDOG_CLIENT_API_KEY": "wdk_GmbETLSYYTdxIFkV6Yz8LF_c4ckHQqdL",
   "GOOGLE_SIGN_IN_WEB_CLIENT_ID": ""
 }
