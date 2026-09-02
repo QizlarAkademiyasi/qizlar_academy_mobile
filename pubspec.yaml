@@ -85,6 +85,7 @@ flutter:
 
   assets:
     - shorebird.yaml
+    - assets/birthday/
     - assets/profile/profile_badges.json
     # Kitdagi .md ba'zan faqat paket pubspec'i bilan simulator/debugda manifestga tushmaydi — host orqali majburiy qo'shamiz.
     - packages/qizlar_academy_kit/assets/markdown/privacy-policy.md

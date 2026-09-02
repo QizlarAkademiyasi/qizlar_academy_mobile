@@ -52,17 +52,18 @@ class _BirthdayAvatarGlowState extends State<BirthdayAvatarGlow>
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    final baseHaloAlpha = context.isDarkTheme ? 0.12 : 0.07;
+    const avatarFallbackColor = Color(0xFFE5E7EB);
+    const baseHaloAlpha = 0.07;
 
     return RepaintBoundary(
       key: const ValueKey('birthday-avatar-glow'),
       child: SizedBox.square(
-        dimension: 116,
+        dimension: 180,
         child: AnimatedBuilder(
           animation: _pulse,
           child: ClipOval(
             child: widget.imageUrl.trim().isEmpty
-                ? ColoredBox(color: appColors.onContainer)
+                ? const ColoredBox(color: avatarFallbackColor)
                 : AppCachedNetworkImage(
                     imageUrl: widget.imageUrl.trim(),
                     fit: BoxFit.cover,
@@ -76,36 +77,60 @@ class _BirthdayAvatarGlowState extends State<BirthdayAvatarGlow>
               children: [
                 Transform.scale(
                   key: const ValueKey('birthday-avatar-glow-pulse'),
-                  scale: 0.92 + (0.08 * pulse),
+                  scale: 0.96 + (0.04 * pulse),
                   child: Container(
-                    width: 116,
-                    height: 116,
+                    width: 180,
+                    height: 180,
                     decoration: BoxDecoration(
-                      color: appColors.primary.withValues(
-                        alpha: baseHaloAlpha * (0.62 + (0.38 * pulse)),
-                      ),
+                      color: Colors.white.withValues(alpha: 0.9),
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: appColors.primary.withValues(
+                            alpha: baseHaloAlpha + (0.06 * pulse),
+                          ),
+                          blurRadius: 16 + (6 * pulse),
+                        ),
+                      ],
                     ),
                   ),
                 ),
                 Container(
-                  width: 86,
-                  height: 86,
-                  padding: const EdgeInsets.all(2),
+                  width: 172,
+                  height: 172,
+                  padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                    color: appColors.primary,
+                    color: Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: appColors.primary.withValues(
-                          alpha: 0.14 + (0.10 * pulse),
-                        ),
-                        blurRadius: 12 + (10 * pulse),
-                        spreadRadius: 0.5 + (1.5 * pulse),
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                  child: avatar,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      avatar ?? const SizedBox.shrink(),
+                      IgnorePointer(
+                        child: Transform.translate(
+                          // The exported SVG ellipse occupies only ~82% of its
+                          // canvas and sits slightly above center. Scale it so
+                          // the pink stroke follows the photo's outer edge.
+                          offset: const Offset(0, 10),
+                          child: Transform.scale(
+                            scale: 1.22,
+                            child: SvgPicture.asset(
+                              'assets/birthday/birthday_ring.svg',
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             );

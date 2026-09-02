@@ -24,7 +24,10 @@ class TasksScreenSkeleton extends StatelessWidget {
             child: Container(
               width: 150,
               height: 20,
-              color: context.appColors.onContainer,
+              decoration: BoxDecoration(
+                color: context.appColors.onContainer,
+                borderRadius: AppRadius.radiusSm,
+              ),
             ),
           ),
           const SizedBox(height: 24),

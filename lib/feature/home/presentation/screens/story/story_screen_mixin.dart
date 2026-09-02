@@ -70,6 +70,7 @@ mixin StoryScreenMixin<T extends StatefulWidget> on State<T> {
       imageUrl: story.imageUrl,
       title: context.l10n.birthdayStoryCongratulations,
       message: context.l10n.birthdayStoryMessage,
+      name: story.name,
     );
   }
 }

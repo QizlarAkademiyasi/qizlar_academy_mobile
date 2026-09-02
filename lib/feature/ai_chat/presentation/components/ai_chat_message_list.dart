@@ -57,7 +57,7 @@ class AiChatMessageList extends StatelessWidget {
           AiChatBubbleMetrics.listInset,
           AiChatBubbleMetrics.listBottomPadding,
         ),
-        scrollCacheExtent: const ScrollCacheExtent.pixels(700),
+        cacheExtent: 700,
         itemCount: messages.length + (showTyping ? 1 : 0),
         itemBuilder: (context, index) {
           if (showTyping && index == 0) {

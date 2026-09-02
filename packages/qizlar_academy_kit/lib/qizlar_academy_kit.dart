@@ -1,7 +1,6 @@
 // Qizlar Academy ilovasi uchun barcha tashqi dependency larning re-exporti.
 // Ilovada faqat shu paket ko'rinadi; asl paketlar shu yerda.
 export 'package:flutter/material.dart';
-export 'package:flutter/rendering.dart' show ScrollCacheExtent;
 export 'package:cupertino_icons/cupertino_icons.dart';
 export 'package:firebase_core/firebase_core.dart';
 export 'package:firebase_auth/firebase_auth.dart';

@@ -151,18 +151,6 @@ class _MainScreenState extends State<MainScreen>
                 ),
               ),
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: context.isDarkTheme
-                  ? UiKitAssets.images.bottomNavDark.image(
-                      opacity: AlwaysStoppedAnimation(0.5),
-                    )
-                  : UiKitAssets.images.bottomNavLight.image(
-                      opacity: AlwaysStoppedAnimation(0.5),
-                    ),
-            ),
             MainAiChatFloatingPillOverlay(
               isBottomNavMinimized: isBottomNavMinimized,
               isExtraMenuExpanded: isExtraMenuExpanded,
