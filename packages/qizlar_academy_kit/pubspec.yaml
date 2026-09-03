@@ -78,6 +78,7 @@ dependencies:
   # Media
   image_picker: ^1.1.2
   pdfrx: ^2.2.24
+  pdfrx: ^2.5.0
 
   # Device information and locale
   devicelocale: ^0.8.2
