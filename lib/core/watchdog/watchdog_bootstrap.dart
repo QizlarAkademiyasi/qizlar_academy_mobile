@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart'
     show PackageInfo, SharedPreferences;
@@ -20,7 +20,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 /// every check and the app then dials a port on the phone itself forever.
 const String kWatchdogServerUrl = String.fromEnvironment(
   'WATCHDOG_SERVER_URL',
-  defaultValue: 'wss://loggermen.roziboyevdev.uz',
+  defaultValue: 'wss://log-api.roziboyevdev.uz',
 );
 
 /// Must match `WATCHDOG_CLIENT_API_KEY` in the server's `.env`.
@@ -31,7 +31,7 @@ const String kWatchdogServerUrl = String.fromEnvironment(
 /// breaks every already-installed app until a new release ships.
 const String kWatchdogClientApiKey = String.fromEnvironment(
   'WATCHDOG_CLIENT_API_KEY',
-  defaultValue: 'f0e44ef9c41ee0bdc943c9a0cc4b959de60a50299f45bfa1',
+  defaultValue: 'wdk_k1NIlcHVVKdW3_oAphvC8Vu30F3IUNmj',
 );
 
 /// SharedPreferences key the generated device id is stored under — the id
@@ -97,12 +97,13 @@ Future<void> initializeWatchdog({
   }
 
   try {
-    await Watchdog.start(
+    await Watchdog.start(``
       config: WatchdogConfig(
         enabled: true,
-        // Cloud-only mode: do not expose the package's local localhost DevTools
-        // server in release builds or on a user's LAN.
-        global: true,
+        // Debug: local DevTools (`watchdog open` → http://localhost:8888) plus
+        // cloud. Release/profile: cloud-only so the phone does not bind a
+        // localhost server on a user's LAN.
+        global: !kDebugMode,
         cloud: cloudReady
             ? WatchdogCloudConfig(
                 serverUrl: serverUrl,
