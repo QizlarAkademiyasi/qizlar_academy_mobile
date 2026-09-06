@@ -4,9 +4,13 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 CustomTransitionPage<void> buildBottomUpRoutePage({
   required LocalKey key,
   required Widget child,
+  String? name,
+  Object? arguments,
 }) {
   return CustomTransitionPage<void>(
     key: key,
+    name: name,
+    arguments: arguments,
     child: child,
     transitionDuration: const Duration(milliseconds: 380),
     reverseTransitionDuration: const Duration(milliseconds: 300),

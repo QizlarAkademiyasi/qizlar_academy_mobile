@@ -5,6 +5,8 @@ import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/router/app_route_transitions.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/core/watchdog/watchdog_integrations.dart';
+import 'package:qizlar_academy_mobile/core/watchdog/watchdog_screen_page.dart';
+import 'package:qizlar_academy_mobile/core/watchdog/watchdog_screen_tracker.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/sign_in_screen.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/screens/verification_args.dart';
@@ -275,7 +277,11 @@ class AppRoute {
           path: Routes.splash,
           name: Routes.splash,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const SplashScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'SplashScreen',
+            child: const SplashScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.main,
@@ -289,13 +295,21 @@ class AppRoute {
           path: Routes.mainGuest,
           name: 'mainGuest',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, _) => _mainShellWithTabBlocs(isGuestMode: true),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: kMainTabInitialScreenName,
+            child: _mainShellWithTabBlocs(isGuestMode: true),
+          ),
         ),
         GoRoute(
           path: Routes.mainUser,
           name: 'mainUser',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, _) => _mainShellWithTabBlocs(isGuestMode: false),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: kMainTabInitialScreenName,
+            child: _mainShellWithTabBlocs(isGuestMode: false),
+          ),
         ),
         GoRoute(
           path: Routes.aiChat,
@@ -303,6 +317,8 @@ class AppRoute {
           parentNavigatorKey: rootNavigatorKey,
           pageBuilder: (_, state) => buildBottomUpRoutePage(
             key: state.pageKey,
+            name: 'AiChatScreen',
+            arguments: <String, String>{'path': state.uri.path},
             child: const AiChatScreen(),
           ),
         ),
@@ -310,63 +326,94 @@ class AppRoute {
           path: Routes.courses,
           name: Routes.coursesName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => BlocProvider(
-            create: (_) =>
-                getIt<CoursesCatalogBloc>()..add(const CoursesCatalogStarted()),
-            child: const CoursesScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'CoursesScreen',
+            child: BlocProvider(
+              create: (_) => getIt<CoursesCatalogBloc>()
+                ..add(const CoursesCatalogStarted()),
+              child: const CoursesScreen(),
+            ),
           ),
         ),
         GoRoute(
           path: '/courses/:id',
           name: 'courseDetails',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (_, state) {
             final id = state.pathParameters['id'] ?? '';
-            return CourseDetailsScreen(courseId: id);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'CourseDetailsScreen',
+              child: CourseDetailsScreen(courseId: id),
+            );
           },
         ),
         GoRoute(
           path: '/courses/:id/player',
           name: 'coursePlayer',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (_, state) {
             final id = state.pathParameters['id'] ?? '';
             final extra = state.extra;
             if (extra is! CourseLessonPlayerArgs) {
-              return CourseDetailsScreen(courseId: id);
+              return watchdogScreenPage(
+                state: state,
+                screenName: 'CourseDetailsScreen',
+                child: CourseDetailsScreen(courseId: id),
+              );
             }
-            return CourseLessonPlayerScreen(args: extra);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'CourseLessonPlayerScreen',
+              child: CourseLessonPlayerScreen(args: extra),
+            );
           },
         ),
         GoRoute(
           path: '/courses/:id/review',
           name: Routes.courseSubmitReviewName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (_, state) {
             final id = state.pathParameters['id'] ?? '';
             final extra = state.extra;
             if (extra is! CourseSubmitReviewArgs) {
-              return CourseDetailsScreen(courseId: id);
+              return watchdogScreenPage(
+                state: state,
+                screenName: 'CourseDetailsScreen',
+                child: CourseDetailsScreen(courseId: id),
+              );
             }
-            return CourseSubmitReviewScreen(args: extra);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'CourseSubmitReviewScreen',
+              child: CourseSubmitReviewScreen(args: extra),
+            );
           },
         ),
         GoRoute(
           path: '/lesson-quiz/:lessonId',
           name: 'lessonQuiz',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (_, state) {
             final lessonId = state.pathParameters['lessonId'] ?? '';
             final extra = state.extra;
             final launch = extra is LessonQuizLaunchContext ? extra : null;
-            return LessonQuizScreen(lessonId: lessonId, launchContext: launch);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'LessonQuizScreen',
+              child: LessonQuizScreen(
+                lessonId: lessonId,
+                launchContext: launch,
+              ),
+            );
           },
         ),
         GoRoute(
           path: Routes.lessonQuizResult,
           name: Routes.lessonQuizResultName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final extra = state.extra;
             if (extra is! LessonQuizResultArgs) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -377,44 +424,68 @@ class AppRoute {
                       : Routes.mainGuest,
                 );
               });
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
+              return watchdogScreenPage(
+                state: state,
+                screenName: 'LessonQuizResultScreen',
+                child: const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                ),
               );
             }
-            return LessonQuizResultScreen(args: extra);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'LessonQuizResultScreen',
+              child: LessonQuizResultScreen(args: extra),
+            );
           },
         ),
         GoRoute(
           path: Routes.notification,
           name: Routes.notificationName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const NotificationScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'NotificationScreen',
+            child: const NotificationScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.myCourses,
           name: Routes.myCoursesName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const MyCoursesScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'MyCoursesScreen',
+            child: const MyCoursesScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.coursesSearch,
           name: Routes.coursesSearchName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final extra = state.extra;
             if (extra is! CoursesSearchArgs) {
-              return AppPageScaffold(
-                title: '',
-                backButton: IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => context.pop(),
+              return watchdogScreenPage(
+                state: state,
+                screenName: 'CoursesSearchScreen',
+                child: AppPageScaffold(
+                  title: '',
+                  backButton: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => context.pop(),
+                  ),
+                  body: const SizedBox.expand(),
                 ),
-                body: const SizedBox.expand(),
               );
             }
-            return BlocProvider.value(
-              value: extra.catalogBloc,
-              child: CoursesSearchScreen(initialQuery: extra.initialQuery),
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'CoursesSearchScreen',
+              child: BlocProvider.value(
+                value: extra.catalogBloc,
+                child: CoursesSearchScreen(initialQuery: extra.initialQuery),
+              ),
             );
           },
         ),
@@ -422,135 +493,217 @@ class AppRoute {
           path: Routes.myCertificates,
           name: Routes.myCertificatesName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const MyCertificatesScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'MyCertificatesScreen',
+            child: const MyCertificatesScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.vacancies,
           name: Routes.vacanciesName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const VacanciesScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'VacanciesScreen',
+            child: const VacanciesScreen(),
+          ),
         ),
         GoRoute(
           path: '/vacancies/:vacancyId',
           name: Routes.vacancyDetailName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (_, state) {
             final id = state.pathParameters['vacancyId'] ?? '';
-            return VacancyDetailScreen(vacancyId: id);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'VacancyDetailScreen',
+              child: VacancyDetailScreen(vacancyId: id),
+            );
           },
         ),
         GoRoute(
           path: Routes.profileInformation,
           name: Routes.profileInformationName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, state) {
+          pageBuilder: (_, state) {
             final extra = state.extra;
             final seed = extra is ProfileUserModel ? extra : null;
-            return EditInformationScreen(seedUser: seed);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'EditInformationScreen',
+              child: EditInformationScreen(seedUser: seed),
+            );
           },
         ),
         GoRoute(
           path: Routes.aboutUs,
           name: Routes.aboutUsName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const AboutUsScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'AboutUsScreen',
+            child: const AboutUsScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.privacyPolicy,
           name: Routes.privacyPolicyName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const PrivacyPolicyScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'PrivacyPolicyScreen',
+            child: const PrivacyPolicyScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.store,
           name: Routes.storeName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const StoreScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'StoreScreen',
+            child: const StoreScreen(),
+          ),
         ),
         GoRoute(
           path: '/store/:id',
           name: Routes.storeDetailName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (_, state) {
             final id = state.pathParameters['id'] ?? '';
-            return StoreDetailScreen(productId: id);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'StoreDetailScreen',
+              child: StoreDetailScreen(productId: id),
+            );
           },
         ),
         GoRoute(
           path: Routes.storeHistory,
           name: Routes.storeHistoryName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const StoreHistoryScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'StoreHistoryScreen',
+            child: const StoreHistoryScreen(),
+          ),
         ),
         GoRoute(
           path: '/store-history/:orderId',
           name: Routes.storeOrderDetailName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (_, state) {
             final orderId = state.pathParameters['orderId'] ?? '';
-            return StoreOrderDetailScreen(orderId: orderId);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'StoreOrderDetailScreen',
+              child: StoreOrderDetailScreen(orderId: orderId),
+            );
           },
         ),
         GoRoute(
           path: Routes.referral,
           name: Routes.referralName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const ReferralScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'ReferralScreen',
+            child: const ReferralScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.myActivity,
           name: Routes.myActivityName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const ActivityScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'ActivityScreen',
+            child: const ActivityScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.tasks,
           name: Routes.tasksName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const TasksScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'TasksScreen',
+            child: const TasksScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.portfolio,
           name: Routes.portfolioName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const PortfolioScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'PortfolioScreen',
+            child: const PortfolioScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.portfolioCreate,
           name: Routes.portfolioCreateName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const PortfolioCreateScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'PortfolioCreateScreen',
+            child: const PortfolioCreateScreen(),
+          ),
         ),
         GoRoute(
           path: '/portfolio/:postId',
           name: Routes.portfolioDetailName,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) {
+          pageBuilder: (_, state) {
             final id = state.pathParameters['postId'] ?? '';
-            return PortfolioDetailScreen(postId: id);
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'PortfolioDetailScreen',
+              child: PortfolioDetailScreen(postId: id),
+            );
           },
         ),
         GoRoute(
           path: Routes.signIn,
           name: Routes.signIn,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, _) => const SignInScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'SignInScreen',
+            child: const SignInScreen(),
+          ),
         ),
         GoRoute(
           path: Routes.verification,
           name: Routes.verification,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (_, state) {
+          pageBuilder: (_, state) {
             final extra = state.extra;
-            if (extra is! VerificationArgs) return const SignInScreen();
-            return VerificationScreen(args: extra);
+            if (extra is! VerificationArgs) {
+              return watchdogScreenPage(
+                state: state,
+                screenName: 'SignInScreen',
+                child: const SignInScreen(),
+              );
+            }
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'VerificationScreen',
+              child: VerificationScreen(args: extra),
+            );
           },
         ),
         GoRoute(
           path: Routes.register,
           name: Routes.register,
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, _) => const RegisterScreen(),
+          pageBuilder: (_, state) => watchdogScreenPage(
+            state: state,
+            screenName: 'RegisterScreen',
+            child: const RegisterScreen(),
+          ),
         ),
       ],
     );

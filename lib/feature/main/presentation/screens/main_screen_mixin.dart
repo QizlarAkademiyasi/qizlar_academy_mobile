@@ -3,6 +3,7 @@ import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
+import 'package:qizlar_academy_mobile/core/watchdog/watchdog_screen_tracker.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/bottom_bar_version_one.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/bottom_bar_version_two.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
@@ -150,10 +151,20 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
         _selectedIndex = index;
       }
     });
+    reportWatchdogMainTab(
+      index,
+      isGuestMode: isGuestMode,
+      path: isGuestMode ? Routes.mainGuest : Routes.mainUser,
+    );
   }
 
   void onPageChanged(int index) {
     Gaimon.light();
+    reportWatchdogMainTab(
+      index,
+      isGuestMode: isGuestMode,
+      path: isGuestMode ? Routes.mainGuest : Routes.mainUser,
+    );
     if (_selectedIndex != index || _bottomNavigationSelectedIndex != index) {
       setState(() {
         _selectedIndex = index;
