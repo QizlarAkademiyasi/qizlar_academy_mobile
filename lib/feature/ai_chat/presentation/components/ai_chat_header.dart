@@ -1,7 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
-import 'package:qizlar_academy_mobile/core/presentation/components/app_blurred_header_surface.dart';
 
 class AiChatHeader extends StatelessWidget {
   const AiChatHeader({
@@ -17,10 +16,8 @@ class AiChatHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDarkTheme;
-    return AppBlurredHeaderSurface(
-      blurSigma: 24,
-      backgroundOpacity: isDark ? 0.75 : 0.65,
+    return ColoredBox(
+      color: context.appColors.background,
       child: SafeArea(
         bottom: false,
         child: Padding(

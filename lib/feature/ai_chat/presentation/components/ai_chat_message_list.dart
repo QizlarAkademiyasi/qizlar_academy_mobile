@@ -21,6 +21,7 @@ class AiChatMessageList extends StatelessWidget {
     this.onRevealSettled,
     this.onStreamingTick,
     this.onUserScrollStarted,
+    this.onUserScrollEnded,
   });
 
   final ScrollController controller;
@@ -34,6 +35,7 @@ class AiChatMessageList extends StatelessWidget {
   final ValueChanged<String>? onRevealSettled;
   final VoidCallback? onStreamingTick;
   final VoidCallback? onUserScrollStarted;
+  final VoidCallback? onUserScrollEnded;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +43,14 @@ class AiChatMessageList extends StatelessWidget {
         isSending &&
         messages.isNotEmpty &&
         messages.last.role == AiChatMessageRole.user;
-    return NotificationListener<ScrollStartNotification>(
+    return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification.dragDetails != null) onUserScrollStarted?.call();
+        if (notification is ScrollStartNotification &&
+            notification.dragDetails != null) {
+          onUserScrollStarted?.call();
+        } else if (notification is ScrollEndNotification) {
+          onUserScrollEnded?.call();
+        }
         return false;
       },
       child: ListView.builder(
@@ -76,22 +83,20 @@ class AiChatMessageList extends StatelessWidget {
           return RepaintBoundary(
             child: Padding(
               padding: EdgeInsets.only(top: group.spacingBefore),
-              child: _KeepAliveMessage(
+              child: AiChatMessageBubble(
                 key: ValueKey(message.id),
-                child: AiChatMessageBubble(
-                  message: message,
-                  isGroupStart: group.isGroupStart,
-                  isGroupEnd: group.isGroupEnd,
-                  hideDuringFlight: message.id == flyingMessageId,
-                  flightTargetKey: message.id == flyingMessageId
-                      ? flightTargetKey
-                      : null,
-                  onCourseTap: onCourseTap,
-                  onRetry: () => onRetry(message.id),
-                  settledRevealIds: settledRevealIds,
-                  onRevealSettled: onRevealSettled,
-                  onStreamingTick: onStreamingTick,
-                ),
+                message: message,
+                isGroupStart: group.isGroupStart,
+                isGroupEnd: group.isGroupEnd,
+                hideDuringFlight: message.id == flyingMessageId,
+                flightTargetKey: message.id == flyingMessageId
+                    ? flightTargetKey
+                    : null,
+                onCourseTap: onCourseTap,
+                onRetry: () => onRetry(message.id),
+                settledRevealIds: settledRevealIds,
+                onRevealSettled: onRevealSettled,
+                onStreamingTick: onStreamingTick,
               ),
             ),
           );
@@ -182,26 +187,5 @@ class _TypingIndicatorState extends State<_TypingIndicator>
         ),
       ),
     );
-  }
-}
-
-class _KeepAliveMessage extends StatefulWidget {
-  const _KeepAliveMessage({super.key, required this.child});
-
-  final Widget child;
-
-  @override
-  State<_KeepAliveMessage> createState() => _KeepAliveMessageState();
-}
-
-class _KeepAliveMessageState extends State<_KeepAliveMessage>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return widget.child;
   }
 }

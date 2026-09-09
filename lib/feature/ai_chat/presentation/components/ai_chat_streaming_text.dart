@@ -162,7 +162,13 @@ class _AiChatStreamingTextState extends State<AiChatStreamingText>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (_visible.isNotEmpty)
-                    AiChatMarkdownBody(data: _visible, style: widget.style),
+                    _completed
+                        ? AiChatMarkdownBody(
+                            data: widget.text,
+                            style: widget.style,
+                            selectable: true,
+                          )
+                        : Text(_visible, style: widget.style),
                   if (showCaret)
                     Padding(
                       padding: EdgeInsets.only(top: _visible.isEmpty ? 0 : 2),

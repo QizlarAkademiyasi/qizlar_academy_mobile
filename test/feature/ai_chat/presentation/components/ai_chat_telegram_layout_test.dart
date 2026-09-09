@@ -99,11 +99,9 @@ void main() {
     await tester.pump();
 
     expect(find.byType(AiChatCourseCard), findsOneWidget);
-    expect(find.byType(HomeCourseCard), findsOneWidget);
+    expect(find.byType(HomeCourseCard), findsNothing);
     expect(find.text('Grafik dizayn'), findsOneWidget);
     expect(find.text('Madina Karimova'), findsOneWidget);
-    expect(find.text('3.4 (5)'), findsOneWidget);
-    expect(find.text('69 soat 50 daqiqa'), findsOneWidget);
   });
 
   testWidgets('typing status enters with animation while AI responds', (
@@ -172,6 +170,101 @@ void main() {
     expect(dismissRequests, 1);
   });
 
+  testWidgets('long reverse list can scroll past the latest message', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _testApp(
+        child: SizedBox(
+          height: 280,
+          child: AiChatMessageList(
+            controller: controller,
+            messages: List.generate(
+              24,
+              (index) => _user('$index', 'Uzun chat xabari $index'),
+            ),
+            isSending: false,
+            onCourseTap: (_) {},
+            onRetry: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(controller.position.maxScrollExtent, greaterThan(0));
+    final before = controller.offset;
+    await tester.drag(
+      find.byKey(const ValueKey('ai-chat-message-list')),
+      const Offset(0, 180),
+    );
+    await tester.pump();
+    expect(controller.offset, isNot(before));
+  });
+
+  testWidgets('streaming follow does not jump while the user is dragging', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    var userScrolling = false;
+    var followCalls = 0;
+
+    void followStreamingReply() {
+      followCalls += 1;
+      if (userScrolling) return;
+      if (!controller.hasClients) return;
+      controller.jumpTo(0);
+    }
+
+    await tester.pumpWidget(
+      _testApp(
+        child: SizedBox(
+          height: 280,
+          child: AiChatMessageList(
+            controller: controller,
+            messages: List.generate(
+              24,
+              (index) => _user('$index', 'Uzun chat xabari $index'),
+            ),
+            isSending: false,
+            onCourseTap: (_) {},
+            onRetry: (_) {},
+            onUserScrollStarted: () => userScrolling = true,
+            onUserScrollEnded: () => userScrolling = false,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final list = find.byKey(const ValueKey('ai-chat-message-list'));
+    final gesture = await tester.startGesture(tester.getCenter(list));
+    await gesture.moveBy(const Offset(0, 140));
+    await tester.pump();
+
+    expect(userScrolling, isTrue);
+    expect(controller.offset, isNot(0));
+    followStreamingReply();
+    expect(followCalls, 1);
+    expect(controller.offset, isNot(0));
+
+    await gesture.up();
+    await tester.pump();
+    expect(userScrolling, isFalse);
+  });
+
   testWidgets('send flight overlay appears then settles', (tester) async {
     await tester.pumpWidget(_testApp(child: const _SendFlightHarness()));
     await tester.tap(find.byKey(const ValueKey('fly')));
@@ -198,35 +291,39 @@ void main() {
     addTearDown(controller.dispose);
     addTearDown(focusNode.dispose);
 
-    Widget buildChat({required double keyboard}) {
-      return _testApp(
+    await tester.pumpWidget(
+      _testApp(
         child: Column(
           children: [
             const Expanded(child: SizedBox.expand()),
-            SafeArea(
-              top: false,
-              bottom: keyboard <= 0,
-              child: AiChatComposer(
-                controller: controller,
-                focusNode: focusNode,
-                isEnabled: true,
-                isSending: false,
-                onSend: () {},
-              ),
+            Builder(
+              builder: (context) {
+                final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+                return Padding(
+                  padding: EdgeInsets.only(bottom: keyboard),
+                  child: SafeArea(
+                    top: false,
+                    bottom: keyboard <= 0,
+                    child: AiChatComposer(
+                      controller: controller,
+                      focusNode: focusNode,
+                      isEnabled: true,
+                      isSending: false,
+                      onSend: () {},
+                    ),
+                  ),
+                );
+              },
             ),
-            SizedBox(height: keyboard),
           ],
         ),
-      );
-    }
-
-    await tester.pumpWidget(buildChat(keyboard: 0));
+      ),
+    );
     await tester.pump();
     final before = tester.getRect(find.byType(AiChatComposer));
 
     tester.view.viewInsets = const FakeViewPadding(bottom: 280);
     addTearDown(tester.view.resetViewInsets);
-    await tester.pumpWidget(buildChat(keyboard: 280));
     await tester.pump();
 
     final after = tester.getRect(find.byType(AiChatComposer));

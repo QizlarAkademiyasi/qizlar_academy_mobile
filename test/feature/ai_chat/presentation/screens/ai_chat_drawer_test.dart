@@ -29,7 +29,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
-    expect(scaffold.resizeToAvoidBottomInset, isTrue);
+    expect(scaffold.resizeToAvoidBottomInset, isFalse);
 
     final mainSurface = find.byKey(const ValueKey('ai-chat-main-surface'));
     final initialRect = tester.getRect(mainSurface);

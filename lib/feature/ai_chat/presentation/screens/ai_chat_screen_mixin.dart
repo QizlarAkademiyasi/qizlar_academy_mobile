@@ -43,6 +43,7 @@ mixin AiChatScreenMixin<T extends StatefulWidget>
   int _lastShownSendErrorNonce = 0;
   String? _flyingMessageId;
   _PendingSendFlight? _pendingFlight;
+  var _userScrolling = false;
 
   @override
   void initState() {
@@ -294,9 +295,19 @@ mixin AiChatScreenMixin<T extends StatefulWidget>
         settledRevealIds: _settledRevealIds,
         onRevealSettled: settleMessageReveal,
         onStreamingTick: followStreamingReply,
-        onUserScrollStarted: dismissKeyboardForScroll,
+        onUserScrollStarted: onUserScrollStarted,
+        onUserScrollEnded: onUserScrollEnded,
       ),
     };
+  }
+
+  void onUserScrollStarted() {
+    _userScrolling = true;
+    dismissKeyboardForScroll();
+  }
+
+  void onUserScrollEnded() {
+    _userScrolling = false;
   }
 
   void dismissKeyboardForScroll() {
@@ -399,8 +410,10 @@ mixin AiChatScreenMixin<T extends StatefulWidget>
   }
 
   void _jumpToLatest({bool onlyIfNearBottom = false}) {
+    if (_userScrolling) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !messagesScrollController.hasClients) return;
+      if (_userScrolling) return;
       final position = messagesScrollController.position;
       if (onlyIfNearBottom && position.pixels > 96) return;
       if (position.pixels == 0) return;

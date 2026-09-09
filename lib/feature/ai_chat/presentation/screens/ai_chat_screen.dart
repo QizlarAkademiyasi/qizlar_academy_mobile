@@ -40,7 +40,7 @@ class _AiChatViewState extends State<_AiChatView>
             : const Color(0xFFFFE3EF),
       ),
       child: Scaffold(
-        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: false,
         backgroundColor: dark
             ? const Color(0xFF3C0C25)
             : const Color(0xFFE8357D),
@@ -98,68 +98,14 @@ class _AiChatViewState extends State<_AiChatView>
                             width: drawerWidth,
                             child: buildSideDrawer(context, state),
                           ),
-                          Transform.translate(
-                            offset: Offset(drawerWidth * progress, 0),
-                            child: Transform.scale(
-                              scale: scale,
-                              alignment: Alignment.centerLeft,
-                              child: GestureDetector(
-                                key: const ValueKey('ai-chat-main-surface'),
-                                behavior: HitTestBehavior.opaque,
-                                onTap: progress > 0 ? closeDrawer : null,
-                                onHorizontalDragStart: progress > 0
-                                    ? handleDrawerDragStart
-                                    : null,
-                                onHorizontalDragUpdate: progress > 0
-                                    ? (details) => handleDrawerDragUpdate(
-                                        details,
-                                        drawerWidth: drawerWidth,
-                                      )
-                                    : null,
-                                onHorizontalDragEnd: progress > 0
-                                    ? handleDrawerDragEnd
-                                    : null,
-                                child: AbsorbPointer(
-                                  absorbing: progress > 0,
-                                  child: ExcludeSemantics(
-                                    excluding: progress > 0.5,
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          radius,
-                                        ),
-                                        boxShadow: progress > 0
-                                            ? [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withValues(
-                                                        alpha: 0.28 * progress,
-                                                      ),
-                                                  blurRadius: 34 * progress,
-                                                  offset: Offset(
-                                                    -8 * progress,
-                                                    10 * progress,
-                                                  ),
-                                                ),
-                                              ]
-                                            : null,
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          radius,
-                                        ),
-                                        child: _buildChatSurface(
-                                          context,
-                                          state,
-                                          dark: dark,
-                                          drawerProgress: progress,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                          _buildMainSurface(
+                            context,
+                            state,
+                            dark: dark,
+                            progress: progress,
+                            drawerWidth: drawerWidth,
+                            scale: scale,
+                            radius: radius,
                           ),
                           Positioned(
                             key: const ValueKey('ai-chat-edge-drag-area'),
@@ -186,6 +132,63 @@ class _AiChatViewState extends State<_AiChatView>
               },
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainSurface(
+    BuildContext context,
+    AiChatState state, {
+    required bool dark,
+    required double progress,
+    required double drawerWidth,
+    required double scale,
+    required double radius,
+  }) {
+    final chatSurface = _buildChatSurface(
+      context,
+      state,
+      dark: dark,
+      drawerProgress: progress,
+    );
+    final content = GestureDetector(
+      key: const ValueKey('ai-chat-main-surface'),
+      behavior: HitTestBehavior.opaque,
+      onTap: progress > 0 ? closeDrawer : null,
+      onHorizontalDragStart: progress > 0 ? handleDrawerDragStart : null,
+      onHorizontalDragUpdate: progress > 0
+          ? (details) =>
+                handleDrawerDragUpdate(details, drawerWidth: drawerWidth)
+          : null,
+      onHorizontalDragEnd: progress > 0 ? handleDrawerDragEnd : null,
+      child: AbsorbPointer(
+        absorbing: progress > 0,
+        child: ExcludeSemantics(excluding: progress > 0.5, child: chatSurface),
+      ),
+    );
+    if (progress <= 0.001) return content;
+
+    return Transform.translate(
+      offset: Offset(drawerWidth * progress, 0),
+      child: Transform.scale(
+        scale: scale,
+        alignment: Alignment.centerLeft,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(radius),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.28 * progress),
+                blurRadius: 34 * progress,
+                offset: Offset(-8 * progress, 10 * progress),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(radius),
+            child: content,
+          ),
         ),
       ),
     );
@@ -218,7 +221,16 @@ class _AiChatViewState extends State<_AiChatView>
             children: [
               buildHeader(context, state),
               Expanded(child: buildBody(context, state)),
-              SafeArea(top: false, child: buildComposer(context, state)),
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.viewInsetsOf(context).bottom,
+                ),
+                child: SafeArea(
+                  top: false,
+                  bottom: MediaQuery.viewInsetsOf(context).bottom <= 0,
+                  child: buildComposer(context, state),
+                ),
+              ),
             ],
           ),
           if (drawerProgress > 0)

@@ -68,14 +68,12 @@ class AiChatMessageBubble extends StatelessWidget {
                       isGroupEnd: isGroupEnd,
                     ),
                   ),
-                  child: SelectionArea(
-                    child: Text(
-                      message.content,
-                      style: context.textTheme.bodyLargeMedium.copyWith(
-                        color: AppColors.white,
-                        height: 1.35,
-                        decoration: TextDecoration.none,
-                      ),
+                  child: Text(
+                    message.content,
+                    style: context.textTheme.bodyLargeMedium.copyWith(
+                      color: AppColors.white,
+                      height: 1.35,
+                      decoration: TextDecoration.none,
                     ),
                   ),
                 )
@@ -147,13 +145,15 @@ class _AssistantReplyState extends State<_AssistantReply>
     with AutomaticKeepAliveClientMixin {
   late final bool _playAnimate;
   late bool _showCourses;
+  var _keepAlive = false;
 
   @override
   void initState() {
-    super.initState();
     final alreadySettled =
         widget.settledRevealIds?.contains(widget.messageId) ?? false;
     _playAnimate = widget.animate && !alreadySettled;
+    _keepAlive = _playAnimate;
+    super.initState();
     if (widget.animate) {
       widget.settledRevealIds?.add(widget.messageId);
     }
@@ -161,7 +161,7 @@ class _AssistantReplyState extends State<_AssistantReply>
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => _keepAlive;
 
   @override
   Widget build(BuildContext context) {
@@ -208,6 +208,10 @@ class _AssistantReplyState extends State<_AssistantReply>
 
   void _onRevealComplete() {
     widget.onRevealSettled?.call(widget.messageId);
+    if (_keepAlive) {
+      _keepAlive = false;
+      updateKeepAlive();
+    }
     if (!mounted || _showCourses) return;
     setState(() => _showCourses = true);
     widget.onStreamingTick?.call();

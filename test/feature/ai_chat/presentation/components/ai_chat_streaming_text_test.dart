@@ -36,6 +36,7 @@ void main() {
       );
 
       expect(find.text(text, findRichText: true), findsNothing);
+      expect(find.byType(MarkdownBody), findsNothing);
 
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 80));
@@ -49,6 +50,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 16));
 
       expect(find.text(text, findRichText: true), findsOneWidget);
+      expect(find.byType(MarkdownBody), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
