@@ -12,7 +12,19 @@ final class NotificationStarted extends NotificationEvent {
 }
 
 final class NotificationRetryRequested extends NotificationEvent {
-  const NotificationRetryRequested();
+  const NotificationRetryRequested({this.tab});
+  final NotificationListTab? tab;
+
+  @override
+  List<Object?> get props => [tab];
+}
+
+final class NotificationLoadMoreRequested extends NotificationEvent {
+  const NotificationLoadMoreRequested(this.tab);
+  final NotificationListTab tab;
+
+  @override
+  List<Object?> get props => [tab];
 }
 
 final class NotificationMarkAllReadRequested extends NotificationEvent {
@@ -21,7 +33,6 @@ final class NotificationMarkAllReadRequested extends NotificationEvent {
 
 final class NotificationItemOpened extends NotificationEvent {
   const NotificationItemOpened({required this.notificationId});
-
   final String notificationId;
 
   @override
@@ -30,7 +41,6 @@ final class NotificationItemOpened extends NotificationEvent {
 
 final class NotificationTabSelected extends NotificationEvent {
   const NotificationTabSelected(this.tab);
-
   final NotificationListTab tab;
 
   @override

@@ -97,7 +97,7 @@ Future<void> initializeWatchdog({
   }
 
   try {
-    await Watchdog.start(``
+    await Watchdog.start(
       config: WatchdogConfig(
         enabled: true,
         // Debug: local DevTools (`watchdog open` → http://localhost:8888) plus

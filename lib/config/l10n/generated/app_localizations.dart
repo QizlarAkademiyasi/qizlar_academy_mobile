@@ -1780,6 +1780,120 @@ abstract class AppLocalizations {
   /// **'Details'**
   String get notificationDetailsMore;
 
+  /// No description provided for @notificationSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification settings'**
+  String get notificationSettingsTitle;
+
+  /// No description provided for @notificationSettingsMasterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get notificationSettingsMasterTitle;
+
+  /// No description provided for @notificationSettingsMasterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive push notifications on this device'**
+  String get notificationSettingsMasterSubtitle;
+
+  /// No description provided for @notificationSettingsTopicsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TOPICS'**
+  String get notificationSettingsTopicsTitle;
+
+  /// No description provided for @notificationSettingsTopicsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable push notifications to manage topics.'**
+  String get notificationSettingsTopicsDisabled;
+
+  /// No description provided for @notificationSettingsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No topics yet'**
+  String get notificationSettingsEmpty;
+
+  /// No description provided for @notificationSettingsEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New topics will appear here.'**
+  String get notificationSettingsEmptySubtitle;
+
+  /// No description provided for @notificationSettingsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load notification topics.'**
+  String get notificationSettingsLoadError;
+
+  /// No description provided for @notificationSettingsUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t update the notification setting.'**
+  String get notificationSettingsUpdateError;
+
+  /// No description provided for @notificationSettingsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications enabled'**
+  String get notificationSettingsEnabled;
+
+  /// No description provided for @notificationSettingsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications disabled'**
+  String get notificationSettingsDisabled;
+
+  /// No description provided for @notificationTimeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get notificationTimeNow;
+
+  /// No description provided for @notificationTimeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String notificationTimeMinutesAgo(int count);
+
+  /// No description provided for @notificationTimeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hr ago'**
+  String notificationTimeHoursAgo(int count);
+
+  /// No description provided for @notificationTimeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days ago'**
+  String notificationTimeDaysAgo(int count);
+
+  /// No description provided for @notificationSectionToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notificationSectionToday;
+
+  /// No description provided for @notificationSectionYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get notificationSectionYesterday;
+
+  /// No description provided for @notificationSectionDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days ago'**
+  String notificationSectionDaysAgo(int count);
+
+  /// No description provided for @notificationSectionWeeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} weeks ago'**
+  String notificationSectionWeeksAgo(int count);
+
   /// No description provided for @notificationsEmptyThisTab.
   ///
   /// In en, this message translates to:

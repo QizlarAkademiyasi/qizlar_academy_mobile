@@ -946,6 +946,78 @@ class AppLocalizationsUz extends AppLocalizations {
   String get notificationDetailsMore => 'Batafsil';
 
   @override
+  String get notificationSettingsTitle => 'Bildirishnoma sozlamalari';
+
+  @override
+  String get notificationSettingsMasterTitle => 'Push bildirishnomalar';
+
+  @override
+  String get notificationSettingsMasterSubtitle =>
+      'Qurilmaga push-xabarlarni yuborish';
+
+  @override
+  String get notificationSettingsTopicsTitle => 'MAVZULAR';
+
+  @override
+  String get notificationSettingsTopicsDisabled =>
+      'Mavzularni boshqarish uchun push bildirishnomalarni yoqing.';
+
+  @override
+  String get notificationSettingsEmpty => 'Hozircha mavzular yo‘q';
+
+  @override
+  String get notificationSettingsEmptySubtitle =>
+      'Yangi mavzular qo‘shilganda shu yerda ko‘rinadi.';
+
+  @override
+  String get notificationSettingsLoadError =>
+      'Bildirishnoma mavzularini yuklab bo‘lmadi.';
+
+  @override
+  String get notificationSettingsUpdateError =>
+      'Bildirishnoma sozlamasini yangilab bo‘lmadi.';
+
+  @override
+  String get notificationSettingsEnabled => 'Push-xabarlar yoqilgan';
+
+  @override
+  String get notificationSettingsDisabled => 'Push-xabarlar o‘chirilgan';
+
+  @override
+  String get notificationTimeNow => 'Hozirgina';
+
+  @override
+  String notificationTimeMinutesAgo(int count) {
+    return '$count daqiqa oldin';
+  }
+
+  @override
+  String notificationTimeHoursAgo(int count) {
+    return '$count soat oldin';
+  }
+
+  @override
+  String notificationTimeDaysAgo(int count) {
+    return '$count kun oldin';
+  }
+
+  @override
+  String get notificationSectionToday => 'Bugun';
+
+  @override
+  String get notificationSectionYesterday => 'Kecha';
+
+  @override
+  String notificationSectionDaysAgo(int count) {
+    return '$count kun oldin';
+  }
+
+  @override
+  String notificationSectionWeeksAgo(int count) {
+    return '$count hafta oldin';
+  }
+
+  @override
   String get notificationsEmptyThisTab =>
       'Ushbu bo‘limda bildirishnomalar yo‘q';
 

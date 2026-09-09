@@ -8,7 +8,9 @@ import 'package:qizlar_academy_mobile/feature/notification/domain/model/notifica
 import 'package:qizlar_academy_mobile/feature/notification/presentation/bloc/notification_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_empty_content.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_list_skeleton.dart';
+import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_segmented_tab.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/notification_screen_mixin.dart';
+import 'package:qizlar_academy_mobile/feature/notification/presentation/utils/notification_grouping.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -45,13 +47,8 @@ class _NotificationViewState extends State<_NotificationView>
   @override
   void initState() {
     super.initState();
-    final initial = _indexForTab(NotificationListTab.community);
-    _tabController = TabController(
-      length: 2,
-      vsync: this,
-      initialIndex: initial,
-    );
-    _pageController = PageController(initialPage: initial);
+    _tabController = TabController(length: 2, vsync: this);
+    _pageController = PageController();
   }
 
   @override
@@ -61,12 +58,19 @@ class _NotificationViewState extends State<_NotificationView>
     super.dispose();
   }
 
-  int _itemsFingerprint(NotificationState state) {
-    var n = 0;
-    for (final s in state.sections) {
-      n += s.items.length;
+  bool _onScrollNotification(
+    ScrollNotification n,
+    BuildContext context,
+    NotificationListTab tab,
+  ) {
+    if (n.metrics.axis != Axis.vertical) return false;
+    if (n is! ScrollUpdateNotification && n is! OverscrollNotification) {
+      return false;
     }
-    return n;
+    if (n.metrics.pixels >= n.metrics.maxScrollExtent - 220) {
+      onScrollNearEnd(context, tab);
+    }
+    return false;
   }
 
   @override
@@ -98,14 +102,6 @@ class _NotificationViewState extends State<_NotificationView>
         }
       },
       builder: (context, state) {
-        final isInitialLoading =
-            (state.status == NotificationStatus.loading ||
-                state.status == NotificationStatus.initial) &&
-            state.sections.isEmpty;
-        final hideTabs =
-            state.status == NotificationStatus.failure &&
-            state.sections.isEmpty;
-
         return AppPageScaffold(
           title: context.l10n.notificationsTitle,
           onBackTap: () => onBackTap(context),
@@ -122,75 +118,63 @@ class _NotificationViewState extends State<_NotificationView>
           ],
           body: Column(
             children: [
-              if (!hideTabs)
-                Padding(
-                  padding: AppPadding.paddingHorizontalMd.add(
-                    const EdgeInsets.only(bottom: 12),
-                  ),
-                  child: AppSegmentedTabBar(
-                    controller: _tabController,
-                    tabLabels: [
-                      context.l10n.notificationTabPlatform,
-                      context.l10n.notificationTabCommunity,
-                    ],
-                    onTap: (index) {
-                      final tab = index == 0
-                          ? NotificationListTab.platform
-                          : NotificationListTab.community;
-                      context.read<NotificationBloc>().add(
-                        NotificationTabSelected(tab),
-                      );
-                    },
-                  ),
+              Padding(
+                padding: AppPadding.paddingHorizontalXl.add(
+                  const EdgeInsets.only(bottom: 12),
                 ),
+                child: NotificationSegmentedTab(
+                  controller: _tabController,
+                  tabLabels: [
+                    context.l10n.notificationTabPlatform,
+                    context.l10n.notificationTabCommunity,
+                  ],
+                  onTap: (index) {
+                    final tab = index == 0
+                        ? NotificationListTab.platform
+                        : NotificationListTab.community;
+                    context.read<NotificationBloc>().add(
+                      NotificationTabSelected(tab),
+                    );
+                  },
+                ),
+              ),
               Expanded(
-                child: switch ((state.status, state.sections.isEmpty)) {
-                  (NotificationStatus.failure, true) => TgsFailureContent(
-                    message: context.l10n.notificationListLoadError,
-                    onRetry: () => retry(context),
-                  ),
-                  (_, true) when isInitialLoading => const Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: NotificationListSkeleton(),
-                  ),
-                  (_, true) => const NotificationEmptyContent(),
-                  _ => PageView(
-                    controller: _pageController,
-                    physics: const BouncingScrollPhysics(),
-                    onPageChanged: (index) {
-                      final tab = index == 0
-                          ? NotificationListTab.platform
-                          : NotificationListTab.community;
-                      if (!context.mounted) return;
-                      if (context.read<NotificationBloc>().state.selectedTab ==
-                          tab) {
-                        return;
-                      }
-                      context.read<NotificationBloc>().add(
-                        NotificationTabSelected(tab),
-                      );
-                      if (_tabController.index != index) {
-                        _tabController.animateTo(index);
-                      }
-                    },
-                    children: [
-                      _KeepAliveTabWrapper(
-                        child: _buildTabBody(
-                          context,
-                          state,
-                          NotificationListTab.platform,
-                        ),
+                child: PageView(
+                  controller: _pageController,
+                  physics: const BouncingScrollPhysics(),
+                  onPageChanged: (index) {
+                    final tab = index == 0
+                        ? NotificationListTab.platform
+                        : NotificationListTab.community;
+                    if (!context.mounted) return;
+                    if (context.read<NotificationBloc>().state.selectedTab ==
+                        tab) {
+                      return;
+                    }
+                    context.read<NotificationBloc>().add(
+                      NotificationTabSelected(tab),
+                    );
+                    if (_tabController.index != index) {
+                      _tabController.animateTo(index);
+                    }
+                  },
+                  children: [
+                    _KeepAliveTabWrapper(
+                      child: _buildTabBody(
+                        context,
+                        state,
+                        NotificationListTab.platform,
                       ),
-                      _KeepAliveTabWrapper(
-                        child: _buildTabBody(
-                          context,
-                          state,
-                          NotificationListTab.community,
-                        ),
+                    ),
+                    _KeepAliveTabWrapper(
+                      child: _buildTabBody(
+                        context,
+                        state,
+                        NotificationListTab.community,
                       ),
-                    ],
-                  ),
-                },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -204,68 +188,68 @@ class _NotificationViewState extends State<_NotificationView>
     NotificationState state,
     NotificationListTab tab,
   ) {
-    if (state.sections.isEmpty &&
-        (state.status == NotificationStatus.loading ||
-            state.status == NotificationStatus.updating)) {
+    final data = state.dataFor(tab);
+    if (data.isInitialLoading || data.status == NotificationTabStatus.initial) {
       return const Padding(
         padding: EdgeInsets.only(top: 6),
         child: NotificationListSkeleton(),
       );
     }
-
-    final sections = state.visibleSectionsForTab(tab);
-
-    if (state.sections.isNotEmpty && sections.isEmpty) {
+    if (data.status == NotificationTabStatus.failure && data.items.isEmpty) {
+      return TgsFailureContent(
+        message: context.l10n.notificationListLoadError,
+        onRetry: () => retry(context, tab),
+      );
+    }
+    if (data.items.isEmpty) {
       return NotificationEmptyContent(
         message: context.l10n.notificationsEmptyThisTab,
         subtitle: context.l10n.notificationsEmptyThisTabSubtitle,
       );
     }
 
-    if (sections.isEmpty) {
-      return const NotificationEmptyContent();
-    }
-
-    return _buildSectionsList(context, state, tab, sections);
-  }
-
-  Widget _buildSectionsList(
-    BuildContext context,
-    NotificationState state,
-    NotificationListTab tab,
-    List<NotificationSectionModel> sections,
-  ) {
+    final sections = groupNotificationItems(data.items, context.l10n);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    final staggerKey = ValueKey<String>(
-      '${tab.name}_${_itemsFingerprint(state)}',
-    );
-
-    return AppStaggeredScrollLimiter(
-      key: staggerKey,
-      child: CustomScrollView(
-        key: PageStorageKey<String>('notification_scroll_${tab.name}'),
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(0, 8, 0, 28 + bottomInset),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                if (index.isOdd) return const SizedBox(height: 28);
-                final sectionIndex = index ~/ 2;
-                final section = sections[sectionIndex];
-                var staggerStart = 0;
-                for (var i = 0; i < sectionIndex; i++) {
-                  staggerStart += sections[i].items.length;
-                }
-                return buildSection(
-                  context,
-                  section: section,
-                  staggerStartIndex: staggerStart,
-                );
-              }, childCount: sections.isEmpty ? 0 : sections.length * 2 - 1),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (n) => _onScrollNotification(n, context, tab),
+      child: AppStaggeredScrollLimiter(
+        child: CustomScrollView(
+          key: PageStorageKey<String>('notification_scroll_${tab.name}'),
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(0, 8, 0, 28 + bottomInset),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  if (index == sections.length * 2 - 1 && data.isLoadingMore) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: SizedBox(
+                        height: 72,
+                        child: NotificationListSkeleton(),
+                      ),
+                    );
+                  }
+                  if (index.isOdd) return const SizedBox(height: 28);
+                  final sectionIndex = index ~/ 2;
+                  if (sectionIndex >= sections.length) {
+                    return const SizedBox.shrink();
+                  }
+                  final section = sections[sectionIndex];
+                  var staggerStart = 0;
+                  for (var i = 0; i < sectionIndex; i++) {
+                    staggerStart += sections[i].items.length;
+                  }
+                  return buildSection(
+                    context,
+                    section: section,
+                    staggerStartIndex: staggerStart,
+                  );
+                }, childCount: sections.length * 2 - 1 + (data.isLoadingMore ? 1 : 0)),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

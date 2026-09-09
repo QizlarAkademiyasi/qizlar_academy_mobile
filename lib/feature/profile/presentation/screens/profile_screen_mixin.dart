@@ -4,7 +4,6 @@ import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
-import 'package:qizlar_academy_mobile/core/push/push_messaging_service.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
@@ -49,10 +48,10 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     context.read<ProfileBloc>().add(const ProfileRetryRequested());
   }
 
-  Future<void> onNotificationsChanged(
-    BuildContext context,
-    bool enabled,
-  ) async {
+  Future<void> onNotificationSettingsTap(
+    BuildContext context, {
+    required bool masterEnabled,
+  }) async {
     final canExecute = await getIt<GuestTapGateService>().allowAction(
       context,
       key: 'profile_notifications_toggle',
@@ -60,23 +59,12 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     );
     if (!canExecute) return;
     if (!context.mounted) return;
-    if (enabled) {
-      final token = await getIt<PushMessagingService>()
-          .ensureTokenForSubscribe();
-      if (token == null || token.isEmpty) {
-        if (context.mounted) {
-          AppToast.warning(
-            context,
-            message: context.l10n.profileNotificationsEnableFailed,
-          );
-        }
-        return;
-      }
-    }
-    if (!context.mounted) return;
-    context.read<ProfileBloc>().add(
-      ProfileNotificationsToggled(enabled: enabled),
+    await context.push(
+      Routes.notificationSettings,
+      extra: masterEnabled,
     );
+    if (!context.mounted) return;
+    context.read<ProfileBloc>().add(const ProfileStarted());
   }
 
   Future<void> onDarkModeChanged(BuildContext context, bool enabled) async {
@@ -540,13 +528,18 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
             showDivider: true,
           );
         }),
-        ProfilePreferenceTile(
+        ProfileMenuTile(
           icon: LucideIcons.bell,
           title: context.l10n.profileNotifications,
-          subtitle: context.l10n.profileNotificationsSubtitle,
-          value: overview.notificationsEnabled,
-          onChanged: (switchContext, enabled) =>
-              onNotificationsChanged(context, enabled),
+          subtitle: overview.notificationsEnabled
+              ? context.l10n.notificationSettingsEnabled
+              : context.l10n.notificationSettingsDisabled,
+          onTap: () {
+            onNotificationSettingsTap(
+              context,
+              masterEnabled: overview.notificationsEnabled,
+            );
+          },
           showDivider: true,
         ),
         ProfilePreferenceTile(

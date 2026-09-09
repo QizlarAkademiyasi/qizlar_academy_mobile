@@ -2,6 +2,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart' show UserApis;
 import 'package:qizlar_academy_mobile/feature/notification/data/datasource/notification_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/notification/domain/model/notification_item_model.dart';
+import 'package:qizlar_academy_mobile/feature/notification/domain/model/notification_topic_model.dart';
 
 class NotificationApiDatasource implements NotificationDatasource {
   const NotificationApiDatasource(this._dio);
@@ -9,15 +10,38 @@ class NotificationApiDatasource implements NotificationDatasource {
   final Dio _dio;
 
   @override
-  Future<List<NotificationSectionModel>> fetchNotificationSections() async {
-    final response = await _dio.get<dynamic>(UserApis.notifications);
-    return _parseSections(response.data);
+  Future<NotificationPageModel> fetchPage({
+    required NotificationChannelType type,
+    required int pageNumber,
+    required int pageSize,
+  }) async {
+    final response = await _dio.get<dynamic>(
+      UserApis.notifications,
+      queryParameters: {
+        'pageNumber': pageNumber,
+        'pageSize': pageSize,
+        'type': type.apiValue,
+      },
+    );
+    final payload = _payload(response.data);
+    final items = _asList(payload['data'])
+        .map((item) => _mapItem(item, fallbackType: type))
+        .toList(growable: false)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return NotificationPageModel(
+      items: items,
+      pagination: _mapPagination(
+        _asMap(_asMap(payload['meta'])['pagination']),
+        pageNumber: pageNumber,
+        pageSize: pageSize,
+        fallbackCount: items.length,
+      ),
+    );
   }
 
   @override
-  Future<List<NotificationSectionModel>> markAllAsRead() async {
+  Future<void> markAllAsRead() async {
     await _dio.post<dynamic>(UserApis.notificationsReadAll);
-    return fetchNotificationSections();
   }
 
   @override
@@ -25,104 +49,129 @@ class NotificationApiDatasource implements NotificationDatasource {
     await _dio.post<dynamic>(UserApis.notificationsReadById(notificationId));
   }
 
-  List<NotificationSectionModel> _parseSections(dynamic data) {
-    final envelope = _asMap(data);
-    final payload = _asMap(envelope['data']);
-    final rawList = _asList(payload['data']);
-
-    final items = rawList
-        .map((item) {
-          final createdAt =
-              DateTime.tryParse((item['createdAt'] ?? '').toString()) ??
-              DateTime.now();
-          final type = (item['type'] ?? '').toString().toLowerCase();
-          final channel = type == 'global'
-              ? NotificationChannelType.global
-              : NotificationChannelType.push;
-          final photo = (item['photo'] ?? '').toString().trim();
-          final targetRaw = item['targetId'];
-          final targetId = targetRaw == null
-              ? null
-              : targetRaw.toString().trim().isEmpty
-              ? null
-              : targetRaw.toString();
-
-          return NotificationItemModel(
-            id: (item['id'] ?? '').toString(),
-            title: (item['title'] ?? '').toString(),
-            description: (item['body'] ?? '').toString(),
-            timeLabel: _formatRelativeTime(createdAt),
-            createdAt: createdAt,
-            channelType: channel,
-            isRead: item['isRead'] == true || item['is_read'] == true,
-            avatarUrl: photo.isEmpty ? null : photo,
-            targetId: targetId,
-          );
-        })
-        .toList(growable: false);
-
-    items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-    final grouped = <String, List<NotificationItemModel>>{};
-    for (final item in items) {
-      final title = _sectionTitle(item.createdAt);
-      grouped.putIfAbsent(title, () => <NotificationItemModel>[]).add(item);
-    }
-
-    final sections = grouped.entries
+  @override
+  Future<NotificationTopicPageModel> fetchTopicsPage({
+    required int pageNumber,
+    required int pageSize,
+  }) async {
+    final response = await _dio.get<dynamic>(
+      UserApis.notificationTopics,
+      queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize},
+    );
+    final payload = _payload(response.data);
+    final items = _asList(payload['data'])
         .map(
-          (entry) =>
-              NotificationSectionModel(title: entry.key, items: entry.value),
+          (item) => NotificationTopicModel(
+            id: (item['id'] ?? '').toString(),
+            topic: (item['topic'] ?? '').toString(),
+            isSubscribed: item['isSubscribed'] == true,
+          ),
+        )
+        .where((item) => item.id.isNotEmpty)
+        .toList(growable: false);
+    return NotificationTopicPageModel(
+      items: items,
+      pagination: _mapPagination(
+        _asMap(_asMap(payload['meta'])['pagination']),
+        pageNumber: pageNumber,
+        pageSize: pageSize,
+        fallbackCount: items.length,
+      ),
+    );
+  }
+
+  @override
+  Future<bool> toggleTopic({required String topicId}) async {
+    final response = await _dio.post<dynamic>(
+      UserApis.notificationTopicToggle(topicId),
+    );
+    final root = _asMap(response.data);
+    final data = _asMap(root['data']);
+    return data['isSubscribed'] == true;
+  }
+
+  NotificationItemModel _mapItem(
+    Map<String, dynamic> item, {
+    required NotificationChannelType fallbackType,
+  }) {
+    final createdAt =
+        DateTime.tryParse((item['createdAt'] ?? '').toString()) ??
+        DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+    final type = (item['type'] ?? '').toString().toLowerCase();
+    final channel = switch (type) {
+      'global' => NotificationChannelType.global,
+      'push' => NotificationChannelType.push,
+      _ => fallbackType,
+    };
+    final photo = _nullableString(item['photo']);
+    final targetId = _nullableString(item['targetId']);
+    final category = NotificationCategory.fromApi(item['category']);
+    final actors = _asList(item['actors'])
+        .take(3)
+        .map(
+          (actor) => NotificationActorModel(
+            id: (actor['id'] ?? '').toString(),
+            firstName: (actor['firstname'] ?? '').toString(),
+            lastName: (actor['lastname'] ?? '').toString(),
+            photoUrl: _nullableString(actor['photo']),
+          ),
         )
         .toList(growable: false);
+    final postMap = item['post'] is Map ? _asMap(item['post']) : null;
+    final postId = postMap == null ? null : _nullableString(postMap['id']);
 
-    sections.sort(_compareSections);
-    return sections;
-  }
-
-  int _compareSections(NotificationSectionModel a, NotificationSectionModel b) {
-    final ra = _sectionRank(a.title);
-    final rb = _sectionRank(b.title);
-    if (ra != rb) return ra.compareTo(rb);
-    final da = a.items
-        .map((e) => e.createdAt)
-        .reduce((x, y) => x.isAfter(y) ? x : y);
-    final db = b.items
-        .map((e) => e.createdAt)
-        .reduce((x, y) => x.isAfter(y) ? x : y);
-    return db.compareTo(da);
-  }
-
-  int _sectionRank(String title) {
-    if (title == 'Bugun') return 0;
-    if (title == 'Kecha') return 1;
-    return 2;
-  }
-
-  String _sectionTitle(DateTime createdAt) {
-    final now = DateTime.now();
-    final localCreatedAt = createdAt.toLocal();
-    final localNow = now.toLocal();
-    final createdDate = DateTime(
-      localCreatedAt.year,
-      localCreatedAt.month,
-      localCreatedAt.day,
+    return NotificationItemModel(
+      id: (item['id'] ?? '').toString(),
+      title: (item['title'] ?? '').toString(),
+      description: (item['body'] ?? '').toString(),
+      createdAt: createdAt,
+      channelType: channel,
+      isRead: item['isRead'] == true || item['is_read'] == true,
+      avatarUrl: photo,
+      targetId: targetId,
+      category: category,
+      actors: actors,
+      post: postId == null
+          ? null
+          : NotificationPostModel(
+              id: postId,
+              thumbnailUrl: _nullableString(postMap?['thumbnail']),
+            ),
     );
-    final nowDate = DateTime(localNow.year, localNow.month, localNow.day);
-    final diffDays = nowDate.difference(createdDate).inDays;
-    if (diffDays == 0) return 'Bugun';
-    if (diffDays == 1) return 'Kecha';
-    return '${localCreatedAt.day.toString().padLeft(2, '0')}.${localCreatedAt.month.toString().padLeft(2, '0')}.${localCreatedAt.year}';
   }
 
-  String _formatRelativeTime(DateTime createdAt) {
-    final difference = DateTime.now().difference(createdAt.toLocal());
-    if (difference.inMinutes < 1) return 'Hozirgina';
-    if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} daqiqa oldin';
-    }
-    if (difference.inHours < 24) return '${difference.inHours} soat oldin';
-    return '${difference.inDays} kun oldin';
+  NotificationPaginationModel _mapPagination(
+    Map<String, dynamic> raw, {
+    required int pageNumber,
+    required int pageSize,
+    required int fallbackCount,
+  }) {
+    final safePageNumber = _parseInt(raw['pageNumber'], pageNumber);
+    final safePageSize = _parseInt(raw['pageSize'], pageSize);
+    final count = _parseInt(raw['count'], fallbackCount);
+    final pageCount = _parseInt(raw['pageCount'], 1).clamp(1, 1 << 31);
+    return NotificationPaginationModel(
+      pageNumber: safePageNumber,
+      pageSize: safePageSize,
+      count: count,
+      pageCount: pageCount,
+    );
+  }
+
+  Map<String, dynamic> _payload(dynamic raw) {
+    final root = _asMap(raw);
+    return _asMap(root['data']);
+  }
+
+  int _parseInt(dynamic raw, int fallback) {
+    if (raw is int) return raw;
+    return int.tryParse(raw?.toString() ?? '') ?? fallback;
+  }
+
+  String? _nullableString(dynamic raw) {
+    if (raw == null) return null;
+    final value = raw.toString().trim();
+    return value.isEmpty ? null : value;
   }
 
   Map<String, dynamic> _asMap(dynamic raw) {

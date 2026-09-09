@@ -22,10 +22,10 @@ class NotificationSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: AppPadding.paddingHorizontalMd,
+          padding: AppPadding.paddingHorizontalXl,
           child: Text(
             section.title,
-            style: context.textTheme.heading6.copyWith(
+            style: context.textTheme.bodyXLargeBold.copyWith(
               color: context.appColors.text,
             ),
           ),

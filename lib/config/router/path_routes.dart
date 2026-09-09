@@ -68,6 +68,10 @@ sealed class Routes {
   static const String profileInformation = '/profile/information';
   static const String profileInformationName = 'profileInformation';
 
+  /// Bildirishnoma sozlamalari (topic + master push)
+  static const String notificationSettings = '/profile/notification-settings';
+  static const String notificationSettingsName = 'notificationSettings';
+
   /// Biz haqimizda
   static const String aboutUs = '/about-us';
   static const String aboutUsName = 'aboutUs';

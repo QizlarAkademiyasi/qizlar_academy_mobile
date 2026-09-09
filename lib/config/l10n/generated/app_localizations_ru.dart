@@ -960,6 +960,77 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notificationDetailsMore => 'Подробнее';
 
   @override
+  String get notificationSettingsTitle => 'Настройки уведомлений';
+
+  @override
+  String get notificationSettingsMasterTitle => 'Push-уведомления';
+
+  @override
+  String get notificationSettingsMasterSubtitle =>
+      'Получать push-уведомления на устройстве';
+
+  @override
+  String get notificationSettingsTopicsTitle => 'ТЕМЫ';
+
+  @override
+  String get notificationSettingsTopicsDisabled =>
+      'Включите push-уведомления, чтобы управлять темами.';
+
+  @override
+  String get notificationSettingsEmpty => 'Тем пока нет';
+
+  @override
+  String get notificationSettingsEmptySubtitle => 'Новые темы появятся здесь.';
+
+  @override
+  String get notificationSettingsLoadError =>
+      'Не удалось загрузить темы уведомлений.';
+
+  @override
+  String get notificationSettingsUpdateError =>
+      'Не удалось обновить настройку уведомлений.';
+
+  @override
+  String get notificationSettingsEnabled => 'Push-уведомления включены';
+
+  @override
+  String get notificationSettingsDisabled => 'Push-уведомления выключены';
+
+  @override
+  String get notificationTimeNow => 'Только что';
+
+  @override
+  String notificationTimeMinutesAgo(int count) {
+    return '$count мин. назад';
+  }
+
+  @override
+  String notificationTimeHoursAgo(int count) {
+    return '$count ч. назад';
+  }
+
+  @override
+  String notificationTimeDaysAgo(int count) {
+    return '$count дн. назад';
+  }
+
+  @override
+  String get notificationSectionToday => 'Сегодня';
+
+  @override
+  String get notificationSectionYesterday => 'Вчера';
+
+  @override
+  String notificationSectionDaysAgo(int count) {
+    return '$count дн. назад';
+  }
+
+  @override
+  String notificationSectionWeeksAgo(int count) {
+    return '$count нед. назад';
+  }
+
+  @override
   String get notificationsEmptyThisTab => 'В этой вкладке нет уведомлений';
 
   @override

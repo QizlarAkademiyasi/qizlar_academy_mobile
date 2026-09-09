@@ -149,6 +149,9 @@ sealed class UserApis {
   static const String notificationsReadAll = '/api/v1/notification/read-all';
   static String notificationsReadById(String id) =>
       '/api/v1/notification/${Uri.encodeComponent(id)}/read';
+  static const String notificationTopics = '/api/v1/notification-topic';
+  static String notificationTopicToggle(String id) =>
+      '/api/v1/notification-topic/${Uri.encodeComponent(id)}/toggle';
 
   static const String leaderboard = '/api/v1/leaderboard';
   static const String leaderboardCourses = '/api/v1/leaderboard/courses';

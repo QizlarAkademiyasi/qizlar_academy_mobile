@@ -942,6 +942,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationDetailsMore => 'Details';
 
   @override
+  String get notificationSettingsTitle => 'Notification settings';
+
+  @override
+  String get notificationSettingsMasterTitle => 'Push notifications';
+
+  @override
+  String get notificationSettingsMasterSubtitle =>
+      'Receive push notifications on this device';
+
+  @override
+  String get notificationSettingsTopicsTitle => 'TOPICS';
+
+  @override
+  String get notificationSettingsTopicsDisabled =>
+      'Enable push notifications to manage topics.';
+
+  @override
+  String get notificationSettingsEmpty => 'No topics yet';
+
+  @override
+  String get notificationSettingsEmptySubtitle =>
+      'New topics will appear here.';
+
+  @override
+  String get notificationSettingsLoadError =>
+      'Couldn’t load notification topics.';
+
+  @override
+  String get notificationSettingsUpdateError =>
+      'Couldn’t update the notification setting.';
+
+  @override
+  String get notificationSettingsEnabled => 'Push notifications enabled';
+
+  @override
+  String get notificationSettingsDisabled => 'Push notifications disabled';
+
+  @override
+  String get notificationTimeNow => 'Just now';
+
+  @override
+  String notificationTimeMinutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String notificationTimeHoursAgo(int count) {
+    return '$count hr ago';
+  }
+
+  @override
+  String notificationTimeDaysAgo(int count) {
+    return '$count days ago';
+  }
+
+  @override
+  String get notificationSectionToday => 'Today';
+
+  @override
+  String get notificationSectionYesterday => 'Yesterday';
+
+  @override
+  String notificationSectionDaysAgo(int count) {
+    return '$count days ago';
+  }
+
+  @override
+  String notificationSectionWeeksAgo(int count) {
+    return '$count weeks ago';
+  }
+
+  @override
   String get notificationsEmptyThisTab => 'No notifications in this tab';
 
   @override

@@ -11,12 +11,12 @@ class NotificationListSkeleton extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(24, 6, 24, 120),
         children: [
-          Bone.text(words: 1, fontSize: 20),
+          Bone.text(words: 1, fontSize: 18),
           const SizedBox(height: 10),
           const _SkeletonTile(),
           const _SkeletonTile(),
           const SizedBox(height: 14),
-          Bone.text(words: 1, fontSize: 20),
+          Bone.text(words: 1, fontSize: 18),
           const SizedBox(height: 10),
           const _SkeletonTile(),
           const _SkeletonTile(),
@@ -36,7 +36,7 @@ class _SkeletonTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Bone.circle(size: 44),
+          Bone.circle(size: 48),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -50,8 +50,8 @@ class _SkeletonTile extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Container(
-            width: 8,
-            height: 8,
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(
               color: context.appColors.stroke,
               shape: BoxShape.circle,

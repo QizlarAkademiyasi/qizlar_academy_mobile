@@ -10,127 +10,165 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   NotificationBloc(this._repository) : super(const NotificationState()) {
     on<NotificationStarted>(_onStarted);
     on<NotificationRetryRequested>(_onRetryRequested);
+    on<NotificationLoadMoreRequested>(_onLoadMoreRequested);
     on<NotificationMarkAllReadRequested>(_onMarkAllReadRequested);
     on<NotificationItemOpened>(_onNotificationItemOpened);
     on<NotificationTabSelected>(_onTabSelected);
   }
 
+  static const int _pageSize = 10;
   final NotificationRepository _repository;
 
   Future<void> _onStarted(
     NotificationStarted event,
     Emitter<NotificationState> emit,
-  ) async {
-    emit(
-      state.copyWith(status: NotificationStatus.loading, clearMessage: true),
-    );
-    try {
-      final sections = await _repository.fetchNotificationSections();
-      emit(
-        state.copyWith(status: NotificationStatus.success, sections: sections),
-      );
-    } catch (e, st) {
-      AppLogger.e('NotificationBloc: load failed', error: e, stackTrace: st);
-      emit(
-        state.copyWith(status: NotificationStatus.failure, clearMessage: true),
-      );
-    }
-  }
+  ) => _loadFirstPage(NotificationListTab.platform, emit);
 
   Future<void> _onRetryRequested(
     NotificationRetryRequested event,
     Emitter<NotificationState> emit,
+  ) => _loadFirstPage(event.tab ?? state.selectedTab, emit);
+
+  Future<void> _loadFirstPage(
+    NotificationListTab tab,
+    Emitter<NotificationState> emit,
   ) async {
-    add(const NotificationStarted());
+    emit(state.withTabData(tab, state.dataFor(tab).copyWith(status: NotificationTabStatus.loading)));
+    try {
+      final page = await _repository.fetchPage(
+        type: tab.channelType,
+        pageNumber: 1,
+        pageSize: _pageSize,
+      );
+      emit(
+        state.withTabData(
+          tab,
+          NotificationTabData(
+            status: NotificationTabStatus.success,
+            items: page.items,
+            pageNumber: page.pagination.pageNumber,
+            pageCount: page.pagination.pageCount,
+            pageSize: page.pagination.pageSize,
+          ),
+        ),
+      );
+    } catch (error, stackTrace) {
+      AppLogger.e(
+        'NotificationBloc: first page failed (${tab.name})',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      emit(
+        state.withTabData(
+          tab,
+          state.dataFor(tab).copyWith(status: NotificationTabStatus.failure),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onLoadMoreRequested(
+    NotificationLoadMoreRequested event,
+    Emitter<NotificationState> emit,
+  ) async {
+    final current = state.dataFor(event.tab);
+    if (!current.hasMore || current.isLoadingMore) return;
+    emit(state.withTabData(event.tab, current.copyWith(isLoadingMore: true)));
+    try {
+      final page = await _repository.fetchPage(
+        type: event.tab.channelType,
+        pageNumber: current.pageNumber + 1,
+        pageSize: current.pageSize,
+      );
+      final byId = <String, NotificationItemModel>{
+        for (final item in current.items) item.id: item,
+        for (final item in page.items) item.id: item,
+      };
+      final items = byId.values.toList(growable: false)
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      emit(
+        state.withTabData(
+          event.tab,
+          current.copyWith(
+            status: NotificationTabStatus.success,
+            items: items,
+            pageNumber: page.pagination.pageNumber,
+            pageCount: page.pagination.pageCount,
+            pageSize: page.pagination.pageSize,
+            isLoadingMore: false,
+          ),
+        ),
+      );
+    } catch (error, stackTrace) {
+      AppLogger.e(
+        'NotificationBloc: load more failed (${event.tab.name})',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      emit(
+        state
+            .withTabData(event.tab, current.copyWith(isLoadingMore: false))
+            .copyWith(loadMoreFailureVersion: state.loadMoreFailureVersion + 1),
+      );
+    }
   }
 
   Future<void> _onMarkAllReadRequested(
     NotificationMarkAllReadRequested event,
     Emitter<NotificationState> emit,
   ) async {
-    if (!state.hasUnread) return;
-    emit(
-      state.copyWith(status: NotificationStatus.updating, clearMessage: true),
-    );
+    if (!state.hasUnread || state.isMarkingAllRead) return;
+    emit(state.copyWith(isMarkingAllRead: true));
     try {
-      final sections = await _repository.markAllAsRead();
+      await _repository.markAllAsRead();
       emit(
-        state.copyWith(status: NotificationStatus.success, sections: sections),
+        state.copyWith(
+          isMarkingAllRead: false,
+          platform: state.platform.markAllRead(),
+          community: state.community.markAllRead(),
+        ),
       );
-    } catch (e, st) {
+    } catch (error, stackTrace) {
       AppLogger.e(
         'NotificationBloc: mark all read failed',
-        error: e,
-        stackTrace: st,
+        error: error,
+        stackTrace: stackTrace,
       );
       emit(
-        state.copyWith(status: NotificationStatus.failure, clearMessage: true),
+        state.copyWith(
+          isMarkingAllRead: false,
+          actionFailureVersion: state.actionFailureVersion + 1,
+        ),
       );
     }
-  }
-
-  void _onTabSelected(
-    NotificationTabSelected event,
-    Emitter<NotificationState> emit,
-  ) {
-    emit(state.copyWith(selectedTab: event.tab));
   }
 
   Future<void> _onNotificationItemOpened(
     NotificationItemOpened event,
     Emitter<NotificationState> emit,
   ) async {
-    final selectedItem = _findNotification(event.notificationId);
-    if (selectedItem == null || selectedItem.isRead) return;
+    final item = state.findItem(event.notificationId);
+    if (item == null || item.isRead) return;
     try {
       await _repository.markAsRead(notificationId: event.notificationId);
-      emit(
-        state.copyWith(
-          status: NotificationStatus.success,
-          sections: _sectionsWithNotificationMarkedRead(
-            state.sections,
-            event.notificationId,
-          ),
-        ),
-      );
-    } catch (e, st) {
+      emit(state.markItemRead(event.notificationId));
+    } catch (error, stackTrace) {
       AppLogger.e(
         'NotificationBloc: mark read failed',
-        error: e,
-        stackTrace: st,
+        error: error,
+        stackTrace: stackTrace,
       );
-      emit(
-        state.copyWith(status: NotificationStatus.failure, clearMessage: true),
-      );
+      emit(state.copyWith(actionFailureVersion: state.actionFailureVersion + 1));
     }
   }
 
-  List<NotificationSectionModel> _sectionsWithNotificationMarkedRead(
-    List<NotificationSectionModel> sections,
-    String notificationId,
-  ) {
-    return sections
-        .map(
-          (section) => NotificationSectionModel(
-            title: section.title,
-            items: section.items
-                .map(
-                  (item) => item.id == notificationId
-                      ? item.copyWith(isRead: true)
-                      : item,
-                )
-                .toList(),
-          ),
-        )
-        .toList(growable: false);
-  }
-
-  NotificationItemModel? _findNotification(String notificationId) {
-    for (final section in state.sections) {
-      for (final item in section.items) {
-        if (item.id == notificationId) return item;
-      }
+  Future<void> _onTabSelected(
+    NotificationTabSelected event,
+    Emitter<NotificationState> emit,
+  ) async {
+    emit(state.copyWith(selectedTab: event.tab));
+    if (state.dataFor(event.tab).status == NotificationTabStatus.initial) {
+      await _loadFirstPage(event.tab, emit);
     }
-    return null;
   }
 }

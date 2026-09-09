@@ -1,41 +1,66 @@
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
-import 'package:qizlar_academy_mobile/feature/notification/data/datasource/notification_api_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/notification/data/datasource/notification_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/notification/domain/model/notification_item_model.dart';
+import 'package:qizlar_academy_mobile/feature/notification/domain/model/notification_topic_model.dart';
 import 'package:qizlar_academy_mobile/feature/notification/domain/repository/notification_repository.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   NotificationRepositoryImpl({
-    required NotificationApiDatasource apiDatasource,
+    required NotificationDatasource datasource,
     required AuthSessionCubit authSessionCubit,
-  }) : _apiDatasource = apiDatasource,
+  }) : _datasource = datasource,
        _authSessionCubit = authSessionCubit;
 
-  final NotificationApiDatasource _apiDatasource;
+  final NotificationDatasource _datasource;
   final AuthSessionCubit _authSessionCubit;
 
   void _ensureRegistered() {
     if (_authSessionCubit.state.isAnonymous) {
-      throw StateError(
-        'Notifications are available only for registered users.',
-      );
+      throw StateError('Notifications are available only for registered users.');
     }
   }
 
   @override
-  Future<List<NotificationSectionModel>> fetchNotificationSections() {
+  Future<NotificationPageModel> fetchPage({
+    required NotificationChannelType type,
+    required int pageNumber,
+    int pageSize = 10,
+  }) {
     _ensureRegistered();
-    return _apiDatasource.fetchNotificationSections();
+    return _datasource.fetchPage(
+      type: type,
+      pageNumber: pageNumber,
+      pageSize: pageSize,
+    );
   }
 
   @override
-  Future<List<NotificationSectionModel>> markAllAsRead() {
+  Future<void> markAllAsRead() {
     _ensureRegistered();
-    return _apiDatasource.markAllAsRead();
+    return _datasource.markAllAsRead();
   }
 
   @override
   Future<void> markAsRead({required String notificationId}) {
     _ensureRegistered();
-    return _apiDatasource.markAsRead(notificationId: notificationId);
+    return _datasource.markAsRead(notificationId: notificationId);
+  }
+
+  @override
+  Future<NotificationTopicPageModel> fetchTopicsPage({
+    required int pageNumber,
+    int pageSize = 10,
+  }) {
+    _ensureRegistered();
+    return _datasource.fetchTopicsPage(
+      pageNumber: pageNumber,
+      pageSize: pageSize,
+    );
+  }
+
+  @override
+  Future<bool> toggleTopic({required String topicId}) {
+    _ensureRegistered();
+    return _datasource.toggleTopic(topicId: topicId);
   }
 }

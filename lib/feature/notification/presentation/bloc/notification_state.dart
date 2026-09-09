@@ -1,60 +1,124 @@
 part of 'notification_bloc.dart';
 
-enum NotificationStatus { initial, loading, updating, success, failure }
+enum NotificationTabStatus { initial, loading, success, failure }
+
+class NotificationTabData extends Equatable {
+  const NotificationTabData({
+    this.status = NotificationTabStatus.initial,
+    this.items = const [],
+    this.pageNumber = 0,
+    this.pageCount = 1,
+    this.pageSize = 10,
+    this.isLoadingMore = false,
+  });
+
+  final NotificationTabStatus status;
+  final List<NotificationItemModel> items;
+  final int pageNumber;
+  final int pageCount;
+  final int pageSize;
+  final bool isLoadingMore;
+
+  bool get hasMore => pageNumber < pageCount;
+  bool get isInitialLoading => status == NotificationTabStatus.loading && items.isEmpty;
+
+  NotificationTabData copyWith({
+    NotificationTabStatus? status,
+    List<NotificationItemModel>? items,
+    int? pageNumber,
+    int? pageCount,
+    int? pageSize,
+    bool? isLoadingMore,
+  }) {
+    return NotificationTabData(
+      status: status ?? this.status,
+      items: items ?? this.items,
+      pageNumber: pageNumber ?? this.pageNumber,
+      pageCount: pageCount ?? this.pageCount,
+      pageSize: pageSize ?? this.pageSize,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    );
+  }
+
+  NotificationTabData markAllRead() => copyWith(
+    items: items.map((item) => item.copyWith(isRead: true)).toList(growable: false),
+  );
+
+  NotificationTabData markItemRead(String id) => copyWith(
+    items: items
+        .map((item) => item.id == id ? item.copyWith(isRead: true) : item)
+        .toList(growable: false),
+  );
+
+  @override
+  List<Object?> get props => [status, items, pageNumber, pageCount, pageSize, isLoadingMore];
+}
 
 class NotificationState extends Equatable {
   const NotificationState({
-    this.status = NotificationStatus.initial,
-    this.sections = const [],
-    this.message,
-    this.selectedTab = NotificationListTab.community,
+    this.platform = const NotificationTabData(),
+    this.community = const NotificationTabData(),
+    this.selectedTab = NotificationListTab.platform,
+    this.isMarkingAllRead = false,
+    this.actionFailureVersion = 0,
+    this.loadMoreFailureVersion = 0,
   });
 
-  final NotificationStatus status;
-  final List<NotificationSectionModel> sections;
-  final String? message;
+  final NotificationTabData platform;
+  final NotificationTabData community;
   final NotificationListTab selectedTab;
+  final bool isMarkingAllRead;
+  final int actionFailureVersion;
+  final int loadMoreFailureVersion;
 
-  bool get hasUnread =>
-      sections.any((section) => section.items.any((item) => !item.isRead));
+  NotificationTabData dataFor(NotificationListTab tab) =>
+      tab == NotificationListTab.platform ? platform : community;
 
-  List<NotificationSectionModel> visibleSectionsForTab(
-    NotificationListTab tab,
-  ) {
-    final channel = tab == NotificationListTab.platform
-        ? NotificationChannelType.push
-        : NotificationChannelType.global;
-    return sections
-        .map(
-          (s) => NotificationSectionModel(
-            title: s.title,
-            items: s.items.where((i) => i.channelType == channel).toList(),
-          ),
-        )
-        .where((s) => s.items.isNotEmpty)
-        .toList(growable: false);
+  bool get hasUnread => [...platform.items, ...community.items].any((item) => !item.isRead);
+
+  NotificationItemModel? findItem(String id) {
+    for (final item in [...platform.items, ...community.items]) {
+      if (item.id == id) return item;
+    }
+    return null;
   }
 
-  List<NotificationSectionModel> get visibleSections =>
-      visibleSectionsForTab(selectedTab);
+  NotificationState withTabData(NotificationListTab tab, NotificationTabData data) {
+    return tab == NotificationListTab.platform
+        ? copyWith(platform: data)
+        : copyWith(community: data);
+  }
 
-  bool get hasItemsInSelectedTab => visibleSections.isNotEmpty;
+  NotificationState markItemRead(String id) => copyWith(
+    platform: platform.markItemRead(id),
+    community: community.markItemRead(id),
+  );
 
   NotificationState copyWith({
-    NotificationStatus? status,
-    List<NotificationSectionModel>? sections,
-    String? message,
+    NotificationTabData? platform,
+    NotificationTabData? community,
     NotificationListTab? selectedTab,
-    bool clearMessage = false,
+    bool? isMarkingAllRead,
+    int? actionFailureVersion,
+    int? loadMoreFailureVersion,
   }) {
     return NotificationState(
-      status: status ?? this.status,
-      sections: sections ?? this.sections,
-      message: clearMessage ? null : (message ?? this.message),
+      platform: platform ?? this.platform,
+      community: community ?? this.community,
       selectedTab: selectedTab ?? this.selectedTab,
+      isMarkingAllRead: isMarkingAllRead ?? this.isMarkingAllRead,
+      actionFailureVersion: actionFailureVersion ?? this.actionFailureVersion,
+      loadMoreFailureVersion: loadMoreFailureVersion ?? this.loadMoreFailureVersion,
     );
   }
 
   @override
-  List<Object?> get props => [status, sections, message, selectedTab];
+  List<Object?> get props => [
+    platform,
+    community,
+    selectedTab,
+    isMarkingAllRead,
+    actionFailureVersion,
+    loadMoreFailureVersion,
+  ];
 }

@@ -42,6 +42,7 @@ import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacan
 import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacancy_detail/vacancy_detail_screen.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/edit_information/screens/edit_information_screen.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/notification_screen.dart';
+import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/settings/notification_settings_screen.dart';
 import 'package:qizlar_academy_mobile/feature/splash/presentation/screens/splash_screen.dart';
 import 'package:qizlar_academy_mobile/feature/store/presentation/screens/store_screen.dart';
 import 'package:qizlar_academy_mobile/feature/store/presentation/screens/detail_screen/screens/store_detail_screen.dart';
@@ -196,6 +197,9 @@ class AppRoute {
         if (location == Routes.profileInformation && isGuest) {
           return Routes.signIn;
         }
+        if (location == Routes.notificationSettings && isGuest) {
+          return Routes.signIn;
+        }
         if (location == Routes.store && isGuest) {
           return Routes.signIn;
         }
@@ -252,6 +256,7 @@ class AppRoute {
             return Routes.register;
           }
           if (location == Routes.profileInformation) return Routes.register;
+          if (location == Routes.notificationSettings) return Routes.register;
           if (location == Routes.store) return Routes.register;
           if (RegExp(r'^/store/[^/]+$').hasMatch(state.uri.path)) {
             return Routes.register;
@@ -533,6 +538,20 @@ class AppRoute {
               state: state,
               screenName: 'EditInformationScreen',
               child: EditInformationScreen(seedUser: seed),
+            );
+          },
+        ),
+        GoRoute(
+          path: Routes.notificationSettings,
+          name: Routes.notificationSettingsName,
+          parentNavigatorKey: rootNavigatorKey,
+          pageBuilder: (_, state) {
+            final extra = state.extra;
+            final masterEnabled = extra is bool ? extra : null;
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'NotificationSettingsScreen',
+              child: NotificationSettingsScreen(masterEnabled: masterEnabled),
             );
           },
         ),

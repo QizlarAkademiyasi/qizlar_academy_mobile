@@ -78,6 +78,7 @@ import 'package:qizlar_academy_mobile/feature/notification/data/datasource/notif
 import 'package:qizlar_academy_mobile/feature/notification/data/repository/notification_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/notification/domain/repository/notification_repository.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/bloc/notification_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/settings/bloc/notification_settings_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/profile/data/repository/profile_repository_impl.dart';
@@ -429,12 +430,20 @@ Future<void> setupLocator() async {
   );
   getIt.registerLazySingleton<NotificationRepository>(
     () => NotificationRepositoryImpl(
-      apiDatasource: getIt<NotificationApiDatasource>(),
+      datasource: getIt<NotificationDatasource>(),
       authSessionCubit: getIt<AuthSessionCubit>(),
     ),
   );
   getIt.registerFactory<NotificationBloc>(
     () => NotificationBloc(getIt<NotificationRepository>()),
+  );
+  getIt.registerFactory<NotificationSettingsBloc>(
+    () => NotificationSettingsBloc(
+      notificationRepository: getIt<NotificationRepository>(),
+      profileRepository: getIt<ProfileRepository>(),
+      ensurePushToken: () =>
+          getIt<PushMessagingService>().ensureTokenForSubscribe(),
+    ),
   );
 
   getIt.registerLazySingleton<StoreApiDatasource>(
