@@ -51,7 +51,6 @@ bool isValidWatchdogClientKey(String key) {
   return !trimmed.startsWith('change-');
 }
 
-
 /// True when [url] is something `WatchdogCloudClient` can actually dial.
 ///
 /// Without this a bad `--dart-define` (an empty string, a pasted Dart VM
@@ -69,7 +68,6 @@ bool isValidWatchdogServerUrl(String url) {
   if (uri.path.isNotEmpty && uri.path != '/') return false;
   return true;
 }
-
 
 /// Starts Watchdog in local + cloud mirror mode.
 ///
@@ -122,7 +120,11 @@ Future<void> initializeWatchdog({
 /// Fills in the user identity once it is known (after login / profile load), so
 /// the dashboard's device list and map label a pin with a person rather than
 /// just a phone model.
-void updateWatchdogUser({String? username, String? phoneNumber, String? email}) {
+void updateWatchdogUser({
+  String? username,
+  String? phoneNumber,
+  String? email,
+}) {
   try {
     Watchdog.updateUser(
       username: username,
