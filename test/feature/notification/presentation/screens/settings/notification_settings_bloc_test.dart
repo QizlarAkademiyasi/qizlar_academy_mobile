@@ -100,6 +100,12 @@ class _FakeTopicsRepository implements NotificationRepository {
     if (failToggle) throw StateError('toggle failed');
     return false;
   }
+
+  @override
+  Future<void> subscribePushToken(String token) async {}
+
+  @override
+  Future<void> unsubscribePushToken(String token) async {}
 }
 
 class _FakeProfileRepository implements ProfileRepository {

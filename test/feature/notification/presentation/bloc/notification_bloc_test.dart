@@ -167,4 +167,10 @@ class _FakeNotificationRepository implements NotificationRepository {
   Future<bool> toggleTopic({required String topicId}) async {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> subscribePushToken(String token) async {}
+
+  @override
+  Future<void> unsubscribePushToken(String token) async {}
 }

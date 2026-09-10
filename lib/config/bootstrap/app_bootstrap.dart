@@ -9,6 +9,7 @@ import 'package:qizlar_academy_mobile/core/analytics/meta_analytics_service.dart
 import 'package:qizlar_academy_mobile/core/deeplink/app_deep_link_coordinator.dart';
 import 'package:qizlar_academy_mobile/core/push/fcm_background_handler.dart';
 import 'package:qizlar_academy_mobile/core/push/push_messaging_service.dart';
+import 'package:qizlar_academy_mobile/core/push/push_subscription_sync_service.dart';
 import 'package:qizlar_academy_mobile/core/watchdog/watchdog_bootstrap.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
@@ -168,6 +169,7 @@ abstract final class AppBootstrap {
     final sw = Stopwatch()..start();
     try {
       await getIt<PushMessagingService>().initialize();
+      unawaited(getIt<PushSubscriptionSyncService>().syncRegisteredDevice());
     } catch (e, st) {
       AppLogger.e(
         'PushMessagingService.initialize failed',

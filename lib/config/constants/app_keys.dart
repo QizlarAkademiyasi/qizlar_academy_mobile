@@ -5,6 +5,7 @@ enum StorageKey {
   tokenType,
   language,
   fcmToken,
+  pushOptedOut,
   pinCodeExist,
   theme,
 

@@ -19,6 +19,9 @@ class PushMessagingService {
 
   bool _initialized = false;
 
+  /// FCM token yangilanganda (yoki birinchi marta saqlanganda).
+  void Function(String? oldToken, String nextToken)? onTokenRefreshed;
+
   /// iOS: APNS uchun bir marta uzoq kutamiz; keyingi [getToken] chaqiriqlarida qayta bloklanmaymiz.
   bool _apnsWaitAttempted = false;
 
@@ -244,7 +247,11 @@ class PushMessagingService {
     if (token == null || token.isEmpty) {
       return;
     }
+    final oldToken = _prefs.getString(StorageKey.fcmToken.name);
     await _prefs.setString(StorageKey.fcmToken.name, token);
+    if (oldToken != token) {
+      onTokenRefreshed?.call(oldToken, token);
+    }
   }
 
   void _onNotificationResponse(NotificationResponse response) {

@@ -321,6 +321,12 @@ class _FakeListRepository implements NotificationRepository {
 
   @override
   Future<bool> toggleTopic({required String topicId}) async => false;
+
+  @override
+  Future<void> subscribePushToken(String token) async {}
+
+  @override
+  Future<void> unsubscribePushToken(String token) async {}
 }
 
 class _DelayedEmptyRepository extends _FakeListRepository {
@@ -388,6 +394,12 @@ class _FakeTopicsRepository implements NotificationRepository {
 
   @override
   Future<bool> toggleTopic({required String topicId}) async => true;
+
+  @override
+  Future<void> subscribePushToken(String token) async {}
+
+  @override
+  Future<void> unsubscribePushToken(String token) async {}
 }
 
 class _FakeAuthRepository implements AuthRepository {

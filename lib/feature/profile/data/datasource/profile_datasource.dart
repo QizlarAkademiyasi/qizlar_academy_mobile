@@ -6,8 +6,6 @@ abstract interface class ProfileDatasource {
 
   Future<ProfileUserPublicModel> getUserProfileById(String id);
 
-  Future<ProfileOverviewModel> updateNotifications({required bool enabled});
-
   Future<ProfileOverviewModel> updateDarkMode({required bool enabled});
 
   Future<ProfileOverviewModel> updateLanguage({required String code});

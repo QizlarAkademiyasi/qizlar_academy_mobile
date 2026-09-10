@@ -17,4 +17,7 @@ abstract interface class NotificationDatasource {
   });
 
   Future<bool> toggleTopic({required String topicId});
+
+  Future<void> subscribePushToken(String token);
+  Future<void> unsubscribePushToken(String token);
 }

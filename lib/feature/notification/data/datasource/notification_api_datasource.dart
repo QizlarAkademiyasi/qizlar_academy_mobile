@@ -90,6 +90,22 @@ class NotificationApiDatasource implements NotificationDatasource {
     return data['isSubscribed'] == true;
   }
 
+  @override
+  Future<void> subscribePushToken(String token) async {
+    await _dio.post<dynamic>(
+      UserApis.notificationSubscribe,
+      data: <String, dynamic>{'token': token},
+    );
+  }
+
+  @override
+  Future<void> unsubscribePushToken(String token) async {
+    await _dio.delete<dynamic>(
+      UserApis.notificationUnsubscribe,
+      data: <String, dynamic>{'token': token},
+    );
+  }
+
   NotificationItemModel _mapItem(
     Map<String, dynamic> item, {
     required NotificationChannelType fallbackType,

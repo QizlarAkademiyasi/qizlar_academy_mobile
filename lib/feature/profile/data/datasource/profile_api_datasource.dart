@@ -1,5 +1,4 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/app_keys.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/exception/profile_registration_required_exception.dart';
@@ -10,10 +9,9 @@ import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overv
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_user_public_model.dart';
 
 class ProfileApiDatasource implements ProfileDatasource {
-  const ProfileApiDatasource(this._dio, this._prefs);
+  const ProfileApiDatasource(this._dio);
 
   final Dio _dio;
-  final SharedPreferences _prefs;
 
   @override
   Future<ProfileOverviewModel> getProfileOverview() async {
@@ -114,32 +112,6 @@ class ProfileApiDatasource implements ProfileDatasource {
       }
     }
     throw FormatException('Unexpected file upload payload', raw);
-  }
-
-  @override
-  Future<ProfileOverviewModel> updateNotifications({
-    required bool enabled,
-  }) async {
-    final fromPrefs = _prefs.getString(StorageKey.fcmToken.name);
-    final token = (fromPrefs != null && fromPrefs.isNotEmpty)
-        ? fromPrefs
-        : await FirebaseMessaging.instance.getToken();
-    if (token == null || token.isEmpty) {
-      throw StateError('FCM token unavailable');
-    }
-    if (enabled) {
-      await _dio.post<dynamic>(
-        UserApis.notificationSubscribe,
-        data: <String, dynamic>{'token': token},
-      );
-    } else {
-      await _dio.delete<dynamic>(
-        UserApis.notificationUnsubscribe,
-        data: <String, dynamic>{'token': token},
-      );
-    }
-    final overview = await getProfileOverview();
-    return overview.copyWith(notificationsEnabled: enabled);
   }
 
   Map<String, dynamic>? _educationPayload(Map<String, dynamic> data) {

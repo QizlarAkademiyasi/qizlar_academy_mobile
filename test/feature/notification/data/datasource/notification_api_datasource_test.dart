@@ -142,12 +142,27 @@ void main() {
     expect(adapter.lastPath, '/api/v1/notification-topic/t1/toggle');
     expect(next, isFalse);
   });
+
+  test('subscribe posts token and unsubscribe deletes token', () async {
+    adapter.response = {};
+    await datasource.subscribePushToken('fcm-1');
+    expect(adapter.lastMethod, 'POST');
+    expect(adapter.lastPath, '/api/v1/notification/subscribe');
+    expect(adapter.lastData, {'token': 'fcm-1'});
+
+    await datasource.unsubscribePushToken('fcm-1');
+    expect(adapter.lastMethod, 'DELETE');
+    expect(adapter.lastPath, '/api/v1/notification/unsubscribe');
+    expect(adapter.lastData, {'token': 'fcm-1'});
+  });
 }
 
 class _CapturingAdapter implements HttpClientAdapter {
   Map<String, dynamic> response = const {};
   String? lastPath;
+  String? lastMethod;
   Map<String, dynamic>? lastQuery;
+  Object? lastData;
 
   @override
   void close({bool force = false}) {}
@@ -159,7 +174,9 @@ class _CapturingAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     lastPath = options.path;
+    lastMethod = options.method;
     lastQuery = options.queryParameters;
+    lastData = options.data;
     return ResponseBody.fromBytes(
       Uint8List.fromList(utf8.encode(jsonEncode(response))),
       200,

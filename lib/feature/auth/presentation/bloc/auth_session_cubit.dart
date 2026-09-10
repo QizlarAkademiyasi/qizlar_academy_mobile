@@ -12,6 +12,7 @@ import 'package:qizlar_academy_mobile/feature/auth/domain/repository/auth_reposi
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_state.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/exception/profile_registration_required_exception.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
+import 'package:qizlar_academy_mobile/core/push/push_subscription_sync_service.dart';
 import 'package:qizlar_academy_mobile/feature/referral/domain/service/referral_use_service.dart';
 
 class AuthSessionCubit extends Cubit<AuthSessionState> {
@@ -32,10 +33,12 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     emit(state.fromModel(model));
     if (state.isRegistered) {
       unawaited(_applyPendingReferral());
+      unawaited(_syncPushSubscription());
     }
   }
 
   Future<void> continueAsGuest() async {
+    await _unbindPushSubscription();
     final model = await _repository.setAnonymousSession();
     emit(state.fromModel(model));
   }
@@ -62,6 +65,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     );
     emit(state.fromModel(model));
     unawaited(_applyPendingReferral());
+    unawaited(_syncPushSubscription());
   }
 
   Future<void> signInWithGoogle({
@@ -76,6 +80,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     );
     emit(state.fromModel(model));
     unawaited(_applyPendingReferral());
+    unawaited(_syncPushSubscription());
   }
 
   Future<void> setRegisteredSession({
@@ -90,6 +95,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     );
     emit(state.fromModel(model));
     unawaited(_applyPendingReferral());
+    unawaited(_syncPushSubscription());
   }
 
   Future<void> _applyPendingReferral() async {
@@ -105,7 +111,34 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
     }
   }
 
+  Future<void> _syncPushSubscription() async {
+    if (!getIt.isRegistered<PushSubscriptionSyncService>()) return;
+    try {
+      await getIt<PushSubscriptionSyncService>().syncRegisteredDevice();
+    } catch (error, stackTrace) {
+      AppLogger.w(
+        'Push subscription sync after auth failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> _unbindPushSubscription() async {
+    if (!getIt.isRegistered<PushSubscriptionSyncService>()) return;
+    try {
+      await getIt<PushSubscriptionSyncService>().unbindDevice();
+    } catch (error, stackTrace) {
+      AppLogger.w(
+        'Push unsubscribe before leaving session failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
   Future<void> clearSession() async {
+    await _unbindPushSubscription();
     await _repository.clearSession();
     if (getIt.isRegistered<PersonalInfoGateChecker>()) {
       await getIt<PersonalInfoGateChecker>().reset();

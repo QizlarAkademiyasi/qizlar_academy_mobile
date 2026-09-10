@@ -63,4 +63,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
     _ensureRegistered();
     return _datasource.toggleTopic(topicId: topicId);
   }
+
+  @override
+  Future<void> subscribePushToken(String token) {
+    _ensureRegistered();
+    return _datasource.subscribePushToken(token);
+  }
+
+  @override
+  Future<void> unsubscribePushToken(String token) {
+    _ensureRegistered();
+    return _datasource.unsubscribePushToken(token);
+  }
 }

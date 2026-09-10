@@ -3,6 +3,7 @@ import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/di
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/neighborhood_model.dart';
 import 'package:qizlar_academy_mobile/feature/personal_info_gate/domain/model/region_model.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/core/push/push_subscription_sync_service.dart';
 import 'package:qizlar_academy_mobile/feature/profile/data/datasource/profile_api_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
@@ -14,11 +15,14 @@ class ProfileRepositoryImpl implements ProfileRepository {
   ProfileRepositoryImpl({
     required ProfileApiDatasource apiDatasource,
     required AuthSessionCubit authSessionCubit,
+    required PushSubscriptionSyncService pushSubscriptionSync,
   }) : _apiDatasource = apiDatasource,
-       _authSessionCubit = authSessionCubit;
+       _authSessionCubit = authSessionCubit,
+       _pushSubscriptionSync = pushSubscriptionSync;
 
   final ProfileApiDatasource _apiDatasource;
   final AuthSessionCubit _authSessionCubit;
+  final PushSubscriptionSyncService _pushSubscriptionSync;
 
   void _ensureRegistered() {
     if (_authSessionCubit.state.isAnonymous) {
@@ -38,9 +42,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<ProfileOverviewModel> updateNotifications({required bool enabled}) {
+  Future<ProfileOverviewModel> updateNotifications({
+    required bool enabled,
+  }) async {
     _ensureRegistered();
-    return _apiDatasource.updateNotifications(enabled: enabled);
+    await _pushSubscriptionSync.setUserOptedOut(!enabled);
+    final overview = await _apiDatasource.getProfileOverview();
+    return overview.copyWith(notificationsEnabled: enabled);
   }
 
   @override

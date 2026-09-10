@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/config/flavor/app_remote_config.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
@@ -136,6 +138,7 @@ import 'package:qizlar_academy_mobile/feature/store/presentation/screens/history
 import 'package:qizlar_academy_mobile/feature/store/presentation/screens/history_screen/bloc/order_detail/store_order_detail_bloc.dart';
 import 'package:qizlar_academy_mobile/core/analytics/meta_analytics_service.dart';
 import 'package:qizlar_academy_mobile/core/push/push_messaging_service.dart';
+import 'package:qizlar_academy_mobile/core/push/push_subscription_sync_service.dart';
 import 'package:qizlar_academy_mobile/firebase_options.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 
@@ -331,7 +334,7 @@ Future<void> setupLocator() async {
   );
 
   getIt.registerLazySingleton<ProfileApiDatasource>(
-    () => ProfileApiDatasource(getIt<Dio>(), prefs),
+    () => ProfileApiDatasource(getIt<Dio>()),
   );
   getIt.registerLazySingleton<ProfileDatasource>(
     () => getIt<ProfileApiDatasource>(),
@@ -343,6 +346,7 @@ Future<void> setupLocator() async {
     () => ProfileRepositoryImpl(
       apiDatasource: getIt<ProfileApiDatasource>(),
       authSessionCubit: getIt<AuthSessionCubit>(),
+      pushSubscriptionSync: getIt<PushSubscriptionSyncService>(),
     ),
   );
   getIt.registerFactory<ProfileBloc>(
@@ -450,6 +454,23 @@ Future<void> setupLocator() async {
           getIt<PushMessagingService>().ensureTokenForSubscribe(),
     ),
   );
+  getIt.registerSingleton<PushSubscriptionSyncService>(
+    PushSubscriptionSyncService(
+      notificationRepository: getIt<NotificationRepository>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+      prefs: prefs,
+      ensurePushToken: () =>
+          getIt<PushMessagingService>().ensureTokenForSubscribe(),
+    ),
+  );
+  getIt<PushMessagingService>().onTokenRefreshed = (oldToken, nextToken) {
+    unawaited(
+      getIt<PushSubscriptionSyncService>().onFcmTokenChanged(
+        oldToken,
+        nextToken,
+      ),
+    );
+  };
 
   getIt.registerLazySingleton<AnnouncementDatasource>(
     () => AnnouncementApiDatasource(getIt<Dio>()),
