@@ -10,6 +10,7 @@ class StoryModel extends Equatable {
     required this.thumbnailUrl,
     this.isViewed = false,
     this.type = StoryItemType.story,
+    this.canTrackView = true,
   });
 
   final String id;
@@ -18,11 +19,18 @@ class StoryModel extends Equatable {
   final String thumbnailUrl;
   final bool isViewed;
   final StoryItemType type;
+  final bool canTrackView;
 
   bool get isBirthday => type == StoryItemType.birthday;
-  bool get canTrackView =>
-      type == StoryItemType.story || type == StoryItemType.birthday;
 
   @override
-  List<Object?> get props => [id, name, imageUrl, thumbnailUrl, isViewed, type];
+  List<Object?> get props => [
+    id,
+    name,
+    imageUrl,
+    thumbnailUrl,
+    isViewed,
+    type,
+    canTrackView,
+  ];
 }

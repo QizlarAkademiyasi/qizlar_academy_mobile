@@ -73,10 +73,10 @@ const List<MainExtraTabMenuItem> kMainExtraTabMenuItems = [
 /// BottomNav shellidan tashqarida alohida screen sifatida ochiladigan bo'limlar.
 const List<MainExtraRouteMenuItem> kMainExtraRouteMenuItems = [
   MainExtraRouteMenuItem(
-    icon: LucideIcons.graduationCap,
+    icon: LucideIcons.store,
     iconBackground: Color(0xFF3357C9),
-    label: 'Kurslar',
-    screenRoute: Routes.courses,
+    label: "Do'kon",
+    screenRoute: Routes.store,
   ),
   MainExtraRouteMenuItem(
     icon: LucideIcons.clipboardCheck,

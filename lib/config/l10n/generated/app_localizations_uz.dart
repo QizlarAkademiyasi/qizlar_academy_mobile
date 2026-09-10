@@ -1587,4 +1587,15 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get aiChatSendError =>
       'Xabar yuborilmadi. Internetni tekshirib, qayta urinib ko‘ring.';
+
+  @override
+  String get announcementCourseAction => 'Kursga o‘tish';
+
+  @override
+  String announcementNamedCourseAction(String courseName) {
+    return '$courseName kursiga o‘tish';
+  }
+
+  @override
+  String get announcementSocialAction => 'Kanalga o‘tish';
 }

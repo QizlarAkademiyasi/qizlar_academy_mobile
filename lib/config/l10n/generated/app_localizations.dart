@@ -2883,6 +2883,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Message was not sent. Check your connection and try again.'**
   String get aiChatSendError;
+
+  /// No description provided for @announcementCourseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open course'**
+  String get announcementCourseAction;
+
+  /// No description provided for @announcementNamedCourseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {courseName}'**
+  String announcementNamedCourseAction(String courseName);
+
+  /// No description provided for @announcementSocialAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open channel'**
+  String get announcementSocialAction;
 }
 
 class _AppLocalizationsDelegate

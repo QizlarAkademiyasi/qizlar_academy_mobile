@@ -8,17 +8,33 @@ import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/com
 import 'package:qizlar_academy_mobile/feature/exception_screens/presentation/components/tgs_failure_content.dart';
 
 class CoursesScreen extends StatelessWidget {
-  const CoursesScreen({super.key});
+  const CoursesScreen({
+    super.key,
+    this.bottomContentInset = 0,
+    this.showBackButton = true,
+  });
+
+  final double bottomContentInset;
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context) {
     // [CoursesCatalogBloc] [app_routes] dagi katalog route orqali beriladi.
-    return const _CoursesView();
+    return _CoursesView(
+      bottomContentInset: bottomContentInset,
+      showBackButton: showBackButton,
+    );
   }
 }
 
 class _CoursesView extends StatefulWidget {
-  const _CoursesView();
+  const _CoursesView({
+    required this.bottomContentInset,
+    required this.showBackButton,
+  });
+
+  final double bottomContentInset;
+  final bool showBackButton;
 
   @override
   State<_CoursesView> createState() => _CoursesViewState();
@@ -64,11 +80,15 @@ class _CoursesViewState extends State<_CoursesView>
                 slivers: [
                   AppBlurredSliverAppBar(
                     automaticallyImplyLeading: false,
-                    leadingWidth: 60,
-                    leading: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: AppBackButton.ghost(onTap: () => context.pop()),
-                    ),
+                    leadingWidth: widget.showBackButton ? 60 : 0,
+                    leading: widget.showBackButton
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: AppBackButton.ghost(
+                              onTap: () => context.pop(),
+                            ),
+                          )
+                        : null,
                     title: Text(
                       context.l10n.coursesAllTitle,
                       style: context.textTheme.heading6.copyWith(
@@ -146,7 +166,12 @@ class _CoursesViewState extends State<_CoursesView>
 
     return [
       SliverPadding(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset + 48),
+        padding: EdgeInsets.fromLTRB(
+          20,
+          0,
+          20,
+          bottomInset + 48 + widget.bottomContentInset,
+        ),
         sliver: SliverList(
           delegate: SliverChildBuilderDelegate((context, index) {
             if (hasInProgress && index == 0) {

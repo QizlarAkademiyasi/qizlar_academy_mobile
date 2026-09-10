@@ -135,7 +135,7 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
 
   void _handleTabTap(int index) {
     // Gaimon.light();
-    if (isGuestMode && (index == 1 || index == kMainProfileTabIndex)) {
+    if (isGuestMode && index == kMainProfileTabIndex) {
       context.go(Routes.signIn);
       return;
     }

@@ -100,7 +100,10 @@ class PrimaryButton extends StatelessWidget {
       case AppPrimaryButtonShape.stadium:
         return StadiumBorder(side: side);
       case AppPrimaryButtonShape.roundedRectangle:
-        return RoundedRectangleBorder(borderRadius: borderRadius ?? AppRadius.radius3xl, side: side);
+        return RoundedRectangleBorder(
+          borderRadius: borderRadius ?? AppRadius.radius3xl,
+          side: side,
+        );
     }
   }
 
@@ -132,16 +135,33 @@ class PrimaryButton extends StatelessWidget {
         resolvedBorder = borderColor ?? Colors.transparent;
     }
 
-    final labelStyle = textStyle ?? context.textTheme.bodyLargeBold.copyWith(color: resolvedForeground);
+    final labelStyle =
+        textStyle ??
+        context.textTheme.bodyLargeBold.copyWith(color: resolvedForeground);
 
     final child = isLoading
-        ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: resolvedForeground))
+        ? SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: resolvedForeground,
+            ),
+          )
         : Row(
             mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (leading != null) ...[leading!, const SizedBox(width: 10)],
-              Text(label, style: labelStyle),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: labelStyle,
+                ),
+              ),
             ],
           );
 
@@ -153,13 +173,20 @@ class PrimaryButton extends StatelessWidget {
         : null;
 
     if (_type == _PrimaryButtonType.text) {
-      final OutlinedBorder textShape = shape == AppPrimaryButtonShape.roundedRectangle ? RoundedRectangleBorder(borderRadius: borderRadius ?? AppRadius.radiusLg) : const StadiumBorder();
+      final OutlinedBorder textShape =
+          shape == AppPrimaryButtonShape.roundedRectangle
+          ? RoundedRectangleBorder(
+              borderRadius: borderRadius ?? AppRadius.radiusLg,
+            )
+          : const StadiumBorder();
       return _wrap(
         TextButton(
           onPressed: handler,
           style: TextButton.styleFrom(
             minimumSize: Size(expand ? double.infinity : 0, height),
-            padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            padding:
+                padding ??
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             foregroundColor: resolvedForeground,
             overlayColor: resolvedForeground.withValues(alpha: 0.08),
             shape: textShape,
@@ -184,7 +211,9 @@ class PrimaryButton extends StatelessWidget {
           onPressed: handler,
           style: OutlinedButton.styleFrom(
             minimumSize: Size(expand ? double.infinity : 0, height),
-            padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding:
+                padding ??
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             foregroundColor: resolvedForeground,
             disabledForegroundColor: resolvedForeground.withValues(alpha: 0.38),
             backgroundColor: resolvedBackground,
@@ -202,7 +231,9 @@ class PrimaryButton extends StatelessWidget {
           elevation: 0,
           shadowColor: Colors.transparent,
           minimumSize: Size(expand ? double.infinity : 0, height),
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding:
+              padding ??
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           backgroundColor: resolvedBackground,
           disabledBackgroundColor: resolvedBackground.withValues(alpha: 0.55),
           foregroundColor: resolvedForeground,

@@ -236,15 +236,20 @@ class _StoryScreenState extends State<StoryScreen>
                               },
                               gestureItemBuilder:
                                   (context, pageIndex, storyIndex) {
+                                    final category =
+                                        widget.categories[pageIndex];
+                                    if (category.isBirthday) {
+                                      return buildBirthdayStoryInteractionOverlay(
+                                        category,
+                                      );
+                                    }
                                     return const SizedBox.shrink();
                                   },
                               pageLength: widget.categories.length,
                               storyLength: (int pageIndex) {
                                 return 1;
                               },
-                              onPageLimitReached: () {
-                                safePop();
-                              },
+                              onPageLimitReached: onStoryLimitReached,
                               indicatorAnimationController:
                                   indicatorAnimationController,
                               onPageChanged: onStoryPageChanged,

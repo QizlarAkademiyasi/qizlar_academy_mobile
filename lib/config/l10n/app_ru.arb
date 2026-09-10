@@ -731,5 +731,13 @@
   "aiChatTyping": "AI печатает…",
   "aiChatRetrySend": "Отправить снова",
   "aiChatLoadError": "Не удалось загрузить чат. Попробуйте снова.",
-  "aiChatSendError": "Сообщение не отправлено. Проверьте подключение и попробуйте снова."
+  "aiChatSendError": "Сообщение не отправлено. Проверьте подключение и попробуйте снова.",
+  "announcementCourseAction": "Перейти к курсу",
+  "announcementNamedCourseAction": "Открыть курс «{courseName}»",
+  "@announcementNamedCourseAction": {
+    "placeholders": {
+      "courseName": {"type": "String"}
+    }
+  },
+  "announcementSocialAction": "Перейти в канал"
 }

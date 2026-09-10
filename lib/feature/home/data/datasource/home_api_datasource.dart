@@ -18,6 +18,7 @@ class HomeApiDatasource implements HomeDatasource {
     imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
     thumbnailUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
     type: StoryItemType.birthday,
+    canTrackView: false,
   );
 
   final Dio _dio;

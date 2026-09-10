@@ -59,10 +59,24 @@ void main() {
     await tester.pump();
     expect(find.text('minimized:false'), findsOneWidget);
   });
+
+  testWidgets('guest can select the courses tab', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: _MainScreenMixinHarness(isGuestMode: true)),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('courses-tab')));
+    await tester.pump();
+
+    expect(find.text('index:1 expanded:false'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 class _MainScreenMixinHarness extends StatefulWidget {
-  const _MainScreenMixinHarness();
+  const _MainScreenMixinHarness({this.isGuestMode = false});
+
+  final bool isGuestMode;
 
   @override
   State<_MainScreenMixinHarness> createState() =>
@@ -72,7 +86,7 @@ class _MainScreenMixinHarness extends StatefulWidget {
 class _MainScreenMixinHarnessState extends State<_MainScreenMixinHarness>
     with MainScreenMixin<_MainScreenMixinHarness> {
   @override
-  bool get isGuestMode => false;
+  bool get isGuestMode => widget.isGuestMode;
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +110,11 @@ class _MainScreenMixinHarnessState extends State<_MainScreenMixinHarness>
             key: const ValueKey('home-tab'),
             onPressed: () => onTabTap(0),
             child: const Text('Home'),
+          ),
+          TextButton(
+            key: const ValueKey('courses-tab'),
+            onPressed: () => onTabTap(1),
+            child: const Text('Courses'),
           ),
           Expanded(
             child: NotificationListener<ScrollNotification>(

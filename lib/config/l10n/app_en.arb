@@ -776,5 +776,13 @@
   "aiChatTyping": "AI is typing…",
   "aiChatRetrySend": "Send again",
   "aiChatLoadError": "Could not load the chat. Please try again.",
-  "aiChatSendError": "Message was not sent. Check your connection and try again."
+  "aiChatSendError": "Message was not sent. Check your connection and try again.",
+  "announcementCourseAction": "Open course",
+  "announcementNamedCourseAction": "Open {courseName}",
+  "@announcementNamedCourseAction": {
+    "placeholders": {
+      "courseName": {"type": "String"}
+    }
+  },
+  "announcementSocialAction": "Open channel"
 }

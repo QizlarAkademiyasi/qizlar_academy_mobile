@@ -113,6 +113,10 @@ sealed class UserApis {
 
   static const String banners = '/api/v1/banner';
 
+  static const String announcementNext = '/api/v1/announcement/next';
+  static String announcementClick(String viewId) =>
+      '/api/v1/announcement/views/${Uri.encodeComponent(viewId)}/click';
+
   static const String coursesClient = '/api/v1/course/client';
   static const String coursesMy = '/api/v1/course/my';
   static const String coursesLeaderboard = '/api/v1/course/leaderboard';

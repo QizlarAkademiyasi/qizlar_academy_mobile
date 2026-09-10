@@ -1596,4 +1596,15 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get aiChatSendError =>
       'Сообщение не отправлено. Проверьте подключение и попробуйте снова.';
+
+  @override
+  String get announcementCourseAction => 'Перейти к курсу';
+
+  @override
+  String announcementNamedCourseAction(String courseName) {
+    return 'Открыть курс «$courseName»';
+  }
+
+  @override
+  String get announcementSocialAction => 'Перейти в канал';
 }

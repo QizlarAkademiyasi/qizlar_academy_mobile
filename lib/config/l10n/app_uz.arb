@@ -731,5 +731,13 @@
   "aiChatTyping": "AI javob yozmoqda…",
   "aiChatRetrySend": "Qayta yuborish",
   "aiChatLoadError": "Chatni yuklab bo‘lmadi. Iltimos, qayta urinib ko‘ring.",
-  "aiChatSendError": "Xabar yuborilmadi. Internetni tekshirib, qayta urinib ko‘ring."
+  "aiChatSendError": "Xabar yuborilmadi. Internetni tekshirib, qayta urinib ko‘ring.",
+  "announcementCourseAction": "Kursga o‘tish",
+  "announcementNamedCourseAction": "{courseName} kursiga o‘tish",
+  "@announcementNamedCourseAction": {
+    "placeholders": {
+      "courseName": {"type": "String"}
+    }
+  },
+  "announcementSocialAction": "Kanalga o‘tish"
 }

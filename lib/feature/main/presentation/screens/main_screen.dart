@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/app_update/app_update_prompt_coordinator.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/announcement/presentation/services/announcement_session_coordinator.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/bloc/courses_catalog_bloc.dart';
+import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_screen.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_action_grid.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
@@ -13,7 +17,6 @@ import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/liquid_bottom_nav_second.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/profile_screen.dart';
-import 'package:qizlar_academy_mobile/feature/store/presentation/screens/store_screen.dart';
 
 import '../../../home/presentation/screens/home_screen_main.dart'
     show HomeScreen;
@@ -29,20 +32,27 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen>
     with MainScreenMixin<MainScreen>, WidgetsBindingObserver {
+  late final AnnouncementSessionCoordinator _announcementCoordinator;
+
   @override
   bool get isGuestMode => widget.isGuestMode;
 
   @override
   void initState() {
     super.initState();
+    _announcementCoordinator = getIt<AnnouncementSessionCoordinator>();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       unawaited(AppUpdatePromptCoordinator.checkAndShowIfNeeded(context));
+      if (!widget.isGuestMode) {
+        _announcementCoordinator.start(context);
+      }
     });
   }
 
   @override
   void dispose() {
+    _announcementCoordinator.stop();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -54,7 +64,9 @@ class _MainScreenState extends State<MainScreen>
         if (!mounted) return;
         unawaited(AppUpdatePromptCoordinator.checkAndShowIfNeeded(context));
       });
+      return;
     }
+    _announcementCoordinator.stop();
   }
 
   @override
@@ -67,7 +79,17 @@ class _MainScreenState extends State<MainScreen>
     final pages = widget.isGuestMode
         ? <Widget>[
             _KeepAlivePage(child: HomeScreen(onSwitchMainTab: onTabTap)),
-            const _KeepAlivePage(child: _GuestSignInRedirectView()),
+            _KeepAlivePage(
+              child: BlocProvider(
+                create: (_) =>
+                    getIt<CoursesCatalogBloc>()
+                      ..add(const CoursesCatalogStarted()),
+                child: const CoursesScreen(
+                  bottomContentInset: 72,
+                  showBackButton: false,
+                ),
+              ),
+            ),
             const _KeepAlivePage(child: LeaderboardScreen()),
             const _KeepAlivePage(child: _GuestSignInRedirectView()),
             // _KeepAlivePage(
@@ -76,8 +98,16 @@ class _MainScreenState extends State<MainScreen>
           ]
         : <Widget>[
             _KeepAlivePage(child: HomeScreen(onSwitchMainTab: onTabTap)),
-            const _KeepAlivePage(
-              child: StoreScreen(bottomContentInset: 72, showBackButton: false),
+            _KeepAlivePage(
+              child: BlocProvider(
+                create: (_) =>
+                    getIt<CoursesCatalogBloc>()
+                      ..add(const CoursesCatalogStarted()),
+                child: const CoursesScreen(
+                  bottomContentInset: 72,
+                  showBackButton: false,
+                ),
+              ),
             ),
             const _KeepAlivePage(child: LeaderboardScreen()),
             const _KeepAlivePage(child: ProfileScreen()),

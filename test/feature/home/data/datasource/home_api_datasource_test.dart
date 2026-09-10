@@ -73,6 +73,7 @@ void main() {
     expect(stories, hasLength(1));
     expect(stories.single.id, 'dev-birthday-mock');
     expect(stories.single.type, StoryItemType.birthday);
+    expect(stories.single.canTrackView, isFalse);
   });
 
   test('does not add birthday mock in prod flavor', () async {

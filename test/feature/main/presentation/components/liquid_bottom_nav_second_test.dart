@@ -14,10 +14,12 @@ void main() {
   test('tab selections and route screens use separate menu lists', () {
     expect(kMainExtraTabMenuItems.single.label, 'Profil');
     expect(kMainExtraTabMenuItems.single.tabIndex, kMainProfileTabIndex);
-    expect(kMainExtraRouteMenuItems.first.label, 'Kurslar');
-    expect(kMainExtraRouteMenuItems.first.screenRoute, Routes.courses);
+    expect(kMainExtraRouteMenuItems.first.label, "Do'kon");
+    expect(kMainExtraRouteMenuItems.first.screenRoute, Routes.store);
     expect(
-      kMainExtraRouteMenuItems.any((item) => item.screenRoute == Routes.store),
+      kMainExtraRouteMenuItems.any(
+        (item) => item.screenRoute == Routes.courses,
+      ),
       isFalse,
     );
     expect(
@@ -52,6 +54,7 @@ void main() {
             final fourthItem = navItems[kMainProfileTabIndex];
             return Column(
               children: [
+                Text('second:${navItems[1].label}'),
                 Text(fourthItem.label),
                 if (fourthItem.labelTrailingIcon != null)
                   Icon(fourthItem.labelTrailingIcon),
@@ -63,6 +66,7 @@ void main() {
     );
 
     expect(find.text('More'), findsOneWidget);
+    expect(find.text('second:Courses'), findsOneWidget);
     expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsNothing);
     expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsNothing);
 
@@ -81,7 +85,7 @@ void main() {
       () => selectedExtraMenuItem = kMainExtraRouteMenuItems.first,
     );
     await tester.pump();
-    expect(find.text('Kurslar'), findsOneWidget);
+    expect(find.text("Do'kon"), findsOneWidget);
     expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
   });
 

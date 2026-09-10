@@ -2,19 +2,76 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/screens/story/components/birthday_avatar_glow.dart';
 
-class BirthdayStoryContent extends StatelessWidget {
+class BirthdayStoryController extends ChangeNotifier {
+  void celebrate() => notifyListeners();
+}
+
+class BirthdayStoryContent extends StatefulWidget {
   const BirthdayStoryContent({
     super.key,
     required this.imageUrl,
     required this.title,
     required this.message,
     this.name = '',
+    this.controller,
+    this.congratulateButtonLink,
   });
 
   final String imageUrl;
   final String title;
   final String message;
   final String name;
+  final BirthdayStoryController? controller;
+  final LayerLink? congratulateButtonLink;
+
+  @override
+  State<BirthdayStoryContent> createState() => _BirthdayStoryContentState();
+}
+
+class _BirthdayStoryContentState extends State<BirthdayStoryContent>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _confettiController;
+  bool _showConfetti = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _confettiController = AnimationController(vsync: this)
+      ..addStatusListener(_onConfettiStatusChanged);
+    widget.controller?.addListener(_playConfetti);
+  }
+
+  @override
+  void didUpdateWidget(covariant BirthdayStoryContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller == widget.controller) return;
+    oldWidget.controller?.removeListener(_playConfetti);
+    widget.controller?.addListener(_playConfetti);
+  }
+
+  @override
+  void dispose() {
+    widget.controller?.removeListener(_playConfetti);
+    _confettiController
+      ..removeStatusListener(_onConfettiStatusChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onConfettiStatusChanged(AnimationStatus status) {
+    if (status == AnimationStatus.completed && mounted) {
+      setState(() => _showConfetti = false);
+    }
+  }
+
+  void _playConfetti() {
+    if (!_showConfetti) {
+      setState(() => _showConfetti = true);
+    }
+    if (_confettiController.duration != null) {
+      _confettiController.forward(from: 0);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +115,7 @@ class BirthdayStoryContent extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          title,
+                          widget.title,
                           textAlign: TextAlign.center,
                           style: context.textTheme.bodySmallRegular.copyWith(
                             color: appColors.text,
@@ -83,10 +140,10 @@ class BirthdayStoryContent extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 28),
-                        BirthdayAvatarGlow(imageUrl: imageUrl),
+                        BirthdayAvatarGlow(imageUrl: widget.imageUrl),
                         const SizedBox(height: 28),
                         Text(
-                          name.trim().isEmpty ? 'Rayhon' : name,
+                          widget.name.trim().isEmpty ? 'Rayhon' : widget.name,
                           textAlign: TextAlign.center,
                           style: context.textTheme.heading3.copyWith(
                             color: const Color(0xFFEC4899),
@@ -97,7 +154,7 @@ class BirthdayStoryContent extends StatelessWidget {
                         ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 310),
                           child: Text(
-                            message,
+                            widget.message,
                             textAlign: TextAlign.center,
                             style: context.textTheme.bodyMediumRegular.copyWith(
                               color: const Color(0xFF6B7280),
@@ -106,46 +163,80 @@ class BirthdayStoryContent extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        Container(
-                          width: 220,
-                          height: 56,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFFF472B6),
-                                Color(0xFFEC4899),
-                                Color(0xFFDB2777),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(
-                                  0xFFEC4899,
-                                ).withValues(alpha: 0.4),
-                                blurRadius: 10,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            'Tabriklayman! 🎂',
-                            style: context.textTheme.bodyXLargeBold.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                        _buildCongratulateButton(context),
                       ],
                     ),
                   ),
                 ),
               ),
+              if (_showConfetti)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: Lottie.asset(
+                      key: const ValueKey('birthday-confetti-animation'),
+                      UiKitAssets.lottie.confetti,
+                      controller: _confettiController,
+                      fit: BoxFit.cover,
+                      repeat: false,
+                      onLoaded: (composition) {
+                        _confettiController.duration = composition.duration;
+                        if (_showConfetti && !_confettiController.isAnimating) {
+                          _confettiController.forward(from: 0);
+                        }
+                      },
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildCongratulateButton(BuildContext context) {
+    final button = DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF472B6), Color(0xFFEC4899), Color(0xFFDB2777)],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFEC4899).withValues(alpha: 0.4),
+            blurRadius: 10,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          key: ValueKey(
+            widget.controller == null
+                ? 'birthday-congratulate-button'
+                : 'birthday-congratulate-button-visual',
+          ),
+          onTap: _playConfetti,
+          borderRadius: BorderRadius.circular(28),
+          child: SizedBox(
+            width: 220,
+            height: 56,
+            child: Center(
+              child: Text(
+                'Tabriklayman! 🎂',
+                style: context.textTheme.bodyXLargeBold.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    final link = widget.congratulateButtonLink;
+    if (link == null) return button;
+    return CompositedTransformTarget(link: link, child: button);
   }
 }
 

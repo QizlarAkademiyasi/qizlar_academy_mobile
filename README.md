@@ -72,18 +72,47 @@ Batafsil: [docs/dependency-visibility.md](docs/dependency-visibility.md).
 
 ### Shorebird
 
-Flutter argumentlari `--` dan keyin uzatiladi:
+Loyiha Shorebird'dagi **Qizlar Akademiyasi** organization'iga ulangan.
+Android'da faqat `prod` flavor Shorebird'ga chiqariladi; `dev` uchun app ID
+yo'q. iOS'da alohida Xcode flavor mavjud emas, shu sababli `--flavor`
+berilmaydi va Runner release prod hisoblanadi.
+
+Yangi store release:
 
 ```bash
-shorebird release android --flavor prod -- --dart-define-from-file=build.json
+shorebird release android \
+  --flavor prod \
+  --dart-define-from-file=build.json \
+  --obfuscate \
+  --split-debug-info=./debug-symbols/shorebird/android
 ```
 
 ```bash
-shorebird patch android --flavor prod -- --dart-define-from-file=build.json
+shorebird release ios \
+  --export-method app-store \
+  --dart-define-from-file=build.json \
+  --obfuscate \
+  --split-debug-info=./debug-symbols/shorebird/ios
 ```
 
-Patch va release **bir xil** `build.json` bilan qilinishi shart — aks holda
-patch boshqa serverga qarab ketadi.
+Mavjud release'ga Dart patch:
+
+```bash
+shorebird patch android \
+  --flavor prod \
+  --dart-define-from-file=build.json
+```
+
+```bash
+shorebird patch ios \
+  --export-method app-store \
+  --dart-define-from-file=build.json
+```
+
+Patch va release **bir xil** `build.json` bilan qilinishi shart. Patch uchun
+`--obfuscate` qayta berilmaydi — Shorebird release sozlamasini avtomatik
+aniqlaydi. `debug-symbols/` artefaktlarini store'ga yuklamang; crash
+symbolication uchun xavfsiz saqlang.
 
 ## Getting Started
 

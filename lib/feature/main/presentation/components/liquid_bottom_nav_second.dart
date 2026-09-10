@@ -1082,9 +1082,9 @@ List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
           MainBottomNavKitIcons.home(color, size, selected),
     ),
     SecondLiquidBottomNavItem(
-      label: l10n.storeTitle,
+      label: l10n.mainTabCourses,
       iconBuilder: (_, color, size, selected) =>
-          Icon(LucideIcons.store, color: color, size: size),
+          MainBottomNavKitIcons.courses(color, size, selected),
     ),
     SecondLiquidBottomNavItem(
       label: l10n.mainTabLeaderboard,

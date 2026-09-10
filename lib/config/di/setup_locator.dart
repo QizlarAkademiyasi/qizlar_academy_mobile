@@ -10,6 +10,11 @@ import 'package:qizlar_academy_mobile/core/network/insecure_ssl_override.dart';
 import 'package:qizlar_academy_mobile/core/network/network_status_service.dart';
 import 'package:qizlar_academy_mobile/core/watchdog/watchdog_integrations.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/datasource/auth_local_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/announcement/data/datasource/announcement_api_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/announcement/data/datasource/announcement_datasource.dart';
+import 'package:qizlar_academy_mobile/feature/announcement/data/repository/announcement_repository_impl.dart';
+import 'package:qizlar_academy_mobile/feature/announcement/domain/repository/announcement_repository.dart';
+import 'package:qizlar_academy_mobile/feature/announcement/presentation/services/announcement_session_coordinator.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/datasource/auth_remote_datasource.dart';
 import 'package:qizlar_academy_mobile/feature/auth/data/repository/auth_repository_impl.dart';
 import 'package:qizlar_academy_mobile/feature/auth/domain/repository/auth_repository.dart';
@@ -444,6 +449,19 @@ Future<void> setupLocator() async {
       ensurePushToken: () =>
           getIt<PushMessagingService>().ensureTokenForSubscribe(),
     ),
+  );
+
+  getIt.registerLazySingleton<AnnouncementDatasource>(
+    () => AnnouncementApiDatasource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<AnnouncementRepository>(
+    () => AnnouncementRepositoryImpl(
+      datasource: getIt<AnnouncementDatasource>(),
+      authSessionCubit: getIt<AuthSessionCubit>(),
+    ),
+  );
+  getIt.registerFactory<AnnouncementSessionCoordinator>(
+    () => AnnouncementSessionCoordinator(getIt<AnnouncementRepository>()),
   );
 
   getIt.registerLazySingleton<StoreApiDatasource>(

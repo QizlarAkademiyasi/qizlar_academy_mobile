@@ -1573,4 +1573,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aiChatSendError =>
       'Message was not sent. Check your connection and try again.';
+
+  @override
+  String get announcementCourseAction => 'Open course';
+
+  @override
+  String announcementNamedCourseAction(String courseName) {
+    return 'Open $courseName';
+  }
+
+  @override
+  String get announcementSocialAction => 'Open channel';
 }
