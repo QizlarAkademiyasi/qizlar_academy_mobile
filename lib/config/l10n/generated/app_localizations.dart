@@ -2901,6 +2901,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open channel'**
   String get announcementSocialAction;
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, {name}'**
+  String homeGreeting(String name);
+
+  /// No description provided for @homeCoinsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Coins'**
+  String get homeCoinsLabel;
+
+  /// No description provided for @homeRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get homeRatingLabel;
+
+  /// No description provided for @homeRankLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank'**
+  String get homeRankLabel;
+
+  /// No description provided for @portfolioMineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'My portfolio'**
+  String get portfolioMineLabel;
+
+  /// No description provided for @portfolioStoriesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Stories could not be loaded'**
+  String get portfolioStoriesError;
 }
 
 class _AppLocalizationsDelegate

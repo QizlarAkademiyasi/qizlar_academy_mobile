@@ -10,7 +10,8 @@ class AppSegmentedTabBar extends StatefulWidget {
     required this.tabLabels,
     this.onTap,
     this.animate = true,
-  }) : assert(tabLabels.length > 0, 'tabLabels must not be empty');
+  }) : assert(tabLabels.length > 0, 'tabLabels must not be empty'),
+       assert(controller.length == tabLabels.length);
 
   final TabController controller;
   final List<String> tabLabels;
@@ -94,18 +95,39 @@ class _AppSegmentedTabBarState extends State<AppSegmentedTabBar> {
             final maxX = constraints.maxWidth - tabWidth;
 
             return Stack(
+              alignment: Alignment.topLeft,
               children: [
                 AnimatedBuilder(
                   animation: widget.controller.animation!,
                   builder: (context, child) {
-                    final position = widget.animate
+                    final dragging =
+                        !widget.controller.indexIsChanging &&
+                        widget.controller.offset.abs() > 0.0001;
+                    final position = dragging
                         ? widget.controller.animation!.value
                         : _activeIndex.toDouble();
                     final progress = tabCount <= 1
                         ? 0.0
                         : (position / (tabCount - 1)).clamp(0.0, 1.0);
-                    return Transform.translate(
-                      offset: Offset(maxX * progress, 0),
+                    final rtl = Directionality.of(context) == TextDirection.rtl;
+                    final targetX = maxX * (rtl ? 1 - progress : progress);
+                    return SingleMotionBuilder(
+                      value: targetX,
+                      // Drag follows the finger directly; taps retain spring velocity
+                      // when the destination changes before the motion settles.
+                      active:
+                          widget.animate &&
+                          !dragging &&
+                          !MediaQuery.disableAnimationsOf(context),
+                      motion: const CupertinoMotion.smooth(
+                        duration: Duration(milliseconds: 360),
+                        extraBounce: 0,
+                      ),
+                      builder: (context, value, child) => Transform.translate(
+                        key: const ValueKey('segmented-tab-indicator'),
+                        offset: Offset(value, 0),
+                        child: child,
+                      ),
                       child: child,
                     );
                   },

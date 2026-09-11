@@ -5,99 +5,45 @@ import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_header_component.dart';
 
 void main() {
-  const collapsedHeaderHeight = kToolbarHeight + 8;
-
-  testWidgets('keeps tasks and notification actions visible and tappable', (
-    tester,
-  ) async {
-    var tasksTapCount = 0;
-    var notificationTapCount = 0;
-
-    await tester.pumpWidget(
-      AppThemeProvider(
-        builder: (context) => MaterialApp(
-          theme: AppOptions.lightThemeData(context),
-          home: Scaffold(
-            body: Align(
-              alignment: Alignment.topCenter,
-              child: SizedBox(
-                height: collapsedHeaderHeight,
-                child: HomeHeaderComponent(
-                  title: 'Abubakr',
-                  subtitle: 'Xush kelibsiz!',
-                  expandedProgress: 0,
-                  tasksTooltip: 'Vazifalar',
-                  notificationTooltip: 'Bildirishnoma',
-                  onTasksTap: () => tasksTapCount++,
-                  onNotificationTap: () => notificationTapCount++,
-                ),
+  for (final width in [320.0, 390.0]) {
+    testWidgets('header actions and greeting fit at $width', (tester) async {
+      tester.view.physicalSize = Size(width, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      var tasks = 0;
+      var notifications = 0;
+      await tester.pumpWidget(
+        AppThemeProvider(
+          builder: (context) => MaterialApp(
+            theme: AppOptions.lightThemeData(context),
+            home: Scaffold(
+              body: HomeHeaderComponent(
+                title: 'Salom, Rayhon',
+                tasksTooltip: 'Tasks',
+                notificationTooltip: 'Notifications',
+                onTasksTap: () => tasks++,
+                onNotificationTap: () => notifications++,
               ),
             ),
           ),
         ),
-      ),
-    );
-
-    final tasksButton = find.byKey(const ValueKey('home-tasks-button'));
-    final notificationButton = find.byKey(
-      const ValueKey('home-notification-button'),
-    );
-
-    expect(tasksButton, findsOneWidget);
-    expect(notificationButton, findsOneWidget);
-    final tasksRect = tester.getRect(tasksButton);
-    final notificationRect = tester.getRect(notificationButton);
-    expect(tasksRect.top, 8);
-    expect(collapsedHeaderHeight - tasksRect.bottom, 8);
-    expect(notificationRect.top, 8);
-    expect(collapsedHeaderHeight - notificationRect.bottom, 8);
-
-    await tester.tap(tasksButton);
-    await tester.pump(const Duration(milliseconds: 800));
-    expect(tasksTapCount, 1);
-
-    await tester.tap(notificationButton);
-    await tester.pump(const Duration(milliseconds: 800));
-
-    expect(notificationTapCount, 1);
-  });
-
-  testWidgets('keeps compact equal spacing around expanded actions', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      AppThemeProvider(
-        builder: (context) => MaterialApp(
-          theme: AppOptions.lightThemeData(context),
-          home: const Scaffold(
-            body: Align(
-              alignment: Alignment.topCenter,
-              child: HomeHeaderComponent(
-                title: 'Abubakr',
-                subtitle: 'Xush kelibsiz!',
-                tasksTooltip: 'Vazifalar',
-                notificationTooltip: 'Bildirishnoma',
-                onTasksTap: _noop,
-                onNotificationTap: _noop,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    final tasksRect = tester.getRect(
-      find.byKey(const ValueKey('home-tasks-button')),
-    );
-    final notificationRect = tester.getRect(
-      find.byKey(const ValueKey('home-notification-button')),
-    );
-
-    expect(tasksRect.top, 8);
-    expect(collapsedHeaderHeight - tasksRect.bottom, 8);
-    expect(notificationRect.top, 8);
-    expect(collapsedHeaderHeight - notificationRect.bottom, 8);
-  });
+      );
+      final left = find.byKey(const ValueKey('home-notification-button'));
+      final right = find.byKey(const ValueKey('home-tasks-button'));
+      expect(tester.getTopLeft(left).dx, 24);
+      expect(tester.getRect(right).right, width - 24);
+      expect(
+        tester.getTopLeft(find.text('Salom, Rayhon')).dy,
+        greaterThan(tester.getRect(left).bottom),
+      );
+      await tester.tap(left);
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.tap(right);
+      await tester.pump(const Duration(milliseconds: 800));
+      expect(tasks, 1);
+      expect(notifications, 1);
+      expect(tester.takeException(), isNull);
+    });
+  }
 }
-
-void _noop() {}

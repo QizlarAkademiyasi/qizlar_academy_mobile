@@ -740,4 +740,18 @@
     }
   },
   "announcementSocialAction": "Перейти в канал"
+,
+  "homeGreeting": "Привет, {name}",
+  "homeCoinsLabel": "Монеты",
+  "homeRatingLabel": "Рейтинг",
+  "homeRankLabel": "Место",
+  "portfolioMineLabel": "Моё портфолио",
+  "portfolioStoriesError": "Не удалось загрузить истории",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

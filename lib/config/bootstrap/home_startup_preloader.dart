@@ -5,7 +5,6 @@ import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
-import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_startup_snapshot.dart';
@@ -28,7 +27,6 @@ abstract final class HomeStartupPreloader {
       final greetingFuture = _loadGreetingName(userType, profile);
       final results = await Future.wait<Object>([
         home.getStats(),
-        home.getCategories(),
         home.getTeachers(),
         home.getCourses(),
         home.getBanners(),
@@ -39,11 +37,10 @@ abstract final class HomeStartupPreloader {
         HomeStartupSnapshot(
           userType: userType,
           homeStats: results[0] as HomeStatsModel,
-          categories: results[1] as List<StoryModel>,
-          teachers: results[2] as List<TeacherModel>,
-          courses: results[3] as List<CourseModel>,
-          banners: results[4] as List<BannerModel>,
-          userGreetingName: results[5] as String,
+          teachers: results[1] as List<TeacherModel>,
+          courses: results[2] as List<CourseModel>,
+          banners: results[3] as List<BannerModel>,
+          userGreetingName: results[4] as String,
         ),
       );
     } catch (e, st) {

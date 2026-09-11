@@ -2,7 +2,6 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
-import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_startup_snapshot.dart';
@@ -40,9 +39,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         state.copyWith(
           status: HomeStatus.success,
-          categoriesLoading: false,
           homeStats: cached.homeStats,
-          categories: cached.categories,
           teachers: cached.teachers,
           courses: cached.courses,
           banners: cached.banners,
@@ -53,59 +50,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return;
     }
 
-    emit(
-      state.copyWith(
-        status: HomeStatus.loading,
-        categoriesLoading: true,
-        message: null,
-      ),
-    );
-
-    Object? failure;
+    emit(state.copyWith(status: HomeStatus.loading, message: null));
 
     try {
-      await Future.wait<void>([
-        _loadCategories(emit).catchError((error, stackTrace) {
-          failure ??= error;
-          AppLogger.e(
-            'HomeBloc: load categories failed',
-            error: error,
-            stackTrace: stackTrace,
-          );
-        }),
-        _loadMainContent(emit).catchError((error, stackTrace) {
-          failure ??= error;
-          AppLogger.e(
-            'HomeBloc: load main content failed',
-            error: error,
-            stackTrace: stackTrace,
-          );
-        }),
-      ]);
-
-      if (failure != null) {
-        emit(state.copyWith(status: HomeStatus.failure, message: null));
-        return;
-      }
-
-      emit(state.copyWith(status: HomeStatus.success, message: null));
+      await _loadMainContent(emit);
+      emit(state.copyWith(status: HomeStatus.success));
     } catch (error, stackTrace) {
-      AppLogger.e(
-        'HomeBloc: home started failed',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      emit(state.copyWith(status: HomeStatus.failure, message: null));
-    }
-  }
-
-  Future<void> _loadCategories(Emitter<HomeState> emit) async {
-    try {
-      final categories = await _repository.getCategories();
-      emit(state.copyWith(categories: categories, categoriesLoading: false));
-    } catch (_) {
-      emit(state.copyWith(categoriesLoading: false));
-      rethrow;
+      AppLogger.e('Home load failed', error: error, stackTrace: stackTrace);
+      emit(state.copyWith(status: HomeStatus.failure));
     }
   }
 

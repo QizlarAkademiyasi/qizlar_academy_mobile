@@ -1,3 +1,4 @@
+import 'package:qizlar_academy_mobile/feature/portfolio/presentation/bloc/portfolio_stories_bloc.dart';
 import 'dart:async';
 
 import 'package:qizlar_academy_mobile/config/constants/theme/app_options.dart';
@@ -521,6 +522,9 @@ Future<void> setupLocator() async {
       apiDatasource: getIt<PortfolioApiDatasource>(),
       authSessionCubit: getIt<AuthSessionCubit>(),
     ),
+  );
+  getIt.registerFactory<PortfolioStoriesBloc>(
+    () => PortfolioStoriesBloc(getIt<HomeRepository>()),
   );
   getIt.registerFactory<PortfolioBloc>(
     () => PortfolioBloc(getIt<PortfolioRepository>()),

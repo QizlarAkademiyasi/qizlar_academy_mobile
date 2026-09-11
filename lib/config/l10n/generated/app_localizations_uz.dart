@@ -1598,4 +1598,24 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get announcementSocialAction => 'Kanalga o‘tish';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Salom, $name';
+  }
+
+  @override
+  String get homeCoinsLabel => 'Tanga';
+
+  @override
+  String get homeRatingLabel => 'Reyting';
+
+  @override
+  String get homeRankLabel => 'Reytingdagi o‘rin';
+
+  @override
+  String get portfolioMineLabel => 'Mening portfoliom';
+
+  @override
+  String get portfolioStoriesError => 'Storylar yuklanmadi';
 }

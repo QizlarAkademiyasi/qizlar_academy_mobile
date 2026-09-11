@@ -15,7 +15,7 @@ import 'package:qizlar_academy_mobile/feature/notification/domain/model/notifica
 import 'package:qizlar_academy_mobile/feature/notification/domain/repository/notification_repository.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/bloc/notification_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_tile.dart';
-import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_segmented_tab.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_segmented_tab_bar.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/notification_screen.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/settings/bloc/notification_settings_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/settings/notification_settings_screen.dart';
@@ -73,10 +73,7 @@ void main() {
   Future<void> registerSession() async {
     await getIt.reset();
     final cubit = AuthSessionCubit(_FakeAuthRepository());
-    await cubit.setRegisteredSession(
-      accessToken: 'a',
-      refreshToken: 'r',
-    );
+    await cubit.setRegisteredSession(accessToken: 'a', refreshToken: 'r');
     getIt.registerSingleton<AuthSessionCubit>(cubit);
     getIt.registerSingleton<GuestTapGateService>(GuestTapGateService());
   }
@@ -121,7 +118,7 @@ void main() {
 
       expect(find.text('Platform'), findsOneWidget);
       expect(find.text('Community'), findsOneWidget);
-      expect(tester.getSize(find.byType(NotificationSegmentedTab)).height, 40);
+      expect(tester.getSize(find.byType(AppSegmentedTabBar)).height, 56);
 
       final dots = find.byKey(const ValueKey('notification-unread-dot'));
       expect(dots, findsWidgets);
@@ -151,12 +148,18 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(find.byKey(const ValueKey('notification-actor-stack')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('notification-actor-stack')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('notification-post-thumbnail')),
       findsOneWidget,
     );
-    expect(tester.getSize(find.byKey(const ValueKey('notification-actor-stack'))), const Size(68, 68));
+    expect(
+      tester.getSize(find.byKey(const ValueKey('notification-actor-stack'))),
+      const Size(68, 68),
+    );
     expect(
       tester.getSize(find.byKey(const ValueKey('notification-post-thumbnail'))),
       const Size(53, 85),

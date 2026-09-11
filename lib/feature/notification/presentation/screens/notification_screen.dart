@@ -8,7 +8,6 @@ import 'package:qizlar_academy_mobile/feature/notification/domain/model/notifica
 import 'package:qizlar_academy_mobile/feature/notification/presentation/bloc/notification_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_empty_content.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_list_skeleton.dart';
-import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_segmented_tab.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/notification_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/utils/notification_grouping.dart';
 
@@ -122,21 +121,7 @@ class _NotificationViewState extends State<_NotificationView>
                 padding: AppPadding.paddingHorizontalXl.add(
                   const EdgeInsets.only(bottom: 12),
                 ),
-                child: NotificationSegmentedTab(
-                  controller: _tabController,
-                  tabLabels: [
-                    context.l10n.notificationTabPlatform,
-                    context.l10n.notificationTabCommunity,
-                  ],
-                  onTap: (index) {
-                    final tab = index == 0
-                        ? NotificationListTab.platform
-                        : NotificationListTab.community;
-                    context.read<NotificationBloc>().add(
-                      NotificationTabSelected(tab),
-                    );
-                  },
-                ),
+                child: buildNotificationTabs(context, _tabController),
               ),
               Expanded(
                 child: PageView(
@@ -220,32 +205,37 @@ class _NotificationViewState extends State<_NotificationView>
             SliverPadding(
               padding: EdgeInsets.fromLTRB(0, 8, 0, 28 + bottomInset),
               sliver: SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  if (index == sections.length * 2 - 1 && data.isLoadingMore) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: SizedBox(
-                        height: 72,
-                        child: NotificationListSkeleton(),
-                      ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index == sections.length * 2 - 1 &&
+                        data.isLoadingMore) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: SizedBox(
+                          height: 72,
+                          child: NotificationListSkeleton(),
+                        ),
+                      );
+                    }
+                    if (index.isOdd) return const SizedBox(height: 28);
+                    final sectionIndex = index ~/ 2;
+                    if (sectionIndex >= sections.length) {
+                      return const SizedBox.shrink();
+                    }
+                    final section = sections[sectionIndex];
+                    var staggerStart = 0;
+                    for (var i = 0; i < sectionIndex; i++) {
+                      staggerStart += sections[i].items.length;
+                    }
+                    return buildSection(
+                      context,
+                      section: section,
+                      staggerStartIndex: staggerStart,
                     );
-                  }
-                  if (index.isOdd) return const SizedBox(height: 28);
-                  final sectionIndex = index ~/ 2;
-                  if (sectionIndex >= sections.length) {
-                    return const SizedBox.shrink();
-                  }
-                  final section = sections[sectionIndex];
-                  var staggerStart = 0;
-                  for (var i = 0; i < sectionIndex; i++) {
-                    staggerStart += sections[i].items.length;
-                  }
-                  return buildSection(
-                    context,
-                    section: section,
-                    staggerStartIndex: staggerStart,
-                  );
-                }, childCount: sections.length * 2 - 1 + (data.isLoadingMore ? 1 : 0)),
+                  },
+                  childCount:
+                      sections.length * 2 - 1 + (data.isLoadingMore ? 1 : 0),
+                ),
               ),
             ),
           ],

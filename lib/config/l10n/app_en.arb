@@ -785,4 +785,18 @@
     }
   },
   "announcementSocialAction": "Open channel"
+,
+  "homeGreeting": "Hello, {name}",
+  "homeCoinsLabel": "Coins",
+  "homeRatingLabel": "Rating",
+  "homeRankLabel": "Rank",
+  "portfolioMineLabel": "My portfolio",
+  "portfolioStoriesError": "Stories could not be loaded",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

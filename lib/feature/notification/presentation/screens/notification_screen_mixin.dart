@@ -10,6 +10,24 @@ import 'package:qizlar_academy_mobile/feature/notification/presentation/componen
 import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_section.dart';
 
 mixin NotificationScreenMixin<T extends StatefulWidget> on State<T> {
+  Widget buildNotificationTabs(
+    BuildContext context,
+    TabController controller,
+  ) => AppSegmentedTabBar(
+    controller: controller,
+    tabLabels: [
+      context.l10n.notificationTabPlatform,
+      context.l10n.notificationTabCommunity,
+    ],
+    onTap: (index) => context.read<NotificationBloc>().add(
+      NotificationTabSelected(
+        index == 0
+            ? NotificationListTab.platform
+            : NotificationListTab.community,
+      ),
+    ),
+  );
+
   int _lastActionFailureVersion = 0;
   int _lastLoadMoreFailureVersion = 0;
 

@@ -1584,4 +1584,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get announcementSocialAction => 'Open channel';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Hello, $name';
+  }
+
+  @override
+  String get homeCoinsLabel => 'Coins';
+
+  @override
+  String get homeRatingLabel => 'Rating';
+
+  @override
+  String get homeRankLabel => 'Rank';
+
+  @override
+  String get portfolioMineLabel => 'My portfolio';
+
+  @override
+  String get portfolioStoriesError => 'Stories could not be loaded';
 }

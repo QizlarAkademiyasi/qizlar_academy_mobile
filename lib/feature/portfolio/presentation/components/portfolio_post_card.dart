@@ -32,7 +32,7 @@ class PortfolioPostCard extends StatelessWidget {
     final name = post.author.fullName.isEmpty
         ? 'Qizlar Akademiyasi'
         : post.author.fullName;
-    final mediaHeight = isDetail ? 433.0 : 386.0;
+    final mediaHeight = isDetail ? 433.0 : 200.0;
     return Material(
       color: context.appColors.onContainer,
       borderRadius: AppRadius.radiusLg,
@@ -44,7 +44,12 @@ class PortfolioPostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _PostHeader(post: post, name: name, onDeleteTap: onDeleteTap),
+              _PostHeader(
+                post: post,
+                name: name,
+                onDeleteTap: onDeleteTap,
+                compact: !isDetail,
+              ),
               if (post.caption.trim().isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
@@ -61,14 +66,23 @@ class PortfolioPostCard extends StatelessWidget {
               ],
               if (post.media.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                PortfolioMediaPreview(media: post.media, height: mediaHeight),
+                PortfolioMediaPreview(
+                  media: post.media,
+                  height: mediaHeight,
+                  borderRadius: isDetail ? 14 : 8,
+                ),
               ],
               if (isDetail) ...[
                 const SizedBox(height: 10),
                 _DetailMeta(post: post),
               ],
               const SizedBox(height: 10),
-              Divider(height: 1, thickness: 1, color: context.appColors.stroke),
+              if (isDetail)
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: context.appColors.stroke,
+                ),
               const SizedBox(height: 8),
               if (isDetail)
                 Row(
@@ -114,40 +128,64 @@ class _PostHeader extends StatelessWidget {
     required this.post,
     required this.name,
     required this.onDeleteTap,
+    this.compact = false,
   });
 
   final PortfolioPostModel post;
   final String name;
+  final bool compact;
   final VoidCallback? onDeleteTap;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         PortfolioAvatar(photoUrl: post.author.photoUrl, name: name, size: 40),
         const SizedBox(width: 10),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.bodyMediumBold.copyWith(
-                  color: context.appColors.text,
+          child: compact
+              ? Wrap(
+                  spacing: 6,
+                  runSpacing: 2,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodyMediumBold.copyWith(
+                        color: context.appColors.text,
+                      ),
+                    ),
+                    Text(
+                      '· ${PortfolioFormatting.relativeTime(post.createdAt)}',
+                      style: context.textTheme.bodySmallRegular.copyWith(
+                        color: context.appColors.grey,
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodyMediumBold.copyWith(
+                        color: context.appColors.text,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      PortfolioFormatting.relativeTime(post.createdAt),
+                      style: context.textTheme.bodySmallRegular.copyWith(
+                        color: context.appColors.secondaryGrey,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                PortfolioFormatting.relativeTime(post.createdAt),
-                style: context.textTheme.bodySmallRegular.copyWith(
-                  color: context.appColors.secondaryGrey,
-                ),
-              ),
-            ],
-          ),
         ),
         if (onDeleteTap != null)
           InkWell(

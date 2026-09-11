@@ -1,26 +1,51 @@
+import 'package:qizlar_academy_mobile/config/constants/daily_coin_feature.dart';
+import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/screens/daily_coin_bottom_sheet.dart';
 import 'dart:async' show unawaited;
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/app_gap.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
-import 'package:qizlar_academy_mobile/config/constants/app_margin.dart';
+
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/services/guest_tap_gate_service.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
-import 'package:qizlar_academy_mobile/feature/home/domain/model/category_model.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_ambient_background.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_banners_carousel.dart';
-import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_category_item.dart';
-import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_course_card.dart';
+
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_courses_section.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_guest_card.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_header_component.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_stats_section.dart';
 
 mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
+  Future<void> _maybeAutopresentDailyCoinSheet() async {
+    if (!kDailyCoinFeatureEnabled) return;
+    for (var i = 0; i < 14; i++) {
+      if (!mounted) return;
+      final auth = getIt<AuthSessionCubit>().state;
+      if (!auth.isRegistered || (auth.accessToken ?? '').trim().isEmpty) {
+        return;
+      }
+      final result = await tryAutopresentDailyCoinSheetFromHomePrefetch(
+        context,
+      );
+      if (result != null) return;
+      await Future<void>.delayed(Duration(milliseconds: 260 + i * 140));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_maybeAutopresentDailyCoinSheet());
+    });
+  }
+
   void _pushSignInDeferred(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!context.mounted) return;
@@ -28,24 +53,15 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     });
   }
 
-  Widget buildHeader(
-    BuildContext context, {
-    String userGreetingName = '',
-    double expandedProgress = 1,
-  }) {
+  Widget buildHeader(BuildContext context, {String userGreetingName = ''}) {
     final isAnonymous = getIt<AuthSessionCubit>().state.isAnonymous;
     final l10n = context.l10n;
     final title = isAnonymous
         ? l10n.homeWelcomeGuestTitle
         : _registeredHeaderTitle(context, userGreetingName);
-    final subtitle = isAnonymous
-        ? l10n.homeWelcomeGuestSubtitle
-        : l10n.homeWelcomeBack;
 
     return HomeHeaderComponent(
       title: title,
-      subtitle: subtitle,
-      expandedProgress: expandedProgress,
       tasksTooltip: context.l10n.tasksTitle,
       notificationTooltip: context.l10n.notificationsTitle,
       onTasksTap: () => onTasksTap(context),
@@ -55,31 +71,11 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
 
   String _registeredHeaderTitle(BuildContext context, String userGreetingName) {
     final trimmed = userGreetingName.trim();
-    if (trimmed.isNotEmpty) return trimmed;
+    if (trimmed.isNotEmpty) return context.l10n.homeGreeting(trimmed);
     return context.l10n.homeRegisteredUserFallback;
   }
 
-  Widget buildStoryBoard(BuildContext context, List<StoryModel> stories) {
-    return DecoratedBox(
-      decoration: BoxDecoration(color: context.appColors.background),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 90,
-            width: MediaQuery.of(context).size.width,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(left: AppGap.gapSm),
-              itemCount: stories.length,
-              itemBuilder: (context, index) =>
-                  StoryBoardItem(story: stories[index]),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget buildAmbientBackground() => const HomeAmbientBackground();
 
   Widget buildStatsSection(
     BuildContext context,
@@ -87,7 +83,6 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     bool isLoading = false,
     VoidCallback? onCoinsAndGradeTap,
     VoidCallback? onRatingTap,
-    VoidCallback? onLastLessonTap,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +92,6 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
           isLoading: isLoading,
           onCoinsAndGradeTap: onCoinsAndGradeTap,
           onRatingTap: onRatingTap,
-          onLastLessonTap: onLastLessonTap,
         ),
       ],
     );
@@ -197,70 +191,11 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     List<CourseModel> courses, {
     bool isLoading = false,
   }) {
-    return Padding(
-      padding: AppMargin.pageHorizontal,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                context.l10n.homePopularCourses,
-                style: context.textTheme.heading6.copyWith(
-                  color: context.appColors.text,
-                ),
-              ),
-              AppLiquidStretch(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: context.appColors.primary.withValues(alpha: 0.38),
-                      width: 2,
-                    ),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: () => context.push(Routes.courses),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            context.l10n.storeAllCategories,
-                            style: context.textTheme.bodySmallSemibold.copyWith(
-                              color: context.appColors.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 3),
-                          Icon(
-                            LucideIcons.chevronRight,
-                            size: 14,
-                            color: context.appColors.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppGap.gapSm),
-          ...courses.map(
-            (course) => HomeCourseCard(
-              course: course,
-              isLoading: isLoading,
-              onTap: () => openCourseDetails(context, course.id),
-            ),
-          ),
-        ],
-      ),
+    return HomeCoursesSection(
+      courses: courses,
+      isLoading: isLoading,
+      onCourseTap: (course) => openCourseDetails(context, course.id),
+      onAllCoursesTap: () => context.push(Routes.courses),
     );
   }
 

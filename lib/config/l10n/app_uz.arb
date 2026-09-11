@@ -740,4 +740,18 @@
     }
   },
   "announcementSocialAction": "Kanalga o‘tish"
+,
+  "homeGreeting": "Salom, {name}",
+  "homeCoinsLabel": "Tanga",
+  "homeRatingLabel": "Reyting",
+  "homeRankLabel": "Reytingdagi o‘rin",
+  "portfolioMineLabel": "Mening portfoliom",
+  "portfolioStoriesError": "Storylar yuklanmadi",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

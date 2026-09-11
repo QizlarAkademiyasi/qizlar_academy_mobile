@@ -8,9 +8,11 @@ class PortfolioListSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeletonizer.zone(
       child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: 3,
-        separatorBuilder: (_, _) => const SizedBox(height: 12),
+        separatorBuilder: (_, _) => const SizedBox(height: 24),
         itemBuilder: (context, index) => Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -41,8 +43,8 @@ class PortfolioListSkeleton extends StatelessWidget {
               SizedBox(height: 12),
               Bone(
                 width: double.infinity,
-                height: 300,
-                borderRadius: BorderRadius.all(Radius.circular(14)),
+                height: 200,
+                borderRadius: BorderRadius.all(Radius.circular(8)),
               ),
               SizedBox(height: 12),
               Bone.text(words: 4),

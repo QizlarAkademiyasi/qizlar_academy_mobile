@@ -1607,4 +1607,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get announcementSocialAction => 'Перейти в канал';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Привет, $name';
+  }
+
+  @override
+  String get homeCoinsLabel => 'Монеты';
+
+  @override
+  String get homeRatingLabel => 'Рейтинг';
+
+  @override
+  String get homeRankLabel => 'Место';
+
+  @override
+  String get portfolioMineLabel => 'Моё портфолио';
+
+  @override
+  String get portfolioStoriesError => 'Не удалось загрузить истории';
 }

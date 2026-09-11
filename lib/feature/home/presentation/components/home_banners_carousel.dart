@@ -1,11 +1,15 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_gap.dart';
-import 'package:qizlar_academy_mobile/config/constants/app_padding.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 
 class HomeBannersCarousel extends StatefulWidget {
-  const HomeBannersCarousel({super.key, required this.banners, this.onBannerTap, this.isLoading = false});
+  const HomeBannersCarousel({
+    super.key,
+    required this.banners,
+    this.onBannerTap,
+    this.isLoading = false,
+  });
 
   final List<BannerModel> banners;
   final ValueChanged<BannerModel>? onBannerTap;
@@ -27,11 +31,11 @@ class _HomeBannersCarouselState extends State<HomeBannersCarousel> {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: 200,
+          height: (MediaQuery.sizeOf(context).width - 48) * 182 / 342,
           child: CarouselSlider.builder(
             itemCount: banners.length,
             options: CarouselOptions(
-              height: 200,
+              height: (MediaQuery.sizeOf(context).width - 48) * 182 / 342,
               viewportFraction: 1,
               autoPlay: true,
               enableInfiniteScroll: false,
@@ -41,88 +45,35 @@ class _HomeBannersCarouselState extends State<HomeBannersCarousel> {
             itemBuilder: (context, i, _) {
               final banner = banners[i];
               return Padding(
-                padding: EdgeInsets.only(right: i == banners.length - 1 ? 0 : AppGap.gapSm),
-                child: _BannerCard(banner: banner, onTap: widget.onBannerTap, isLoading: widget.isLoading),
+                padding: EdgeInsets.zero,
+                child: _BannerCard(
+                  banner: banner,
+                  onTap: widget.onBannerTap,
+                  isLoading: widget.isLoading,
+                ),
               );
             },
           ),
         ),
-        const SizedBox(height: AppGap.gapSm),
-        _DotsIndicator(length: banners.length, index: _index),
+        if (banners.length > 1) ...[
+          const SizedBox(height: AppGap.gapSm),
+          _DotsIndicator(length: banners.length, index: _index),
+        ],
       ],
     );
   }
 }
 
-class _BannerCardMedia extends StatefulWidget {
+class _BannerCardMedia extends StatelessWidget {
   const _BannerCardMedia({super.key, required this.imageUrl});
-
   final String imageUrl;
-
   @override
-  State<_BannerCardMedia> createState() => _BannerCardMediaState();
-}
-
-class _BannerCardMediaState extends State<_BannerCardMedia> {
-  bool _showGradientOverlay = false;
-  bool _overlayRevealPending = false;
-
-  void _scheduleGradientReveal() {
-    if (_showGradientOverlay || _overlayRevealPending) return;
-    _overlayRevealPending = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _overlayRevealPending = false;
-      if (!mounted) return;
-      setState(() => _showGradientOverlay = true);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        CachedNetworkImage(
-          imageUrl: widget.imageUrl,
-          fit: BoxFit.cover,
-          alignment: Alignment.topCenter,
-          fadeInDuration: const Duration(milliseconds: 320),
-          fadeOutDuration: const Duration(milliseconds: 200),
-          placeholder: (context, url) => const _BannerImageShimmer(),
-          errorWidget: (context, url, error) {
-            return DecoratedBox(
-              decoration: BoxDecoration(
-                color: context.appColors.onContainer,
-                borderRadius: AppRadius.radius2xl,
-                border: Border.all(color: context.appColors.stroke),
-              ),
-            );
-          },
-          imageBuilder: (context, imageProvider) {
-            return Image(
-              image: imageProvider,
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
-              filterQuality: FilterQuality.medium,
-              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                if (wasSynchronouslyLoaded || frame != null) {
-                  _scheduleGradientReveal();
-                  return child;
-                }
-                return const _BannerImageShimmer();
-              },
-            );
-          },
-        ),
-        if (_showGradientOverlay)
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [AppColors.black.withValues(alpha: 0.55), AppColors.black.withValues(alpha: 0.05)]),
-            ),
-          ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => AppCachedNetworkImage(
+    imageUrl: imageUrl,
+    fit: BoxFit.cover,
+    alignment: Alignment.topCenter,
+    placeholder: (_, _) => const _BannerImageShimmer(),
+  );
 }
 
 /// Rasm tarmoqqa chiqishi / decode bo‘lganicha — silliq shimmer.
@@ -134,7 +85,13 @@ class _BannerImageShimmer extends StatelessWidget {
     return AppImageShimmer(
       borderRadius: AppRadius.radius2xl,
       baseColor: context.appColors.onSecondaryContainer,
-      highlightColor: Color.lerp(context.appColors.onSecondaryContainer, context.appColors.onContainer, 0.42) ?? context.appColors.onSecondaryContainer,
+      highlightColor:
+          Color.lerp(
+            context.appColors.onSecondaryContainer,
+            context.appColors.onContainer,
+            0.42,
+          ) ??
+          context.appColors.onSecondaryContainer,
     );
   }
 }
@@ -176,7 +133,11 @@ class _BannerCardSkeleton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Bone(width: 92, height: 124, borderRadius: BorderRadius.circular(20)),
+                Bone(
+                  width: 92,
+                  height: 124,
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ],
             ),
           ),
@@ -187,7 +148,11 @@ class _BannerCardSkeleton extends StatelessWidget {
 }
 
 class _BannerCard extends StatelessWidget {
-  const _BannerCard({required this.banner, required this.onTap, this.isLoading = false});
+  const _BannerCard({
+    required this.banner,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   final BannerModel banner;
   final ValueChanged<BannerModel>? onTap;
@@ -206,7 +171,7 @@ class _BannerCard extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () => onTap?.call(banner),
         child: Padding(
-          padding: AppPadding.paddingHorizontalMd,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: ClipRRect(
             borderRadius: AppRadius.radius2xl,
             child: Stack(
@@ -220,7 +185,10 @@ class _BannerCard extends StatelessWidget {
                             border: Border.all(color: context.appColors.stroke),
                           ),
                         )
-                      : _BannerCardMedia(key: ValueKey(banner.id), imageUrl: imageUrl),
+                      : _BannerCardMedia(
+                          key: ValueKey(banner.id),
+                          imageUrl: imageUrl,
+                        ),
                 ),
                 // Padding(
                 //   padding: const EdgeInsets.all(16),
@@ -284,7 +252,10 @@ class _DotsIndicator extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: active ? 18 : 6,
           height: 6,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), color: active ? AppColors.primary : context.appColors.secondaryGrey),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(99),
+            color: active ? AppColors.primary : context.appColors.secondaryGrey,
+          ),
         );
       }),
     );
