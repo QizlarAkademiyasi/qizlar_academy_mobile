@@ -17,6 +17,7 @@ export 'package:qizlar_academy_mobile/core/presentation/components/app_spinner_d
 export 'package:qizlar_academy_mobile/core/presentation/components/app_bottom_sheet.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_blurred_app_bar.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_blurred_header_surface.dart';
+export 'package:qizlar_academy_mobile/core/presentation/components/app_scroll_edge_blur.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_failure_state.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_cached_network_image.dart';
 export 'package:qizlar_academy_mobile/core/presentation/components/app_image_shimmer.dart';

@@ -41,10 +41,12 @@ class PortfolioListSkeleton extends StatelessWidget {
               SizedBox(height: 12),
               Bone.multiText(lines: 3),
               SizedBox(height: 12),
-              Bone(
-                width: double.infinity,
-                height: 200,
-                borderRadius: BorderRadius.all(Radius.circular(8)),
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Bone(
+                  width: double.infinity,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
               ),
               SizedBox(height: 12),
               Bone.text(words: 4),

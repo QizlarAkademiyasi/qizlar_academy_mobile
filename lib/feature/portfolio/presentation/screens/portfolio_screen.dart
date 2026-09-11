@@ -89,7 +89,10 @@ class _PortfolioViewState extends State<_PortfolioView>
                 else if (state.items.isEmpty)
                   SliverFillRemaining(
                     hasScrollBody: false,
-                    child: buildEmptyContent(context, state),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(24, 0, 24, bottomInset + 24),
+                      child: buildEmptyContent(context, state),
+                    ),
                   )
                 else
                   SliverPadding(

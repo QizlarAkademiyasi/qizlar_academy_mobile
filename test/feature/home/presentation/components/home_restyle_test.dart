@@ -15,6 +15,8 @@ import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_ambient_background.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_course_card.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_courses_section.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_banners_carousel.dart';
+import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dart';
 
 const _featuredCourses = [
   CourseModel(
@@ -124,13 +126,8 @@ void main() {
                         ),
                         ListView(
                           children: [
-                            HomeHeaderComponent(
-                              title: 'Salom, Rayhon',
-                              tasksTooltip: 'Tasks',
-                              notificationTooltip: 'Notifications',
-                              onTasksTap: () {},
-                              onNotificationTap: () {},
-                            ),
+                            const SizedBox(height: 64),
+                            const HomeHeaderComponent(title: 'Salom, Rayhon'),
                             const SizedBox(height: 36),
                             HomeStatsSection(
                               stats: const HomeStatsModel(
@@ -232,4 +229,43 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('Home banner card height is constrained inside stretch slack', (
+    tester,
+  ) async {
+    const width = 390.0;
+    tester.view.physicalSize = const Size(width, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      AppThemeProvider(
+        builder: (context) => MaterialApp(
+          theme: AppOptions.lightThemeData(context),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(width, 844)),
+            child: const Scaffold(
+              body: HomeBannersCarousel(
+                autoPlay: false,
+                banners: [
+                  BannerModel(id: '1', title: '', subtitle: '', imageUrl: ''),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    final expectedCard = (width - 48) * 182 / 342;
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-card'))).height,
+      expectedCard,
+    );
+    expect(
+      tester.getSize(find.byKey(const ValueKey('home-banner-viewport'))).height,
+      expectedCard + HomeBannersCarousel.stretchSlack * 2,
+    );
+    expect(tester.takeException(), isNull);
+  });
 }

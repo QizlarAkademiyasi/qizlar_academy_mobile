@@ -14,47 +14,53 @@ class HomeStatsSection extends StatelessWidget {
   final HomeStatsModel stats;
   final bool isLoading;
   final VoidCallback? onCoinsAndGradeTap, onRatingTap;
+  static const double stretchSlack = 12;
+
   @override
-  Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.symmetric(horizontal: 24),
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-    decoration: BoxDecoration(
-      color: context.appColors.onContainer.withValues(alpha: .35),
-      borderRadius: BorderRadius.circular(24),
-      border: Border.all(
-        color: context.appColors.onContainer.withValues(alpha: .9),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: stretchSlack),
+    child: AppLiquidStretch(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+        decoration: BoxDecoration(
+          color: context.appColors.onContainer.withValues(alpha: .35),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: context.appColors.onContainer.withValues(alpha: .9),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: _Metric(
+                value: stats.coins,
+                label: context.l10n.homeCoinsLabel,
+                icon: LucideIcons.circleStar,
+                isLoading: isLoading,
+                onTap: onCoinsAndGradeTap,
+              ),
+            ),
+            Expanded(
+              child: _Metric(
+                value: stats.grade,
+                label: context.l10n.homeRatingLabel,
+                icon: LucideIcons.flame,
+                isLoading: isLoading,
+                onTap: onCoinsAndGradeTap,
+              ),
+            ),
+            Expanded(
+              child: _Metric(
+                value: stats.rating,
+                label: context.l10n.homeRankLabel,
+                icon: LucideIcons.crown,
+                isLoading: isLoading,
+                onTap: onRatingTap,
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-    child: Row(
-      children: [
-        Expanded(
-          child: _Metric(
-            value: stats.coins,
-            label: context.l10n.homeCoinsLabel,
-            icon: LucideIcons.circleStar,
-            isLoading: isLoading,
-            onTap: onCoinsAndGradeTap,
-          ),
-        ),
-        Expanded(
-          child: _Metric(
-            value: stats.grade,
-            label: context.l10n.homeRatingLabel,
-            icon: LucideIcons.flame,
-            isLoading: isLoading,
-            onTap: onCoinsAndGradeTap,
-          ),
-        ),
-        Expanded(
-          child: _Metric(
-            value: stats.rating,
-            label: context.l10n.homeRankLabel,
-            icon: LucideIcons.crown,
-            isLoading: isLoading,
-            onTap: onRatingTap,
-          ),
-        ),
-      ],
     ),
   );
 }

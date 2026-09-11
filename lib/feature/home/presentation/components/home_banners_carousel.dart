@@ -9,11 +9,23 @@ class HomeBannersCarousel extends StatefulWidget {
     required this.banners,
     this.onBannerTap,
     this.isLoading = false,
+    this.autoPlay = true,
   });
+
+  static const double stretchSlack = 16;
+  static const double _designWidth = 342;
+  static const double _designHeight = 182;
 
   final List<BannerModel> banners;
   final ValueChanged<BannerModel>? onBannerTap;
   final bool isLoading;
+  final bool autoPlay;
+
+  static double bannerCardHeight(BuildContext context) =>
+      (MediaQuery.sizeOf(context).width - 48) * _designHeight / _designWidth;
+
+  static double viewportHeight(BuildContext context) =>
+      bannerCardHeight(context) + stretchSlack * 2;
 
   @override
   State<HomeBannersCarousel> createState() => _HomeBannersCarouselState();
@@ -27,30 +39,32 @@ class _HomeBannersCarouselState extends State<HomeBannersCarousel> {
     final banners = widget.banners;
     if (banners.isEmpty) return const SizedBox.shrink();
 
+    final cardHeight = HomeBannersCarousel.bannerCardHeight(context);
+    final viewportHeight = HomeBannersCarousel.viewportHeight(context);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: (MediaQuery.sizeOf(context).width - 48) * 182 / 342,
+          key: const ValueKey('home-banner-viewport'),
+          height: viewportHeight,
           child: CarouselSlider.builder(
             itemCount: banners.length,
             options: CarouselOptions(
-              height: (MediaQuery.sizeOf(context).width - 48) * 182 / 342,
+              height: viewportHeight,
               viewportFraction: 1,
-              autoPlay: true,
+              autoPlay: widget.autoPlay,
               enableInfiniteScroll: false,
               enlargeCenterPage: false,
               onPageChanged: (value, _) => setState(() => _index = value),
             ),
             itemBuilder: (context, i, _) {
               final banner = banners[i];
-              return Padding(
-                padding: EdgeInsets.zero,
-                child: _BannerCard(
-                  banner: banner,
-                  onTap: widget.onBannerTap,
-                  isLoading: widget.isLoading,
-                ),
+              return _BannerCard(
+                banner: banner,
+                cardHeight: cardHeight,
+                onTap: widget.onBannerTap,
+                isLoading: widget.isLoading,
               );
             },
           ),
@@ -150,18 +164,26 @@ class _BannerCardSkeleton extends StatelessWidget {
 class _BannerCard extends StatelessWidget {
   const _BannerCard({
     required this.banner,
+    required this.cardHeight,
     required this.onTap,
     this.isLoading = false,
   });
 
   final BannerModel banner;
+  final double cardHeight;
   final ValueChanged<BannerModel>? onTap;
   final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const _BannerCardSkeleton();
+      return Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: HomeBannersCarousel.stretchSlack,
+        ),
+        child: SizedBox(height: cardHeight, child: const _BannerCardSkeleton()),
+      );
     }
 
     final imageUrl = banner.imageUrl.trim();
@@ -171,14 +193,20 @@ class _BannerCard extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () => onTap?.call(banner),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: ClipRRect(
-            borderRadius: AppRadius.radius2xl,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                SizedBox.expand(
-                  child: imageUrl.isEmpty
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: HomeBannersCarousel.stretchSlack,
+          ),
+          child: SizedBox(
+            key: const ValueKey('home-banner-card'),
+            height: cardHeight,
+            width: double.infinity,
+            child: ClipRRect(
+              borderRadius: AppRadius.radius2xl,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  imageUrl.isEmpty
                       ? DecoratedBox(
                           decoration: BoxDecoration(
                             color: context.appColors.onContainer,
@@ -189,42 +217,8 @@ class _BannerCard extends StatelessWidget {
                           key: ValueKey(banner.id),
                           imageUrl: imageUrl,
                         ),
-                ),
-                // Padding(
-                //   padding: const EdgeInsets.all(16),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     mainAxisAlignment: MainAxisAlignment.end,
-                //     mainAxisSize: MainAxisSize.min,
-                //     children: [
-                //       Skeletonizer(
-                //         enabled: isLoading,
-                //         child: Text(
-                //           banner.title,
-                //           maxLines: 1,
-                //           overflow: TextOverflow.ellipsis,
-                //           style: context.textTheme.bodyLargeBold.copyWith(
-                //             color: AppColors.white,
-                //           ),
-                //         ),
-                //       ),
-                //       const SizedBox(height: 4),
-                //       Skeletonizer(
-                //         enabled: isLoading,
-                //         child: Text(
-                //           banner.subtitle,
-                //           maxLines: 2,
-                //           overflow: TextOverflow.ellipsis,
-                //           style: context.textTheme.bodySmallRegular.copyWith(
-                //             color: AppColors.white.withValues(alpha: 0.9),
-                //             height: 1.25,
-                //           ),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

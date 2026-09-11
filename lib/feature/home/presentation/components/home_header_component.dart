@@ -2,72 +2,43 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class HomeHeaderComponent extends StatelessWidget {
-  const HomeHeaderComponent({
-    super.key,
-    required this.title,
-    required this.onTasksTap,
-    required this.onNotificationTap,
-    required this.tasksTooltip,
-    required this.notificationTooltip,
-  });
+  const HomeHeaderComponent({super.key, required this.title});
 
   final String title;
-  final VoidCallback onTasksTap;
-  final VoidCallback onNotificationTap;
-  final String tasksTooltip;
-  final String notificationTooltip;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _HomeHeaderActionButton(
-                key: const ValueKey('home-notification-button'),
-                icon: LucideIcons.bell,
-                tooltip: notificationTooltip,
-                onTap: onNotificationTap,
-                showIndicator: true,
-              ),
-              _HomeHeaderActionButton(
-                key: const ValueKey('home-tasks-button'),
-                icon: LucideIcons.clipboardCheck,
-                tooltip: tasksTooltip,
-                onTap: onTasksTap,
-              ),
-            ],
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          key: const ValueKey('home-large-greeting'),
+          style: context.textTheme.heading4.copyWith(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            height: 1.25,
+            color: context.appColors.text,
           ),
-          const SizedBox(height: 20),
-          Text(
-            title,
-            style: context.textTheme.heading4.copyWith(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              height: 1.25,
-              color: context.appColors.text,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }
 }
 
-class _HomeHeaderActionButton extends StatelessWidget {
-  const _HomeHeaderActionButton({
+class HomeHeaderActionButton extends StatelessWidget {
+  const HomeHeaderActionButton({
     super.key,
     required this.icon,
     required this.tooltip,
     required this.onTap,
     this.showIndicator = false,
   });
+
+  static const double size = 48;
 
   final IconData icon;
   final String tooltip;
@@ -87,11 +58,11 @@ class _HomeHeaderActionButton extends StatelessWidget {
         child: Stack(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: HomeHeaderActionButton.size,
+              height: HomeHeaderActionButton.size,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: context.appColors.onContainer.withValues(alpha: 0.28),
+                color: context.appColors.onContainer.withValues(alpha: 0.6),
                 boxShadow: [
                   BoxShadow(
                     color: context.appColors.shadow.withValues(alpha: 0.005),

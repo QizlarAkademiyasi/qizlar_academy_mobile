@@ -32,7 +32,6 @@ class PortfolioPostCard extends StatelessWidget {
     final name = post.author.fullName.isEmpty
         ? 'Qizlar Akademiyasi'
         : post.author.fullName;
-    final mediaHeight = isDetail ? 433.0 : 200.0;
     return Material(
       color: context.appColors.onContainer,
       borderRadius: AppRadius.radiusLg,
@@ -68,7 +67,6 @@ class PortfolioPostCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 PortfolioMediaPreview(
                   media: post.media,
-                  height: mediaHeight,
                   borderRadius: isDetail ? 14 : 8,
                 ),
               ],

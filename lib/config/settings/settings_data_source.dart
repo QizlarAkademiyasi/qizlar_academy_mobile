@@ -56,8 +56,9 @@ class SettingsDataSourceImpl implements SettingsDataSource {
   @override
   ThemeMode getThemeMode() {
     final index = _prefs.getInt(_keyThemeMode);
-    if (index == null) return ThemeMode.system;
-    return ThemeMode.values[index.clamp(0, ThemeMode.values.length - 1)];
+    if (index == null) return ThemeMode.light;
+    final mode = ThemeMode.values[index.clamp(0, ThemeMode.values.length - 1)];
+    return mode == ThemeMode.system ? ThemeMode.light : mode;
   }
 
   @override

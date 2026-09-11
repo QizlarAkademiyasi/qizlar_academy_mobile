@@ -72,7 +72,7 @@ class _MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     final bottomNavigationOffset = switch (Theme.of(context).platform) {
-      TargetPlatform.android => const Offset(0, -12),
+      TargetPlatform.android => const Offset(0, 6),
       TargetPlatform.iOS => const Offset(0, 18),
       _ => Offset.zero,
     };

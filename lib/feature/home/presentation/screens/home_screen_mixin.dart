@@ -19,9 +19,15 @@ import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_courses_section.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_guest_card.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_header_component.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_pinned_app_bar.dart';
 import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_stats_section.dart';
 
 mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
+  static const double _collapseRange = 56;
+
+  late final ScrollController homeScrollController;
+  final ValueNotifier<double> headerCollapse = ValueNotifier<double>(0);
+
   Future<void> _maybeAutopresentDailyCoinSheet() async {
     if (!kDailyCoinFeatureEnabled) return;
     for (var i = 0; i < 14; i++) {
@@ -41,9 +47,64 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
+    homeScrollController = ScrollController()..addListener(_onHomeScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       unawaited(_maybeAutopresentDailyCoinSheet());
     });
+  }
+
+  @override
+  void dispose() {
+    homeScrollController.removeListener(_onHomeScroll);
+    homeScrollController.dispose();
+    headerCollapse.dispose();
+    super.dispose();
+  }
+
+  void _onHomeScroll() {
+    if (!homeScrollController.hasClients) return;
+    final next = (homeScrollController.offset / _collapseRange).clamp(0.0, 1.0);
+    if ((next - headerCollapse.value).abs() < 0.01 && next != 0 && next != 1) {
+      return;
+    }
+    if (next == headerCollapse.value) return;
+    headerCollapse.value = next;
+  }
+
+  String greetingTitle(BuildContext context, {String userGreetingName = ''}) {
+    if (getIt<AuthSessionCubit>().state.isAnonymous) {
+      return context.l10n.homeWelcomeGuestTitle;
+    }
+    return _registeredHeaderTitle(context, userGreetingName);
+  }
+
+  Widget buildPinnedAppBar(
+    BuildContext context, {
+    String userGreetingName = '',
+  }) {
+    final title = greetingTitle(context, userGreetingName: userGreetingName);
+    return ValueListenableBuilder<double>(
+      valueListenable: headerCollapse,
+      builder: (context, collapse, _) {
+        return HomePinnedAppBar(
+          title: title,
+          collapseProgress: collapse,
+          tasksTooltip: context.l10n.tasksTitle,
+          notificationTooltip: context.l10n.notificationsTitle,
+          onTasksTap: () => onTasksTap(context),
+          onNotificationTap: () => onNotificationTap(context),
+        );
+      },
+    );
+  }
+
+  Widget buildLargeGreeting(
+    BuildContext context, {
+    String userGreetingName = '',
+  }) {
+    return HomeHeaderComponent(
+      title: greetingTitle(context, userGreetingName: userGreetingName),
+    );
   }
 
   void _pushSignInDeferred(BuildContext context) {
@@ -51,22 +112,6 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
       if (!context.mounted) return;
       context.push(Routes.signIn);
     });
-  }
-
-  Widget buildHeader(BuildContext context, {String userGreetingName = ''}) {
-    final isAnonymous = getIt<AuthSessionCubit>().state.isAnonymous;
-    final l10n = context.l10n;
-    final title = isAnonymous
-        ? l10n.homeWelcomeGuestTitle
-        : _registeredHeaderTitle(context, userGreetingName);
-
-    return HomeHeaderComponent(
-      title: title,
-      tasksTooltip: context.l10n.tasksTitle,
-      notificationTooltip: context.l10n.notificationsTitle,
-      onTasksTap: () => onTasksTap(context),
-      onNotificationTap: () => onNotificationTap(context),
-    );
   }
 
   String _registeredHeaderTitle(BuildContext context, String userGreetingName) {
@@ -190,12 +235,13 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     BuildContext context,
     List<CourseModel> courses, {
     bool isLoading = false,
+    VoidCallback? onAllCoursesTap,
   }) {
     return HomeCoursesSection(
       courses: courses,
       isLoading: isLoading,
       onCourseTap: (course) => openCourseDetails(context, course.id),
-      onAllCoursesTap: () => context.push(Routes.courses),
+      onAllCoursesTap: onAllCoursesTap ?? () {},
     );
   }
 
