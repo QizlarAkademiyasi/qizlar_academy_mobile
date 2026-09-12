@@ -77,7 +77,8 @@ dependencies:
 
   # Media
   image_picker: ^1.1.2
-  pdfrx: 2.4.8
+  # 2.4.8 → pdfrx_engine ^0.4.7 → meta ^1.18.0; Flutter SDK meta ni 1.17.0 da pin qiladi.
+  pdfrx: 2.4.7
 
   # Device information and locale
   devicelocale: ^0.8.2
