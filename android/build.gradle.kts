@@ -16,7 +16,14 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {
-    project.evaluationDependsOn(":app")
+    pluginManager.withPlugin("com.android.library") {
+        val hasKotlinSources =
+            project.file("src/main/kotlin").exists() ||
+                project.fileTree("src").matching { include("**/*.kt") }.files.isNotEmpty()
+        if (hasKotlinSources && !pluginManager.hasPlugin("org.jetbrains.kotlin.android")) {
+            pluginManager.apply("org.jetbrains.kotlin.android")
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
