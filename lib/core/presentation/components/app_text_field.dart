@@ -50,7 +50,6 @@ class AppTextField extends StatelessWidget {
   final Iterable<String>? autofillHints;
   final TextCapitalization textCapitalization;
 
-  static const double _minHeight = 52;
   static const double _maxHeight = 56;
   static const double _horizontalInset = 16;
   static const double _verticalPadding = 14;
@@ -82,7 +81,7 @@ class AppTextField extends StatelessWidget {
       textCapitalization: textCapitalization,
       style: textStyle,
       cursorColor: colors.primary,
-      textAlignVertical: TextAlignVertical.center,
+      textAlignVertical: suffix == null ? null : TextAlignVertical.center,
       decoration: InputDecoration(
         isDense: true,
         filled: false,

@@ -191,6 +191,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/app_bar_backgounds/
     - assets/images/bottom_sheet/
     - assets/json/
     - assets/markdown/

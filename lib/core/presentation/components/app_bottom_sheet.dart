@@ -1,12 +1,16 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
-/// Pastdan modal sheet: [ModalSheetRoute] + [Sheet] ([SheetSize.fit]). [isScrollControlled] — API mosligi.
+/// Pastdan modal sheet: [ModalSheetRoute] + [Sheet] ([SheetSize.stretch]).
+///
+/// [isScrollControlled] — API mosligi (smooth_sheets doim scroll-controlled).
 Future<T?> showAppBottomSheet<T>(
   BuildContext context, {
   required Widget child,
   bool isScrollControlled = true,
   bool useSafeArea = true,
+  SheetScrollHandlingBehavior scrollSyncMode =
+      SheetScrollHandlingBehavior.always,
 }) {
   return Navigator.of(context).push<T>(
     ModalSheetRoute<T>(
@@ -29,18 +33,28 @@ Future<T?> showAppBottomSheet<T>(
       },
       builder: (_) => Sheet(
         initialOffset: const SheetOffset(1),
-        snapGrid: const SheetSnapGrid.single(snap: SheetOffset(1)),
+        snapGrid: const SheetSnapGrid.stepless(
+          minOffset: SheetOffset(0),
+          maxOffset: SheetOffset(1),
+        ),
         physics: const BouncingSheetPhysics(),
         decoration: MaterialSheetDecoration(
-          size: SheetSize.fit,
+          size: SheetSize.stretch,
           color: Colors.transparent,
           elevation: 0,
           shadowColor: Colors.transparent,
+          clipBehavior: Clip.none,
         ),
-        scrollConfiguration: const SheetScrollConfiguration(
-          scrollSyncMode: SheetScrollHandlingBehavior.onlyFromTop,
+        scrollConfiguration: SheetScrollConfiguration(
+          scrollSyncMode: scrollSyncMode,
         ),
-        child: AppTabletMaxWidth(child: child),
+        child: AppTabletMaxWidth(
+          child: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: child,
+          ),
+        ),
       ),
     ),
   );
@@ -68,72 +82,87 @@ class AppBottomSheetContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scrollMaxHeight = MediaQuery.sizeOf(context).height * 0.55;
+
     return Padding(
       padding: const EdgeInsetsGeometry.fromLTRB(8, 0, 8, 24),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          image: isBackgorun
-              ? DecorationImage(
-                  alignment: Alignment.topCenter,
-                  fit: BoxFit.cover,
-                  scale: 1.5,
-                  image: context.isDarkTheme
-                      ? UiKitAssets.images.bottomSheet.bottomSheetDark
-                            .provider()
-                      : UiKitAssets.images.bottomSheet.bottomSheetLight
-                            .provider(),
-                )
-              : null,
-          color: context.appColors.background,
-          borderRadius: AppRadius.radius3xl,
-          border: Border.all(color: context.appColors.stroke),
-        ),
-        child: Stack(
-          children: [
-            SafeArea(
-              top: false,
-              bottom: false,
-              child: Padding(
-                padding: padding.add(
-                  EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (showHandle)
-                      Align(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: context.appColors.text,
-                            borderRadius: AppRadius.radius2,
-                          ),
-                        ),
-                      ),
-                    if (title != null && title!.isNotEmpty) ...[
-                      const SizedBox(height: 16),
-                      Text(
-                        title!,
-                        style: context.textTheme.bodyXLargeSemibold.copyWith(
-                          color: context.appColors.text,
-                        ),
-                      ),
-                    ],
-                    if (showHandle || (title != null && title!.isNotEmpty))
-                      const SizedBox(height: 16),
-                    if (isScrollable)
-                      Flexible(child: SingleChildScrollView(child: child))
-                    else
-                      child,
-                    const SizedBox(height: 12),
-                  ],
-                ),
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              image: isBackgorun
+                  ? DecorationImage(
+                      alignment: Alignment.topCenter,
+                      fit: BoxFit.cover,
+                      scale: 1.5,
+                      image: context.isDarkTheme
+                          ? UiKitAssets.images.bottomSheet.bottomSheetDark
+                                .provider()
+                          : UiKitAssets.images.bottomSheet.bottomSheetLight
+                                .provider(),
+                    )
+                  : null,
+              color: context.appColors.background,
+              borderRadius: AppRadius.radius3xl,
+              border: Border.all(color: context.appColors.stroke),
             ),
-          ],
-        ),
+            child: Stack(
+              children: [
+                SafeArea(
+                  top: false,
+                  bottom: false,
+                  child: Padding(
+                    padding: padding.add(
+                      EdgeInsets.only(
+                        bottom: MediaQuery.paddingOf(context).bottom,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (showHandle)
+                          Align(
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: context.appColors.text,
+                                borderRadius: AppRadius.radius2,
+                              ),
+                            ),
+                          ),
+                        if (title != null && title!.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Text(
+                            title!,
+                            style: context.textTheme.bodyXLargeSemibold
+                                .copyWith(color: context.appColors.text),
+                          ),
+                        ],
+                        if (showHandle || (title != null && title!.isNotEmpty))
+                          const SizedBox(height: 16),
+                        if (isScrollable)
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: scrollMaxHeight,
+                            ),
+                            child: SingleChildScrollView(child: child),
+                          )
+                        else
+                          child,
+                        const SizedBox(height: 12),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

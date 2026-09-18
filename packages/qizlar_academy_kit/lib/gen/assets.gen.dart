@@ -14,6 +14,21 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart' as _svg;
 import 'package:vector_graphics/vector_graphics.dart' as _vg;
 
+class $AssetsAppBarBackgoundsGen {
+  const $AssetsAppBarBackgoundsGen();
+
+  /// File path: assets/app_bar_backgounds/Background light.png
+  AssetGenImage get backgroundLight =>
+      const AssetGenImage('assets/app_bar_backgounds/Background light.png');
+
+  /// File path: assets/app_bar_backgounds/background dark.png
+  AssetGenImage get backgroundDark =>
+      const AssetGenImage('assets/app_bar_backgounds/background dark.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [backgroundLight, backgroundDark];
+}
+
 class $AssetsBadgesGen {
   const $AssetsBadgesGen();
 
@@ -45,6 +60,22 @@ class $AssetsBadgesGen {
     loverRabbit,
     ring,
   ];
+}
+
+class $AssetsDataGen {
+  const $AssetsDataGen();
+
+  /// File path: assets/data/districts.json
+  String get districts => 'packages/qizlar_academy_kit/assets/data/districts.json';
+
+  /// File path: assets/data/neighborhoods.json
+  String get neighborhoods => 'packages/qizlar_academy_kit/assets/data/neighborhoods.json';
+
+  /// File path: assets/data/regions.json
+  String get regions => 'packages/qizlar_academy_kit/assets/data/regions.json';
+
+  /// List of all assets
+  List<String> get values => [districts, neighborhoods, regions];
 }
 
 class $AssetsImagesGen {
@@ -1809,12 +1840,12 @@ class $AssetsSvgsIconsGeneralGen {
   ];
 }
 
-class UiKitAssets {
-  const UiKitAssets._();
-
+abstract final class UiKitAssets {
   static const String package = 'qizlar_academy_kit';
 
+  static const $AssetsAppBarBackgoundsGen appBarBackgounds = $AssetsAppBarBackgoundsGen();
   static const $AssetsBadgesGen badges = $AssetsBadgesGen();
+  static const $AssetsDataGen data = $AssetsDataGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsJsonGen json = $AssetsJsonGen();
   static const $AssetsLottieGen lottie = $AssetsLottieGen();

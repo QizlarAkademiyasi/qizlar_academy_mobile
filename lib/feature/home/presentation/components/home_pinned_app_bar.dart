@@ -1,6 +1,7 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
-import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_header_component.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_app_bar_background.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_liquid_action_button.dart';
 
 class HomePinnedAppBar extends StatelessWidget {
   const HomePinnedAppBar({
@@ -13,7 +14,9 @@ class HomePinnedAppBar extends StatelessWidget {
     required this.notificationTooltip,
   });
 
-  static const double toolbarTopPad = 16;
+  static const double toolbarHeight = 44;
+  static const double horizontalInset = 16;
+  static const double fadePocket = 72;
 
   final String title;
   final double collapseProgress;
@@ -23,27 +26,36 @@ class HomePinnedAppBar extends StatelessWidget {
   final String notificationTooltip;
 
   static double contentInset(BuildContext context) =>
-      MediaQuery.paddingOf(context).top +
-      toolbarTopPad +
-      HomeHeaderActionButton.size;
+      MediaQuery.paddingOf(context).top + toolbarHeight;
 
-  static double overlayHeight(BuildContext context) => contentInset(context);
+  static double overlayHeight(BuildContext context) =>
+      contentInset(context) + fadePocket;
 
   @override
   Widget build(BuildContext context) {
     final top = MediaQuery.paddingOf(context).top;
-    final titleOpacity = collapseProgress.clamp(0.0, 1.0);
+    final titleOpacity = Curves.easeOutCubic.transform(
+      collapseProgress.clamp(0.0, 1.0),
+    );
     return SizedBox(
       key: const ValueKey('home-pinned-app-bar'),
       height: overlayHeight(context),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          AppScrollEdgeBlur(progress: collapseProgress),
-          Padding(
-            padding: EdgeInsets.fromLTRB(24, top + toolbarTopPad, 24, 0),
-            child: SizedBox(
-              height: HomeHeaderActionButton.size,
+          HomeAppBarBackground(progress: collapseProgress),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: top + toolbarHeight,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                horizontalInset,
+                top,
+                horizontalInset,
+                0,
+              ),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -63,23 +75,25 @@ class HomePinnedAppBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      HomeHeaderActionButton(
-                        key: const ValueKey('home-notification-button'),
-                        icon: LucideIcons.bell,
-                        tooltip: notificationTooltip,
-                        onTap: onNotificationTap,
-                        showIndicator: true,
-                      ),
-                      HomeHeaderActionButton(
-                        key: const ValueKey('home-tasks-button'),
-                        icon: LucideIcons.clipboardCheck,
-                        tooltip: tasksTooltip,
-                        onTap: onTasksTap,
-                      ),
-                    ],
+                  HomeLiquidActionLayer(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        HomeLiquidActionButton(
+                          key: const ValueKey('home-notification-button'),
+                          icon: CupertinoIcons.bell,
+                          tooltip: notificationTooltip,
+                          onTap: onNotificationTap,
+                          showIndicator: true,
+                        ),
+                        HomeLiquidActionButton(
+                          key: const ValueKey('home-tasks-button'),
+                          icon: CupertinoIcons.doc_checkmark,
+                          tooltip: tasksTooltip,
+                          onTap: onTasksTap,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

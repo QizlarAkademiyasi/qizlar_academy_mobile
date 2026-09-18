@@ -141,24 +141,28 @@ abstract class LiquidGlassRenderObject extends RenderProxyBox {
     for (final geometryRo in link.shapes) {
       final geometry = geometryRo.maybeRebuildGeometry();
 
-      if (geometry == null) continue;
+      if (geometry == null || !hasUsablePaintRect(geometry.bounds)) {
+        continue;
+      }
 
       final transform = geometryRo.getTransformTo(this);
-      shapesWithGeometry.add((geometryRo, geometry, transform));
+      if (!hasUsableMatrix(transform)) continue;
 
       final geoBounds = MatrixUtils.transformRect(
         transform,
         geometry.bounds,
       );
+      if (!hasUsablePaintRect(geoBounds)) continue;
+
+      shapesWithGeometry.add((geometryRo, geometry, transform));
       boundingBox = boundingBox == null
           ? geoBounds
           : boundingBox.expandToInclude(geoBounds);
     }
 
-    if (boundingBox == null) {
+    if (boundingBox == null || !hasUsablePaintRect(boundingBox)) {
       _clearGeometryImage();
-
-      super.paint(context, offset);
+      _paintContentsWithoutGlass(context, offset, shapesWithGeometry);
       return;
     }
 
@@ -166,19 +170,7 @@ abstract class LiquidGlassRenderObject extends RenderProxyBox {
 
     if (settings.effectiveThickness <= 0) {
       _clearGeometryImage();
-      paintShapeContents(
-        context,
-        offset,
-        shapesWithGeometry,
-        insideGlass: true,
-      );
-      paintShapeContents(
-        context,
-        offset,
-        shapesWithGeometry,
-        insideGlass: false,
-      );
-      super.paint(context, offset);
+      _paintContentsWithoutGlass(context, offset, shapesWithGeometry);
       return;
     }
 
@@ -189,13 +181,18 @@ abstract class LiquidGlassRenderObject extends RenderProxyBox {
 
       needsGeometryUpdate = false;
 
-      final (image, matteBounds) = _buildGeometryImage(
+      final geometryImage = _buildGeometryImage(
         shapesWithGeometry,
         boundingBox,
       );
 
-      _geometryImage = image;
-      _geometryMatteBounds = matteBounds;
+      if (geometryImage == null) {
+        _paintContentsWithoutGlass(context, offset, shapesWithGeometry);
+        return;
+      }
+
+      _geometryImage = geometryImage.$1;
+      _geometryMatteBounds = geometryImage.$2;
     }
 
     if (debugPaintLiquidGlassGeometry) {
@@ -230,6 +227,26 @@ abstract class LiquidGlassRenderObject extends RenderProxyBox {
       }
     }
 
+    super.paint(context, offset);
+  }
+
+  void _paintContentsWithoutGlass(
+    PaintingContext context,
+    Offset offset,
+    List<(RenderLiquidGlassGeometry, GeometryCache, Matrix4)> shapes,
+  ) {
+    paintShapeContents(
+      context,
+      offset,
+      shapes,
+      insideGlass: true,
+    );
+    paintShapeContents(
+      context,
+      offset,
+      shapes,
+      insideGlass: false,
+    );
     super.paint(context, offset);
   }
 
@@ -300,16 +317,27 @@ abstract class LiquidGlassRenderObject extends RenderProxyBox {
   @protected
   bool needsGeometryUpdate = true;
 
-  (ui.Image, Rect) _buildGeometryImage(
+  (ui.Image, Rect)? _buildGeometryImage(
     List<(RenderLiquidGlassGeometry, GeometryCache, Matrix4)> geometries,
     Rect bounds,
   ) {
+    if (!hasUsableMatrix(matteTransform) || !hasUsablePaintRect(bounds)) {
+      return null;
+    }
+
     final boundsInMatteSpace = MatrixUtils.transformRect(
       matteTransform,
       bounds,
     ).snapToPixels(devicePixelRatio);
 
+    if (!hasUsablePaintRect(boundsInMatteSpace)) {
+      return null;
+    }
+
     final size = boundsInMatteSpace.size * devicePixelRatio;
+    if (!hasUsableImageSize(size)) {
+      return null;
+    }
 
     final buffer = StringBuffer('$hashCode Built geometry image with '
         '${geometries.length} shapes at size ${size.width}x${size.height}:\n');

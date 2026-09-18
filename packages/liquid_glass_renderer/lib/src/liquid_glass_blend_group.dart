@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 import 'package:liquid_glass_renderer/src/internal/render_liquid_glass_geometry.dart';
+import 'package:liquid_glass_renderer/src/internal/snap_rect_to_pixels.dart';
 import 'package:liquid_glass_renderer/src/internal/transform_tracking_repaint_boundary_mixin.dart';
 import 'package:liquid_glass_renderer/src/liquid_glass.dart';
 import 'package:liquid_glass_renderer/src/liquid_glass_render_scope.dart';
@@ -273,6 +274,12 @@ class RenderLiquidGlassBlendGroup extends RenderLiquidGlassGeometry
           shape,
           glassContainsChild,
         );
+        if (!hasUsablePaintRect(shapeData.shapeBounds) ||
+            (shapeData.shapeToGeometry != null &&
+                !hasUsableMatrix(shapeData.shapeToGeometry!))) {
+          continue;
+        }
+
         shapes.add(shapeData);
 
         layerBounds = layerBounds?.expandToInclude(shapeData.shapeBounds) ??

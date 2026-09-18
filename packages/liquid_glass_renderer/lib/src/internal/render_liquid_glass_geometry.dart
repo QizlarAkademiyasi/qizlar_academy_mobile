@@ -220,7 +220,7 @@ abstract class RenderLiquidGlassGeometry extends RenderProxyBox {
     geometry = null;
     geometryState = LiquidGlassGeometryState.updated;
 
-    if (shapes.isEmpty) {
+    if (shapes.isEmpty || !hasUsablePaintRect(layerBounds)) {
       return null;
     }
 
@@ -231,6 +231,12 @@ abstract class RenderLiquidGlassGeometry extends RenderProxyBox {
       snappedBounds.width * devicePixelRatio,
       snappedBounds.height * devicePixelRatio,
     ).snapToPixels(1);
+
+    if (!hasUsablePaintRect(snappedBounds) ||
+        !hasUsablePaintRect(matteBounds) ||
+        !hasUsableImageSize(matteBounds.size)) {
+      return null;
+    }
 
     // Set the new geometry
     final newGeo = geometry = UnrenderedGeometryCache(
@@ -251,9 +257,14 @@ abstract class RenderLiquidGlassGeometry extends RenderProxyBox {
     List<ShapeGeometry> shapes,
   ) {
     final bounds = geometryBounds.snapToPixels(devicePixelRatio);
+    final imageSize = bounds.size * devicePixelRatio;
 
-    final width = (bounds.width * devicePixelRatio).ceil();
-    final height = (bounds.height * devicePixelRatio).ceil();
+    if (!hasUsablePaintRect(bounds) || !hasUsableImageSize(imageSize)) {
+      return PictureRecorder().endRecording();
+    }
+
+    final width = imageSize.width.ceil();
+    final height = imageSize.height.ceil();
 
     geometryShader.setFloatUniforms((value) {
       value
@@ -342,8 +353,28 @@ class UnrenderedGeometryCache extends GeometryCache {
   /// The matte image representing the geometry.
   final Picture matte;
 
+  RenderedGeometryCache _emptyRenderedGeometry() {
+    final recorder = PictureRecorder();
+    Canvas(recorder);
+    final picture = recorder.endRecording();
+    final image = picture.toImageSync(1, 1);
+    picture.dispose();
+    return RenderedGeometryCache(
+      matte: image,
+      matteBounds: const Rect.fromLTWH(0, 0, 1, 1),
+      bounds: bounds,
+      shapes: shapes,
+      path: path,
+    );
+  }
+
   @override
   Future<RenderedGeometryCache> renderAsync() async {
+    if (!hasUsablePaintRect(matteBounds) ||
+        !hasUsableImageSize(matteBounds.size)) {
+      dispose();
+      return _emptyRenderedGeometry();
+    }
     final image = await matte.toImage(
       matteBounds.width.ceil(),
       matteBounds.height.ceil(),
@@ -359,6 +390,11 @@ class UnrenderedGeometryCache extends GeometryCache {
 
   @override
   RenderedGeometryCache render() {
+    if (!hasUsablePaintRect(matteBounds) ||
+        !hasUsableImageSize(matteBounds.size)) {
+      dispose();
+      return _emptyRenderedGeometry();
+    }
     final image = matte.toImageSync(
       matteBounds.width.ceil(),
       matteBounds.height.ceil(),

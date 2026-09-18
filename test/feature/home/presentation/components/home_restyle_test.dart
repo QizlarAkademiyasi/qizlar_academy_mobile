@@ -156,6 +156,11 @@ void main() {
           ),
         );
         await tester.pump();
+        expect(
+          find.byKey(const ValueKey('home-stats-liquid-layer')),
+          findsOneWidget,
+        );
+        expect(find.byType(LiquidGlass), findsOneWidget);
         expect(find.text('127'), findsOneWidget);
         expect(find.text('3'), findsOneWidget);
         expect(find.text('82'), findsOneWidget);

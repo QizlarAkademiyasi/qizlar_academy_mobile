@@ -2,6 +2,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_liquid_action_button.dart';
 
 class HomeStatsSection extends StatelessWidget {
   const HomeStatsSection({
@@ -14,51 +15,51 @@ class HomeStatsSection extends StatelessWidget {
   final HomeStatsModel stats;
   final bool isLoading;
   final VoidCallback? onCoinsAndGradeTap, onRatingTap;
-  static const double stretchSlack = 12;
+  static const double stretchSlack = 0;
 
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: stretchSlack),
     child: AppLiquidStretch(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-        decoration: BoxDecoration(
-          color: context.appColors.onContainer.withValues(alpha: .35),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: context.appColors.onContainer.withValues(alpha: .9),
+      child: LiquidGlassLayer(
+        key: const ValueKey('home-stats-liquid-layer'),
+        settings: homeLiquidGlassSettings(context.isDarkTheme),
+        child: LiquidGlass(
+          shape: const LiquidRoundedSuperellipse(borderRadius: 24),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _Metric(
+                    value: stats.coins,
+                    label: context.l10n.homeCoinsLabel,
+                    icon: LucideIcons.circleStar,
+                    isLoading: isLoading,
+                    onTap: onCoinsAndGradeTap,
+                  ),
+                ),
+                Expanded(
+                  child: _Metric(
+                    value: stats.grade,
+                    label: context.l10n.homeRatingLabel,
+                    icon: LucideIcons.flame,
+                    isLoading: isLoading,
+                    onTap: onCoinsAndGradeTap,
+                  ),
+                ),
+                Expanded(
+                  child: _Metric(
+                    value: stats.rating,
+                    label: context.l10n.homeRankLabel,
+                    icon: LucideIcons.crown,
+                    isLoading: isLoading,
+                    onTap: onRatingTap,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: _Metric(
-                value: stats.coins,
-                label: context.l10n.homeCoinsLabel,
-                icon: LucideIcons.circleStar,
-                isLoading: isLoading,
-                onTap: onCoinsAndGradeTap,
-              ),
-            ),
-            Expanded(
-              child: _Metric(
-                value: stats.grade,
-                label: context.l10n.homeRatingLabel,
-                icon: LucideIcons.flame,
-                isLoading: isLoading,
-                onTap: onCoinsAndGradeTap,
-              ),
-            ),
-            Expanded(
-              child: _Metric(
-                value: stats.rating,
-                label: context.l10n.homeRankLabel,
-                icon: LucideIcons.crown,
-                isLoading: isLoading,
-                onTap: onRatingTap,
-              ),
-            ),
-          ],
         ),
       ),
     ),
@@ -80,6 +81,9 @@ class _Metric extends StatelessWidget {
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) => InkWell(
+    splashFactory: NoSplash.splashFactory,
+    overlayColor: WidgetStatePropertyAll(Colors.transparent),
+    highlightColor: Colors.transparent,
     onTap: onTap,
     borderRadius: BorderRadius.circular(12),
     child: Padding(

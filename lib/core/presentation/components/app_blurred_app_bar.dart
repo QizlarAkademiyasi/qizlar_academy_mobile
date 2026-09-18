@@ -16,7 +16,7 @@ class AppBlurredAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leadingWidth,
     this.toolbarHeight = kToolbarHeight,
     this.bottom,
-    this.blurSigma = 18,
+    this.blurSigma = 30,
     this.backgroundOpacity = 0.82,
   });
 
@@ -80,7 +80,7 @@ class AppBlurredSliverAppBar extends StatelessWidget {
     this.floating = false,
     this.snap = false,
     this.bottom,
-    this.blurSigma = 18,
+    this.blurSigma = 30,
     this.backgroundOpacity = 0.82,
   });
 
