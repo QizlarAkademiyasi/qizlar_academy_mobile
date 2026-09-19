@@ -36,6 +36,17 @@ String formatPhoneForDisplay(String raw) {
   return '+$code $first $second-$third-$fourth';
 }
 
+/// Profil headeridagi ikkinchi qator: formatlangan telefon yoki `null` (ko‘rsatilmaydi).
+String? profileHeaderPhoneSubtitle(String phoneNumber) {
+  final trimmed = phoneNumber.trim();
+  if (trimmed.isEmpty) return null;
+  final digits = trimmed.replaceAll(RegExp(r'[^0-9]'), '');
+  if (digits.length < 9) return null;
+  final formatted = formatPhoneForDisplay(trimmed);
+  if (formatted.isNotEmpty) return formatted;
+  return trimmed;
+}
+
 /// Profil sarlavhasidagi ikkinchi qator matni: `Telefon: +998 …` yoki bo‘sh bo‘lsa `Telefon: —`.
 String profilePhoneSubtitleLine(String phoneNumber) {
   final trimmed = phoneNumber.trim();

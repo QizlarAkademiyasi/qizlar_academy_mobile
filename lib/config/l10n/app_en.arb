@@ -351,7 +351,18 @@
   "profileMenuProfileInfo": "Profile information",
   "profileMenuLanguage": "Language",
   "profileMenuShareApp": "Share the app",
+  "profileMenuInviteFriend": "Invite a friend",
+  "profileInviteFriendSubtitle": "Invite your friends",
   "profileShareAppSubtitle": "Invite friends and family",
+  "profileSectionPartners": "Partners",
+  "profileUserIdSubtitle": "id: {userId}",
+  "@profileUserIdSubtitle": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
   "profileShareAppMessage": "Qizlar Academy brings free courses, a vibrant community, and room to grow for women and girls — all in one app.\n\nDownload and learn together:\n{link}",
   "@profileShareAppMessage": {
     "placeholders": {
@@ -788,6 +799,15 @@
 ,
   "homeGreeting": "Hello, {name}",
   "homeCoinsLabel": "Coins",
+  "homeStreakLabel": "Streak",
+  "homeStreakDays": "{count, plural, one{{count} day} other{{count} days}}",
+  "@homeStreakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "homeRatingLabel": "Rating",
   "homeRankLabel": "Rank",
   "portfolioMineLabel": "My portfolio",

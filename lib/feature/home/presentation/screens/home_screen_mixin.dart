@@ -78,16 +78,11 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
     return _registeredHeaderTitle(context, userGreetingName);
   }
 
-  Widget buildPinnedAppBar(
-    BuildContext context, {
-    String userGreetingName = '',
-  }) {
-    final title = greetingTitle(context, userGreetingName: userGreetingName);
+  Widget buildPinnedAppBar(BuildContext context) {
     return ValueListenableBuilder<double>(
       valueListenable: headerCollapse,
       builder: (context, collapse, _) {
         return HomePinnedAppBar(
-          title: title,
           collapseProgress: collapse,
           tasksTooltip: context.l10n.tasksTitle,
           notificationTooltip: context.l10n.notificationsTitle,
@@ -101,9 +96,13 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
   Widget buildLargeGreeting(
     BuildContext context, {
     String userGreetingName = '',
+    int userBadgeId = 0,
+    bool showBadge = true,
   }) {
     return HomeHeaderComponent(
       title: greetingTitle(context, userGreetingName: userGreetingName),
+      userBadgeId: userBadgeId,
+      showBadge: showBadge,
     );
   }
 

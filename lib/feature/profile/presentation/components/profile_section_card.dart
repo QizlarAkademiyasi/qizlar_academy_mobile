@@ -1,5 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_liquid_surface.dart';
 
 class ProfileSectionCard extends StatelessWidget {
   const ProfileSectionCard({
@@ -24,12 +25,8 @@ class ProfileSectionCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Container(
-          decoration: BoxDecoration(
-            color: context.appColors.onContainer,
-            borderRadius: AppRadius.radiusXl,
-            border: Border.all(color: context.appColors.stroke),
-          ),
+        ProfileLiquidSurface(
+          layerKey: const ValueKey('profile-section-liquid-layer'),
           child: Column(children: children),
         ),
       ],

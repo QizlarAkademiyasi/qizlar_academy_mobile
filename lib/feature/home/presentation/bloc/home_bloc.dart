@@ -5,6 +5,7 @@ import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dar
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_startup_snapshot.dart';
+import 'package:qizlar_academy_mobile/feature/home/domain/model/home_user_profile_snippet.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/teacher_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/repository/home_repository.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
@@ -44,6 +45,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           courses: cached.courses,
           banners: cached.banners,
           userGreetingName: cached.userGreetingName,
+          userBadgeId: cached.userBadgeId,
           message: null,
         ),
       );
@@ -61,24 +63,36 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<String> _loadUserGreetingName() async {
-    if (!_authSessionCubit.state.isRegistered) return '';
+  Future<HomeUserProfileSnippet> _loadUserProfileSnippet() async {
+    if (!_authSessionCubit.state.isRegistered) {
+      return HomeUserProfileSnippet.empty;
+    }
     try {
       final overview = await _profileRepository.getProfileOverview();
-      final first = overview.user.firstName.trim();
-      if (first.isNotEmpty) return first;
-      final full = overview.user.fullName.trim();
-      if (full.isNotEmpty) return full;
+      final user = overview.user;
+      final first = user.firstName.trim();
+      final name = first.isNotEmpty
+          ? first
+          : (user.fullName.trim().isNotEmpty ? user.fullName.trim() : '');
+      return HomeUserProfileSnippet(
+        greetingName: name,
+        badgeId: user.badgeId,
+      );
     } catch (_) {}
-    return '';
+    return HomeUserProfileSnippet.empty;
   }
 
   Future<void> _onUserGreetingRefreshRequested(
     HomeUserGreetingRefreshRequested event,
     Emitter<HomeState> emit,
   ) async {
-    final name = await _loadUserGreetingName();
-    emit(state.copyWith(userGreetingName: name));
+    final snippet = await _loadUserProfileSnippet();
+    emit(
+      state.copyWith(
+        userGreetingName: snippet.greetingName,
+        userBadgeId: snippet.badgeId,
+      ),
+    );
   }
 
   Future<void> _loadMainContent(Emitter<HomeState> emit) async {
@@ -87,15 +101,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       _repository.getTeachers(),
       _repository.getCourses(),
       _repository.getBanners(),
-      _loadUserGreetingName(),
+      _loadUserProfileSnippet(),
     ]);
+    final snippet = results[4]! as HomeUserProfileSnippet;
     emit(
       state.copyWith(
         homeStats: results[0] as HomeStatsModel,
         teachers: results[1] as List<TeacherModel>,
         courses: results[2] as List<CourseModel>,
         banners: results[3] as List<BannerModel>,
-        userGreetingName: results[4] as String,
+        userGreetingName: snippet.greetingName,
+        userBadgeId: snippet.badgeId,
       ),
     );
   }

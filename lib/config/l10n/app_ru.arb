@@ -313,7 +313,18 @@
   "profileMenuProfileInfo": "Данные профиля",
   "profileMenuLanguage": "Язык",
   "profileMenuShareApp": "Поделиться приложением",
+  "profileMenuInviteFriend": "Пригласить друга",
+  "profileInviteFriendSubtitle": "Пригласите друзей",
   "profileShareAppSubtitle": "Поделитесь с близкими",
+  "profileSectionPartners": "Партнёры",
+  "profileUserIdSubtitle": "id: {userId}",
+  "@profileUserIdSubtitle": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
   "profileShareAppMessage": "Qizlar Akademiyasi — бесплатные курсы, активное сообщество и возможности для роста для женщин и девушек в одном приложении.\n\nСкачайте и учитесь вместе:\n{link}",
   "@profileShareAppMessage": {
     "placeholders": {
@@ -743,6 +754,15 @@
 ,
   "homeGreeting": "Привет, {name}",
   "homeCoinsLabel": "Монеты",
+  "homeStreakLabel": "Серия",
+  "homeStreakDays": "{count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дней}}",
+  "@homeStreakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "homeRatingLabel": "Рейтинг",
   "homeRankLabel": "Место",
   "portfolioMineLabel": "Моё портфолио",

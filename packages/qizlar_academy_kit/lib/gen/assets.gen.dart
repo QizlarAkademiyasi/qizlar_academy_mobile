@@ -29,6 +29,16 @@ class $AssetsAppBarBackgoundsGen {
   List<AssetGenImage> get values => [backgroundLight, backgroundDark];
 }
 
+class $AssetsAppbarGen {
+  const $AssetsAppbarGen();
+
+  /// File path: assets/appbar/appBar_logo.svg
+  SvgGenImage get appBarLogo => const SvgGenImage('assets/appbar/appBar_logo.svg');
+
+  /// List of all assets
+  List<SvgGenImage> get values => [appBarLogo];
+}
+
 class $AssetsBadgesGen {
   const $AssetsBadgesGen();
 
@@ -117,6 +127,9 @@ class $AssetsImagesGen {
 
   /// File path: assets/images/logo_removed.png
   AssetGenImage get logoRemoved => const AssetGenImage('assets/images/logo_removed.png');
+
+  /// Directory path: assets/images/partners
+  $AssetsImagesPartnersGen get partners => const $AssetsImagesPartnersGen();
 
   /// File path: assets/images/qizlar_ovozi.svg
   SvgGenImage get qizlarOvozi => const SvgGenImage('assets/images/qizlar_ovozi.svg');
@@ -361,6 +374,23 @@ class $AssetsImagesBottomSheetGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [bottomSheetDark, bottomSheetLight];
+}
+
+class $AssetsImagesPartnersGen {
+  const $AssetsImagesPartnersGen();
+
+  /// File path: assets/images/partners/agentlik_logo.png
+  AssetGenImage get agentlikLogo => const AssetGenImage('assets/images/partners/agentlik_logo.png');
+
+  /// File path: assets/images/partners/qizlar_ovozi_logo.png
+  AssetGenImage get qizlarOvoziLogo =>
+      const AssetGenImage('assets/images/partners/qizlar_ovozi_logo.png');
+
+  /// File path: assets/images/partners/qomita_logo.png
+  AssetGenImage get qomitaLogo => const AssetGenImage('assets/images/partners/qomita_logo.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [agentlikLogo, qizlarOvoziLogo, qomitaLogo];
 }
 
 class $AssetsLottieRabbitGen {
@@ -1840,10 +1870,13 @@ class $AssetsSvgsIconsGeneralGen {
   ];
 }
 
-abstract final class UiKitAssets {
+class UiKitAssets {
+  const UiKitAssets._();
+
   static const String package = 'qizlar_academy_kit';
 
   static const $AssetsAppBarBackgoundsGen appBarBackgounds = $AssetsAppBarBackgoundsGen();
+  static const $AssetsAppbarGen appbar = $AssetsAppbarGen();
   static const $AssetsBadgesGen badges = $AssetsBadgesGen();
   static const $AssetsDataGen data = $AssetsDataGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();

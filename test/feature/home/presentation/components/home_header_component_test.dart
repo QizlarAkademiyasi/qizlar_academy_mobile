@@ -29,7 +29,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('pinned app bar keeps actions and collapses name at $width', (
+    testWidgets('pinned app bar keeps actions and logo at $width', (
       tester,
     ) async {
       tester.view.physicalSize = Size(width, 800);
@@ -83,7 +83,6 @@ void main() {
                           left: 0,
                           right: 0,
                           child: HomePinnedAppBar(
-                            title: 'Salom, Rayhon',
                             collapseProgress: progress,
                             tasksTooltip: 'Tasks',
                             notificationTooltip: 'Notifications',
@@ -129,11 +128,7 @@ void main() {
         tester.getTopLeft(find.byKey(const ValueKey('home-large-greeting'))).dy,
         greaterThan(tester.getRect(left).bottom),
       );
-      final opacityFinder = find.ancestor(
-        of: find.byKey(const ValueKey('home-compact-title')),
-        matching: find.byType(Opacity),
-      );
-      expect(tester.widget<Opacity>(opacityFinder).opacity, 0);
+      expect(find.byKey(const ValueKey('home-app-bar-logo')), findsOneWidget);
       expect(
         find.byKey(const ValueKey('home-liquid-action-layer')),
         findsOneWidget,
@@ -170,12 +165,7 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -120));
       await tester.pumpAndSettle();
       expect(tester.getTopLeft(left).dy, yBefore);
-      expect(tester.widget<Opacity>(opacityFinder).opacity, greaterThan(0.9));
-      expect(find.byKey(const ValueKey('home-compact-title')), findsOneWidget);
-      final compactTitle = tester.getRect(
-        find.byKey(const ValueKey('home-compact-title')),
-      );
-      expect(toolbarBottom - compactTitle.bottom, inInclusiveRange(8, 16));
+      expect(find.byKey(const ValueKey('home-app-bar-logo')), findsOneWidget);
       expect(find.byType(HomeAppBarBackground), findsOneWidget);
       expect(
         find.byKey(const ValueKey('home-app-bar-background')),
@@ -232,7 +222,6 @@ void main() {
                           left: 0,
                           right: 0,
                           child: HomePinnedAppBar(
-                            title: 'Salom, Rayhon',
                             collapseProgress: 0,
                             tasksTooltip: 'Tasks',
                             notificationTooltip: 'Notifications',

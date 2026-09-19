@@ -62,7 +62,6 @@ void main() {
                       Align(
                         alignment: Alignment.topCenter,
                         child: HomePinnedAppBar(
-                          title: 'Salom, Rayhon',
                           collapseProgress: collapsed ? 1 : 0,
                           tasksTooltip: 'Vazifalar',
                           notificationTooltip: 'Bildirishnomalar',

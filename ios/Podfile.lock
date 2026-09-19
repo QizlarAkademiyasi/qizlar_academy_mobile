@@ -94,7 +94,7 @@ SPEC CHECKSUMS:
   FBSDKCoreKit: a5f384db2e9ee84e98494fed8f983d2bd79accff
   FBSDKCoreKit_Basics: d35c775aaf243a2d731dfae7be3a74b1987285ab
   FBSDKShareKit: e7ec3bed8e82dabc04e56f3cf44ef99a1864309e
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   flutter_inappwebview_ios: 6f63631e2c62a7c350263b13fa5427aedefe81d4
   fluttertoast: 21eecd6935e7064cc1fcb733a4c5a428f3f24f0f
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94

@@ -10,6 +10,7 @@ class HomeState extends Equatable {
     this.courses = const [],
     this.banners = const [],
     this.userGreetingName = '',
+    this.userBadgeId = 0,
     this.message,
   });
 
@@ -19,8 +20,9 @@ class HomeState extends Equatable {
   final List<CourseModel> courses;
   final List<BannerModel> banners;
 
-  /// Ro‘yxatdan o‘tgan foydalanuvchi uchun AppBar sarlavhasi (profildan).
+  /// Ro‘yxatdan o‘tgan foydalanuvchi uchun salom qatori (profildan).
   final String userGreetingName;
+  final int userBadgeId;
   final String? message;
 
   HomeState copyWith({
@@ -30,6 +32,7 @@ class HomeState extends Equatable {
     List<CourseModel>? courses,
     List<BannerModel>? banners,
     String? userGreetingName,
+    int? userBadgeId,
     String? message,
   }) {
     return HomeState(
@@ -39,6 +42,7 @@ class HomeState extends Equatable {
       courses: courses ?? this.courses,
       banners: banners ?? this.banners,
       userGreetingName: userGreetingName ?? this.userGreetingName,
+      userBadgeId: userBadgeId ?? this.userBadgeId,
       message: message ?? this.message,
     );
   }
@@ -51,6 +55,7 @@ class HomeState extends Equatable {
     courses,
     banners,
     userGreetingName,
+    userBadgeId,
     message,
   ];
 }

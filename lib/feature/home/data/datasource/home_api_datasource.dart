@@ -76,23 +76,27 @@ class HomeApiDatasource implements HomeDatasource {
     if (userType == UserType.guest) {
       return const HomeStatsModel(
         coins: 0,
-        grade: 0,
+        streakDays: 0,
         rating: 0,
         lastLessonCategory: '',
         lastLessonProgress: 0,
       );
     }
 
-    final response = await _dio.get<dynamic>(UserApis.userLastProgress);
-    final progressData = _unwrapDataAsMap(response.data);
+    final results = await Future.wait<dynamic>([
+      _dio.get<dynamic>(UserApis.userLastProgress),
+      _dio.get<dynamic>(UserApis.activityStreak),
+    ]);
+    final progressData = _unwrapDataAsMap(results[0].data);
+    final streakData = _unwrapDataAsMap(results[1].data);
     final progressPercent = _parseDouble(progressData['progressPercent']);
+    final rawStreak = streakData['streakCount'];
+    final streakDays = (int.tryParse('$rawStreak') ?? 0).clamp(0, 9999);
 
     return HomeStatsModel(
       coins: _parseInt(progressData['coins']),
-      // API: `last-progress` endpoint'dan "rating" ham keladi.
-      // Home'dagi "Reyting" (oldin "Baho") shu qiymat bo'ladi.
-      grade: _parseInt(progressData['rating']),
-      rating: _parseInt(progressData['leaderboardRank']),
+      streakDays: streakDays,
+      rating: _parseInt(progressData['rating']),
       lastLessonCategory: (progressData['lastLessonTitle'] ?? '').toString(),
       lastLessonProgress: (progressPercent / 100).clamp(0, 1),
     );

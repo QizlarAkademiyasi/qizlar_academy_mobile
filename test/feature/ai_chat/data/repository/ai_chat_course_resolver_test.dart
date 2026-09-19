@@ -116,7 +116,7 @@ class _FakeHomeRepository implements HomeRepository {
   @override
   Future<HomeStatsModel> getStats() async => const HomeStatsModel(
     coins: 0,
-    grade: 0,
+    streakDays: 0,
     rating: 0,
     lastLessonCategory: '',
     lastLessonProgress: 0,

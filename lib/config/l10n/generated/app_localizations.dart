@@ -1360,11 +1360,35 @@ abstract class AppLocalizations {
   /// **'Share the app'**
   String get profileMenuShareApp;
 
+  /// No description provided for @profileMenuInviteFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a friend'**
+  String get profileMenuInviteFriend;
+
+  /// No description provided for @profileInviteFriendSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite your friends'**
+  String get profileInviteFriendSubtitle;
+
   /// No description provided for @profileShareAppSubtitle.
   ///
   /// In en, this message translates to:
   /// **'Invite friends and family'**
   String get profileShareAppSubtitle;
+
+  /// No description provided for @profileSectionPartners.
+  ///
+  /// In en, this message translates to:
+  /// **'Partners'**
+  String get profileSectionPartners;
+
+  /// No description provided for @profileUserIdSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'id: {userId}'**
+  String profileUserIdSubtitle(String userId);
 
   /// No description provided for @profileShareAppMessage.
   ///
@@ -2913,6 +2937,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Coins'**
   String get homeCoinsLabel;
+
+  /// No description provided for @homeStreakLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get homeStreakLabel;
+
+  /// No description provided for @homeStreakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} day} other{{count} days}}'**
+  String homeStreakDays(int count);
 
   /// No description provided for @homeRatingLabel.
   ///

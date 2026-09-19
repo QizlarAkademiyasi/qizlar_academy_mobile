@@ -166,8 +166,8 @@
   "profileStatRating": "Reyting",
   "profileStatPoints": "Ballar",
   "profileMenuCertificates": "Sertifikatlarim",
-  "profileMenuMyCourses": "Mening kurslarim",
-  "profileMenuMyActivity": "Mening faolligim",
+  "profileMenuMyCourses": "Kurslarim",
+  "profileMenuMyActivity": "Faolligim",
   "dailyCoinStreakTitle": "{count} kunlik ketma-ketlik",
   "@dailyCoinStreakTitle": {
     "placeholders": {
@@ -313,7 +313,18 @@
   "profileMenuProfileInfo": "Profil ma'lumotlari",
   "profileMenuLanguage": "Til",
   "profileMenuShareApp": "Ilovani ulashish",
+  "profileMenuInviteFriend": "Do'stimni chaqirish",
+  "profileInviteFriendSubtitle": "Do'stlaringizni taklif qiling",
   "profileShareAppSubtitle": "Do‘stlaringiz bilan ulashing",
+  "profileSectionPartners": "Hamkorlar",
+  "profileUserIdSubtitle": "id: {userId}",
+  "@profileUserIdSubtitle": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
   "profileShareAppMessage": "Qizlar Akademiyasi — ayol-qizlar uchun bepul o‘quv kurslari, faol hamjamiyat va rivojlanish imkoniyatlari barchasi bitta ilovada.\n\nYuklab oling va birga o‘rganing:\n{link}",
   "@profileShareAppMessage": {
     "placeholders": {
@@ -743,6 +754,15 @@
 ,
   "homeGreeting": "Salom, {name}",
   "homeCoinsLabel": "Tanga",
+  "homeStreakLabel": "Seriya",
+  "homeStreakDays": "{count} kun",
+  "@homeStreakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "homeRatingLabel": "Reyting",
   "homeRankLabel": "Reytingdagi o‘rin",
   "portfolioMineLabel": "Mening portfoliom",

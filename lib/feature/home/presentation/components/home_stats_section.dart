@@ -32,7 +32,7 @@ class HomeStatsSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: _Metric(
-                    value: stats.coins,
+                    value: '${stats.coins}',
                     label: context.l10n.homeCoinsLabel,
                     icon: LucideIcons.circleStar,
                     isLoading: isLoading,
@@ -41,8 +41,8 @@ class HomeStatsSection extends StatelessWidget {
                 ),
                 Expanded(
                   child: _Metric(
-                    value: stats.grade,
-                    label: context.l10n.homeRatingLabel,
+                    value: context.l10n.homeStreakDays(stats.streakDays),
+                    label: context.l10n.homeStreakLabel,
                     icon: LucideIcons.flame,
                     isLoading: isLoading,
                     onTap: onCoinsAndGradeTap,
@@ -50,8 +50,8 @@ class HomeStatsSection extends StatelessWidget {
                 ),
                 Expanded(
                   child: _Metric(
-                    value: stats.rating,
-                    label: context.l10n.homeRankLabel,
+                    value: '${stats.rating}',
+                    label: context.l10n.homeRatingLabel,
                     icon: LucideIcons.crown,
                     isLoading: isLoading,
                     onTap: onRatingTap,
@@ -74,7 +74,7 @@ class _Metric extends StatelessWidget {
     required this.isLoading,
     this.onTap,
   });
-  final int value;
+  final String value;
   final String label;
   final IconData icon;
   final bool isLoading;
@@ -100,7 +100,7 @@ class _Metric extends StatelessWidget {
                 Skeletonizer(
                   enabled: isLoading,
                   child: Text(
-                    '$value',
+                    value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: context.textTheme.bodyMediumBold.copyWith(

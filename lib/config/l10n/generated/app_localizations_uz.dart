@@ -503,10 +503,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileMenuCertificates => 'Sertifikatlarim';
 
   @override
-  String get profileMenuMyCourses => 'Mening kurslarim';
+  String get profileMenuMyCourses => 'Kurslarim';
 
   @override
-  String get profileMenuMyActivity => 'Mening faolligim';
+  String get profileMenuMyActivity => 'Faolligim';
 
   @override
   String dailyCoinStreakTitle(int count) {
@@ -712,7 +712,21 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileMenuShareApp => 'Ilovani ulashish';
 
   @override
+  String get profileMenuInviteFriend => 'Do\'stimni chaqirish';
+
+  @override
+  String get profileInviteFriendSubtitle => 'Do\'stlaringizni taklif qiling';
+
+  @override
   String get profileShareAppSubtitle => 'Do‘stlaringiz bilan ulashing';
+
+  @override
+  String get profileSectionPartners => 'Hamkorlar';
+
+  @override
+  String profileUserIdSubtitle(String userId) {
+    return 'id: $userId';
+  }
 
   @override
   String profileShareAppMessage(String link) {
@@ -1606,6 +1620,14 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get homeCoinsLabel => 'Tanga';
+
+  @override
+  String get homeStreakLabel => 'Seriya';
+
+  @override
+  String homeStreakDays(int count) {
+    return '$count kun';
+  }
 
   @override
   String get homeRatingLabel => 'Reyting';

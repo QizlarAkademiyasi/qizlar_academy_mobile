@@ -132,7 +132,7 @@ void main() {
                             HomeStatsSection(
                               stats: const HomeStatsModel(
                                 coins: 127,
-                                grade: 3,
+                                streakDays: 3,
                                 rating: 82,
                                 lastLessonCategory: '',
                                 lastLessonProgress: 0,
@@ -162,9 +162,9 @@ void main() {
         );
         expect(find.byType(LiquidGlass), findsOneWidget);
         expect(find.text('127'), findsOneWidget);
-        expect(find.text('3'), findsOneWidget);
         expect(find.text('82'), findsOneWidget);
-        expect(find.text('Seriya'), findsNothing);
+        expect(find.text('Seriya'), findsOneWidget);
+        expect(find.text('3 kun'), findsOneWidget);
         expect(find.text('Kurslar'), findsOneWidget);
         expect(find.text('Barcha kurslar'), findsOneWidget);
         expect(find.text("Ko'rish"), findsOneWidget);

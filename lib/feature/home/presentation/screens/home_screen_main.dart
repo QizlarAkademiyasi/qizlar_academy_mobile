@@ -69,6 +69,8 @@ class _HomeScreenState extends State<HomeScreen>
                           child: buildLargeGreeting(
                             context,
                             userGreetingName: state.userGreetingName,
+                            userBadgeId: state.userBadgeId,
+                            showBadge: !auth.isAnonymous,
                           ),
                         ),
                         const SliverToBoxAdapter(child: SizedBox(height: 36)),
@@ -94,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 state.homeStats ??
                                     const HomeStatsModel(
                                       coins: 0,
-                                      grade: 0,
+                                      streakDays: 0,
                                       rating: 0,
                                       lastLessonCategory: '',
                                       lastLessonProgress: 0,
@@ -157,10 +159,7 @@ class _HomeScreenState extends State<HomeScreen>
                     top: 0,
                     left: 0,
                     right: 0,
-                    child: buildPinnedAppBar(
-                      context,
-                      userGreetingName: state.userGreetingName,
-                    ),
+                    child: buildPinnedAppBar(context),
                   ),
                 ],
               ),

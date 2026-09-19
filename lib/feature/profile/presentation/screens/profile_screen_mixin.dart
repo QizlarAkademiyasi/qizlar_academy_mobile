@@ -15,8 +15,9 @@ import 'package:qizlar_academy_mobile/feature/profile/data/profile_badge_catalog
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_badge_picker_sheet_content.dart';
-import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_filter_chips.dart';
+import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_achievement_grid.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_header.dart';
+import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_partners_section.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_language_option_tile.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_delete_account_tile.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_logout_tile.dart';
@@ -48,10 +49,7 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     context.read<ProfileBloc>().add(const ProfileRetryRequested());
   }
 
-  Future<void> onNotificationSettingsTap(
-    BuildContext context, {
-    required bool masterEnabled,
-  }) async {
+  Future<void> onNotificationsToggled(BuildContext context, bool enabled) async {
     final canExecute = await getIt<GuestTapGateService>().allowAction(
       context,
       key: 'profile_notifications_toggle',
@@ -59,12 +57,9 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     );
     if (!canExecute) return;
     if (!context.mounted) return;
-    await context.push(
-      Routes.notificationSettings,
-      extra: masterEnabled,
+    context.read<ProfileBloc>().add(
+      ProfileNotificationsToggled(enabled: enabled),
     );
-    if (!context.mounted) return;
-    context.read<ProfileBloc>().add(const ProfileStarted());
   }
 
   Future<void> onDarkModeChanged(BuildContext context, bool enabled) async {
@@ -138,6 +133,10 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     }
     if (item.type == ProfileMenuItemType.shareApp) {
       await onShareApp(context);
+      return;
+    }
+    if (item.type == ProfileMenuItemType.inviteFriend) {
+      context.push(Routes.referral);
       return;
     }
 
@@ -440,32 +439,46 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     return ProfileStatsCard(stats: stats, loading: loading);
   }
 
-  Widget buildProfileFilters(
-    BuildContext context, {
-    required ProfileOverviewModel overview,
-  }) {
-    return ProfileFilterChips(items: overview.bankFilters);
+  Widget buildPartnersSection(BuildContext context) {
+    return const ProfilePartnersSection();
   }
 
   Widget buildAchievementsSection(
     BuildContext context, {
     required ProfileOverviewModel overview,
   }) {
-    return ProfileSectionCard(
-      title: context.l10n.profileSectionAccount,
-      children: List.generate(overview.achievements.length, (index) {
-        final item = overview.achievements[index];
-        return ProfileMenuTile(
-          icon: _iconForMenuType(item.type),
-          title: _profileMenuTitle(context, item),
-          subtitle: _achievementSubtitle(context, overview, item),
-          badgeCount: _achievementBadgeCount(overview, item),
-          onTap: () {
-            onMenuTap(context, item: item, overview: overview);
-          },
-          showDivider: index != overview.achievements.length - 1,
-        );
-      }),
+    final achievements = overview.achievements;
+    if (achievements.length < 4) {
+      return ProfileSectionCard(
+        title: context.l10n.profileSectionAccount,
+        children: List.generate(achievements.length, (index) {
+          final item = achievements[index];
+          return ProfileMenuTile(
+            icon: _iconForMenuType(item.type),
+            title: _profileMenuTitle(context, item),
+            subtitle: _achievementSubtitle(context, overview, item),
+            badgeCount: _achievementBadgeCount(overview, item),
+            onTap: () {
+              onMenuTap(context, item: item, overview: overview);
+            },
+            showDivider: index != achievements.length - 1,
+          );
+        }),
+      );
+    }
+
+    final gridItems = achievements.take(4).map((item) {
+      return ProfileAchievementGridItem(
+        icon: _iconForMenuType(item.type),
+        title: _profileMenuTitle(context, item),
+        badgeCount: _achievementBadgeCount(overview, item),
+        onTap: () => onMenuTap(context, item: item, overview: overview),
+      );
+    }).toList(growable: false);
+
+    return ProfileAchievementGrid(
+      sectionTitle: context.l10n.profileSectionAccount,
+      items: gridItems,
     );
   }
 
@@ -528,17 +541,15 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
             showDivider: true,
           );
         }),
-        ProfileMenuTile(
+        ProfilePreferenceTile(
           icon: LucideIcons.bell,
           title: context.l10n.profileNotifications,
           subtitle: overview.notificationsEnabled
               ? context.l10n.notificationSettingsEnabled
               : context.l10n.notificationSettingsDisabled,
-          onTap: () {
-            onNotificationSettingsTap(
-              context,
-              masterEnabled: overview.notificationsEnabled,
-            );
+          value: overview.notificationsEnabled,
+          onChanged: (switchContext, enabled) {
+            onNotificationsToggled(switchContext, enabled);
           },
           showDivider: true,
         ),
@@ -569,6 +580,8 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
           title: _profileMenuTitle(context, item),
           subtitle: item.type == ProfileMenuItemType.shareApp
               ? context.l10n.profileShareAppSubtitle
+              : item.type == ProfileMenuItemType.inviteFriend
+              ? context.l10n.profileInviteFriendSubtitle
               : item.subtitle,
           onTap: () {
             onMenuTap(context, item: item, overview: overview);
@@ -600,6 +613,8 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
         return l.profileMenuLanguage;
       case ProfileMenuItemType.shareApp:
         return l.profileMenuShareApp;
+      case ProfileMenuItemType.inviteFriend:
+        return l.profileMenuInviteFriend;
       case ProfileMenuItemType.aboutApp:
         return l.profileMenuAbout;
       case ProfileMenuItemType.helpCenter:
@@ -638,6 +653,8 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
         return LucideIcons.languages;
       case ProfileMenuItemType.shareApp:
         return LucideIcons.share2;
+      case ProfileMenuItemType.inviteFriend:
+        return LucideIcons.userRoundPlus;
       case ProfileMenuItemType.aboutApp:
         return LucideIcons.info;
       case ProfileMenuItemType.helpCenter:

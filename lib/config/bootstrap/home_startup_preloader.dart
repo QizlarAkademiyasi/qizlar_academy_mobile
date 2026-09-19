@@ -8,6 +8,7 @@ import 'package:qizlar_academy_mobile/feature/home/domain/model/banner_model.dar
 import 'package:qizlar_academy_mobile/feature/home/domain/model/course_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_stats_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/home_startup_snapshot.dart';
+import 'package:qizlar_academy_mobile/feature/home/domain/model/home_user_profile_snippet.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/model/teacher_model.dart';
 import 'package:qizlar_academy_mobile/feature/home/domain/repository/home_repository.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/repository/profile_repository.dart';
@@ -24,14 +25,15 @@ abstract final class HomeStartupPreloader {
       final home = getIt<HomeRepository>();
       final profile = getIt<ProfileRepository>();
 
-      final greetingFuture = _loadGreetingName(userType, profile);
+      final profileSnippetFuture = _loadProfileSnippet(userType, profile);
       final results = await Future.wait<Object>([
         home.getStats(),
         home.getTeachers(),
         home.getCourses(),
         home.getBanners(),
-        greetingFuture,
+        profileSnippetFuture,
       ]);
+      final snippet = results[4] as HomeUserProfileSnippet;
 
       getIt<HomeStartupCache>().set(
         HomeStartupSnapshot(
@@ -40,7 +42,8 @@ abstract final class HomeStartupPreloader {
           teachers: results[1] as List<TeacherModel>,
           courses: results[2] as List<CourseModel>,
           banners: results[3] as List<BannerModel>,
-          userGreetingName: results[4] as String,
+          userGreetingName: snippet.greetingName,
+          userBadgeId: snippet.badgeId,
         ),
       );
     } catch (e, st) {
@@ -54,18 +57,23 @@ abstract final class HomeStartupPreloader {
     }
   }
 
-  static Future<String> _loadGreetingName(
+  static Future<HomeUserProfileSnippet> _loadProfileSnippet(
     UserType userType,
     ProfileRepository profile,
   ) async {
-    if (userType != UserType.user) return '';
+    if (userType != UserType.user) return HomeUserProfileSnippet.empty;
     try {
       final overview = await profile.getProfileOverview();
-      final first = overview.user.firstName.trim();
-      if (first.isNotEmpty) return first;
-      final full = overview.user.fullName.trim();
-      if (full.isNotEmpty) return full;
+      final user = overview.user;
+      final first = user.firstName.trim();
+      final name = first.isNotEmpty
+          ? first
+          : (user.fullName.trim().isNotEmpty ? user.fullName.trim() : '');
+      return HomeUserProfileSnippet(
+        greetingName: name,
+        badgeId: user.badgeId,
+      );
     } catch (_) {}
-    return '';
+    return HomeUserProfileSnippet.empty;
   }
 }

@@ -12,6 +12,7 @@ final class HomeStartupSnapshot {
     required this.courses,
     required this.banners,
     required this.userGreetingName,
+    required this.userBadgeId,
   });
 
   final UserType userType;
@@ -20,6 +21,7 @@ final class HomeStartupSnapshot {
   final List<CourseModel> courses;
   final List<BannerModel> banners;
   final String userGreetingName;
+  final int userBadgeId;
 }
 
 /// Splash paytida preload qilingan Home datalari uchun in-memory cache.

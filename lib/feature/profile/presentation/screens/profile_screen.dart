@@ -1,11 +1,9 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
-import 'package:qizlar_academy_mobile/config/constants/apis.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
-import 'package:qizlar_academy_mobile/core/format/phone_display_format.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_ambient_background.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/bloc/profile_bloc.dart';
-import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_full_name_with_badge.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_language_option_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_menu_item_model.dart';
 import 'package:qizlar_academy_mobile/feature/profile/domain/model/profile_overview_model.dart';
@@ -71,6 +69,12 @@ class _ProfileViewState extends State<_ProfileView>
           subtitle: l10n.profileShareAppSubtitle,
         ),
         ProfileMenuItemModel(
+          id: 'general-invite',
+          type: ProfileMenuItemType.inviteFriend,
+          title: l10n.profileMenuInviteFriend,
+          subtitle: l10n.profileInviteFriendSubtitle,
+        ),
+        ProfileMenuItemModel(
           id: 'general-2',
           type: ProfileMenuItemType.aboutApp,
           title: l10n.profileMenuAbout,
@@ -115,6 +119,9 @@ class _ProfileViewState extends State<_ProfileView>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Scaffold(
+      backgroundColor: context.isDarkTheme
+          ? context.appColors.background
+          : const Color(0xFFF7F7F5),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: profileBlocListener,
         builder: (context, state) {
@@ -141,328 +148,130 @@ class _ProfileViewState extends State<_ProfileView>
               final avatarGen =
                   getIt<ProfileAvatarRefreshNotifier>().generation;
               final topInset = MediaQuery.paddingOf(context).top;
-              return CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _ProfilePinnedHeaderDelegate(
-                      overview: overview,
-                      enabledSkeleton: isInitialLoading,
-                      avatarImageGeneration: avatarGen,
-                      topInset: topInset,
-                      onBadgeTap: isInitialLoading
-                          ? null
-                          : () => onProfileBadgePressed(
+              return Stack(
+                children: [
+                  const Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: HomeAmbientBackground(),
+                  ),
+                  CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            24,
+                            topInset + 8,
+                            24,
+                            14,
+                          ),
+                          child: Skeletonizer.zone(
+                            enabled: isInitialLoading,
+                            child: buildProfileHeader(
                               context,
                               overview: overview,
+                              avatarImageGeneration: avatarGen,
+                              loading: isInitialLoading,
                             ),
-                      expandedHeader: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: buildProfileHeader(
-                          context,
-                          overview: overview,
-                          avatarImageGeneration: avatarGen,
-                          loading: isInitialLoading,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset + 56),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        Skeletonizer.zone(
-                          enabled: isInitialLoading,
-                          child: IgnorePointer(
-                            ignoring: isInitialLoading,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                  child: buildProfileStats(
-                                    context,
-                                    overview: overview,
-                                    loading: isInitialLoading,
-                                  ),
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, bottomInset + 56),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
+                            Skeletonizer.zone(
+                              enabled: isInitialLoading,
+                              child: IgnorePointer(
+                                ignoring: isInitialLoading,
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: buildProfileStats(
+                                        context,
+                                        overview: overview,
+                                        loading: isInitialLoading,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: buildPartnersSection(context),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: buildAchievementsSection(
+                                        context,
+                                        overview: overview,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: buildSettingsSection(
+                                        context,
+                                        overview: overview,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: buildGeneralSection(
+                                        context,
+                                        overview: overview,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 18),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                  child: buildAchievementsSection(
-                                    context,
-                                    overview: overview,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                  child: buildSettingsSection(
-                                    context,
-                                    overview: overview,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                  child: buildGeneralSection(
-                                    context,
-                                    overview: overview,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: buildDeleteAccountSection(context),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: buildLogoutSection(context),
-                        ),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: ProfileAppVersionText(
-                            style: context.textTheme.bodySmallRegular.copyWith(
-                              color: context.appColors.secondaryGrey,
+                            const SizedBox(height: 24),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              child: buildDeleteAccountSection(context),
                             ),
-                          ),
+                            const SizedBox(height: 12),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              child: buildLogoutSection(context),
+                            ),
+                            const SizedBox(height: 16),
+                            Center(
+                              child: ProfileAppVersionText(
+                                style: context.textTheme.bodySmallRegular
+                                    .copyWith(
+                                      color: context.appColors.secondaryGrey,
+                                    ),
+                              ),
+                            ),
+                          ]),
                         ),
-                      ]),
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               );
             },
           );
         },
-      ),
-    );
-  }
-}
-
-class _ProfilePinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
-  _ProfilePinnedHeaderDelegate({
-    required this.overview,
-    required this.enabledSkeleton,
-    required this.avatarImageGeneration,
-    required this.topInset,
-    required this.onBadgeTap,
-    required this.expandedHeader,
-  });
-
-  final ProfileOverviewModel overview;
-  final bool enabledSkeleton;
-  final int avatarImageGeneration;
-  final double topInset;
-  final VoidCallback? onBadgeTap;
-  final Widget expandedHeader;
-
-  static const double _maxHeight = 170;
-  static const double _minHeight = 85;
-
-  @override
-  double get minExtent => topInset + _minHeight;
-
-  @override
-  double get maxExtent => topInset + _maxHeight;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    final progress = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
-    final expandedFactor = (1 - progress).clamp(0.0, 1.0);
-
-    return AppBlurredHeaderSurface(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(16, topInset + 8, 16, 10),
-        child: Stack(
-          children: [
-            Opacity(
-              opacity: 1 - progress,
-              child: IgnorePointer(
-                ignoring: progress > 0.6,
-                child: ClipRect(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    heightFactor: expandedFactor,
-                    child: SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: Skeletonizer.zone(
-                        enabled: enabledSkeleton,
-                        child: expandedHeader,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Opacity(
-              opacity: progress,
-              child: IgnorePointer(
-                ignoring: progress < 0.4,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: _CompactPinnedHeader(
-                    overview: overview,
-                    enabledSkeleton: enabledSkeleton,
-                    avatarImageGeneration: avatarImageGeneration,
-                    onBadgeTap: onBadgeTap,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  bool shouldRebuild(covariant _ProfilePinnedHeaderDelegate oldDelegate) {
-    return oldDelegate.overview != overview ||
-        oldDelegate.enabledSkeleton != enabledSkeleton ||
-        oldDelegate.avatarImageGeneration != avatarImageGeneration ||
-        oldDelegate.topInset != topInset ||
-        oldDelegate.onBadgeTap != onBadgeTap ||
-        oldDelegate.expandedHeader != expandedHeader;
-  }
-}
-
-class _CompactPinnedHeader extends StatelessWidget {
-  const _CompactPinnedHeader({
-    required this.overview,
-    required this.enabledSkeleton,
-    required this.avatarImageGeneration,
-    this.onBadgeTap,
-  });
-
-  final ProfileOverviewModel overview;
-  final bool enabledSkeleton;
-  final int avatarImageGeneration;
-  final VoidCallback? onBadgeTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (enabledSkeleton) {
-      return Skeletonizer.zone(
-        enabled: true,
-        child: Container(
-          height: 70,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: context.appColors.onContainer,
-            borderRadius: AppRadius.radiusXl,
-            border: Border.all(color: context.appColors.stroke),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: context.appColors.primary,
-                    width: 2,
-                  ),
-                ),
-                child: Center(child: Bone.circle(size: 40)),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Bone.text(words: 3, fontSize: 14),
-                    const SizedBox(height: 4),
-                    Bone.text(words: 2, fontSize: 12),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final rawAvatar = overview.user.avatarUrl.trim();
-    var resolvedAvatar = rawAvatar.isEmpty ? '' : Apis.resolveUrl(rawAvatar);
-    if (resolvedAvatar.isNotEmpty && avatarImageGeneration != 0) {
-      resolvedAvatar = resolvedAvatar.contains('?')
-          ? '$resolvedAvatar&v=$avatarImageGeneration'
-          : '$resolvedAvatar?v=$avatarImageGeneration';
-    }
-    final hasAvatar = resolvedAvatar.isNotEmpty;
-
-    return Container(
-      height: 70,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: context.appColors.onContainer,
-        borderRadius: AppRadius.radiusXl,
-        border: Border.all(color: context.appColors.stroke),
-      ),
-      child: Row(
-        children: [
-          AppTappableProfileAvatar(
-            size: 48,
-            borderWidth: 2,
-            heroId: 'profile_pinned_compact_${overview.user.userId}',
-            resolvedNetworkUrl: hasAvatar ? resolvedAvatar : '',
-            placeholder: Icon(
-              LucideIcons.user,
-              color: context.appColors.grey,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProfileFullNameWithBadge(
-                  user: overview.user,
-                  nameStyle: context.textTheme.bodyMediumSemibold.copyWith(
-                    color: context.appColors.text,
-                  ),
-                  badgeSize: 24,
-                  badgeGap: 6,
-                  maxLines: 1,
-                  fallbackTextAlign: TextAlign.start,
-                  rowMainAxisAlignment: MainAxisAlignment.start,
-                  onBadgeTap: onBadgeTap,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  profilePhoneSubtitleLine(overview.user.phoneNumber),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.bodyXSmallRegular.copyWith(
-                    color: context.appColors.secondaryGrey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

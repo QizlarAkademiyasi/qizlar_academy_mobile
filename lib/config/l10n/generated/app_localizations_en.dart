@@ -711,7 +711,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileMenuShareApp => 'Share the app';
 
   @override
+  String get profileMenuInviteFriend => 'Invite a friend';
+
+  @override
+  String get profileInviteFriendSubtitle => 'Invite your friends';
+
+  @override
   String get profileShareAppSubtitle => 'Invite friends and family';
+
+  @override
+  String get profileSectionPartners => 'Partners';
+
+  @override
+  String profileUserIdSubtitle(String userId) {
+    return 'id: $userId';
+  }
 
   @override
   String profileShareAppMessage(String link) {
@@ -1592,6 +1606,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeCoinsLabel => 'Coins';
+
+  @override
+  String get homeStreakLabel => 'Streak';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '$count day',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get homeRatingLabel => 'Rating';

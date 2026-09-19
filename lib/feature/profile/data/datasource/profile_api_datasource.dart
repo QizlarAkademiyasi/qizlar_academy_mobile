@@ -287,6 +287,11 @@ class ProfileApiDatasource implements ProfileDatasource {
           title: 'Ilovani ulashish',
         ),
         ProfileMenuItemModel(
+          id: 'invite',
+          type: ProfileMenuItemType.inviteFriend,
+          title: 'Do\'stimni chaqirish',
+        ),
+        ProfileMenuItemModel(
           id: 'about',
           type: ProfileMenuItemType.aboutApp,
           title: 'Biz haqimizda',

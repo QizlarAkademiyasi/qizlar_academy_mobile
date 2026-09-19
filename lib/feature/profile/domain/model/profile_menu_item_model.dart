@@ -8,6 +8,7 @@ enum ProfileMenuItemType {
   profileInfo,
   language,
   shareApp,
+  inviteFriend,
   aboutApp,
   helpCenter,
   privacyPolicy,
