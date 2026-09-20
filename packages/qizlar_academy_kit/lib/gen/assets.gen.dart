@@ -137,6 +137,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/qizlar_ovozi_Logo.png
   AssetGenImage get qizlarOvoziLogo => const AssetGenImage('assets/images/qizlar_ovozi_Logo.png');
 
+  /// Directory path: assets/images/services_hub
+  $AssetsImagesServicesHubGen get servicesHub => const $AssetsImagesServicesHubGen();
+
   /// File path: assets/images/splash_logo.png
   AssetGenImage get splashLogoPng => const AssetGenImage('assets/images/splash_logo.png');
 
@@ -391,6 +394,24 @@ class $AssetsImagesPartnersGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [agentlikLogo, qizlarOvoziLogo, qomitaLogo];
+}
+
+class $AssetsImagesServicesHubGen {
+  const $AssetsImagesServicesHubGen();
+
+  /// File path: assets/images/services_hub/academy_logo.svg
+  SvgGenImage get academyLogo => const SvgGenImage('assets/images/services_hub/academy_logo.svg');
+
+  /// File path: assets/images/services_hub/game_card_2048_bg.svg
+  SvgGenImage get gameCard2048Bg =>
+      const SvgGenImage('assets/images/services_hub/game_card_2048_bg.svg');
+
+  /// File path: assets/images/services_hub/game_card_candy_bg.svg
+  SvgGenImage get gameCardCandyBg =>
+      const SvgGenImage('assets/images/services_hub/game_card_candy_bg.svg');
+
+  /// List of all assets
+  List<SvgGenImage> get values => [academyLogo, gameCard2048Bg, gameCardCandyBg];
 }
 
 class $AssetsLottieRabbitGen {

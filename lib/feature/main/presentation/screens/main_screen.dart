@@ -11,12 +11,12 @@ import 'package:qizlar_academy_mobile/feature/announcement/presentation/services
 import 'package:qizlar_academy_mobile/feature/courses/presentation/bloc/courses_catalog_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/courses/presentation/screens/courses_screen.dart';
 import 'package:qizlar_academy_mobile/feature/leaderboard/presentation/screens/leaderboard_screen.dart';
-import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_action_grid.dart';
-import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_ai_chat_floating_pill.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/liquid_bottom_nav_second.dart';
+import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_drag_hide_area.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 import 'package:qizlar_academy_mobile/feature/profile/presentation/screens/profile_screen.dart';
+import 'package:qizlar_academy_mobile/feature/services_hub/presentation/screens/services_hub_main_tab_page.dart';
 
 import '../../../home/presentation/screens/home_screen_main.dart'
     show HomeScreen;
@@ -111,9 +111,9 @@ class _MainScreenState extends State<MainScreen>
             ),
             const _KeepAlivePage(child: LeaderboardScreen()),
             const _KeepAlivePage(child: ProfileScreen()),
-            // _KeepAlivePage(
-            //   child: MainMoreTabPage(selectedItemIndex: morePanelSelectedItemIndex, onItemSelected: onMorePanelItemSelected),
-            // ),
+            const _KeepAlivePage(
+              child: ServicesHubMainTabPage(bottomContentInset: 120),
+            ),
           ];
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -166,65 +166,32 @@ class _MainScreenState extends State<MainScreen>
             //     decoration: BoxDecoration(boxShadow: [BoxShadow(spreadRadius: 2, blurRadius: 32, color: AppColors.shadow.withValues(alpha: 0.14))]),
             //   ),
             // ),
-            Positioned.fill(
-              child: AnimatedOpacity(
-                opacity: isExtraMenuExpanded ? 1 : 0,
-                duration: const Duration(milliseconds: 280),
-                curve: Curves.easeOut,
-                child: IgnorePointer(
-                  ignoring: !isExtraMenuExpanded,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: closeExtraMenu,
-                    child: const SizedBox.expand(),
-                  ),
-                ),
+            MainBottomNavDragHideArea(
+              navigationOffset: bottomNavigationOffset,
+              onDismissIntent: (_) => tryPopAppModalSheet(context),
+              floatingPill: MainAiChatFloatingPillOverlay(
+                bottomNavigationOffset: bottomNavigationOffset,
+                onTap: openAiChat,
               ),
-            ),
-            MainAiChatFloatingPillOverlay(
-              isBottomNavMinimized: isBottomNavMinimized,
-              isExtraMenuExpanded: isExtraMenuExpanded,
-              bottomNavigationOffset: bottomNavigationOffset,
-              onTap: openAiChat,
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 0),
-                child: Transform.translate(
-                  offset: bottomNavigationOffset,
-                  child: SecondLiquidBottomNav(
-                    items: mainAppSecondLiquidBottomNavItems(
-                      context,
-                      isGuestMode: isGuestMode,
-                      selectedExtraMenuItem: selectedExtraMenuItem,
-                      isProfileMenuExpanded: isExtraMenuExpanded,
-                    ),
-                    currentIndex: isExtraMenuExpanded
-                        ? kMainProfileTabIndex
-                        : bottomNavigationSelectedIndex,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 2,
-                      vertical: 2,
-                    ),
-                    onChanged: onTabTap,
-                    selectedColor: context.appColors.primary,
-                    unselectedColor: context.appColors.bottomBarTabUnselected,
-                    extraActionIcon: LucideIcons.galleryVerticalEnd,
-                    onExtraActionTap: onPortfolioTap,
-                    extraActionSemanticLabel: 'Portfolio feed',
-                    extraActionShowsCloseWhenExpanded: false,
-                    isMinimized: isBottomNavMinimized,
-                    isExpanded: isExtraMenuExpanded,
-                    expandedContent: MainExtraActionGrid(
-                      onItemTap: onExtraMenuItemTap,
-                    ),
-                    expandedContentHeight:
-                        MainExtraActionGrid.preferredHeightFor(
-                          kMainExtraMenuItems.length,
-                        ),
-                  ),
+              navigation: SecondLiquidBottomNav(
+                items: mainAppSecondLiquidBottomNavItems(
+                  context,
+                  isGuestMode: isGuestMode,
                 ),
+                currentIndex: bottomNavigationSelectedIndex,
+                suppressTabHighlight: isServicesHubTabActive,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 2,
+                  vertical: 2,
+                ),
+                onChanged: onTabTap,
+                selectedColor: context.appColors.primary,
+                unselectedColor: context.appColors.bottomBarTabUnselected,
+                extraActionIcon: isGuestMode ? null : LucideIcons.plus,
+                onExtraActionTap: isGuestMode ? null : onServicesHubTap,
+                extraActionSemanticLabel: context.l10n.servicesHubTitle,
+                extraActionShowsCloseWhenExpanded: false,
+                extraActionIsActive: isServicesHubTabActive,
               ),
             ),
             // if (Platform.isIOS)
@@ -321,7 +288,7 @@ class _MainTabPageViewWithFadeState extends State<_MainTabPageViewWithFade>
     return FadeTransition(
       opacity: _opacity,
       child: PageView(
-        physics: ClampingScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         controller: widget.pageController,
         onPageChanged: widget.onPageChanged,
         children: widget.pages,

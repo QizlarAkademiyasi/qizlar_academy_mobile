@@ -37,6 +37,8 @@ import 'package:qizlar_academy_mobile/feature/privacy_policy/presentation/screen
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/create/portfolio_create_screen.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/detail/portfolio_detail_screen.dart';
 import 'package:qizlar_academy_mobile/feature/portfolio/presentation/screens/portfolio_screen.dart';
+import 'package:qizlar_academy_mobile/feature/services_hub/domain/model/game_webview_args.dart';
+import 'package:qizlar_academy_mobile/feature/services_hub/presentation/screens/game_webview/game_webview_screen.dart';
 import 'package:qizlar_academy_mobile/feature/certificates/presentation/screens/my_certificates_screen.dart';
 import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacancies_screen.dart';
 import 'package:qizlar_academy_mobile/feature/vacancy/presentation/screens/vacancy_detail/vacancy_detail_screen.dart';
@@ -660,6 +662,26 @@ class AppRoute {
             screenName: 'PortfolioScreen',
             child: const PortfolioScreen(),
           ),
+        ),
+        GoRoute(
+          path: Routes.gameWebView,
+          name: Routes.gameWebViewName,
+          parentNavigatorKey: rootNavigatorKey,
+          pageBuilder: (_, state) {
+            final extra = state.extra;
+            if (extra is! GameWebViewArgs) {
+              return watchdogScreenPage(
+                state: state,
+                screenName: 'MainScreen',
+                child: const MainScreen(isGuestMode: false),
+              );
+            }
+            return watchdogScreenPage(
+              state: state,
+              screenName: 'GameWebViewScreen',
+              child: GameWebViewScreen(args: extra),
+            );
+          },
         ),
         GoRoute(
           path: Routes.portfolioCreate,

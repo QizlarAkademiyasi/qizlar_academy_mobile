@@ -112,4 +112,8 @@ sealed class Routes {
 
   static const String portfolioCreate = '/portfolio/create';
   static const String portfolioCreateName = 'portfolioCreate';
+
+  /// Ichki o‘yin WebView (faqat ruxsat etilgan hostlar).
+  static const String gameWebView = '/game-webview';
+  static const String gameWebViewName = 'gameWebView';
 }

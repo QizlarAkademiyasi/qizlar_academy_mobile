@@ -4,57 +4,43 @@ import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 
 void main() {
-  testWidgets('More opens the menu and Profile becomes the fourth tab', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const MaterialApp(home: _MainScreenMixinHarness()));
+  testWidgets('profile tab switches to profile index', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: _MainScreenMixinHarness(isGuestMode: false)),
+    );
 
-    expect(find.text('index:0 expanded:false'), findsOneWidget);
+    expect(find.text('index:0 hub:false'), findsOneWidget);
 
-    await tester.tap(find.byKey(const ValueKey('fourth-tab')));
+    await tester.tap(find.byKey(const ValueKey('profile-tab')));
     await tester.pump();
-    expect(find.text('index:0 expanded:true'), findsOneWidget);
-
-    await tester.tap(find.byKey(const ValueKey('profile-menu-item')));
-    await tester.pump();
-    expect(find.text('index:3 expanded:false'), findsOneWidget);
-    expect(find.text('remembered:Profil'), findsOneWidget);
-
-    await tester.tap(find.byKey(const ValueKey('fourth-tab')));
-    await tester.pump();
-    expect(find.text('index:3 expanded:true'), findsOneWidget);
+    expect(find.text('index:3 hub:false'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('home-tab')));
     await tester.pump();
-    expect(find.text('index:0 expanded:false'), findsOneWidget);
-    expect(find.text('remembered:Profil'), findsOneWidget);
-
-    await tester.tap(find.byKey(const ValueKey('fourth-tab')));
-    await tester.pump();
-    expect(find.text('index:3 expanded:false'), findsOneWidget);
-
-    await tester.tap(find.byKey(const ValueKey('fourth-tab')));
-    await tester.pump();
-    expect(find.text('index:3 expanded:true'), findsOneWidget);
+    expect(find.text('index:0 hub:false'), findsOneWidget);
   });
 
-  testWidgets('vertical scroll minimizes and restores the bottom navigation', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const MaterialApp(home: _MainScreenMixinHarness()));
+  testWidgets('services hub tap selects tab index 4 for user', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: _MainScreenMixinHarness(isGuestMode: false)),
+    );
 
-    expect(find.text('minimized:false'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('profile-tab')));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('services-hub-tab')));
+    await tester.pump();
+    expect(find.text('index:4 hub:true'), findsOneWidget);
+    expect(find.text('bottomNav:3'), findsOneWidget);
+  });
+
+  testWidgets('scroll does not minimize bottom navigation', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: _MainScreenMixinHarness(isGuestMode: false)),
+    );
 
     await tester.drag(
       find.byKey(const ValueKey('scrollable')),
       const Offset(0, -80),
-    );
-    await tester.pump();
-    expect(find.text('minimized:true'), findsOneWidget);
-
-    await tester.drag(
-      find.byKey(const ValueKey('scrollable')),
-      const Offset(0, 40),
     );
     await tester.pump();
     expect(find.text('minimized:false'), findsOneWidget);
@@ -68,13 +54,13 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('courses-tab')));
     await tester.pump();
 
-    expect(find.text('index:1 expanded:false'), findsOneWidget);
+    expect(find.text('index:1 hub:false'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
 
 class _MainScreenMixinHarness extends StatefulWidget {
-  const _MainScreenMixinHarness({this.isGuestMode = false});
+  const _MainScreenMixinHarness({this.isGuestMode = true});
 
   final bool isGuestMode;
 
@@ -93,18 +79,18 @@ class _MainScreenMixinHarnessState extends State<_MainScreenMixinHarness>
     return Scaffold(
       body: Column(
         children: [
-          Text('index:$selectedIndex expanded:$isExtraMenuExpanded'),
-          Text('minimized:$isBottomNavMinimized'),
-          Text('remembered:${selectedExtraMenuItem?.label ?? 'none'}'),
+          Text('index:$selectedIndex hub:$isServicesHubTabActive'),
+          Text('bottomNav:$bottomNavigationSelectedIndex'),
+          const Text('minimized:false'),
           TextButton(
-            key: const ValueKey('fourth-tab'),
-            onPressed: () => onTabTap(kMainProfileTabIndex),
-            child: const Text('More or Profile'),
+            key: const ValueKey('services-hub-tab'),
+            onPressed: onServicesHubTap,
+            child: const Text('Services Hub'),
           ),
           TextButton(
-            key: const ValueKey('profile-menu-item'),
-            onPressed: () => onExtraMenuItemTap(kMainExtraTabMenuItems.single),
-            child: const Text('Select Profile'),
+            key: const ValueKey('profile-tab'),
+            onPressed: () => onTabTap(kMainProfileTabIndex),
+            child: const Text('Profile'),
           ),
           TextButton(
             key: const ValueKey('home-tab'),

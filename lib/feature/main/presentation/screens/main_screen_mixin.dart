@@ -20,19 +20,12 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   int get bottomNavigationSelectedIndex => _bottomNavigationSelectedIndex;
   int _bottomNavigationSelectedIndex = 0;
 
+  bool get isServicesHubTabActive =>
+      !isGuestMode && _selectedIndex == kMainServicesHubTabIndex;
+
   /// Pastki bar orqali tab almashganda oshadi — [MainScreen] fade faqat shu bilan ishlaydi.
   int get tabBarFadeNonce => _tabBarFadeNonce;
   int _tabBarFadeNonce = 0;
-
-  bool get isExtraMenuExpanded => _isExtraMenuExpanded;
-  bool _isExtraMenuExpanded = false;
-
-  MainExtraMenuItem? get selectedExtraMenuItem => _selectedExtraMenuItem;
-  MainExtraMenuItem? _selectedExtraMenuItem;
-
-  bool get isBottomNavMinimized => _isBottomNavMinimized;
-  bool _isBottomNavMinimized = false;
-  double _bottomNavScrollDelta = 0;
 
   late final PageController pageController;
 
@@ -49,94 +42,39 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void onTabTap(int index) {
-    _setBottomNavMinimized(false);
-
-    if (index == kMainProfileTabIndex) {
-      if (_bottomNavigationSelectedIndex != kMainProfileTabIndex) {
-        switch (_selectedExtraMenuItem) {
-          case MainExtraTabMenuItem(:final tabIndex):
-            _handleTabTap(tabIndex);
-          case MainExtraRouteMenuItem(:final screenRoute):
-            setState(
-              () => _bottomNavigationSelectedIndex = kMainProfileTabIndex,
-            );
-            context.push(screenRoute);
-          case MainExtraActionMenuItem():
-            toggleExtraMenu();
-          case null:
-            toggleExtraMenu();
-        }
-        return;
-      }
-
-      if (isGuestMode) {
-        context.go(Routes.signIn);
-        return;
-      }
-
-      toggleExtraMenu();
+    if (isGuestMode && index == kMainProfileTabIndex) {
+      context.go(Routes.signIn);
       return;
-    }
-
-    if (_isExtraMenuExpanded) {
-      setState(() => _isExtraMenuExpanded = false);
     }
     _handleTabTap(index);
   }
 
-  void toggleExtraMenu() {
-    setState(() {
-      _isBottomNavMinimized = false;
-      _bottomNavScrollDelta = 0;
-      _isExtraMenuExpanded = !_isExtraMenuExpanded;
-    });
-  }
-
-  void closeExtraMenu() {
-    if (_isExtraMenuExpanded) {
-      setState(() => _isExtraMenuExpanded = false);
+  void onServicesHubTap() {
+    if (isGuestMode) {
+      context.go(Routes.signIn);
+      return;
     }
-  }
-
-  void onPortfolioTap() {
-    closeExtraMenu();
-    context.push(Routes.portfolio);
+    _handleTabTap(kMainServicesHubTabIndex);
   }
 
   void openAiChat() {
-    closeExtraMenu();
     context.push(Routes.aiChat);
   }
 
-  void onExtraMenuItemTap(MainExtraMenuItem item) {
-    setState(() {
-      _isExtraMenuExpanded = false;
-      if (item is! MainExtraActionMenuItem) {
-        _selectedExtraMenuItem = item;
-        _bottomNavigationSelectedIndex = kMainProfileTabIndex;
-      }
-    });
-    switch (item) {
-      case MainExtraTabMenuItem(:final tabIndex):
-        _handleTabTap(tabIndex);
-      case MainExtraRouteMenuItem(:final screenRoute):
-        context.push(screenRoute);
-      case MainExtraActionMenuItem(:final action):
-        _handleExtraMenuAction(action);
-    }
-  }
-
-  void _handleExtraMenuAction(MainExtraMenuAction action) {
-    switch (action) {
-      case MainExtraMenuAction.joinTeam:
-        break;
-    }
-  }
-
   void _handleTabTap(int index) {
-    // Gaimon.light();
-    if (isGuestMode && index == kMainProfileTabIndex) {
-      context.go(Routes.signIn);
+    if (index == kMainServicesHubTabIndex) {
+      if (_selectedIndex == kMainServicesHubTabIndex) {
+        return;
+      }
+      setState(() {
+        _tabBarFadeNonce++;
+        _selectedIndex = kMainServicesHubTabIndex;
+      });
+      reportWatchdogMainTab(
+        kMainServicesHubTabIndex,
+        isGuestMode: false,
+        path: Routes.mainUser,
+      );
       return;
     }
 
@@ -168,61 +106,16 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
     if (_selectedIndex != index || _bottomNavigationSelectedIndex != index) {
       setState(() {
         _selectedIndex = index;
-        _bottomNavigationSelectedIndex = index;
-        _isExtraMenuExpanded = false;
-        _isBottomNavMinimized = false;
-        _bottomNavScrollDelta = 0;
-        if (index == kMainProfileTabIndex) {
-          _selectedExtraMenuItem = kMainExtraTabMenuItems.single;
+        if (index <= kMainProfileTabIndex) {
+          _bottomNavigationSelectedIndex = index;
         }
       });
     }
   }
 
-  /// Aktiv tab ichidagi vertikal scrollni kuzatib, pastki navigatsiyani
-  /// scroll-down'da ixchamlaydi va scroll-up'da qayta ochadi.
+  /// Scroll paytida pastki navigatsiyani kichraytirish o‘chirilgan.
   bool onMainScrollNotification(ScrollNotification notification) {
-    if (notification.metrics.axis != Axis.vertical) return false;
-
-    if (_isExtraMenuExpanded) {
-      _bottomNavScrollDelta = 0;
-      _setBottomNavMinimized(false);
-      return false;
-    }
-
-    if (notification.metrics.pixels <= 4) {
-      _bottomNavScrollDelta = 0;
-      _setBottomNavMinimized(false);
-      return false;
-    }
-
-    if (notification is ScrollUpdateNotification) {
-      final delta = notification.scrollDelta ?? 0;
-      if (delta == 0) return false;
-
-      if ((_bottomNavScrollDelta > 0 && delta < 0) ||
-          (_bottomNavScrollDelta < 0 && delta > 0)) {
-        _bottomNavScrollDelta = 0;
-      }
-      _bottomNavScrollDelta += delta;
-
-      if (_bottomNavScrollDelta >= 22) {
-        _bottomNavScrollDelta = 0;
-        _setBottomNavMinimized(true);
-      } else if (_bottomNavScrollDelta <= -14) {
-        _bottomNavScrollDelta = 0;
-        _setBottomNavMinimized(false);
-      }
-    } else if (notification is ScrollEndNotification) {
-      _bottomNavScrollDelta = 0;
-    }
-
     return false;
-  }
-
-  void _setBottomNavMinimized(bool value) {
-    if (_isBottomNavMinimized == value || !mounted) return;
-    setState(() => _isBottomNavMinimized = value);
   }
 
   Widget buildBottomNavigationBar(BuildContext context) {

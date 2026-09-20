@@ -3,6 +3,9 @@ import 'package:qizlar_academy_mobile/config/router/app_routes.dart';
 
 const int kMainProfileTabIndex = 3;
 
+/// Faqat login user PageView: + tugmasi orqali ochiladigan Services Hub.
+const int kMainServicesHubTabIndex = 4;
+
 /// Kengaygan More menyusidagi umumiy vizual ma'lumotlar.
 sealed class MainExtraMenuItem {
   const MainExtraMenuItem({
