@@ -17,6 +17,13 @@ Future<T?> showAppBottomSheet<T>(
       barrierColor: Colors.black.withValues(alpha: 0.45),
       barrierDismissible: true,
       swipeDismissible: true,
+      // [SheetSize.stretch] da kontent viewport balandligiga teng, shuning uchun
+      // `SheetOffset` ga nisbatan olingan standart chegara ~butun ekran bo'ladi
+      // va qisqa drag hech qachon yopmaydi. Chegara viewportga bog'lanadi.
+      swipeDismissSensitivity: const SwipeDismissSensitivity(
+        minFlingVelocityRatio: 0.5,
+        dismissalOffset: SheetOffset.proportionalToViewport(0.92),
+      ),
       transitionDuration: const Duration(milliseconds: 480),
       transitionCurve: Curves.fastEaseInToSlowEaseOut,
       viewportBuilder: (ctx, sheetChild) {
@@ -33,10 +40,9 @@ Future<T?> showAppBottomSheet<T>(
       },
       builder: (_) => Sheet(
         initialOffset: const SheetOffset(1),
-        snapGrid: const SheetSnapGrid.stepless(
-          minOffset: SheetOffset(0),
-          maxOffset: SheetOffset(1),
-        ),
+        // Pastga drag sheet ichida "yutilmasin": `stepless(minOffset: 0)` bilan
+        // sheet o'zi pastga suriladi va swipe-to-dismiss umuman ishga tushmaydi.
+        snapGrid: const SheetSnapGrid.single(snap: SheetOffset(1)),
         physics: const BouncingSheetPhysics(),
         decoration: MaterialSheetDecoration(
           size: SheetSize.stretch,
@@ -58,6 +64,37 @@ Future<T?> showAppBottomSheet<T>(
       ),
     ),
   );
+}
+
+/// Stack’dagi eng ustki route — pop qilmasdan. `popUntil` predikati birinchi
+/// route’da `true` qaytargani uchun hech narsa olib tashlanmaydi.
+Route<dynamic>? appTopRoute(BuildContext context) {
+  final navigator = Navigator.maybeOf(context);
+  if (navigator == null) return null;
+
+  Route<dynamic>? topRoute;
+  navigator.popUntil((route) {
+    topRoute = route;
+    return true;
+  });
+  return topRoute;
+}
+
+/// Eng ustki route [showAppBottomSheet] kabi modal sheet bo‘lsa uni yopadi.
+///
+/// Oddiy push route (masalan, `context.push` bilan ochilgan ekran) tasodifan
+/// pop bo‘lib ketmasligi uchun faqat sheet route’larida `true` qaytadi.
+bool tryPopAppModalSheet(BuildContext context) {
+  final navigator = Navigator.maybeOf(context);
+  if (navigator == null || !navigator.canPop()) return false;
+
+  final topRoute = appTopRoute(context);
+  if (topRoute is! ModalSheetRoute && topRoute is! CupertinoModalSheetRoute) {
+    return false;
+  }
+
+  navigator.pop();
+  return true;
 }
 
 class AppBottomSheetContainer extends StatelessWidget {

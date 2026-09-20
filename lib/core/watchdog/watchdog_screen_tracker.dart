@@ -13,9 +13,10 @@ String mainTabScreenName(int index, {required bool isGuestMode}) {
   }
   return switch (index) {
     0 => 'HomeScreen',
-    1 => 'StoreScreen',
+    1 => 'CoursesScreen',
     2 => 'LeaderboardScreen',
     3 => 'ProfileScreen',
+    4 => 'ServicesHubMainTabPage',
     _ => 'HomeScreen',
   };
 }

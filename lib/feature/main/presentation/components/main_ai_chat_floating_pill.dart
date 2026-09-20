@@ -7,38 +7,25 @@ import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 class MainAiChatFloatingPillOverlay extends StatelessWidget {
   const MainAiChatFloatingPillOverlay({
     super.key,
-    required this.isBottomNavMinimized,
-    required this.isExtraMenuExpanded,
     required this.bottomNavigationOffset,
     required this.onTap,
   });
 
   static const double _navigationHeight = 64;
-  static const double _compactNavigationHeight = 50;
-  static const double pillHeight = _compactNavigationHeight - 10;
+  static const double pillHeight = _navigationHeight - 10;
   static const double _navigationMarginBottom = 16;
-  static const double _compactNavigationMarginBottom = 8;
   static const double _gapAboveNavigation = 10;
 
-  final bool isBottomNavMinimized;
-  final bool isExtraMenuExpanded;
   final Offset bottomNavigationOffset;
   final VoidCallback onTap;
 
   static double resolveBottomOffset({
     required double safeAreaBottom,
-    required bool isBottomNavMinimized,
     required double navigationTranslateY,
   }) {
-    final navigationHeight = isBottomNavMinimized
-        ? _compactNavigationHeight
-        : _navigationHeight;
-    final navigationMargin = isBottomNavMinimized
-        ? _compactNavigationMarginBottom
-        : _navigationMarginBottom;
     return safeAreaBottom +
-        navigationMargin +
-        navigationHeight -
+        _navigationMarginBottom +
+        _navigationHeight -
         navigationTranslateY +
         _gapAboveNavigation;
   }
@@ -47,28 +34,13 @@ class MainAiChatFloatingPillOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottom = resolveBottomOffset(
       safeAreaBottom: MediaQuery.paddingOf(context).bottom,
-      isBottomNavMinimized: isBottomNavMinimized,
       navigationTranslateY: bottomNavigationOffset.dy,
     );
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
+    return Positioned(
       left: 0,
       right: 0,
       bottom: bottom,
-      child: IgnorePointer(
-        ignoring: isExtraMenuExpanded,
-        child: AnimatedSlide(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          offset: isExtraMenuExpanded ? const Offset(0, 0.25) : Offset.zero,
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 180),
-            opacity: isExtraMenuExpanded ? 0 : 1,
-            child: Center(child: _MainAiChatFloatingPill(onTap: onTap)),
-          ),
-        ),
-      ),
+      child: Center(child: _MainAiChatFloatingPill(onTap: onTap)),
     );
   }
 }

@@ -47,6 +47,7 @@
   "mainTabLeaderboard": "Liderlar",
   "mainTabProfile": "Profil",
   "mainTabMore": "Yana",
+  "mainBottomNavShow": "Pastki menyuni ko‘rsatish",
   "mainMoreEmptyHint": "Pastki «Yana» tugmasini bosing va kerakli bo‘limni tanlang.",
   "guestSignInCta": "Kirish",
   "homeWelcomeGuestTitle": "Xush kelibsiz!",
@@ -773,5 +774,21 @@
         "type": "String"
       }
     }
-  }
+  },
+  "servicesHubTitle": "Barcha servislar",
+  "servicesHubAllServicesTitle": "Barcha Servislar",
+  "servicesHubGamesTitle": "O'yinlar",
+  "servicesHubComingSoon": "Tez orada ochiladi",
+  "servicesHubPortfolioTitle": "Portfolio",
+  "servicesHubPortfolioSubtitle": "Ballaringizni qimmatbaho sovg'alarga almashtiring",
+  "servicesHubStoreTitle": "Sovg'alar do'koni",
+  "servicesHubStoreSubtitle": "Ballaringizni qimmatbaho sovg'alarga almashtiring",
+  "servicesHubOlympiadTitle": "Olimpiadalar va Testlar",
+  "servicesHubOlympiadSubtitle": "Bilimingizni sinab ko'ring va sertifikat oling",
+  "servicesHubVacanciesTitle": "Vakansiyalar",
+  "servicesHubVacanciesSubtitle": "Kelajak kasbingizni toping va ishga joylashing",
+  "servicesHubTeamTitle": "Akademiya Jamoasi",
+  "servicesHubTeamSubtitle": "Faol qizlar bilan uchrashuvlar va elchilar",
+  "servicesHubGame2048Description": "Raqamlarni birlashtiring va 2048 tile ga yeting — tez va qiziqarli mantiq o'yini.",
+  "servicesHubGameCandyDescription": "Rangli shirinliklarni moslashtiring, kombinatsiyalar yig'ing va rekord o'rnating."
 }

@@ -166,6 +166,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get mainTabMore => 'Yana';
 
   @override
+  String get mainBottomNavShow => 'Pastki menyuni ko‘rsatish';
+
+  @override
   String get mainMoreEmptyHint =>
       'Pastki «Yana» tugmasini bosing va kerakli bo‘limni tanlang.';
 
@@ -1640,4 +1643,59 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get portfolioStoriesError => 'Storylar yuklanmadi';
+
+  @override
+  String get servicesHubTitle => 'Barcha servislar';
+
+  @override
+  String get servicesHubAllServicesTitle => 'Barcha Servislar';
+
+  @override
+  String get servicesHubGamesTitle => 'O\'yinlar';
+
+  @override
+  String get servicesHubComingSoon => 'Tez orada ochiladi';
+
+  @override
+  String get servicesHubPortfolioTitle => 'Portfolio';
+
+  @override
+  String get servicesHubPortfolioSubtitle =>
+      'Ballaringizni qimmatbaho sovg\'alarga almashtiring';
+
+  @override
+  String get servicesHubStoreTitle => 'Sovg\'alar do\'koni';
+
+  @override
+  String get servicesHubStoreSubtitle =>
+      'Ballaringizni qimmatbaho sovg\'alarga almashtiring';
+
+  @override
+  String get servicesHubOlympiadTitle => 'Olimpiadalar va Testlar';
+
+  @override
+  String get servicesHubOlympiadSubtitle =>
+      'Bilimingizni sinab ko\'ring va sertifikat oling';
+
+  @override
+  String get servicesHubVacanciesTitle => 'Vakansiyalar';
+
+  @override
+  String get servicesHubVacanciesSubtitle =>
+      'Kelajak kasbingizni toping va ishga joylashing';
+
+  @override
+  String get servicesHubTeamTitle => 'Akademiya Jamoasi';
+
+  @override
+  String get servicesHubTeamSubtitle =>
+      'Faol qizlar bilan uchrashuvlar va elchilar';
+
+  @override
+  String get servicesHubGame2048Description =>
+      'Raqamlarni birlashtiring va 2048 tile ga yeting — tez va qiziqarli mantiq o\'yini.';
+
+  @override
+  String get servicesHubGameCandyDescription =>
+      'Rangli shirinliklarni moslashtiring, kombinatsiyalar yig\'ing va rekord o\'rnating.';
 }

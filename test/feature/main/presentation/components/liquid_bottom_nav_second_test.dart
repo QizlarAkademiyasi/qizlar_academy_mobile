@@ -30,34 +30,25 @@ void main() {
     );
   });
 
-  testWidgets('fourth tab changes from More to Profile with an arrow', (
+  testWidgets('fourth tab is always Profile for guest and user shells', (
     tester,
   ) async {
-    MainExtraMenuItem? selectedExtraMenuItem;
-    var profileMenuIsExpanded = false;
-    late StateSetter setHarnessState;
-
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: StatefulBuilder(
-          builder: (context, setState) {
-            setHarnessState = setState;
+        home: Builder(
+          builder: (context) {
             final navItems = mainAppSecondLiquidBottomNavItems(
               context,
               isGuestMode: true,
-              selectedExtraMenuItem: selectedExtraMenuItem,
-              isProfileMenuExpanded: profileMenuIsExpanded,
             );
             final fourthItem = navItems[kMainProfileTabIndex];
             return Column(
               children: [
                 Text('second:${navItems[1].label}'),
                 Text(fourthItem.label),
-                if (fourthItem.labelTrailingIcon != null)
-                  Icon(fourthItem.labelTrailingIcon),
               ],
             );
           },
@@ -65,28 +56,10 @@ void main() {
       ),
     );
 
-    expect(find.text('More'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
     expect(find.text('second:Courses'), findsOneWidget);
     expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsNothing);
     expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsNothing);
-
-    setHarnessState(
-      () => selectedExtraMenuItem = kMainExtraTabMenuItems.single,
-    );
-    await tester.pump();
-    expect(find.text('Profile'), findsOneWidget);
-    expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsOneWidget);
-
-    setHarnessState(() => profileMenuIsExpanded = true);
-    await tester.pump();
-    expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
-
-    setHarnessState(
-      () => selectedExtraMenuItem = kMainExtraRouteMenuItems.first,
-    );
-    await tester.pump();
-    expect(find.text("Do'kon"), findsOneWidget);
-    expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
   });
 
   testWidgets('tab tap uses no splash and reports the selected index', (
@@ -202,6 +175,29 @@ void main() {
     setHarnessState(() => minimized = false);
     await tester.pumpAndSettle();
     expect(tester.getSize(find.byType(InkWell).first).height, fullTabHeight);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('suppressTabHighlight hides sliding indicator', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Center(
+          child: SecondLiquidBottomNav(
+            items: items,
+            margin: EdgeInsets.zero,
+            backgroundBlurSigma: 0,
+            currentIndex: 1,
+            suppressTabHighlight: true,
+            extraActionIcon: Icons.add,
+            onExtraActionTap: () {},
+            extraActionIsActive: true,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Home'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

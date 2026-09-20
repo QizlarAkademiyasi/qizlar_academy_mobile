@@ -47,6 +47,7 @@
   "mainTabLeaderboard": "Лидеры",
   "mainTabProfile": "Профиль",
   "mainTabMore": "Ещё",
+  "mainBottomNavShow": "Показать нижнее меню",
   "mainMoreEmptyHint": "Нажмите «Ещё» на панели вкладок и выберите раздел.",
   "guestSignInCta": "Войти",
   "homeWelcomeGuestTitle": "Добро пожаловать!",
@@ -773,5 +774,21 @@
         "type": "String"
       }
     }
-  }
+  },
+  "servicesHubTitle": "Все сервисы",
+  "servicesHubAllServicesTitle": "Все сервисы",
+  "servicesHubGamesTitle": "Игры",
+  "servicesHubComingSoon": "Скоро",
+  "servicesHubPortfolioTitle": "Портфолио",
+  "servicesHubPortfolioSubtitle": "Обменивайте баллы на ценные подарки",
+  "servicesHubStoreTitle": "Магазин подарков",
+  "servicesHubStoreSubtitle": "Обменивайте баллы на ценные подарки",
+  "servicesHubOlympiadTitle": "Олимпиады и тесты",
+  "servicesHubOlympiadSubtitle": "Проверьте знания и получите сертификат",
+  "servicesHubVacanciesTitle": "Вакансии",
+  "servicesHubVacanciesSubtitle": "Найдите будущую профессию и устройтесь на работу",
+  "servicesHubTeamTitle": "Команда академии",
+  "servicesHubTeamSubtitle": "Встречи с активными участницами и амбассадорами",
+  "servicesHubGame2048Description": "Объединяйте числа и дойдите до плитки 2048 в этой логической игре.",
+  "servicesHubGameCandyDescription": "Собирайте конфеты одного цвета, делайте комбо и бейте рекорды."
 }

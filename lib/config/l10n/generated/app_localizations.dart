@@ -382,6 +382,12 @@ abstract class AppLocalizations {
   /// **'More'**
   String get mainTabMore;
 
+  /// No description provided for @mainBottomNavShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show bottom navigation'**
+  String get mainBottomNavShow;
+
   /// No description provided for @mainMoreEmptyHint.
   ///
   /// In en, this message translates to:
@@ -2973,6 +2979,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stories could not be loaded'**
   String get portfolioStoriesError;
+
+  /// No description provided for @servicesHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All services'**
+  String get servicesHubTitle;
+
+  /// No description provided for @servicesHubAllServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All services'**
+  String get servicesHubAllServicesTitle;
+
+  /// No description provided for @servicesHubGamesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Games'**
+  String get servicesHubGamesTitle;
+
+  /// No description provided for @servicesHubComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get servicesHubComingSoon;
+
+  /// No description provided for @servicesHubPortfolioTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio'**
+  String get servicesHubPortfolioTitle;
+
+  /// No description provided for @servicesHubPortfolioSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange your points for valuable gifts'**
+  String get servicesHubPortfolioSubtitle;
+
+  /// No description provided for @servicesHubStoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift shop'**
+  String get servicesHubStoreTitle;
+
+  /// No description provided for @servicesHubStoreSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange your points for valuable gifts'**
+  String get servicesHubStoreSubtitle;
+
+  /// No description provided for @servicesHubOlympiadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Olympiads and tests'**
+  String get servicesHubOlympiadTitle;
+
+  /// No description provided for @servicesHubOlympiadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Test your knowledge and earn a certificate'**
+  String get servicesHubOlympiadSubtitle;
+
+  /// No description provided for @servicesHubVacanciesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacancies'**
+  String get servicesHubVacanciesTitle;
+
+  /// No description provided for @servicesHubVacanciesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your future career and get hired'**
+  String get servicesHubVacanciesSubtitle;
+
+  /// No description provided for @servicesHubTeamTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Academy team'**
+  String get servicesHubTeamTitle;
+
+  /// No description provided for @servicesHubTeamSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet active members and ambassadors'**
+  String get servicesHubTeamSubtitle;
+
+  /// No description provided for @servicesHubGame2048Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge numbers and reach the 2048 tile in this quick logic game.'**
+  String get servicesHubGame2048Description;
+
+  /// No description provided for @servicesHubGameCandyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Match colorful candies, build combos, and beat your high score.'**
+  String get servicesHubGameCandyDescription;
 }
 
 class _AppLocalizationsDelegate

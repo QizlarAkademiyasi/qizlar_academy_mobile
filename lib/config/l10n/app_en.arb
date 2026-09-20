@@ -61,6 +61,7 @@
   "mainTabLeaderboard": "Leader",
   "mainTabProfile": "Profile",
   "mainTabMore": "More",
+  "mainBottomNavShow": "Show bottom navigation",
   "mainMoreEmptyHint": "Open “More” in the tab bar and choose a section.",
   "guestSignInCta": "Sign in",
   "homeWelcomeGuestTitle": "Welcome!",
@@ -818,5 +819,21 @@
         "type": "String"
       }
     }
-  }
+  },
+  "servicesHubTitle": "All services",
+  "servicesHubAllServicesTitle": "All services",
+  "servicesHubGamesTitle": "Games",
+  "servicesHubComingSoon": "Coming soon",
+  "servicesHubPortfolioTitle": "Portfolio",
+  "servicesHubPortfolioSubtitle": "Exchange your points for valuable gifts",
+  "servicesHubStoreTitle": "Gift shop",
+  "servicesHubStoreSubtitle": "Exchange your points for valuable gifts",
+  "servicesHubOlympiadTitle": "Olympiads and tests",
+  "servicesHubOlympiadSubtitle": "Test your knowledge and earn a certificate",
+  "servicesHubVacanciesTitle": "Vacancies",
+  "servicesHubVacanciesSubtitle": "Find your future career and get hired",
+  "servicesHubTeamTitle": "Academy team",
+  "servicesHubTeamSubtitle": "Meet active members and ambassadors",
+  "servicesHubGame2048Description": "Merge numbers and reach the 2048 tile in this quick logic game.",
+  "servicesHubGameCandyDescription": "Match colorful candies, build combos, and beat your high score."
 }

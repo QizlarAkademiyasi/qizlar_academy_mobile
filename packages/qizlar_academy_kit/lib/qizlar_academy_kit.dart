@@ -3,6 +3,7 @@
 export 'package:flutter/material.dart';
 export 'package:flutter/cupertino.dart' show CupertinoIcons;
 export 'package:flutter/rendering.dart' show ScrollCacheExtent;
+export 'package:flutter/gestures.dart' show DragStartBehavior;
 export 'package:cupertino_icons/cupertino_icons.dart';
 export 'package:firebase_core/firebase_core.dart';
 export 'package:firebase_auth/firebase_auth.dart';
@@ -42,7 +43,20 @@ export 'package:lottie_tgs/lottie.dart';
 export 'package:omni_video_player/omni_video_player.dart';
 export 'package:youtube_player_flutter/youtube_player_flutter.dart';
 export 'package:flutter_inappwebview/flutter_inappwebview.dart'
-    show PlatformInAppWebViewController;
+    show
+        CacheMode,
+        InAppWebView,
+        InAppWebViewController,
+        InAppWebViewKeepAlive,
+        InAppWebViewSettings,
+        NavigationAction,
+        NavigationActionPolicy,
+        PlatformInAppWebViewController,
+        URLRequest,
+        WebResourceError,
+        WebResourceRequest,
+        WebResourceResponse,
+        WebUri;
 export 'package:youtube_explode_dart/youtube_explode_dart.dart' hide QString;
 export 'package:pinput/pinput.dart';
 export 'sms_autofill_bridge.dart';

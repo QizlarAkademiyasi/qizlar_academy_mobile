@@ -165,6 +165,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainTabMore => 'More';
 
   @override
+  String get mainBottomNavShow => 'Show bottom navigation';
+
+  @override
   String get mainMoreEmptyHint =>
       'Open “More” in the tab bar and choose a section.';
 
@@ -1632,4 +1635,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get portfolioStoriesError => 'Stories could not be loaded';
+
+  @override
+  String get servicesHubTitle => 'All services';
+
+  @override
+  String get servicesHubAllServicesTitle => 'All services';
+
+  @override
+  String get servicesHubGamesTitle => 'Games';
+
+  @override
+  String get servicesHubComingSoon => 'Coming soon';
+
+  @override
+  String get servicesHubPortfolioTitle => 'Portfolio';
+
+  @override
+  String get servicesHubPortfolioSubtitle =>
+      'Exchange your points for valuable gifts';
+
+  @override
+  String get servicesHubStoreTitle => 'Gift shop';
+
+  @override
+  String get servicesHubStoreSubtitle =>
+      'Exchange your points for valuable gifts';
+
+  @override
+  String get servicesHubOlympiadTitle => 'Olympiads and tests';
+
+  @override
+  String get servicesHubOlympiadSubtitle =>
+      'Test your knowledge and earn a certificate';
+
+  @override
+  String get servicesHubVacanciesTitle => 'Vacancies';
+
+  @override
+  String get servicesHubVacanciesSubtitle =>
+      'Find your future career and get hired';
+
+  @override
+  String get servicesHubTeamTitle => 'Academy team';
+
+  @override
+  String get servicesHubTeamSubtitle => 'Meet active members and ambassadors';
+
+  @override
+  String get servicesHubGame2048Description =>
+      'Merge numbers and reach the 2048 tile in this quick logic game.';
+
+  @override
+  String get servicesHubGameCandyDescription =>
+      'Match colorful candies, build combos, and beat your high score.';
 }

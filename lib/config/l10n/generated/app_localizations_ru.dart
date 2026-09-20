@@ -165,6 +165,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mainTabMore => 'Ещё';
 
   @override
+  String get mainBottomNavShow => 'Показать нижнее меню';
+
+  @override
   String get mainMoreEmptyHint =>
       'Нажмите «Ещё» на панели вкладок и выберите раздел.';
 
@@ -1657,4 +1660,58 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get portfolioStoriesError => 'Не удалось загрузить истории';
+
+  @override
+  String get servicesHubTitle => 'Все сервисы';
+
+  @override
+  String get servicesHubAllServicesTitle => 'Все сервисы';
+
+  @override
+  String get servicesHubGamesTitle => 'Игры';
+
+  @override
+  String get servicesHubComingSoon => 'Скоро';
+
+  @override
+  String get servicesHubPortfolioTitle => 'Портфолио';
+
+  @override
+  String get servicesHubPortfolioSubtitle =>
+      'Обменивайте баллы на ценные подарки';
+
+  @override
+  String get servicesHubStoreTitle => 'Магазин подарков';
+
+  @override
+  String get servicesHubStoreSubtitle => 'Обменивайте баллы на ценные подарки';
+
+  @override
+  String get servicesHubOlympiadTitle => 'Олимпиады и тесты';
+
+  @override
+  String get servicesHubOlympiadSubtitle =>
+      'Проверьте знания и получите сертификат';
+
+  @override
+  String get servicesHubVacanciesTitle => 'Вакансии';
+
+  @override
+  String get servicesHubVacanciesSubtitle =>
+      'Найдите будущую профессию и устройтесь на работу';
+
+  @override
+  String get servicesHubTeamTitle => 'Команда академии';
+
+  @override
+  String get servicesHubTeamSubtitle =>
+      'Встречи с активными участницами и амбассадорами';
+
+  @override
+  String get servicesHubGame2048Description =>
+      'Объединяйте числа и дойдите до плитки 2048 в этой логической игре.';
+
+  @override
+  String get servicesHubGameCandyDescription =>
+      'Собирайте конфеты одного цвета, делайте комбо и бейте рекорды.';
 }

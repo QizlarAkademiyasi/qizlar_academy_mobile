@@ -7,7 +7,6 @@ import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dar
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_kit_icons.dart';
 import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_bottom_nav_profile_tab_icon.dart';
-import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_extra_menu_items.dart';
 
 Color _secondLiquidBottomNavWhiten(Color base, {required bool lightBar}) {
   return Color.lerp(base, const Color(0xFFFFFFFF), lightBar ? 0.38 : 0.72)!;
@@ -112,12 +111,6 @@ double _secondLiquidBottomNavSafeExpandedRadius({
   final double concentricRadius =
       indicatorRadius + largestPadding + _secondLiquidBottomNavIndicatorInset;
   return math.max(_secondLiquidBottomNavExpandedVisualRadius, concentricRadius);
-}
-
-double _secondLiquidBottomNavPulseFromProgress(double value) {
-  final double t = value - value.floorToDouble();
-  final double pulse = 1 - ((t - 0.5).abs() * 2);
-  return pulse.clamp(0.0, 1.0).toDouble();
 }
 
 /// Surilmali indikator pill: rang [baseColor] dan biroz ochroq, blur yoqilganda shisha qatlami.
@@ -350,6 +343,8 @@ class SecondLiquidBottomNav extends StatefulWidget {
     this.onExtraActionTap,
     this.extraActionSemanticLabel,
     this.extraActionShowsCloseWhenExpanded = true,
+    this.extraActionIsActive = false,
+    this.suppressTabHighlight = false,
     this.extraButtonSpacing = 12,
     this.extraButtonBottomInset = 0,
 
@@ -400,6 +395,12 @@ class SecondLiquidBottomNav extends StatefulWidget {
   /// Kengaygan holatda extra action ikonkasi close ikoniga almashishini boshqaradi.
   final bool extraActionShowsCloseWhenExpanded;
 
+  /// Services Hub kabi extra action tanlangan holat (pill active).
+  final bool extraActionIsActive;
+
+  /// Pastki 4 tab highlight o‘chiriladi (masalan, Services Hub ochiq).
+  final bool suppressTabHighlight;
+
   final double extraButtonSpacing;
   final double extraButtonBottomInset;
 
@@ -427,8 +428,6 @@ class SecondLiquidBottomNav extends StatefulWidget {
 
 class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
   late int _internalIndex;
-  int _extraPulseTick = 0;
-
   int get _activeIndex => widget.currentIndex ?? _internalIndex;
 
   @override
@@ -452,10 +451,6 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
       }
     });
     widget.onChanged?.call(index);
-  }
-
-  void _onExtraButtonPointerDown(PointerDownEvent event) {
-    setState(() => _extraPulseTick++);
   }
 
   @override
@@ -513,6 +508,7 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
         lerpDouble(widget.extraButtonSpacing, 8, layoutMinimizeT) ??
         widget.extraButtonSpacing;
     final resolvedExtraSpacing = math.max(0.0, rawExtraSpacing);
+    final bool extraActive = isExpanded || widget.extraActionIsActive;
     final Widget? resolvedExtra = widget.extraActionIcon != null
         ? _SecondLiquidBottomNavExtraIconButton(
             height: resolvedHeight,
@@ -524,9 +520,12 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
             backgroundBlurSigma: widget.backgroundBlurSigma,
             iconColor: widget.unselectedColor ?? palette.unselectedColor,
             semanticLabel: widget.extraActionSemanticLabel,
-            isActive: isExpanded,
+            isActive: extraActive,
           )
         : widget.extraButton;
+    final int resolvedActiveIndex = widget.suppressTabHighlight
+        ? -1
+        : _activeIndex;
     final bool hasExtraButton = resolvedExtra != null;
     final double resolvedIndicatorSigma =
         widget.indicatorBlurSigma ??
@@ -550,7 +549,7 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
                 indicatorBlurSigma: resolvedIndicatorSigma,
                 padding: widget.padding,
                 items: widget.items,
-                activeIndex: _activeIndex,
+                activeIndex: resolvedActiveIndex,
                 onTap: _onTap,
                 iconSize: widget.iconSize,
                 selectedColor: widget.selectedColor ?? palette.selectedColor,
@@ -567,29 +566,10 @@ class _SecondLiquidBottomNavState extends State<SecondLiquidBottomNav> {
               SizedBox(width: resolvedExtraSpacing),
               Padding(
                 padding: EdgeInsets.only(bottom: widget.extraButtonBottomInset),
-                child: Listener(
-                  behavior: HitTestBehavior.translucent,
-                  onPointerDown: _onExtraButtonPointerDown,
-                  child: SingleMotionBuilder(
-                    value: _extraPulseTick.toDouble(),
-                    motion: const CupertinoMotion.smooth(
-                      duration: Duration(milliseconds: 440),
-                      extraBounce: 0.04,
-                    ),
-                    builder: (context, animatedTick, child) {
-                      final double pulse =
-                          _secondLiquidBottomNavPulseFromProgress(animatedTick);
-                      return Transform.scale(
-                        scale: 1 - (0.018 * pulse),
-                        child: SizedBox(
-                          width: resolvedHeight,
-                          height: resolvedHeight,
-                          child: FittedBox(fit: BoxFit.contain, child: child),
-                        ),
-                      );
-                    },
-                    child: resolvedExtra,
-                  ),
+                child: SizedBox(
+                  width: resolvedHeight,
+                  height: resolvedHeight,
+                  child: FittedBox(fit: BoxFit.contain, child: resolvedExtra),
                 ),
               ),
             ],
@@ -676,7 +656,9 @@ class _SecondLiquidBottomNavPillWithTabsState
             final double x = _dragging && _dragPillX != null
                 ? _dragPillX!
                 : animatedPillX;
-            final int shownIndex = _dragging && _dragPillX != null
+            final int shownIndex = widget.activeIndex < 0
+                ? -1
+                : _dragging && _dragPillX != null
                 ? _indexFromPillX(_dragPillX!, itemWidth)
                 : widget.activeIndex;
 
@@ -746,23 +728,25 @@ class _SecondLiquidBottomNavPillWithTabsState
               behavior: HitTestBehavior.translucent,
               child: Stack(
                 children: [
-                  Positioned.fill(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: _secondLiquidBottomNavSlidingIndicator(
-                        x: x,
-                        width: indicatorWidth,
-                        baseColor: widget.indicatorColor,
-                        lightBar: widget.lightBar,
+                  if (widget.activeIndex >= 0)
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: _secondLiquidBottomNavSlidingIndicator(
+                          x: x,
+                          width: indicatorWidth,
+                          baseColor: widget.indicatorColor,
+                          lightBar: widget.lightBar,
+                        ),
                       ),
                     ),
-                  ),
                   Row(
                     children: List.generate(widget.items.length, (index) {
                       return Expanded(
                         child: _SecondLiquidBottomNavTab(
                           item: widget.items[index],
-                          isSelected: index == shownIndex,
+                          isSelected:
+                              shownIndex >= 0 && index == shownIndex,
                           onTap: () => widget.onIndexChanged(index),
                           iconSize: widget.iconSize,
                           selectedColor: widget.selectedColor,
@@ -1060,21 +1044,13 @@ class _SecondLiquidBottomNavTab extends StatelessWidget {
   }
 }
 
-/// Asosiy 4 tab: dastlab More, extra menyudan item tanlangandan keyin esa
-/// oxirgi tanlangan item va menu arrowi ko‘rsatiladi.
-/// Brand ranglar uchun: `selectedColor: context.appColors.primary`, `unselectedColor: context.appColors.bottomBarTabUnselected` —
-/// yoki barcha ranglarni o‘tmasdan default [secondLiquidBottomNavThemePalette] ishlatiladi.
+/// Asosiy 4 tab: Asosiy, Kurslar, Liderlar, Profil.
 List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
   BuildContext context, {
   required bool isGuestMode,
-  required MainExtraMenuItem? selectedExtraMenuItem,
-  bool isProfileMenuExpanded = false,
 }) {
   final l10n = context.l10n;
   final appColors = context.appColors;
-  final isProfileSelected =
-      selectedExtraMenuItem is MainExtraTabMenuItem &&
-      selectedExtraMenuItem.tabIndex == kMainProfileTabIndex;
   return [
     SecondLiquidBottomNavItem(
       label: l10n.mainTabHome,
@@ -1091,29 +1067,15 @@ List<SecondLiquidBottomNavItem> mainAppSecondLiquidBottomNavItems(
       iconBuilder: (_, color, size, selected) =>
           MainBottomNavKitIcons.leaderboard(color, size, selected),
     ),
-    if (selectedExtraMenuItem != null)
-      SecondLiquidBottomNavItem(
-        label: isProfileSelected
-            ? l10n.mainTabProfile
-            : selectedExtraMenuItem.label,
-        labelTrailingIcon: isProfileMenuExpanded
-            ? Icons.keyboard_arrow_down_rounded
-            : Icons.keyboard_arrow_up_rounded,
-        iconBuilder: (_, color, size, selected) => isProfileSelected
-            ? MainBottomNavProfileTabIcon(
-                isGuestMode: isGuestMode,
-                selected: selected,
-                selectedColor: appColors.primary,
-                unselectedColor: appColors.bottomBarTabUnselected,
-                iconSize: size,
-              )
-            : Icon(selectedExtraMenuItem.icon, color: color, size: size),
-      )
-    else
-      SecondLiquidBottomNavItem(
-        label: l10n.mainTabMore,
-        iconBuilder: (_, color, size, selected) =>
-            Icon(LucideIcons.ellipsis, color: color, size: size),
+    SecondLiquidBottomNavItem(
+      label: l10n.mainTabProfile,
+      iconBuilder: (_, color, size, selected) => MainBottomNavProfileTabIcon(
+        isGuestMode: isGuestMode,
+        selected: selected,
+        selectedColor: appColors.primary,
+        unselectedColor: appColors.bottomBarTabUnselected,
+        iconSize: size,
       ),
+    ),
   ];
 }
