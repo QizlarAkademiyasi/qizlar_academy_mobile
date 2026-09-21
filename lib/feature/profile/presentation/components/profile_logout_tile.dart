@@ -1,7 +1,6 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
-import 'package:qizlar_academy_mobile/feature/profile/presentation/components/profile_liquid_surface.dart';
 
 class ProfileLogoutTile extends StatelessWidget {
   const ProfileLogoutTile({super.key, required this.onTap});
@@ -10,9 +9,14 @@ class ProfileLogoutTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProfileLiquidSurface(
-      layerKey: const ValueKey('profile-logout-liquid-layer'),
+    return Container(
+      key: const ValueKey('profile-logout-solid-surface'),
       height: 68,
+      decoration: BoxDecoration(
+        color: context.appColors.onContainer,
+        borderRadius: AppRadius.radiusXl,
+        border: Border.all(color: context.appColors.stroke),
+      ),
       child: Material(
         color: Colors.transparent,
         clipBehavior: Clip.antiAlias,

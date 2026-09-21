@@ -1,6 +1,5 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
-import 'package:qizlar_academy_mobile/feature/home/presentation/components/home_liquid_action_button.dart';
 
 class ProfileAchievementGridItem {
   const ProfileAchievementGridItem({
@@ -23,13 +22,39 @@ class ProfileAchievementGrid extends StatelessWidget {
     super.key,
     required this.sectionTitle,
     required this.items,
+    this.showSurface = true,
   });
+
+  static const EdgeInsets surfacePadding = EdgeInsets.all(14);
 
   final String sectionTitle;
   final List<ProfileAchievementGridItem> items;
+  final bool showSurface;
 
   @override
   Widget build(BuildContext context) {
+    final grid = Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _AchievementCard(item: items[0])),
+            const SizedBox(width: 16),
+            Expanded(child: _AchievementCard(item: items[1])),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _AchievementCard(item: items[2])),
+            const SizedBox(width: 16),
+            Expanded(child: _AchievementCard(item: items[3])),
+          ],
+        ),
+      ],
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -43,40 +68,18 @@ class ProfileAchievementGrid extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            borderRadius: AppRadius.radiusXl,
-            border: Border.all(color: context.appColors.stroke),
-          ),
-          child: AppLiquidStretch(
-            child: LiquidGlassLayer(
-              key: const ValueKey('profile-achievement-liquid-layer'),
-              settings: homeLiquidGlassSettings(context.isDarkTheme),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: _AchievementCard(item: items[0])),
-                      const SizedBox(width: 16),
-                      Expanded(child: _AchievementCard(item: items[1])),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: _AchievementCard(item: items[2])),
-                      const SizedBox(width: 16),
-                      Expanded(child: _AchievementCard(item: items[3])),
-                    ],
-                  ),
-                ],
-              ),
+        if (showSurface)
+          Container(
+            key: const ValueKey('profile-achievement-solid-surface'),
+            padding: surfacePadding,
+            decoration: BoxDecoration(
+              borderRadius: AppRadius.radiusXl,
+              border: Border.all(color: context.appColors.stroke),
             ),
-          ),
-        ),
+            child: grid,
+          )
+        else
+          grid,
       ],
     );
   }
@@ -87,90 +90,91 @@ class _AchievementCard extends StatelessWidget {
 
   final ProfileAchievementGridItem item;
 
-  static const double _cardRadius = 20;
   static const double _cardHeight = 120;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      key: const ValueKey('profile-achievement-card'),
       height: _cardHeight,
-      child: LiquidGlass(
-        shape: const LiquidRoundedSuperellipse(borderRadius: _cardRadius),
-        child: Material(
-          color: Colors.transparent,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(_cardRadius),
-          child: InkWell(
-            onTap: () {
-              Gaimon.light();
-              item.onTap();
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: context.appColors.iconSecondary,
-                          borderRadius: AppRadius.radiusMd,
-                        ),
-                        child: Icon(
-                          item.icon,
-                          size: 18,
-                          color: item.badgeCount != null
-                              ? AppColors.primary
-                              : context.appColors.grey,
-                        ),
+      decoration: BoxDecoration(
+        color: context.appColors.onContainer,
+        borderRadius: AppRadius.radiusLg,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: AppRadius.radiusLg,
+        child: InkWell(
+          onTap: () {
+            Gaimon.light();
+            item.onTap();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: context.appColors.iconSecondary,
+                        borderRadius: AppRadius.radiusMd,
                       ),
-                      if (item.badgeCount != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: context.appColors.primary,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            '${item.badgeCount}',
-                            style: context.textTheme.bodySmallBold.copyWith(
-                              color: AppColors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        )
-                      else
-                        Icon(
-                          LucideIcons.chevronRight,
-                          size: 12,
-                          color: context.appColors.secondaryGrey,
+                      child: Icon(
+                        item.icon,
+                        size: 18,
+                        color: item.badgeCount != null
+                            ? AppColors.primary
+                            : context.appColors.grey,
+                      ),
+                    ),
+                    if (item.badgeCount != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 6,
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Text(
-                        item.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.bodyMediumSemibold.copyWith(
-                          color: context.appColors.text,
-                          fontSize: 14,
+                        decoration: BoxDecoration(
+                          color: context.appColors.primary,
+                          borderRadius: BorderRadius.circular(10),
                         ),
+                        child: Text(
+                          '${item.badgeCount}',
+                          style: context.textTheme.bodySmallBold.copyWith(
+                            color: AppColors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
+                    else
+                      Icon(
+                        LucideIcons.chevronRight,
+                        size: 12,
+                        color: context.appColors.secondaryGrey,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      item.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodyMediumSemibold.copyWith(
+                        color: context.appColors.text,
+                        fontSize: 14,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

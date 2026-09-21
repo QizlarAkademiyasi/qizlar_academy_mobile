@@ -479,6 +479,7 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     return ProfileAchievementGrid(
       sectionTitle: context.l10n.profileSectionAccount,
       items: gridItems,
+      showSurface: false,
     );
   }
 
