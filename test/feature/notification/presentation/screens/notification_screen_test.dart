@@ -15,6 +15,7 @@ import 'package:qizlar_academy_mobile/feature/notification/domain/model/notifica
 import 'package:qizlar_academy_mobile/feature/notification/domain/repository/notification_repository.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/bloc/notification_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/components/notification_tile.dart';
+import 'package:qizlar_academy_mobile/core/presentation/components/app_bottom_sheet.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_segmented_tab_bar.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/notification_screen.dart';
 import 'package:qizlar_academy_mobile/feature/notification/presentation/screens/settings/bloc/notification_settings_bloc.dart';
@@ -201,7 +202,13 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.byType(NotificationDetailSheet), findsOneWidget);
+    expect(find.byType(AppBottomSheetContainer), findsOneWidget);
     expect(find.text('Join us today'), findsOneWidget);
+
+    await tester.tap(find.text('Details'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(find.text('course-course-1'), findsOneWidget);
   });
 
   testWidgets('topic switches are disabled when master is off', (tester) async {

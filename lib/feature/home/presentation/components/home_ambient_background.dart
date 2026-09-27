@@ -1,16 +1,21 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 
 class HomeAmbientBackground extends StatelessWidget {
-  const HomeAmbientBackground({super.key});
+  const HomeAmbientBackground({super.key, this.blurSigma = 90});
+
+  final double blurSigma;
+
   @override
-  Widget build(BuildContext context) => IgnorePointer(
-    child: SizedBox(
-      height: 440,
+  Widget build(BuildContext context) {
+    final content = SizedBox(
+      height: 550,
       child: Stack(
         children: [
           Positioned(
-            left: -100,
+            left: -170,
             top: 0,
             width: 460,
             height: 440,
@@ -19,7 +24,7 @@ class HomeAmbientBackground extends StatelessWidget {
                 gradient: RadialGradient(
                   colors: [
                     const Color(
-                      0xFFF4CFE1,
+                      0xFFFF8EBC,
                     ).withValues(alpha: context.isDarkTheme ? .12 : .65),
                     const Color(0x00F4CFE1),
                   ],
@@ -28,7 +33,7 @@ class HomeAmbientBackground extends StatelessWidget {
             ),
           ),
           Positioned(
-            right: -100,
+            right: -170,
             top: -90,
             width: 400,
             height: 430,
@@ -37,7 +42,7 @@ class HomeAmbientBackground extends StatelessWidget {
                 gradient: RadialGradient(
                   colors: [
                     const Color(
-                      0xFFEBF6C9,
+                      0xFFC6F23F,
                     ).withValues(alpha: context.isDarkTheme ? .12 : .75),
                     const Color(0x00EBF6C9),
                   ],
@@ -47,6 +52,18 @@ class HomeAmbientBackground extends StatelessWidget {
           ),
         ],
       ),
-    ),
-  );
+    );
+
+    return IgnorePointer(
+      child: blurSigma > 0
+          ? ImageFiltered(
+              imageFilter: ImageFilter.blur(
+                sigmaX: blurSigma,
+                sigmaY: blurSigma,
+              ),
+              child: content,
+            )
+          : content,
+    );
+  }
 }
