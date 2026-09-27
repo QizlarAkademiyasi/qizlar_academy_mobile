@@ -14,31 +14,26 @@ import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_
 mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
   bool get isGuestMode;
 
-  int get selectedIndex => _selectedIndex;
-  int _selectedIndex = 0;
+  /// Pastki bar pill/ikon tanlovi — tab kontenti almashishidan oldin yangilanadi.
+  final ValueNotifier<int> navIndex = ValueNotifier(0);
 
-  int get bottomNavigationSelectedIndex => _bottomNavigationSelectedIndex;
-  int _bottomNavigationSelectedIndex = 0;
+  /// Asosiy tab stack indeksi — keyingi frame’da yangilanadi (CrossFade uchun).
+  final ValueNotifier<int> tabIndex = ValueNotifier(0);
+
+  int get selectedIndex => tabIndex.value;
+
+  int get bottomNavigationSelectedIndex => navIndex.value;
 
   bool get isServicesHubTabActive =>
-      !isGuestMode && _selectedIndex == kMainServicesHubTabIndex;
+      !isGuestMode && tabIndex.value == kMainServicesHubTabIndex;
 
-  /// Pastki bar orqali tab almashganda oshadi — [MainScreen] fade faqat shu bilan ishlaydi.
+  /// Pastki bar orqali tab almashganda oshadi — [MainTabStack] CrossFade faqat shu bilan.
   int get tabBarFadeNonce => _tabBarFadeNonce;
   int _tabBarFadeNonce = 0;
 
-  late final PageController pageController;
-
-  @override
-  void initState() {
-    super.initState();
-    pageController = PageController(initialPage: _selectedIndex);
-  }
-
-  @override
-  void dispose() {
-    pageController.dispose();
-    super.dispose();
+  void disposeMainTabSelection() {
+    navIndex.dispose();
+    tabIndex.dispose();
   }
 
   void onTabTap(int index) {
@@ -61,15 +56,22 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
     context.push(Routes.aiChat);
   }
 
+  void _scheduleTabIndex(int index) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (tabIndex.value == index) return;
+      tabIndex.value = index;
+      setState(() => _tabBarFadeNonce++);
+    });
+  }
+
   void _handleTabTap(int index) {
     if (index == kMainServicesHubTabIndex) {
-      if (_selectedIndex == kMainServicesHubTabIndex) {
+      if (tabIndex.value == kMainServicesHubTabIndex) {
         return;
       }
-      setState(() {
-        _tabBarFadeNonce++;
-        _selectedIndex = kMainServicesHubTabIndex;
-      });
+      _scheduleTabIndex(kMainServicesHubTabIndex);
+      Gaimon.light();
       reportWatchdogMainTab(
         kMainServicesHubTabIndex,
         isGuestMode: false,
@@ -78,39 +80,20 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
       return;
     }
 
-    if (_selectedIndex == index && _bottomNavigationSelectedIndex == index) {
+    if (tabIndex.value == index && navIndex.value == index) {
       return;
     }
 
-    setState(() {
-      _bottomNavigationSelectedIndex = index;
-      if (_selectedIndex != index) {
-        _tabBarFadeNonce++;
-        _selectedIndex = index;
-      }
-    });
-    reportWatchdogMainTab(
-      index,
-      isGuestMode: isGuestMode,
-      path: isGuestMode ? Routes.mainGuest : Routes.mainUser,
-    );
-  }
-
-  void onPageChanged(int index) {
+    navIndex.value = index;
+    if (tabIndex.value != index) {
+      _scheduleTabIndex(index);
+    }
     Gaimon.light();
     reportWatchdogMainTab(
       index,
       isGuestMode: isGuestMode,
       path: isGuestMode ? Routes.mainGuest : Routes.mainUser,
     );
-    if (_selectedIndex != index || _bottomNavigationSelectedIndex != index) {
-      setState(() {
-        _selectedIndex = index;
-        if (index <= kMainProfileTabIndex) {
-          _bottomNavigationSelectedIndex = index;
-        }
-      });
-    }
   }
 
   /// Scroll paytida pastki navigatsiyani kichraytirish o‘chirilgan.
@@ -229,7 +212,7 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
 
   Widget buildGlassBottomBarVersionOne(BuildContext context) {
     return GlassBottomNavigationVersionOne(
-      currentIndex: _bottomNavigationSelectedIndex,
+      currentIndex: navIndex.value,
       onTap: onTabTap,
       fake: false,
     );
@@ -237,7 +220,7 @@ mixin MainScreenMixin<T extends StatefulWidget> on State<T> {
 
   Widget buildGlassBottomBarVersionTwo(BuildContext context) {
     return GlassBottomNavigationVersionTwo(
-      currentIndex: _bottomNavigationSelectedIndex,
+      currentIndex: navIndex.value,
       onTap: onTabTap,
     );
   }

@@ -49,17 +49,23 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
     context.read<ProfileBloc>().add(const ProfileRetryRequested());
   }
 
-  Future<void> onNotificationsToggled(BuildContext context, bool enabled) async {
+  Future<void> openNotificationSettings(
+    BuildContext context, {
+    required bool masterEnabled,
+  }) async {
     final canExecute = await getIt<GuestTapGateService>().allowAction(
       context,
-      key: 'profile_notifications_toggle',
+      key: 'profile_notifications_settings',
       title: context.l10n.guestGateNotificationSettings,
     );
     if (!canExecute) return;
     if (!context.mounted) return;
-    context.read<ProfileBloc>().add(
-      ProfileNotificationsToggled(enabled: enabled),
+    await context.push(
+      Routes.notificationSettings,
+      extra: masterEnabled,
     );
+    if (!context.mounted) return;
+    context.read<ProfileBloc>().add(const ProfileStarted());
   }
 
   Future<void> onDarkModeChanged(BuildContext context, bool enabled) async {
@@ -542,17 +548,19 @@ mixin ProfileScreenMixin<T extends StatefulWidget> on State<T> {
             showDivider: true,
           );
         }),
-        ProfilePreferenceTile(
+        ProfileMenuTile(
+          key: const ValueKey('profile-notification-settings'),
           icon: LucideIcons.bell,
           title: context.l10n.profileNotifications,
           subtitle: overview.notificationsEnabled
               ? context.l10n.notificationSettingsEnabled
               : context.l10n.notificationSettingsDisabled,
-          value: overview.notificationsEnabled,
-          onChanged: (switchContext, enabled) {
-            onNotificationsToggled(switchContext, enabled);
+          onTap: () {
+            openNotificationSettings(
+              context,
+              masterEnabled: overview.notificationsEnabled,
+            );
           },
-          showDivider: true,
         ),
         ProfilePreferenceTile(
           icon: LucideIcons.moon,

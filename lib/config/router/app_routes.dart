@@ -62,7 +62,7 @@ const bool kShowFlutterSplash = true;
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
-/// Barcha tab ekranlari bitta [MainScreen] ichida; [PageView] tab almashganda
+/// Barcha tab ekranlari bitta [MainScreen] ichida; tab almashganda
 /// pastki o‘rnatmalarni qayta yig‘masin — bog‘larni shu yerdan yagona yaratamiz
 /// (aks holda har kirishda `..add(Started)` = qayta GET).
 Widget _mainShellWithTabBlocs({required bool isGuestMode}) {
@@ -72,6 +72,10 @@ Widget _mainShellWithTabBlocs({required bool isGuestMode}) {
       BlocProvider(
         create: (_) =>
             getIt<LeaderboardBloc>()..add(const LeaderboardStarted()),
+      ),
+      BlocProvider(
+        create: (_) =>
+            getIt<CoursesCatalogBloc>()..add(const CoursesCatalogStarted()),
       ),
 
       /// Mehmon rejimida ham [ProfileBloc] mavjud bo‘lishi kerak: ba’zi overlay /

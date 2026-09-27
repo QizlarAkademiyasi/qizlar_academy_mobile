@@ -19,7 +19,7 @@ class CoursesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [CoursesCatalogBloc] [app_routes] dagi katalog route orqali beriladi.
+    // [CoursesCatalogBloc] MainScreen shell yoki [Routes.courses] provider orqali beriladi.
     return _CoursesView(
       bottomContentInset: bottomContentInset,
       showBackButton: showBackButton,

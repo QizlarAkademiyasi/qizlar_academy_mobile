@@ -53,6 +53,8 @@ export 'package:flutter_inappwebview/flutter_inappwebview.dart'
         NavigationActionPolicy,
         PlatformInAppWebViewController,
         URLRequest,
+        UserScript,
+        UserScriptInjectionTime,
         WebResourceError,
         WebResourceRequest,
         WebResourceResponse,

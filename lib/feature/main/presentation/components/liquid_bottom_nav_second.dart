@@ -128,6 +128,7 @@ Widget _secondLiquidBottomNavSlidingIndicator({
         )!
       : Color.lerp(baseColor, const Color(0xFF8E8E93), 0.38)!;
   return Transform.translate(
+    key: const ValueKey('second-bottom-nav-indicator'),
     offset: Offset(x, 0),
     child: Container(
       width: width,

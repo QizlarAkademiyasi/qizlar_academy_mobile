@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
+import 'package:qizlar_academy_mobile/feature/services_hub/config/game_webview_audio.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/config/services_hub_game_keep_alive_store.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/config/services_hub_games_config.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/domain/model/game_webview_args.dart';
@@ -35,6 +38,9 @@ mixin GameWebViewScreenMixin<T extends StatefulWidget> on State<T> {
 
   void onWebViewCreated(InAppWebViewController controller) {
     webViewController = controller;
+    unawaited(
+      controller.evaluateJavascript(source: gameWebViewUnmuteScript),
+    );
     if (!startsWarmed) return;
     if (!mounted) return;
     setState(() {

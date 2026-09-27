@@ -4,6 +4,20 @@ import 'package:qizlar_academy_mobile/feature/main/presentation/components/main_
 import 'package:qizlar_academy_mobile/feature/main/presentation/screens/main_screen_mixin.dart';
 
 void main() {
+  testWidgets('nav index updates before the tab stack', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: _MainScreenMixinHarness(isGuestMode: false)),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('courses-tab')));
+    await tester.pump();
+    expect(find.text('bottomNav:1'), findsOneWidget);
+    expect(find.text('index:0 hub:false'), findsOneWidget);
+
+    await tester.pump();
+    expect(find.text('index:1 hub:false'), findsOneWidget);
+  });
+
   testWidgets('profile tab switches to profile index', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(home: _MainScreenMixinHarness(isGuestMode: false)),
@@ -13,9 +27,12 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('profile-tab')));
     await tester.pump();
+    expect(find.text('bottomNav:3'), findsOneWidget);
+    await tester.pump();
     expect(find.text('index:3 hub:false'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('home-tab')));
+    await tester.pump();
     await tester.pump();
     expect(find.text('index:0 hub:false'), findsOneWidget);
   });
@@ -27,7 +44,9 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('profile-tab')));
     await tester.pump();
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('services-hub-tab')));
+    await tester.pump();
     await tester.pump();
     expect(find.text('index:4 hub:true'), findsOneWidget);
     expect(find.text('bottomNav:3'), findsOneWidget);
@@ -53,6 +72,7 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('courses-tab')));
     await tester.pump();
+    await tester.pump();
 
     expect(find.text('index:1 hub:false'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -75,12 +95,28 @@ class _MainScreenMixinHarnessState extends State<_MainScreenMixinHarness>
   bool get isGuestMode => widget.isGuestMode;
 
   @override
+  void dispose() {
+    disposeMainTabSelection();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          Text('index:$selectedIndex hub:$isServicesHubTabActive'),
-          Text('bottomNav:$bottomNavigationSelectedIndex'),
+          ValueListenableBuilder<int>(
+            valueListenable: tabIndex,
+            builder: (context, index, _) {
+              final hubActive =
+                  !isGuestMode && index == kMainServicesHubTabIndex;
+              return Text('index:$index hub:$hubActive');
+            },
+          ),
+          ValueListenableBuilder<int>(
+            valueListenable: navIndex,
+            builder: (context, index, _) => Text('bottomNav:$index'),
+          ),
           const Text('minimized:false'),
           TextButton(
             key: const ValueKey('services-hub-tab'),

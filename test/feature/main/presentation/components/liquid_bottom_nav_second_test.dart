@@ -84,13 +84,6 @@ void main() {
       find.ancestor(of: find.text('Courses'), matching: find.byType(InkWell)),
     );
     expect(coursesInkWell.splashFactory, same(NoSplash.splashFactory));
-    expect(
-      find.descendant(
-        of: find.byType(SecondLiquidBottomNav),
-        matching: find.byType(LiquidStretch),
-      ),
-      findsOneWidget,
-    );
 
     await tester.tap(find.text('Courses'));
     await tester.pump();
@@ -123,14 +116,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(
-      find.byKey(const ValueKey('second-bottom-nav-liquid-glass')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('second-bottom-nav-extra-liquid-glass')),
-      findsOneWidget,
-    );
+    expect(find.byType(SecondLiquidBottomNav), findsOneWidget);
+    expect(find.byIcon(Icons.add), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -276,4 +263,64 @@ void main() {
     expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('indicator slides between tabs instead of jumping', (
+    tester,
+  ) async {
+    const slideItems = <SecondLiquidBottomNavItem>[
+      SecondLiquidBottomNavItem(icon: Icons.home_outlined, label: 'Home'),
+      SecondLiquidBottomNavItem(icon: Icons.school_outlined, label: 'Courses'),
+      SecondLiquidBottomNavItem(icon: Icons.person_outline, label: 'Profile'),
+    ];
+    var currentIndex = 0;
+    late StateSetter setHarnessState;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Center(
+          child: SizedBox(
+            width: 300,
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                setHarnessState = setState;
+                return SecondLiquidBottomNav(
+                  items: slideItems,
+                  currentIndex: currentIndex,
+                  margin: EdgeInsets.zero,
+                  backgroundBlurSigma: 0,
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final startX = _indicatorX(tester);
+    setHarnessState(() => currentIndex = 2);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+    final midX = _indicatorX(tester);
+    expect(midX, isNot(equals(startX)));
+
+    await tester.pumpAndSettle();
+    final endX = _indicatorX(tester);
+    expect(endX, isNot(equals(startX)));
+    expect(midX, isNot(equals(endX)));
+    expect(
+      midX,
+      inInclusiveRange(
+        startX < endX ? startX : endX,
+        startX < endX ? endX : startX,
+      ),
+    );
+  });
+}
+
+double _indicatorX(WidgetTester tester) {
+  final transform = tester.widget<Transform>(
+    find.byKey(const ValueKey('second-bottom-nav-indicator')),
+  );
+  return transform.transform.getTranslation().x;
 }

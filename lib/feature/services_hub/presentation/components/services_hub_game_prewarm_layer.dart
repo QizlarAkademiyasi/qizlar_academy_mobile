@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
+import 'package:qizlar_academy_mobile/feature/services_hub/config/game_webview_audio.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/config/services_hub_game_keep_alive_store.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/config/services_hub_game_webview_settings.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/domain/model/services_hub_game_item.dart';
@@ -19,6 +21,9 @@ class ServicesHubGamePrewarmLayer extends StatefulWidget {
   static const Duration startDelay = Duration(milliseconds: 300);
   static const double prewarmWidth = 360;
   static const double prewarmHeight = 640;
+
+  static UnmodifiableListView<UserScript> muteUserScripts() =>
+      gameWebViewMuteUserScripts();
 
   final List<ServicesHubGameItem> games;
 
@@ -103,8 +108,17 @@ class _ServicesHubGamePrewarmLayerState
                   keepAlive: ServicesHubGameKeepAliveStore.of(game.id),
                   initialUrlRequest: URLRequest(url: WebUri(game.playUrl)),
                   initialSettings: gameWebViewSettings(),
-                  onLoadStop: (_, _) =>
-                      _finishPrewarm(game.id, warmed: true),
+                  initialUserScripts:
+                      ServicesHubGamePrewarmLayer.muteUserScripts(),
+                  onLoadStop: (controller, _) async {
+                    try {
+                      await controller.evaluateJavascript(
+                        source: gameWebViewMuteScript,
+                      );
+                    } finally {
+                      _finishPrewarm(game.id, warmed: true);
+                    }
+                  },
                   onReceivedError: (_, _, _) =>
                       _finishPrewarm(game.id, warmed: false),
                 ),
