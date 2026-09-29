@@ -1,0 +1,7 @@
+*.jks binary
+*.p12 binary
+*.mobileprovision binary
+*.p8 text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+assets/credentials/*.json text eol=lf
