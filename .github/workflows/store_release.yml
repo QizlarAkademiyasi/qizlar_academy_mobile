@@ -1,5 +1,7 @@
 name: Store release
 
+run-name: Store release · Play ${{ inputs.play_track }}
+
 on:
   workflow_dispatch:
     inputs:
@@ -20,13 +22,17 @@ concurrency:
 
 jobs:
   android:
-    name: Android Play
+    name: Android Play (${{ inputs.play_track }})
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Read app version
+        id: version
+        run: bash .github/scripts/read_app_version.sh
 
       - uses: actions/setup-java@v4
         with:
@@ -75,6 +81,9 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
+      - name: Write Play release notes
+        run: bash .github/scripts/write_play_release_notes.sh "${{ steps.version.outputs.version }}" "${{ inputs.play_track }}"
+
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1.1.4
         with:
@@ -82,9 +91,15 @@ jobs:
           packageName: uz.globalmove.girls_academy
           releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
           mappingFile: build/app/outputs/mapping/prodRelease/mapping.txt
+          releaseName: ${{ steps.version.outputs.version }} · ${{ inputs.play_track }}
+          whatsNewDirectory: build/whatsnew
           tracks: ${{ inputs.play_track }}
           status: completed
           changesNotSentForReview: ${{ inputs.play_track == 'production' }}
+
+      - name: Annotate Android result
+        if: always()
+        run: bash .github/scripts/annotate_store_build.sh android "${{ steps.version.outputs.version }}" "${{ inputs.play_track }}" "${{ job.status }}"
 
   ios:
     name: iOS TestFlight
@@ -94,6 +109,10 @@ jobs:
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Read app version
+        id: version
+        run: bash .github/scripts/read_app_version.sh
 
       - uses: shorebirdtech/setup-shorebird@v1
         with:
@@ -138,3 +157,7 @@ jobs:
           xcrun altool --upload-app --type ios -f "$ipa" \
             --apiKey 9SMN52TK33 \
             --apiIssuer 2305c692-65a4-40a3-b4c4-66241279a6d4
+
+      - name: Annotate iOS result
+        if: always()
+        run: bash .github/scripts/annotate_store_build.sh ios "${{ steps.version.outputs.version }}" testflight "${{ job.status }}"
