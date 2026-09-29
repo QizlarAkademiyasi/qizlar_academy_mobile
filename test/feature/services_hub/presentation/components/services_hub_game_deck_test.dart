@@ -100,7 +100,7 @@ void main() {
     );
   });
 
-  testWidgets('expanded card pushes card below without overlap', (tester) async {
+  testWidgets('expanded card keeps Figma overlap step to next card', (tester) async {
     await pumpDeck(tester);
 
     final cardA = cardWithId('a');
@@ -108,12 +108,13 @@ void main() {
 
     final rect0 = tester.getRect(cardA);
     final rect1 = tester.getRect(cardWithId('b'));
+    final expandedPeek = ServicesHubGameDeck.expandedStackPeek;
 
     expect(rect0.top, 0);
-    expect(rect1.top, rect0.top + ServicesHubGameCard.expandedHeight);
+    expect(rect1.top, rect0.top + expandedPeek);
     expect(
       tester.getSize(find.byType(ServicesHubGameDeck)).height,
-      ServicesHubGameCard.expandedHeight + ServicesHubGameCard.collapsedHeight,
+      expandedPeek + ServicesHubGameCard.collapsedHeight,
     );
   });
 
@@ -124,7 +125,8 @@ void main() {
     final collapsedHeight =
         ServicesHubGameDeck.stackPeek + ServicesHubGameCard.collapsedHeight;
     final expandedHeight =
-        ServicesHubGameCard.expandedHeight + ServicesHubGameCard.collapsedHeight;
+        ServicesHubGameDeck.expandedStackPeek +
+        ServicesHubGameCard.collapsedHeight;
 
     expect(tester.getSize(deck).height, collapsedHeight);
 
@@ -171,7 +173,7 @@ void main() {
     );
   });
 
-  testWidgets('play button is hidden when card is collapsed', (tester) async {
+  testWidgets('collapsed play button is visible but not tappable', (tester) async {
     await pumpDeck(tester);
 
     final cardA = cardWithId('a');
@@ -186,14 +188,6 @@ void main() {
     );
     expect(playButton, findsOneWidget);
 
-    final opacity = tester.widget<AnimatedOpacity>(
-      find.ancestor(
-        of: playButton,
-        matching: find.byType(AnimatedOpacity),
-      ).first,
-    );
-    expect(opacity.opacity, 0);
-
     final ignorePointer = tester.widget<IgnorePointer>(
       find.ancestor(
         of: playButton,
@@ -201,5 +195,92 @@ void main() {
       ).first,
     );
     expect(ignorePointer.ignoring, isTrue);
+  });
+
+  testWidgets('card content uses Figma top offsets', (tester) async {
+    await pumpDeck(tester);
+
+    void expectPositionedTop(double top) {
+      expect(
+        find.descendant(
+          of: cardWithId('a'),
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is AnimatedPositioned && widget.top == top,
+          ),
+        ),
+        findsOneWidget,
+      );
+    }
+
+    expectPositionedTop(ServicesHubGameCard.titleTopCollapsed);
+    expectPositionedTop(ServicesHubGameCard.descriptionTopCollapsed);
+    expectPositionedTop(ServicesHubGameCard.playTopCollapsed);
+
+    await tapCardPeek(tester, cardWithId('a'));
+
+    expectPositionedTop(ServicesHubGameCard.titleTopExpanded);
+    expectPositionedTop(ServicesHubGameCard.descriptionTopExpanded);
+    expectPositionedTop(ServicesHubGameCard.playTopExpanded);
+  });
+
+  testWidgets('expanded card uses Figma background height and tail gap', (
+    tester,
+  ) async {
+    await pumpDeck(tester);
+
+    Finder backgroundLayer(Finder card, {required double bottomInset}) {
+      return find.descendant(
+        of: card,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is AnimatedPositioned &&
+              widget.top == 0 &&
+              widget.left == 0 &&
+              widget.right == 0 &&
+              widget.bottom == bottomInset &&
+              widget.child is SvgPicture,
+        ),
+      );
+    }
+
+    Finder frameTail(Finder card, {required double height}) {
+      return find.descendant(
+        of: card,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is AnimatedPositioned &&
+              widget.bottom == 0 &&
+              widget.height == height &&
+              widget.child is ColoredBox,
+        ),
+      );
+    }
+
+    final cardA = cardWithId('a');
+    expect(
+      backgroundLayer(cardA, bottomInset: 0),
+      findsOneWidget,
+    );
+    expect(frameTail(cardA, height: 0), findsOneWidget);
+
+    await tapCardPeek(tester, cardA);
+
+    expect(
+      backgroundLayer(cardA, bottomInset: ServicesHubGameCard.expandedFrameTailHeight),
+      findsOneWidget,
+    );
+    expect(
+      frameTail(cardA, height: ServicesHubGameCard.expandedFrameTailHeight),
+      findsOneWidget,
+    );
+
+    final bgBox = tester.renderObject<RenderBox>(
+      backgroundLayer(
+        cardA,
+        bottomInset: ServicesHubGameCard.expandedFrameTailHeight,
+      ).first,
+    );
+    expect(bgBox.size.height, ServicesHubGameCard.expandedBackgroundHeight);
   });
 }

@@ -3,6 +3,7 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/colors.dart';
 import 'package:qizlar_academy_mobile/config/constants/theme/theme_extension.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/domain/model/services_hub_game_item.dart';
+
 class ServicesHubGameCard extends StatelessWidget {
   const ServicesHubGameCard({
     super.key,
@@ -14,7 +15,20 @@ class ServicesHubGameCard extends StatelessWidget {
 
   static const double collapsedHeight = 176;
   static const double expandedHeight = 300;
+  static const double expandedBackgroundHeight = 250;
+  static const double expandedFrameTailHeight = 50;
   static const double borderRadius = 24;
+
+  static const double logoLeft = 18;
+  static const double logoTop = 18;
+  static const double titleTopCollapsed = 18;
+  static const double titleTopExpanded = 40;
+  static const double descriptionInset = 27;
+  static const double descriptionTopCollapsed = 58;
+  static const double descriptionTopExpanded = 80;
+  static const double playTopCollapsed = 111;
+  static const double playTopExpanded = 146;
+
   static const Duration _contentAnimationDuration = Duration(milliseconds: 450);
   static const Curve _contentAnimationCurve = Curves.easeOutCubic;
 
@@ -35,97 +49,107 @@ class ServicesHubGameCard extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(borderRadius),
           child: Stack(
-              fit: StackFit.expand,
-              children: [
-                SvgPicture.asset(
+            fit: StackFit.expand,
+            children: [
+              AnimatedPositioned(
+                duration: _contentAnimationDuration,
+                curve: _contentAnimationCurve,
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: isExpanded ? expandedFrameTailHeight : 0,
+                child: SvgPicture.asset(
                   game.backgroundAsset,
                   fit: BoxFit.cover,
                   package: 'qizlar_academy_kit',
                 ),
-                AnimatedPositioned(
-                  duration: _contentAnimationDuration,
-                  curve: _contentAnimationCurve,
-                  left: 18,
-                  top: 18,
-                  child: SvgPicture.asset(
-                    UiKitAssets.images.servicesHub.academyLogo.path,
-                    width: 16,
-                    height: 18,
-                    package: 'qizlar_academy_kit',
+              ),
+              AnimatedPositioned(
+                duration: _contentAnimationDuration,
+                curve: _contentAnimationCurve,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: isExpanded ? expandedFrameTailHeight : 0,
+                child: ColoredBox(color: colors.background),
+              ),
+              AnimatedPositioned(
+                duration: _contentAnimationDuration,
+                curve: _contentAnimationCurve,
+                left: logoLeft,
+                top: logoTop,
+                child: SvgPicture.asset(
+                  UiKitAssets.images.servicesHub.academyLogo.path,
+                  width: 16,
+                  height: 18,
+                  package: 'qizlar_academy_kit',
+                ),
+              ),
+              AnimatedPositioned(
+                duration: _contentAnimationDuration,
+                curve: _contentAnimationCurve,
+                left: 0,
+                right: 0,
+                top: isExpanded ? titleTopExpanded : titleTopCollapsed,
+                child: Text(
+                  game.title,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.heading4.copyWith(
+                    color: colors.text,
                   ),
                 ),
-                AnimatedPositioned(
-                  duration: _contentAnimationDuration,
-                  curve: _contentAnimationCurve,
-                  left: 16,
-                  right: 16,
-                  top: isExpanded ? 56 : 48,
+              ),
+              AnimatedPositioned(
+                duration: _contentAnimationDuration,
+                curve: _contentAnimationCurve,
+                left: descriptionInset,
+                right: descriptionInset,
+                top: isExpanded
+                    ? descriptionTopExpanded
+                    : descriptionTopCollapsed,
+                child: IgnorePointer(
+                  ignoring: !isExpanded,
                   child: Text(
-                    game.title,
+                    game.description,
                     textAlign: TextAlign.center,
-                    style: context.textTheme.heading4.copyWith(
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.bodySmallRegular.copyWith(
                       color: colors.text,
                     ),
                   ),
                 ),
-                AnimatedPositioned(
-                  duration: _contentAnimationDuration,
+              ),
+              AnimatedPositioned(
+                duration: _contentAnimationDuration,
+                curve: _contentAnimationCurve,
+                left: 0,
+                right: 0,
+                top: isExpanded ? playTopExpanded : playTopCollapsed,
+                child: AnimatedScale(
+                  scale: isExpanded ? 1 : 0.85,
+                  duration: const Duration(milliseconds: 280),
                   curve: _contentAnimationCurve,
-                  left: 20,
-                  right: 20,
-                  top: isExpanded ? 100 : 78,
-                  child: AnimatedOpacity(
-                    opacity: isExpanded ? 1 : 0,
-                    duration: const Duration(milliseconds: 280),
-                    child: IgnorePointer(
-                      ignoring: !isExpanded,
-                      child: Text(
-                        game.description,
-                        textAlign: TextAlign.center,
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.bodySmallRegular.copyWith(
-                          color: colors.text,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                AnimatedPositioned(
-                  duration: _contentAnimationDuration,
-                  curve: _contentAnimationCurve,
-                  left: 0,
-                  right: 0,
-                  bottom: isExpanded ? 18 : 10,
-                  child: AnimatedOpacity(
-                    opacity: isExpanded ? 1 : 0,
-                    duration: const Duration(milliseconds: 280),
-                    child: AnimatedScale(
-                      scale: isExpanded ? 1 : 0.85,
-                      duration: const Duration(milliseconds: 280),
-                      curve: _contentAnimationCurve,
-                      child: IgnorePointer(
-                        ignoring: !isExpanded,
-                        child: Center(
-                          child: Material(
-                            color: colors.primary,
-                            borderRadius: BorderRadius.circular(14),
-                            child: InkWell(
-                              onTap: () {
-                                Gaimon.medium();
-                                onPlayTap();
-                              },
-                              borderRadius: BorderRadius.circular(14),
-                              child: SizedBox(
-                                width: 64,
-                                height: 64,
-                                child: Center(
-                                  child: Text(
-                                    game.playButtonLabel,
-                                    style: context.textTheme.bodyXLargeBold
-                                        .copyWith(color: AppColors.white),
-                                  ),
-                                ),
+                  child: IgnorePointer(
+                    ignoring: !isExpanded,
+                    child: Center(
+                      child: Material(
+                        color: colors.primary,
+                        borderRadius: BorderRadius.circular(14),
+                        child: InkWell(
+                          onTap: () {
+                            Gaimon.medium();
+                            onPlayTap();
+                          },
+                          borderRadius: BorderRadius.circular(14),
+                          child: SizedBox(
+                            width: 64,
+                            height: 64,
+                            child: Center(
+                              child: Text(
+                                game.playButtonLabel,
+                                style: context.textTheme.bodyXLargeBold
+                                    .copyWith(color: AppColors.white),
                               ),
                             ),
                           ),
@@ -134,10 +158,11 @@ class ServicesHubGameCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }

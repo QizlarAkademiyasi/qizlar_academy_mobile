@@ -30,7 +30,7 @@ class ServicesHubGamesSection extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         Padding(
-          padding: const EdgeInsets.only(top: 4, bottom: 8),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           child: ServicesHubGameDeck(
             games: games,
             onPlayGame: onPlayGame,

@@ -21,6 +21,10 @@ class ServicesHubGameDeck extends StatefulWidget {
   static double get stackPeek =>
       ServicesHubGameCard.collapsedHeight - cardOverlap;
 
+  /// Ochilgan kartadan keyingi karta qadam (Figma overlap saqlanadi).
+  static double get expandedStackPeek =>
+      ServicesHubGameCard.expandedHeight - cardOverlap;
+
   final List<ServicesHubGameItem> games;
   final ValueChanged<ServicesHubGameItem> onPlayGame;
   final double revealBottomInset;
@@ -60,7 +64,7 @@ class _ServicesHubGameDeckState extends State<ServicesHubGameDeck> {
   /// Karta bilan keyingi karta orasidagi vertikal qadam.
   double _stepAfter(int index) {
     return _expandedIndex == index
-        ? ServicesHubGameCard.expandedHeight
+        ? ServicesHubGameDeck.expandedStackPeek
         : ServicesHubGameDeck.stackPeek;
   }
 
