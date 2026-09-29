@@ -1,8 +1,11 @@
 name: Store release
 
-run-name: Store release · Play ${{ inputs.play_track }}
+run-name: Store release · Play ${{ inputs.play_track || 'internal' }}
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       play_track:
@@ -22,7 +25,7 @@ concurrency:
 
 jobs:
   android:
-    name: Android Play (${{ inputs.play_track }})
+    name: Android Play (${{ inputs.play_track || 'internal' }})
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
@@ -82,7 +85,7 @@ jobs:
           if-no-files-found: error
 
       - name: Write Play release notes
-        run: bash .github/scripts/write_play_release_notes.sh "${{ steps.version.outputs.version }}" "${{ inputs.play_track }}"
+        run: bash .github/scripts/write_play_release_notes.sh "${{ steps.version.outputs.version }}" "${{ inputs.play_track || 'internal' }}"
 
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1.1.4
@@ -91,15 +94,15 @@ jobs:
           packageName: uz.globalmove.girls_academy
           releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
           mappingFile: build/app/outputs/mapping/prodRelease/mapping.txt
-          releaseName: ${{ steps.version.outputs.version }} · ${{ inputs.play_track }}
+          releaseName: ${{ steps.version.outputs.version }} · ${{ inputs.play_track || 'internal' }}
           whatsNewDirectory: build/whatsnew
-          tracks: ${{ inputs.play_track }}
+          tracks: ${{ inputs.play_track || 'internal' }}
           status: completed
           changesNotSentForReview: ${{ inputs.play_track == 'production' }}
 
       - name: Annotate Android result
         if: always()
-        run: bash .github/scripts/annotate_store_build.sh android "${{ steps.version.outputs.version }}" "${{ inputs.play_track }}" "${{ job.status }}"
+        run: bash .github/scripts/annotate_store_build.sh android "${{ steps.version.outputs.version }}" "${{ inputs.play_track || 'internal' }}" "${{ job.status }}"
 
   ios:
     name: iOS TestFlight
