@@ -88,17 +88,20 @@ jobs:
         run: bash .github/scripts/write_play_release_notes.sh "${{ steps.version.outputs.version }}" "${{ inputs.play_track || 'internal' }}"
 
       - name: Upload to Google Play
-        uses: r0adkll/upload-google-play@v1.1.4
-        with:
-          serviceAccountJson: assets/credentials/qizlar-akademiyasi-d22381d8490c.json
-          packageName: uz.globalmove.girls_academy
-          releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
-          mappingFile: build/app/outputs/mapping/prodRelease/mapping.txt
-          releaseName: ${{ steps.version.outputs.version }} · ${{ inputs.play_track || 'internal' }}
-          whatsNewDirectory: build/whatsnew
-          tracks: ${{ inputs.play_track || 'internal' }}
-          status: completed
-          changesNotSentForReview: ${{ inputs.play_track == 'production' }}
+        working-directory: /tmp/play-upload
+        env:
+          KEY_FILE: ${{ github.workspace }}/assets/credentials/qizlar-akademiyasi-d22381d8490c.json
+          PACKAGE_NAME: uz.globalmove.girls_academy
+          AAB_PATH: ${{ github.workspace }}/build/app/outputs/bundle/prodRelease/app-prod-release.aab
+          PLAY_TRACK: ${{ inputs.play_track || 'internal' }}
+          RELEASE_NAME: ${{ steps.version.outputs.version }} · ${{ inputs.play_track || 'internal' }}
+          MAPPING_FILE: ${{ github.workspace }}/build/app/outputs/mapping/prodRelease/mapping.txt
+          NOTES_DIR: ${{ github.workspace }}/build/whatsnew
+          CHANGES_NOT_SENT_FOR_REVIEW: ${{ (inputs.play_track || 'internal') == 'production' }}
+        run: |
+          npm init -y >/dev/null
+          npm install --silent googleapis@144
+          node "$GITHUB_WORKSPACE/.github/scripts/upload_play.js"
 
       - name: Annotate Android result
         if: always()
