@@ -23,6 +23,8 @@ jobs:
     name: Android Play
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,12 +32,6 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.47.5"
-          channel: stable
-          cache: true
 
       - name: Install Android NDK
         run: |
@@ -47,18 +43,35 @@ jobs:
           yes | "$sdkmanager" --licenses >/dev/null || true
           "$sdkmanager" --install "ndk;28.2.13676358"
 
-      - name: Build prod App Bundle
+      - uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: Load Shorebird token
         run: |
-          flutter pub get
-          flutter build appbundle --release --flavor prod \
-            --dart-define-from-file=build.json \
-            --obfuscate \
-            --split-debug-info=build/debug-info
+          if [ -n "$SHOREBIRD_TOKEN" ]; then
+            exit 0
+          fi
+          token_file="assets/credentials/shorebird_token.txt"
+          if [ -f "$token_file" ]; then
+            echo "SHOREBIRD_TOKEN=$(tr -d '\r\n' < "$token_file")" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          echo "Shorebird API key is missing."
+          echo "Create one at https://console.shorebird.dev (Account, API Keys) and save it as assets/credentials/shorebird_token.txt or the SHOREBIRD_TOKEN GitHub secret."
+          exit 1
+
+      - name: Shorebird release
+        uses: shorebirdtech/shorebird-release@v1
+        with:
+          platform: android
+          flutter-version: "3.47.5"
+          args: --flavor prod --dart-define-from-file=build.json --obfuscate --split-debug-info=debug-symbols/shorebird/android --no-confirm
 
       - uses: actions/upload-artifact@v4
         with:
           name: android-debug-symbols
-          path: build/debug-info
+          path: debug-symbols/shorebird/android
           retention-days: 30
           if-no-files-found: error
 
@@ -77,31 +90,43 @@ jobs:
     name: iOS TestFlight
     runs-on: macos-latest
     timeout-minutes: 90
+    env:
+      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+      - uses: shorebirdtech/setup-shorebird@v1
         with:
-          flutter-version: "3.47.5"
-          channel: stable
           cache: true
+
+      - name: Load Shorebird token
+        run: |
+          if [ -n "$SHOREBIRD_TOKEN" ]; then
+            exit 0
+          fi
+          token_file="assets/credentials/shorebird_token.txt"
+          if [ -f "$token_file" ]; then
+            echo "SHOREBIRD_TOKEN=$(tr -d '\r\n' < "$token_file")" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          echo "Shorebird API key is missing."
+          echo "Create one at https://console.shorebird.dev (Account, API Keys) and save it as assets/credentials/shorebird_token.txt or the SHOREBIRD_TOKEN GitHub secret."
+          exit 1
 
       - name: Install iOS signing
         run: bash .github/scripts/install_ios_signing.sh
 
-      - name: Build IPA
-        run: |
-          flutter pub get
-          flutter build ipa --release \
-            --dart-define-from-file=build.json \
-            --obfuscate \
-            --split-debug-info=build/debug-info \
-            --export-options-plist=ios/ExportOptions.plist
+      - name: Shorebird release
+        uses: shorebirdtech/shorebird-release@v1
+        with:
+          platform: ios
+          flutter-version: "3.47.5"
+          args: --export-method app-store --dart-define-from-file=build.json --obfuscate --split-debug-info=debug-symbols/shorebird/ios --no-confirm
 
       - uses: actions/upload-artifact@v4
         with:
           name: ios-debug-symbols
-          path: build/debug-info
+          path: debug-symbols/shorebird/ios
           retention-days: 30
           if-no-files-found: error
 
