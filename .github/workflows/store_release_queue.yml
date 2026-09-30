@@ -40,6 +40,6 @@ jobs:
           fi
           echo "Dispatch Store release · Play ${PLAY_TRACK} · ${version}"
           gh workflow run store_release.yml \
-            --ref "${{ github.sha }}" \
+            --ref "${{ github.ref_name }}" \
             -f "play_track=${PLAY_TRACK}" \
             -f "app_version=${version}"
