@@ -1,11 +1,8 @@
 name: Store release
 
-run-name: Store release · Play ${{ inputs.play_track || 'internal' }}
+run-name: Store release · Play ${{ inputs.play_track }} · ${{ inputs.app_version }}
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       play_track:
@@ -18,24 +15,43 @@ on:
           - alpha
           - beta
           - production
+      app_version:
+        description: pubspec version, for example 1.7.8+91
+        required: true
+        type: string
 
 concurrency:
   group: store-release
   cancel-in-progress: false
 
 jobs:
-  android:
-    name: Android Play (${{ inputs.play_track || 'internal' }})
+  version:
+    name: Version ${{ inputs.app_version }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read app version
+        id: version
+        run: |
+          bash .github/scripts/read_app_version.sh
+          pubspec_version="$(awk '/^version:/{print $2; exit}' pubspec.yaml)"
+          if [ "$pubspec_version" != "${{ inputs.app_version }}" ]; then
+            echo "pubspec ${pubspec_version} va run ${{ inputs.app_version }} mos emas."
+            exit 1
+          fi
+
+  shorebird_android:
+    name: Shorebird Android ${{ inputs.app_version }}
+    needs: version
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Read app version
-        id: version
-        run: bash .github/scripts/read_app_version.sh
 
       - uses: actions/setup-java@v4
         with:
@@ -77,6 +93,21 @@ jobs:
           flutter-version: "3.47.5"
           args: --flavor prod --dart-define-from-file=build.json --obfuscate --split-debug-info=debug-symbols/shorebird/android --no-confirm
 
+      - name: Collect Android artifacts
+        run: |
+          mkdir -p dist/android
+          cp build/app/outputs/bundle/prodRelease/app-prod-release.aab dist/android/
+          if [ -f build/app/outputs/mapping/prodRelease/mapping.txt ]; then
+            cp build/app/outputs/mapping/prodRelease/mapping.txt dist/android/
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: dist/android
+          retention-days: 30
+          if-no-files-found: error
+
       - uses: actions/upload-artifact@v4
         with:
           name: android-debug-symbols
@@ -84,42 +115,15 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
-      - name: Write Play release notes
-        run: bash .github/scripts/write_play_release_notes.sh "${{ steps.version.outputs.version }}" "${{ inputs.play_track || 'internal' }}"
-
-      - name: Upload to Google Play
-        env:
-          KEY_FILE: ${{ github.workspace }}/assets/credentials/qizlar-akademiyasi-d22381d8490c.json
-          PACKAGE_NAME: uz.globalmove.girls_academy
-          AAB_PATH: ${{ github.workspace }}/build/app/outputs/bundle/prodRelease/app-prod-release.aab
-          PLAY_TRACK: ${{ inputs.play_track || 'internal' }}
-          RELEASE_NAME: ${{ steps.version.outputs.version }} · ${{ inputs.play_track || 'internal' }}
-          MAPPING_FILE: ${{ github.workspace }}/build/app/outputs/mapping/prodRelease/mapping.txt
-          NOTES_DIR: ${{ github.workspace }}/build/whatsnew
-          CHANGES_NOT_SENT_FOR_REVIEW: ${{ (inputs.play_track || 'internal') == 'production' }}
-        run: |
-          mkdir -p /tmp/play-upload
-          cd /tmp/play-upload
-          npm init -y >/dev/null
-          npm install --silent googleapis@144
-          node "$GITHUB_WORKSPACE/.github/scripts/upload_play.js"
-
-      - name: Annotate Android result
-        if: always()
-        run: bash .github/scripts/annotate_store_build.sh android "${{ steps.version.outputs.version }}" "${{ inputs.play_track || 'internal' }}" "${{ job.status }}"
-
-  ios:
-    name: iOS TestFlight
+  shorebird_ios:
+    name: Shorebird iOS ${{ inputs.app_version }}
+    needs: shorebird_android
     runs-on: macos-latest
     timeout-minutes: 90
     env:
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Read app version
-        id: version
-        run: bash .github/scripts/read_app_version.sh
 
       - uses: shorebirdtech/setup-shorebird@v1
         with:
@@ -151,20 +155,77 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
+          name: ios-ipa
+          path: build/ios/ipa/*.ipa
+          retention-days: 30
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
           name: ios-debug-symbols
           path: debug-symbols/shorebird/ios
           retention-days: 30
           if-no-files-found: error
 
+  play_upload:
+    name: Play ${{ inputs.play_track }} ${{ inputs.app_version }}
+    needs: shorebird_ios
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-release
+          path: dist/android
+
+      - name: Write Play release notes
+        run: bash .github/scripts/write_play_release_notes.sh "${{ inputs.app_version }}" "${{ inputs.play_track }}"
+
+      - name: Upload to Google Play
+        env:
+          KEY_FILE: ${{ github.workspace }}/assets/credentials/qizlar-akademiyasi-d22381d8490c.json
+          PACKAGE_NAME: uz.globalmove.girls_academy
+          AAB_PATH: ${{ github.workspace }}/dist/android/app-prod-release.aab
+          PLAY_TRACK: ${{ inputs.play_track }}
+          RELEASE_NAME: ${{ inputs.app_version }} · ${{ inputs.play_track }}
+          MAPPING_FILE: ${{ github.workspace }}/dist/android/mapping.txt
+          NOTES_DIR: ${{ github.workspace }}/build/whatsnew
+          CHANGES_NOT_SENT_FOR_REVIEW: ${{ inputs.play_track == 'production' }}
+        run: |
+          mkdir -p /tmp/play-upload
+          cd /tmp/play-upload
+          npm init -y >/dev/null
+          npm install --silent googleapis@144
+          NODE_PATH=/tmp/play-upload/node_modules node "$GITHUB_WORKSPACE/.github/scripts/upload_play.js"
+
+      - name: Annotate Android result
+        if: always()
+        run: bash .github/scripts/annotate_store_build.sh android "${{ inputs.app_version }}" "${{ inputs.play_track }}" "${{ job.status }}"
+
+  testflight_upload:
+    name: TestFlight ${{ inputs.app_version }}
+    needs: shorebird_ios
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ios-ipa
+          path: dist/ios
+
       - name: Upload to TestFlight
         run: |
           mkdir -p "$HOME/.appstoreconnect/private_keys"
           cp assets/credentials/AuthKey_9SMN52TK33.p8 "$HOME/.appstoreconnect/private_keys/AuthKey_9SMN52TK33.p8"
-          ipa="$(ls build/ios/ipa/*.ipa)"
+          ipa="$(ls dist/ios/*.ipa)"
           xcrun altool --upload-app --type ios -f "$ipa" \
             --apiKey 9SMN52TK33 \
             --apiIssuer 2305c692-65a4-40a3-b4c4-66241279a6d4
 
       - name: Annotate iOS result
         if: always()
-        run: bash .github/scripts/annotate_store_build.sh ios "${{ steps.version.outputs.version }}" testflight "${{ job.status }}"
+        run: bash .github/scripts/annotate_store_build.sh ios "${{ inputs.app_version }}" testflight "${{ job.status }}"

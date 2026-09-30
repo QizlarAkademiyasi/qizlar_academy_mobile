@@ -1,0 +1,45 @@
+name: Queue store release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      play_track:
+        description: Google Play track
+        required: true
+        default: internal
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  queue:
+    name: Queue store release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dispatch store release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PLAY_TRACK: ${{ inputs.play_track || 'internal' }}
+        run: |
+          version="$(awk '/^version:/{print $2; exit}' pubspec.yaml)"
+          if [ -z "$version" ]; then
+            echo "pubspec.yaml ichida version topilmadi."
+            exit 1
+          fi
+          echo "Dispatch Store release · Play ${PLAY_TRACK} · ${version}"
+          gh workflow run store_release.yml \
+            --ref "${{ github.sha }}" \
+            -f "play_track=${PLAY_TRACK}" \
+            -f "app_version=${version}"
