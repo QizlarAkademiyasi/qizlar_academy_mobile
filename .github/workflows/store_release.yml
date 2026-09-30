@@ -88,7 +88,6 @@ jobs:
         run: bash .github/scripts/write_play_release_notes.sh "${{ steps.version.outputs.version }}" "${{ inputs.play_track || 'internal' }}"
 
       - name: Upload to Google Play
-        working-directory: /tmp/play-upload
         env:
           KEY_FILE: ${{ github.workspace }}/assets/credentials/qizlar-akademiyasi-d22381d8490c.json
           PACKAGE_NAME: uz.globalmove.girls_academy
@@ -99,6 +98,8 @@ jobs:
           NOTES_DIR: ${{ github.workspace }}/build/whatsnew
           CHANGES_NOT_SENT_FOR_REVIEW: ${{ (inputs.play_track || 'internal') == 'production' }}
         run: |
+          mkdir -p /tmp/play-upload
+          cd /tmp/play-upload
           npm init -y >/dev/null
           npm install --silent googleapis@144
           node "$GITHUB_WORKSPACE/.github/scripts/upload_play.js"
