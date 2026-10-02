@@ -19,59 +19,59 @@ void main() {
     );
   }
 
-  testWidgets('warms inactive tabs after the first frame', (tester) async {
+  testWidgets('does not build inactive tabs after later frames', (
+    tester,
+  ) async {
     await tester.pumpWidget(host(selectedIndex: 0, fadeNonce: 0));
 
     expect(find.text('home-tab-page'), findsOneWidget);
     expect(find.text('courses-tab-page', skipOffstage: false), findsNothing);
     expect(find.text('profile-tab-page', skipOffstage: false), findsNothing);
 
-    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
 
-    expect(find.text('courses-tab-page', skipOffstage: false), findsOneWidget);
-    expect(find.text('profile-tab-page', skipOffstage: false), findsOneWidget);
-    expect(find.text('courses-tab-page'), findsNothing);
+    expect(find.text('courses-tab-page', skipOffstage: false), findsNothing);
+    expect(find.text('profile-tab-page', skipOffstage: false), findsNothing);
   });
 
   testWidgets('shows the new tab immediately without waiting for fade', (
     tester,
   ) async {
     await tester.pumpWidget(host(selectedIndex: 0, fadeNonce: 0));
-    await tester.pump();
 
     await tester.pumpWidget(host(selectedIndex: 1, fadeNonce: 1));
     await tester.pump();
 
-    expect(
-      find.text('courses-tab-page', skipOffstage: true),
-      findsOneWidget,
-    );
+    expect(find.text('courses-tab-page', skipOffstage: true), findsOneWidget);
   });
 
   testWidgets('crossfades outgoing and incoming tabs during switch', (
     tester,
   ) async {
     await tester.pumpWidget(host(selectedIndex: 0, fadeNonce: 0));
-    await tester.pump();
 
     await tester.pumpWidget(host(selectedIndex: 1, fadeNonce: 1));
     await tester.pump();
 
-    expect(
-      find.text('home-tab-page', skipOffstage: false),
-      findsOneWidget,
-    );
-    expect(
-      find.text('courses-tab-page', skipOffstage: false),
-      findsOneWidget,
-    );
+    expect(find.text('home-tab-page', skipOffstage: false), findsOneWidget);
+    expect(find.text('courses-tab-page', skipOffstage: false), findsOneWidget);
 
     await tester.pumpAndSettle(MainTabStack.fadeDuration);
 
     expect(find.text('home-tab-page', skipOffstage: true), findsNothing);
-    expect(
-      find.text('courses-tab-page', skipOffstage: true),
-      findsOneWidget,
-    );
+    expect(find.text('courses-tab-page', skipOffstage: true), findsOneWidget);
+  });
+
+  testWidgets('keeps a previously selected tab built offstage', (tester) async {
+    await tester.pumpWidget(host(selectedIndex: 0, fadeNonce: 0));
+    await tester.pumpWidget(host(selectedIndex: 1, fadeNonce: 1));
+    await tester.pumpAndSettle(MainTabStack.fadeDuration);
+
+    await tester.pumpWidget(host(selectedIndex: 0, fadeNonce: 2));
+    await tester.pumpAndSettle(MainTabStack.fadeDuration);
+
+    expect(find.text('courses-tab-page', skipOffstage: false), findsOneWidget);
+    expect(find.text('courses-tab-page'), findsNothing);
+    expect(find.text('profile-tab-page', skipOffstage: false), findsNothing);
   });
 }

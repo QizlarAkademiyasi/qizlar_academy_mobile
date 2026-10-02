@@ -3,6 +3,7 @@ import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/config/services_hub_game_webview_settings.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/domain/model/game_webview_args.dart';
+import 'package:qizlar_academy_mobile/feature/services_hub/presentation/screens/game_webview/components/game_webview_loading_skeleton.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/presentation/screens/game_webview/game_webview_screen_mixin.dart';
 
 class GameWebViewScreen extends StatefulWidget {
@@ -17,9 +18,18 @@ class GameWebViewScreen extends StatefulWidget {
 class _GameWebViewScreenState extends State<GameWebViewScreen>
     with GameWebViewScreenMixin<GameWebViewScreen> {
   @override
+  GameWebViewArgs get args => widget.args;
+
+  @override
   void initState() {
     super.initState();
-    args = widget.args;
+    initializeGameWebView();
+  }
+
+  @override
+  void dispose() {
+    disposeGameWebView();
+    super.dispose();
   }
 
   @override
@@ -60,7 +70,6 @@ class _GameWebViewScreenState extends State<GameWebViewScreen>
         body: Stack(
           children: [
             InAppWebView(
-              keepAlive: gameKeepAlive,
               initialUrlRequest: URLRequest(url: WebUri(uri.toString())),
               initialSettings: gameWebViewSettings(),
               onWebViewCreated: onWebViewCreated,
@@ -81,7 +90,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen>
                 ),
               ),
             if (isLoading && !hasError)
-              const Center(child: CircularProgressIndicator.adaptive()),
+              const Positioned.fill(child: GameWebViewLoadingSkeleton()),
             if (hasError)
               Positioned.fill(
                 child: ColoredBox(

@@ -9,6 +9,7 @@ part 'daily_coin_state.dart';
 class DailyCoinBloc extends Bloc<DailyCoinEvent, DailyCoinState> {
   DailyCoinBloc(this._repository) : super(const DailyCoinState()) {
     on<DailyCoinStarted>(_onStarted);
+    on<DailyCoinSeeded>(_onSeeded);
     on<DailyCoinRefreshed>(_onRefreshed);
     on<DailyCoinClaimPressed>(_onClaimPressed);
   }
@@ -20,6 +21,16 @@ class DailyCoinBloc extends Bloc<DailyCoinEvent, DailyCoinState> {
     Emitter<DailyCoinState> emit,
   ) async {
     await _loadStreak(emit);
+  }
+
+  void _onSeeded(DailyCoinSeeded event, Emitter<DailyCoinState> emit) {
+    emit(
+      state.copyWith(
+        status: DailyCoinStatus.success,
+        streak: event.streak,
+        clearMessage: true,
+      ),
+    );
   }
 
   Future<void> _onRefreshed(

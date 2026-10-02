@@ -11,6 +11,15 @@ class DailyCoinStarted extends DailyCoinEvent {
   List<Object?> get props => [];
 }
 
+class DailyCoinSeeded extends DailyCoinEvent {
+  const DailyCoinSeeded(this.streak);
+
+  final DailyStreakModel streak;
+
+  @override
+  List<Object?> get props => [streak];
+}
+
 class DailyCoinRefreshed extends DailyCoinEvent {
   const DailyCoinRefreshed();
 

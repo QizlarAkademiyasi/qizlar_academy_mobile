@@ -87,10 +87,75 @@ void main() {
     expect(find.text('Olish'), findsNothing);
     expect(find.text('Olingan'), findsNothing);
   });
+
+  testWidgets('auto sheet uses prefetched streak without another GET', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      AppThemeProvider(
+        builder: (context) => MaterialApp(
+          locale: const Locale('uz'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppOptions.lightThemeData(context),
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => tryAutopresentDailyCoinSheetFromHomePrefetch(
+                  context,
+                  const DailyStreakModel(streakCount: 4, isClaimed: false),
+                ),
+                child: const Text('Open prefetched'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open prefetched'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Olish'), findsOneWidget);
+    expect(repository.fetchCount, 0);
+  });
+
+  testWidgets('auto sheet stays closed for an already claimed streak', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      AppThemeProvider(
+        builder: (context) => MaterialApp(
+          locale: const Locale('uz'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppOptions.lightThemeData(context),
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => tryAutopresentDailyCoinSheetFromHomePrefetch(
+                  context,
+                  const DailyStreakModel(streakCount: 4, isClaimed: true),
+                ),
+                child: const Text('Try claimed'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Try claimed'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Olish'), findsNothing);
+    expect(repository.fetchCount, 0);
+  });
 }
 
 class _SuccessfulDailyCoinRepository implements DailyCoinRepository {
   var _isClaimed = false;
+  var fetchCount = 0;
 
   @override
   Future<void> claimStreak() async {
@@ -99,6 +164,7 @@ class _SuccessfulDailyCoinRepository implements DailyCoinRepository {
 
   @override
   Future<DailyStreakModel> fetchStreak() async {
+    fetchCount++;
     return DailyStreakModel(streakCount: 2, isClaimed: _isClaimed);
   }
 }

@@ -168,7 +168,8 @@ class _MainScreenState extends State<MainScreen>
                     return ValueListenableBuilder<int>(
                       valueListenable: tabIndex,
                       builder: (context, stackIndex, _) {
-                        final hubActive = !isGuestMode &&
+                        final hubActive =
+                            !isGuestMode &&
                             stackIndex == kMainServicesHubTabIndex;
                         return SecondLiquidBottomNav(
                           items: mainAppSecondLiquidBottomNavItems(
@@ -185,10 +186,12 @@ class _MainScreenState extends State<MainScreen>
                           selectedColor: context.appColors.primary,
                           unselectedColor:
                               context.appColors.bottomBarTabUnselected,
-                          extraActionIcon:
-                              isGuestMode ? null : LucideIcons.plus,
-                          onExtraActionTap:
-                              isGuestMode ? null : onServicesHubTap,
+                          extraActionIcon: isGuestMode
+                              ? null
+                              : LucideIcons.plus,
+                          onExtraActionTap: isGuestMode
+                              ? null
+                              : onServicesHubTap,
                           extraActionSemanticLabel:
                               context.l10n.servicesHubTitle,
                           extraActionShowsCloseWhenExpanded: false,

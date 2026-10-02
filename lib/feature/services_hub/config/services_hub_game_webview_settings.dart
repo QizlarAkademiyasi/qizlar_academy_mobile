@@ -1,12 +1,11 @@
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 
-/// Prewarm layer va o‘yin ekrani bitta sozlamadan foydalanadi — aks holda
-/// cache mos kelmaydi va prewarm foydasi yo‘qoladi.
+/// User ochgan game session WebView sozlamalari.
 InAppWebViewSettings gameWebViewSettings() {
   return InAppWebViewSettings(
     javaScriptEnabled: true,
     mediaPlaybackRequiresUserGesture: false,
-    transparentBackground: true,
+    transparentBackground: false,
     useShouldOverrideUrlLoading: true,
     cacheEnabled: true,
     clearCache: false,

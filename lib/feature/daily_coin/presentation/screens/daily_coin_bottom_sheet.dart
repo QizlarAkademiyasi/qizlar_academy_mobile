@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/app_keys.dart';
@@ -6,7 +6,9 @@ import 'package:qizlar_academy_mobile/config/constants/daily_coin_feature.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
 import 'package:qizlar_academy_mobile/core/presentation/components/app_components.dart';
+import 'package:qizlar_academy_mobile/core/network/daily_streak_daily_fetch_service.dart';
 import 'package:qizlar_academy_mobile/feature/daily_coin/data/daily_coin_calendar_day.dart';
+import 'package:qizlar_academy_mobile/feature/daily_coin/domain/model/daily_streak_model.dart';
 import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/bloc/daily_coin_bloc.dart';
 import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/components/daily_coin_sheet_content.dart';
 
@@ -18,9 +20,20 @@ Future<void> _markDailyCoinSheetEngagedToday() async {
   );
 }
 
-Widget _dailyCoinSheetPage(BuildContext context) {
+Widget _dailyCoinSheetPage(
+  BuildContext context, {
+  DailyStreakModel? initialStreak,
+}) {
   return BlocProvider(
-    create: (_) => getIt<DailyCoinBloc>()..add(const DailyCoinStarted()),
+    create: (_) {
+      final bloc = getIt<DailyCoinBloc>();
+      bloc.add(
+        initialStreak == null
+            ? const DailyCoinStarted()
+            : DailyCoinSeeded(initialStreak),
+      );
+      return bloc;
+    },
     child: BlocListener<DailyCoinBloc, DailyCoinState>(
       listenWhen: (previous, current) {
         final claimSucceeded =
@@ -34,6 +47,13 @@ Widget _dailyCoinSheetPage(BuildContext context) {
       },
       listener: (context, state) {
         if (state.status == DailyCoinStatus.success) {
+          final streak = state.streak;
+          if (streak != null &&
+              getIt.isRegistered<DailyStreakDailyFetchService>()) {
+            unawaited(
+              getIt<DailyStreakDailyFetchService>().saveSnapshot(streak),
+            );
+          }
           Navigator.of(context).pop();
           return;
         }
@@ -56,8 +76,14 @@ Widget _dailyCoinSheetPage(BuildContext context) {
   );
 }
 
-Future<void> _openDailyCoinBottomSheet(BuildContext context) {
-  return showAppBottomSheet<void>(context, child: _dailyCoinSheetPage(context));
+Future<void> _openDailyCoinBottomSheet(
+  BuildContext context, {
+  DailyStreakModel? initialStreak,
+}) {
+  return showAppBottomSheet<void>(
+    context,
+    child: _dailyCoinSheetPage(context, initialStreak: initialStreak),
+  );
 }
 
 /// Qo‘lda ochish (Tangalar bloki): kun uchun «bir marta» auto-sheet bilan ziddiyat yo‘q.
@@ -68,12 +94,11 @@ Future<void> showDailyCoinBottomSheet(BuildContext context) async {
   await _openDailyCoinBottomSheet(context);
 }
 
-/// Bosh sahifa: prefetch snapshot asosida **tangani hali olmagan** bo‘lsa sheet ochadi.
-///
-/// Qaytishi: `null` — snapshot yo‘q, birozdan keyin qayta urinish mumkin;
-/// `true` — sheet muvaffaqiyatli ochildi; `false` — ochilmadi (olingan, boshqa kun, allaqachon ochilgan).
-Future<bool?> tryAutopresentDailyCoinSheetFromHomePrefetch(
+/// Bosh sahifa: typed snapshot bo'yicha **tangani hali olmagan** bo'lsa sheet
+/// ochadi. `false` — olingan yoki sheet bugun allaqachon ochilgan.
+Future<bool> tryAutopresentDailyCoinSheetFromHomePrefetch(
   BuildContext context,
+  DailyStreakModel streak,
 ) async {
   if (!kDailyCoinFeatureEnabled) return false;
   final prefs = getIt<SharedPreferences>();
@@ -82,29 +107,10 @@ Future<bool?> tryAutopresentDailyCoinSheetFromHomePrefetch(
     return false;
   }
 
-  final raw = prefs.getString(StorageKey.dailyStreakSnapshotV1.name);
-  if (raw == null) return null;
-
-  Map<String, dynamic> map;
-  try {
-    final decoded = jsonDecode(raw);
-    if (decoded is! Map<String, dynamic>) return false;
-    map = decoded;
-  } catch (_) {
-    return false;
-  }
-
-  if (map['calendarDay'] != today) return false;
-
-  final claimedRaw = map['isClaimed'];
-  final isClaimed = claimedRaw is bool
-      ? claimedRaw
-      : claimedRaw is String && claimedRaw.toLowerCase() == 'true';
-
-  if (isClaimed) return false;
+  if (streak.isClaimed) return false;
 
   await _markDailyCoinSheetEngagedToday();
   if (!context.mounted) return false;
-  await _openDailyCoinBottomSheet(context);
+  await _openDailyCoinBottomSheet(context, initialStreak: streak);
   return true;
 }

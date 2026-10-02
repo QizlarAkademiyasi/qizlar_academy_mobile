@@ -1,6 +1,8 @@
-import 'package:qizlar_academy_mobile/config/constants/daily_coin_feature.dart';
-import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/screens/daily_coin_bottom_sheet.dart';
 import 'dart:async' show unawaited;
+
+import 'package:qizlar_academy_mobile/config/constants/daily_coin_feature.dart';
+import 'package:qizlar_academy_mobile/core/network/daily_streak_daily_fetch_service.dart';
+import 'package:qizlar_academy_mobile/feature/daily_coin/presentation/screens/daily_coin_bottom_sheet.dart';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/l10n/l10n.dart';
@@ -30,18 +32,12 @@ mixin HomeScreenMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> _maybeAutopresentDailyCoinSheet() async {
     if (!kDailyCoinFeatureEnabled) return;
-    for (var i = 0; i < 14; i++) {
-      if (!mounted) return;
-      final auth = getIt<AuthSessionCubit>().state;
-      if (!auth.isRegistered || (auth.accessToken ?? '').trim().isEmpty) {
-        return;
-      }
-      final result = await tryAutopresentDailyCoinSheetFromHomePrefetch(
-        context,
-      );
-      if (result != null) return;
-      await Future<void>.delayed(Duration(milliseconds: 260 + i * 140));
-    }
+    final auth = getIt<AuthSessionCubit>().state;
+    if (!auth.isRegistered || (auth.accessToken ?? '').trim().isEmpty) return;
+    final streak = await getIt<DailyStreakDailyFetchService>()
+        .ensureFetchedOnceToday();
+    if (!mounted || streak == null) return;
+    await tryAutopresentDailyCoinSheetFromHomePrefetch(context, streak);
   }
 
   @override

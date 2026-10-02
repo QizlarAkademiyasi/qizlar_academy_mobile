@@ -15,8 +15,6 @@ class ServicesHubGameCard extends StatelessWidget {
 
   static const double collapsedHeight = 176;
   static const double expandedHeight = 300;
-  static const double expandedBackgroundHeight = 250;
-  static const double expandedFrameTailHeight = 50;
   static const double borderRadius = 24;
 
   static const double logoLeft = 18;
@@ -51,27 +49,12 @@ class ServicesHubGameCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              AnimatedPositioned(
-                duration: _contentAnimationDuration,
-                curve: _contentAnimationCurve,
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: isExpanded ? expandedFrameTailHeight : 0,
+              Positioned.fill(
                 child: SvgPicture.asset(
                   game.backgroundAsset,
                   fit: BoxFit.cover,
                   package: 'qizlar_academy_kit',
                 ),
-              ),
-              AnimatedPositioned(
-                duration: _contentAnimationDuration,
-                curve: _contentAnimationCurve,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: isExpanded ? expandedFrameTailHeight : 0,
-                child: ColoredBox(color: colors.background),
               ),
               AnimatedPositioned(
                 duration: _contentAnimationDuration,

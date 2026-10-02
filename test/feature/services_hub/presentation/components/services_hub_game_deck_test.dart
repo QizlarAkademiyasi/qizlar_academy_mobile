@@ -144,33 +144,31 @@ void main() {
     expect(tester.getSize(deck).height, expandedHeight);
   });
 
-  testWidgets('unselected cards use perspective tilt when collapsed', (tester) async {
+  List<String> deckCardPaintOrder(WidgetTester tester) {
+    final stack = tester.widget<Stack>(
+      find
+          .descendant(
+            of: find.byType(ServicesHubGameDeck),
+            matching: find.byType(Stack),
+          )
+          .first,
+    );
+    return stack.children
+        .whereType<AnimatedPositioned>()
+        .map((positioned) => (positioned.key! as ValueKey<String>).value)
+        .toList(growable: false);
+  }
+
+  testWidgets('expanded card paints above cards below it in the stack', (
+    tester,
+  ) async {
     await pumpDeck(tester);
 
-    Transform cardTransform(Finder card) {
-      return tester.widget<Transform>(
-        find.ancestor(
-          of: card,
-          matching: find.byType(Transform),
-        ).first,
-      );
-    }
-
-    expect(
-      cardTransform(cardWithId('a')).transform.entry(1, 1),
-      lessThan(1.0),
-    );
+    expect(deckCardPaintOrder(tester), ['a', 'b']);
 
     await tapCardPeek(tester, cardWithId('a'));
 
-    expect(
-      cardTransform(cardWithId('a')).transform.entry(1, 1),
-      closeTo(1.0, 0.001),
-    );
-    expect(
-      cardTransform(cardWithId('b')).transform.entry(1, 1),
-      lessThan(1.0),
-    );
+    expect(deckCardPaintOrder(tester), ['b', 'a']);
   });
 
   testWidgets('collapsed play button is visible but not tappable', (tester) async {
@@ -200,87 +198,71 @@ void main() {
   testWidgets('card content uses Figma top offsets', (tester) async {
     await pumpDeck(tester);
 
-    void expectPositionedTop(double top) {
+    void expectPositionedTop(
+      double top, {
+      double? left,
+      double? right,
+    }) {
       expect(
         find.descendant(
           of: cardWithId('a'),
           matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is AnimatedPositioned && widget.top == top,
+            (widget) {
+              if (widget is! AnimatedPositioned || widget.top != top) {
+                return false;
+              }
+              if (left != null && widget.left != left) return false;
+              if (right != null && widget.right != right) return false;
+              return true;
+            },
           ),
         ),
         findsOneWidget,
       );
     }
 
-    expectPositionedTop(ServicesHubGameCard.titleTopCollapsed);
+    expectPositionedTop(
+      ServicesHubGameCard.titleTopCollapsed,
+      left: 0,
+      right: 0,
+    );
     expectPositionedTop(ServicesHubGameCard.descriptionTopCollapsed);
     expectPositionedTop(ServicesHubGameCard.playTopCollapsed);
 
     await tapCardPeek(tester, cardWithId('a'));
 
-    expectPositionedTop(ServicesHubGameCard.titleTopExpanded);
+    expectPositionedTop(
+      ServicesHubGameCard.titleTopExpanded,
+      left: 0,
+      right: 0,
+    );
     expectPositionedTop(ServicesHubGameCard.descriptionTopExpanded);
     expectPositionedTop(ServicesHubGameCard.playTopExpanded);
   });
 
-  testWidgets('expanded card uses Figma background height and tail gap', (
+  testWidgets('expanded card background fills the full card height', (
     tester,
   ) async {
     await pumpDeck(tester);
 
-    Finder backgroundLayer(Finder card, {required double bottomInset}) {
-      return find.descendant(
-        of: card,
-        matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is AnimatedPositioned &&
-              widget.top == 0 &&
-              widget.left == 0 &&
-              widget.right == 0 &&
-              widget.bottom == bottomInset &&
-              widget.child is SvgPicture,
-        ),
-      );
-    }
-
-    Finder frameTail(Finder card, {required double height}) {
-      return find.descendant(
-        of: card,
-        matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is AnimatedPositioned &&
-              widget.bottom == 0 &&
-              widget.height == height &&
-              widget.child is ColoredBox,
-        ),
-      );
-    }
-
     final cardA = cardWithId('a');
-    expect(
-      backgroundLayer(cardA, bottomInset: 0),
-      findsOneWidget,
+    final background = find.descendant(
+      of: cardA,
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is Positioned &&
+            widget.left == 0 &&
+            widget.top == 0 &&
+            widget.right == 0 &&
+            widget.bottom == 0 &&
+            widget.child is SvgPicture,
+      ),
     );
-    expect(frameTail(cardA, height: 0), findsOneWidget);
+    expect(background, findsOneWidget);
 
     await tapCardPeek(tester, cardA);
 
-    expect(
-      backgroundLayer(cardA, bottomInset: ServicesHubGameCard.expandedFrameTailHeight),
-      findsOneWidget,
-    );
-    expect(
-      frameTail(cardA, height: ServicesHubGameCard.expandedFrameTailHeight),
-      findsOneWidget,
-    );
-
-    final bgBox = tester.renderObject<RenderBox>(
-      backgroundLayer(
-        cardA,
-        bottomInset: ServicesHubGameCard.expandedFrameTailHeight,
-      ).first,
-    );
-    expect(bgBox.size.height, ServicesHubGameCard.expandedBackgroundHeight);
+    final bgBox = tester.renderObject<RenderBox>(background.first);
+    expect(bgBox.size.height, ServicesHubGameCard.expandedHeight);
   });
 }

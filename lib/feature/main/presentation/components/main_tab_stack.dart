@@ -2,8 +2,9 @@ import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 
 /// BottomNav tab host: swipe yo‘q, index darhol almashadi.
 ///
-/// Inactive tablar post-frame warmup qilinadi. Tab almashganda outgoing va
-/// incoming sahifalar CrossFade (160ms) — butun stack flash emas.
+/// Tablar birinchi tanlanganda lazy quriladi va keyin state'i saqlanadi.
+/// Tab almashganda outgoing va incoming sahifalar CrossFade (160ms) — butun
+/// stack flash emas.
 class MainTabStack extends StatefulWidget {
   const MainTabStack({
     super.key,
@@ -34,17 +35,13 @@ class _MainTabStackState extends State<MainTabStack>
     curve: Curves.easeOut,
   );
 
-  bool _warmInactiveTabs = false;
+  late final Set<int> _builtIndices = <int>{widget.selectedIndex};
   int? _outgoingIndex;
 
   @override
   void initState() {
     super.initState();
     _fadeController.addStatusListener(_onFadeStatusChanged);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _warmInactiveTabs) return;
-      setState(() => _warmInactiveTabs = true);
-    });
   }
 
   void _onFadeStatusChanged(AnimationStatus status) {
@@ -58,6 +55,9 @@ class _MainTabStackState extends State<MainTabStack>
   @override
   void didUpdateWidget(covariant MainTabStack oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _builtIndices
+      ..removeWhere((index) => index >= widget.pages.length)
+      ..add(widget.selectedIndex);
     final indexChanged = widget.selectedIndex != oldWidget.selectedIndex;
     final barDroveChange = widget.fadeNonce != oldWidget.fadeNonce;
     if (indexChanged && barDroveChange) {
@@ -78,14 +78,11 @@ class _MainTabStackState extends State<MainTabStack>
   }
 
   bool _shouldBuild(int index) {
-    return index == widget.selectedIndex ||
-        _outgoingIndex == index ||
-        _warmInactiveTabs;
+    return _builtIndices.contains(index) || _outgoingIndex == index;
   }
 
   bool _isOnstage(int index) {
-    final crossfading =
-        _outgoingIndex != null && _fadeController.value < 1.0;
+    final crossfading = _outgoingIndex != null && _fadeController.value < 1.0;
     if (crossfading) {
       return index == widget.selectedIndex || index == _outgoingIndex;
     }

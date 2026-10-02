@@ -12,8 +12,6 @@ class ServicesHubGameDeck extends StatefulWidget {
   });
 
   static const double cardOverlap = 44;
-  static const double cardTiltRadians = 0.1;
-  static const double cardPerspective = 0.001;
   static const Duration animationDuration = Duration(milliseconds: 450);
   static const Curve animationCurve = Curves.easeOutCubic;
 
@@ -80,6 +78,37 @@ class _ServicesHubGameDeckState extends State<ServicesHubGameDeck> {
     return tops.last + _cardHeight(widget.games.length - 1);
   }
 
+  /// Kengaygan karta keyingi kartalar ostida qolmasligi uchun eng oxirida chiziladi.
+  List<int> _paintOrder(int count) {
+    if (_expandedIndex == null) {
+      return List<int>.generate(count, (i) => i);
+    }
+    return [
+      for (var i = 0; i < count; i++)
+        if (i != _expandedIndex) i,
+      _expandedIndex!,
+    ];
+  }
+
+  Widget _buildDeckCard(int index, List<double> tops) {
+    return AnimatedPositioned(
+      key: ValueKey(widget.games[index].id),
+      duration: ServicesHubGameDeck.animationDuration,
+      curve: ServicesHubGameDeck.animationCurve,
+      left: 0,
+      right: 0,
+      top: tops[index],
+      height: _cardHeight(index),
+      child: ServicesHubGameCard(
+        key: _cardKeys[widget.games[index].id],
+        game: widget.games[index],
+        isExpanded: _expandedIndex == index,
+        onCardTap: () => _onCardTap(index),
+        onPlayTap: () => widget.onPlayGame(widget.games[index]),
+      ),
+    );
+  }
+
   void _onCardTap(int index) {
     final expanding = _expandedIndex != index;
     setState(() {
@@ -114,7 +143,8 @@ class _ServicesHubGameDeckState extends State<ServicesHubGameDeck> {
       return;
     }
     final position = scrollable.position;
-    final target = RenderAbstractViewport.of(box).getOffsetToReveal(box, 1).offset +
+    final target =
+        RenderAbstractViewport.of(box).getOffsetToReveal(box, 1).offset +
         widget.revealBottomInset;
     if (target > position.pixels) {
       position.animateTo(
@@ -140,48 +170,12 @@ class _ServicesHubGameDeckState extends State<ServicesHubGameDeck> {
       duration: ServicesHubGameDeck.animationDuration,
       curve: ServicesHubGameDeck.animationCurve,
       builder: (context, height, child) {
-        return SizedBox(
-          height: height,
-          width: double.infinity,
-          child: child,
-        );
+        return SizedBox(height: height, width: double.infinity, child: child);
       },
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          for (var i = 0; i < count; i++)
-            AnimatedPositioned(
-              key: ValueKey(widget.games[i].id),
-              duration: ServicesHubGameDeck.animationDuration,
-              curve: ServicesHubGameDeck.animationCurve,
-              left: 0,
-              right: 0,
-              top: tops[i],
-              height: _cardHeight(i),
-              child: TweenAnimationBuilder<double>(
-                tween: Tween<double>(
-                  end: _expandedIndex == i ? 0.0 : ServicesHubGameDeck.cardTiltRadians,
-                ),
-                duration: ServicesHubGameDeck.animationDuration,
-                curve: ServicesHubGameDeck.animationCurve,
-                builder: (context, angle, child) {
-                  return Transform(
-                    alignment: Alignment.topCenter,
-                    transform: Matrix4.identity()
-                      ..setEntry(3, 2, ServicesHubGameDeck.cardPerspective)
-                      ..rotateX(angle),
-                    child: child,
-                  );
-                },
-                child: ServicesHubGameCard(
-                  key: _cardKeys[widget.games[i].id],
-                  game: widget.games[i],
-                  isExpanded: _expandedIndex == i,
-                  onCardTap: () => _onCardTap(i),
-                  onPlayTap: () => widget.onPlayGame(widget.games[i]),
-                ),
-              ),
-            ),
+          for (final index in _paintOrder(count)) _buildDeckCard(index, tops),
         ],
       ),
     );

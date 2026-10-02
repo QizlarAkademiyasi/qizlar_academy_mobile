@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/constants/apis.dart';
-import 'package:qizlar_academy_mobile/config/constants/daily_coin_feature.dart';
 import 'package:qizlar_academy_mobile/config/di/setup_locator.dart';
-import 'package:qizlar_academy_mobile/core/network/daily_streak_daily_fetch_service.dart';
 import 'package:qizlar_academy_mobile/config/logs/logs.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_cubit.dart';
 import 'package:qizlar_academy_mobile/feature/auth/presentation/bloc/auth_session_state.dart';
@@ -48,7 +46,10 @@ final class ActivityPingService {
     if (!_appInForeground || !_shouldPing) return;
 
     unawaited(_postPing());
-    _timer = Timer.periodic(const Duration(minutes: 1), (_) => unawaited(_postPing()));
+    _timer = Timer.periodic(
+      const Duration(minutes: 1),
+      (_) => unawaited(_postPing()),
+    );
   }
 
   void stop() {
@@ -59,7 +60,10 @@ final class ActivityPingService {
   Future<void> _postPing() async {
     if (!_shouldPing) return;
     try {
-      await _dio.post<void>(UserApis.activityPing, data: <String, dynamic>{'duration': 1});
+      await _dio.post<void>(
+        UserApis.activityPing,
+        data: <String, dynamic>{'duration': 1},
+      );
     } catch (e, st) {
       AppLogger.w('Activity ping failed', error: e, stackTrace: st);
     }
@@ -76,16 +80,10 @@ class ActivityPingScope extends StatefulWidget {
   State<ActivityPingScope> createState() => _ActivityPingScopeState();
 }
 
-class _ActivityPingScopeState extends State<ActivityPingScope> with WidgetsBindingObserver {
+class _ActivityPingScopeState extends State<ActivityPingScope>
+    with WidgetsBindingObserver {
   late final ActivityPingService _service = getIt<ActivityPingService>();
   StreamSubscription<AuthSessionState>? _authSub;
-
-  void _scheduleDailyStreakPrefetch() {
-    if (!kDailyCoinFeatureEnabled) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(getIt<DailyStreakDailyFetchService>().ensureFetchedOnceToday());
-    });
-  }
 
   @override
   void initState() {
@@ -94,9 +92,7 @@ class _ActivityPingScopeState extends State<ActivityPingScope> with WidgetsBindi
     _service.setAppInForeground(true);
     _authSub = getIt<AuthSessionCubit>().stream.listen((_) {
       _service.onAuthStateChanged();
-      _scheduleDailyStreakPrefetch();
     });
-    _scheduleDailyStreakPrefetch();
   }
 
   @override
@@ -111,7 +107,6 @@ class _ActivityPingScopeState extends State<ActivityPingScope> with WidgetsBindi
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _service.setAppInForeground(true);
-      _scheduleDailyStreakPrefetch();
     } else if (state == AppLifecycleState.paused) {
       _service.setAppInForeground(false);
     }

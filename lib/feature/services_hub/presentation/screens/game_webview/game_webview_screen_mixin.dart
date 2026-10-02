@@ -2,18 +2,20 @@ import 'dart:async';
 
 import 'package:qizlar_academy_kit/qizlar_academy_kit.dart';
 import 'package:qizlar_academy_mobile/config/logs/app_logger.dart';
-import 'package:qizlar_academy_mobile/feature/services_hub/config/game_webview_audio.dart';
-import 'package:qizlar_academy_mobile/feature/services_hub/config/services_hub_game_keep_alive_store.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/config/services_hub_games_config.dart';
 import 'package:qizlar_academy_mobile/feature/services_hub/domain/model/game_webview_args.dart';
 
 mixin GameWebViewScreenMixin<T extends StatefulWidget> on State<T> {
-  late final GameWebViewArgs args;
+  static const Duration gameLoadTimeout = Duration(seconds: 15);
+
+  GameWebViewArgs get args;
 
   InAppWebViewController? webViewController;
   double loadProgress = 0;
   bool isLoading = true;
   bool hasError = false;
+
+  Timer? _loadTimer;
 
   Uri? get validatedUri {
     final uri = Uri.tryParse(args.url);
@@ -23,47 +25,49 @@ mixin GameWebViewScreenMixin<T extends StatefulWidget> on State<T> {
     return uri;
   }
 
-  /// Prewarm keepAlive ni band qilgan bo‘lsa, ekran o‘z WebView'ini ochadi
-  /// (HTTP cache baribir umumiy). Qaror bir marta — build davomida
-  /// o‘zgarmasligi uchun.
-  late final bool usesKeepAlive = !ServicesHubGameKeepAliveStore.isPrewarming(
-    args.gameId,
-  );
+  void initializeGameWebView() {
+    _armLoadTimeout();
+  }
 
-  late final bool startsWarmed =
-      usesKeepAlive && ServicesHubGameKeepAliveStore.isWarmed(args.gameId);
+  void disposeGameWebView() {
+    _loadTimer?.cancel();
+  }
 
-  InAppWebViewKeepAlive? get gameKeepAlive =>
-      usesKeepAlive ? ServicesHubGameKeepAliveStore.of(args.gameId) : null;
+  void _armLoadTimeout() {
+    _loadTimer?.cancel();
+    _loadTimer = Timer(gameLoadTimeout, () {
+      if (!mounted || !isLoading) return;
+      AppLogger.w('Game web load timeout: ${args.gameId}');
+      _markFailed();
+    });
+  }
 
   void onWebViewCreated(InAppWebViewController controller) {
     webViewController = controller;
-    unawaited(
-      controller.evaluateJavascript(source: gameWebViewUnmuteScript),
-    );
-    if (!startsWarmed) return;
-    if (!mounted) return;
-    setState(() {
-      isLoading = false;
-      loadProgress = 1;
-    });
   }
 
   void onProgressChanged(int progress) {
     if (!mounted) return;
+    if (shouldCompleteGameLoad(progress: progress)) {
+      _completeLoading();
+      return;
+    }
     setState(() {
       loadProgress = progress / 100;
-      if (progress >= 100) isLoading = false;
     });
   }
 
   void onWebViewLoadStop() {
-    if (usesKeepAlive) {
-      ServicesHubGameKeepAliveStore.markWarmed(args.gameId);
-    }
+    _completeLoading();
+  }
+
+  void _completeLoading() {
+    _loadTimer?.cancel();
     if (!mounted) return;
+    if (!isLoading && !hasError && loadProgress >= 1) return;
     setState(() {
       isLoading = false;
+      hasError = false;
       loadProgress = 1;
     });
   }
@@ -86,7 +90,7 @@ mixin GameWebViewScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   void _markFailed() {
-    ServicesHubGameKeepAliveStore.clearWarmed(args.gameId);
+    _loadTimer?.cancel();
     if (!mounted) return;
     setState(() {
       isLoading = false;
@@ -95,8 +99,8 @@ mixin GameWebViewScreenMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> reloadGame() async {
-    final uri = validatedUri;
-    if (uri == null) return;
+    final controller = webViewController;
+    if (controller == null || validatedUri == null) return;
     if (mounted) {
       setState(() {
         hasError = false;
@@ -104,9 +108,8 @@ mixin GameWebViewScreenMixin<T extends StatefulWidget> on State<T> {
         loadProgress = 0;
       });
     }
-    await webViewController?.loadUrl(
-      urlRequest: URLRequest(url: WebUri(uri.toString())),
-    );
+    _armLoadTimeout();
+    await controller.reload();
   }
 
   Future<void> handleSystemBack() async {
@@ -131,4 +134,10 @@ mixin GameWebViewScreenMixin<T extends StatefulWidget> on State<T> {
     AppLogger.w('Game web navigation blocked: $uri');
     return NavigationActionPolicy.CANCEL;
   }
+}
+
+/// Progress 100 yoki `onLoadStop` loader yopilishi kerakligini bildiradi.
+bool shouldCompleteGameLoad({int? progress, bool loadStop = false}) {
+  if (loadStop) return true;
+  return progress != null && progress >= 100;
 }
